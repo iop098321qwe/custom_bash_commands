@@ -18,3 +18,5 @@ function cc() {
   git commit -m "$message"
   git push origin "$currentBranch"
 }
+
+# test
