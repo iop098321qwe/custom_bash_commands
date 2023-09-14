@@ -18,3 +18,40 @@ function cc() {
   git commit -m "$message"
   git push origin "$currentBranch"
 }
+
+# A function to initialize a local git repo and create/connect it to a GitHub repo
+incon() {
+    # Ensure the gh tool is installed
+    if ! command -v gh &> /dev/null; then
+        echo "gh (GitHub CLI) not found. Please install it to proceed."
+        return
+    fi
+
+    # Check if the current directory already contains a git repository
+    if [ -d ".git" ]; then
+        echo "This directory is already initialized as a git repository."
+        return
+    fi
+
+    # 1. Initialize a new local Git repository
+    git init
+
+    # Create a .gitignore and README.md file
+    touch .gitignore README.md
+    echo "# New Repository" > README.md
+
+    # 2. Create a new remote repository on GitHub using the gh tool
+    repo_name=$(basename $(pwd) | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+    gh repo create $repo_name --confirm || { echo "Repository creation failed. Exiting."; return; }
+
+    # 3. Connect the local repository to the newly created remote repository on GitHub
+    git remote add origin "https://github.com/$(gh api user | jq -r '.login')/$repo_name.git"
+    
+    # 4. Add all files, commit, and push
+    cc "Initial commit"
+    git push -u origin master || { echo "Push to master failed. Exiting."; return; }
+
+    # 5. Create a test branch, switch to it, and then switch back to master
+    git checkout -b test
+    git checkout master
+}
