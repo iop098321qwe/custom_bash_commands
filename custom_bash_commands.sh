@@ -19,8 +19,8 @@ function cc() {
   git push origin "$currentBranch"
 }
 
-# A function to initialize a local git repo and create/connect it to a GitHub repo
-function incon() {
+# A function to initialize a local git repo, create/connect it to a GitHub repo, and set up files
+incon() {
     # Ensure the gh tool is installed
     if ! command -v gh &> /dev/null; then
         echo "gh (GitHub CLI) not found. Please install it to proceed."
@@ -37,12 +37,14 @@ function incon() {
     git init
 
     # Create a .gitignore and README.md file
-    touch .gitignore README.md
-    echo "# New Repository" > README.md
-
-    # 2. Create a new remote repository on GitHub using the gh tool
+    touch .gitignore
     repo_name=$(basename $(pwd) | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
-    gh repo create $repo_name --confirm || { echo "Repository creation failed. Exiting."; return; }
+    formatted_name=$(echo $repo_name | tr '_' ' ' | sed -e "s/\b\(.\)/\u\1/g")
+    echo "# $formatted_name" > README.md
+    echo "* Not started" >> README.md
+
+    # 2. Create a new remote public repository on GitHub using the gh tool
+    gh repo create $repo_name --public || { echo "Repository creation failed. Exiting."; return; }
 
     # 3. Connect the local repository to the newly created remote repository on GitHub
     git remote add origin "https://github.com/$(gh api user | jq -r '.login')/$repo_name.git"
