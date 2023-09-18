@@ -44,7 +44,7 @@ incon() {
     echo "* Not started" >> README.md
 
     # 2. Create a new remote public repository on GitHub using the gh tool
-    gh repo create $repo_name --public || { echo "Repository creation failed. Exiting."; return; }
+    gh repo create $repo_name --private || { echo "Repository creation failed. Exiting."; return; }
 
     # 3. Connect the local repository to the newly created remote repository on GitHub
     git remote add origin "https://github.com/$(gh api user | jq -r '.login')/$repo_name.git"
