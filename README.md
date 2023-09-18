@@ -11,3 +11,4 @@
 * Set up .bashrc in the user directory (with hidden files) with the `source ~/.custom_bash_commands.sh` appended to the end.
 * Ensure the most up-to-date version of the github repository is added to the user file (with hidden files).
 * Open a new terminal as this will not work without the .bashrc file being reloaded.
+* You can also optionally run `source .bashrc` to refresh the .bashrc file. (or `source .bash_profile`)
