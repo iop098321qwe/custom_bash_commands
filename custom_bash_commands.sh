@@ -55,5 +55,6 @@ incon() {
 
     # 5. Create a test branch, switch to it, and then switch back to master
     git checkout -b test
+    cc "Initial test commit"
     git checkout master
 }
