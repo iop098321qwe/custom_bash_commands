@@ -8,7 +8,18 @@
 
 ### Current configuration:
 
-* Set up .bashrc in the user directory (with hidden files) with the `source ~/.custom_bash_commands.sh` appended to the end.
+* Set up .bashrc in the <user> directory (with hidden files) with the `source ~/.custom_bash_commands.sh` appended to the end.
 * Ensure the most up-to-date version of the github repository is added to the user file (with hidden files).
 * Open a new terminal as this will not work without the .bashrc file being reloaded.
 * You can also optionally run `source .bashrc` to refresh the .bashrc file. (or `source .bash_profile`)
+
+#### Additional Alias options:
+
+* Append `alias docs="cd ~/Documents"` to the end of the .bashrc file in the <user> directory.
+* Append `alias ...="cd ~"` to the end of the .bashrc file in the <user> directory.
+* Append `alias back="cd .."` to the end of the .bashrc file in the <user> directory.
+
+## Additional Plans:
+
+* Add the alias functions above into the .custom_bash_commands.sh file for simple one file upload.
+* Add a command to automatically update/copy the most recent version of the file into the <user> directory.
