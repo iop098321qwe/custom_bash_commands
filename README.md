@@ -36,23 +36,49 @@
 
 #### Additional Function options:
 
-* Add to the end of the `.bashrc` file:
+Add to the end of the `.bashrc` file:
 ```bash
 # Custom function to make directories and switch into it, and move into the deepest directory created.
 function mkcd() {
   mkdir -p "$1" && cd "$1"
 }
 ```
-    * This will create a function to make a directory or directories and change into the deepest created directory.
-* Add to the end of the `.bashrc` file: 
+This will create a function to make a directory or directories and change into the deepest created directory.
+###### Syntax `mkcd <directory1>/<directory2>` (Example: `mkcd project/project_notes`)
+
+---
+
+Add to the end of the `.bashrc` file: 
 ```bash
 # Function to create a backup file of a file.
 function bkup() {
   cp "$1" "${1}.bak"
 }
 ```
-   * This will create a backup file of the file chosen, using the syntax `bkup <filename>` in the same directory.
+This will create a backup file of the file chosen in the same directory.
+###### Syntax: `bkup <filename>` (Example: `bkup testfile.odt`)
 
+---
+
+Add to the end of the `.bashrc` file:
+```bash
+# Function: up
+# Description: This function allows you to move up in the directory hierarchy by a specified number of levels.
+function up() {
+  local times=$1  # The number of levels to move up in the directory structure.
+  local up=""     # A string that will accumulate the "../" for each level up.
+
+  while [ "$times" -gt 0 ]; do
+    up="../$up"   # Append "../" to the 'up' string for each level.
+    times=$((times - 1))  # Decrement the counter.
+  done
+
+  cd $up  # Change directory to the final path constructed.
+  ls
+}
+```
+This will move up the specified amount of directories.
+###### Syntax: `up <number>` (Example: `up 2`)
 
 ## Additional Plans:
 
