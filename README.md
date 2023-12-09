@@ -84,7 +84,6 @@ This will move up the specified amount of directories.
 
 * Add the alias functions above into the .custom_bash_commands.sh file for simple one file upload.
 * ~~Add a command to automatically update/copy the most recent version of the file into the <user> directory.~~
-* Add `-q` for quiet output for `cc`.
 * Add a smart function to automatically check if there were any updates before performing the automatic update of the .custom_bash_commands.sh script in the ~/ directory.
 * Add descriptions for alias' and custom functions in the README.md file.
 
