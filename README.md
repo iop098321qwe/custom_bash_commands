@@ -199,7 +199,7 @@ function findfile() {
 
 ---
 
-
+##### Add `figlet -f future Welcome Back -F border`
 ## Additional Plans:
 
 * Add the alias functions above into the .custom_bash_commands.sh file for simple one file upload.
