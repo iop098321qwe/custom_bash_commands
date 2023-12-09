@@ -28,6 +28,27 @@
 * Append `alias cbcc="cdgh && cd custom_bash_commands && ls && cc"` to the end of the `.bashrc` file in the <user> directory.
 * Append `alias myip="curl http://ipecho.net/plain; echo"` to the end of the `.bashrc` file in the <user> directory.
 * Append `alias rma='rm -rf'` to the end of the `.bashrc` file in the <user> directory.
+* Append `alias x='chmod +x'` to the end of the `.bashrc` file in the <user> directory.
+
+#### Additional Function options:
+
+* Add to the end of the `.bashrc` file:
+```bash
+# Custom function to make directories and switch into it, and move into the deepest directory created.
+function mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
+```
+    * This will create a function to make a directory or directories and change into the deepest created directory.
+* Add to the end of the `.bashrc` file: 
+```bash
+# Function to create a backup file of a file.
+function bkup() {
+  cp "$1" "${1}.bak"
+}
+```
+   * This will create a backup file of the file chosen, using the syntax `bkup <filename>`
+
 
 ## Additional Plans:
 
@@ -35,6 +56,7 @@
 * ~~Add a command to automatically update/copy the most recent version of the file into the <user> directory.~~
 * Add `-q` for quiet output for `cc`.
 * Add a smart function to automatically check if there were any updates before performing the automatic update of the .custom_bash_commands.sh script in the ~/ directory.
+* Add descriptions for alias' and custom functions in the README.md file.
 
 # To Test
 
