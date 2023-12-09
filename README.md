@@ -18,13 +18,19 @@
 
 #### Additional Alias options:
 
-* Append `alias docs="cd ~/Documents"` to the end of the .bashrc file in the <user> directory.
-* Append `alias ...="cd ~"` to the end of the .bashrc file in the <user> directory.
-* Append `alias back="cd .."` to the end of the .bashrc file in the <user> directory.
+* Append `alias docs="cd ~/Documents && ls"` to the end of the .bashrc file in the <user> directory.
+* Append `alias ...="cd ~ && ls"` to the end of the .bashrc file in the <user> directory.
+* Append `alias back="cd .. && ls"` to the end of the .bashrc file in the <user> directory.
 
 ## Additional Plans:
 
 * Add the alias functions above into the .custom_bash_commands.sh file for simple one file upload.
 * ~~Add a command to automatically update/copy the most recent version of the file into the <user> directory.~~
- * Add `-q` for quiet output on the CLI.
+ * Add `-q` for quiet output for `cc`.
  * Add a smart function to automatically check if there were any updates before performing the automatic update of the .custom_bash_commands.sh script in the ~/ directory.
+
+ # To Test
+
+ * Change the .bashrc file to read `source ~/.test_update_commands.sh`
+ * Run the terminal and verify the testing works by opening the .custom_bash_commands.sh in the user directory.
+ * Change the .bashrc file to read `source ~/.update_commands.sh` if it is not working.
