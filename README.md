@@ -33,6 +33,7 @@
     * Syntax: `x <filename>`
 * Append `alias gs='git status'` to the end of the `.bashrc` file in the <user> directory.
     * This will get the status of the git repository you are in quickly.
+* Append `alias editbash='code ~/.bashrc && source ~/.bashrc'` to the end of the `.bashrc` file in the <user> directory.
 
 #### Additional Function options:
 
