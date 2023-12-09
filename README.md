@@ -29,6 +29,10 @@
 * Append `alias myip="curl http://ipecho.net/plain; echo"` to the end of the `.bashrc` file in the <user> directory.
 * Append `alias rma='rm -rf'` to the end of the `.bashrc` file in the <user> directory.
 * Append `alias x='chmod +x'` to the end of the `.bashrc` file in the <user> directory.
+    * This will make whichever file that follows the command executable.
+    * Syntax: `x <filename>`
+* Append `alias gs='git status'` to the end of the `.bashrc` file in the <user> directory.
+    * This will get the status of the git repository you are in quickly.
 
 #### Additional Function options:
 
@@ -47,7 +51,7 @@ function bkup() {
   cp "$1" "${1}.bak"
 }
 ```
-   * This will create a backup file of the file chosen, using the syntax `bkup <filename>`
+   * This will create a backup file of the file chosen, using the syntax `bkup <filename>` in the same directory.
 
 
 ## Additional Plans:
