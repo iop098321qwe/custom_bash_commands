@@ -34,6 +34,9 @@
 * Append `alias gs='git status'` to the end of the `.bashrc` file in the <user> directory.
     * This will get the status of the git repository you are in quickly.
 * Append `alias editbash='code ~/.bashrc && source ~/.bashrc'` to the end of the `.bashrc` file in the <user> directory.
+* Append `alias cls='clear && ls'` to the end of the `.bashrc` file in the <user> directory.
+* Append `alias refresh='source ~/.bashrc'` to the end of the `.bashrc` file in the <user> directory.
+* Append `alias c='clear'` to the end of the `.bashrc` file in the <user> directory.
 
 #### Additional Function options:
 
@@ -53,7 +56,7 @@ Add to the end of the `.bashrc` file:
 ```bash
 # Function to create a backup file of a file.
 function bkup() {
-  cp "$1" "${1}.bak"
+  cp "$1" "${1}_$(date +%Y%m%d%H%M%S).bak"
 }
 ```
 This will create a backup file of the file chosen in the same directory.
