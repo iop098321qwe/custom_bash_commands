@@ -92,3 +92,7 @@ This will move up the specified amount of directories.
 * Change the `.bashrc` file to read `source ~/.test_update_commands.sh`
 * Run the terminal and verify the testing works by opening the .custom_bash_commands.sh in the user directory.
 * Change the `.bashrc` file to read `source ~/.update_commands.sh` if it is not working.
+
+# Useful Commands to Remember:
+
+* `neofetch`: graphically shows system information with a beautiful output and ASCII Art of the Desktop Environment installed on Linux.
