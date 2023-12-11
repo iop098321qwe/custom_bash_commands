@@ -199,7 +199,46 @@ function findfile() {
 
 ---
 
-##### Add `figlet -f future Welcome Back -F border`
+##### Add to the end of the `.bashrc` file with `editbash` command:
+
+```bash
+# Define the custom command
+update() {
+    # Create the log directory if it doesn't exist
+    mkdir -p ~/Documents/update_logs
+
+    # Define the log file path
+    log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
+
+    # Run update commands with sudo, tee to output to terminal and append to log file
+    command="sudo apt update"
+    echo -e "\n================================================================================"
+    echo "Running command: $command" | tee -a "$log_file"
+    echo "================================================================================"
+    eval "$command" | tee -a "$log_file"
+
+    command="sudo apt upgrade -y"
+    echo -e "\n================================================================================"
+    echo "Running command: $command" | tee -a "$log_file"
+    echo "================================================================================"
+    eval "$command" | tee -a "$log_file"
+
+    command="sudo apt autoremove -y"
+    echo -e "\n================================================================================"
+    echo "Running command: $command" | tee -a "$log_file"
+    echo "================================================================================"
+    eval "$command" | tee -a "$log_file"
+
+    # Display the log file path
+    echo -e "\nUpdate logs saved to: $log_file"
+}
+```
+* Function to automatically run multiple update commands with logging functionality.
+
+---
+
+##### Add `figlet -f future Welcome Back -F border` to the end of the `.bashrc` file with `editbash` command:
+
 ## Additional Plans:
 
 * Add the alias functions above into the .custom_bash_commands.sh file for simple one file upload.
