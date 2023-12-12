@@ -250,6 +250,7 @@ update() {
 * Add a smart function to automatically check if there were any updates before performing the automatic update of the .custom_bash_commands.sh script in the ~/ directory.
 * Add descriptions for alias' and custom functions in the README.md file.
 * Move all functions and alias' to the `custom_bash_commands.sh` script for easy transferral and one file to manage them all.
+* Create a test workflow for testing the custom commands.
 
 # To Test
 

@@ -176,4 +176,11 @@ fi
 # Print the session ID
 echo "Session ID: $session_id"
 
+# Check to see if neofetch is installed and install it if it is not, then call it
+if ! command -v neofetch &> /dev/null; then
+    echo "neofetch not found. Installing..."
+    sudo apt install neofetch -y
+fi
+neofetch
+
 cd ~
