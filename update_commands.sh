@@ -10,6 +10,7 @@ REPO_URL=https://github.com/iop098321qwe/custom_bash_commands.git
 FILE_PATHS=(
     custom_bash_commands.sh
     version.txt
+    update_commands.sh
 )
 
 # Initialize an empty git repository and configure for sparse checkout
