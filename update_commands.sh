@@ -9,7 +9,7 @@ REPO_URL=https://github.com/iop098321qwe/custom_bash_commands.git
 # List of file paths to download and move
 FILE_PATHS=(
     custom_bash_commands.sh
-    version.txt
+    .version
     update_commands.sh
 )
 
@@ -29,9 +29,14 @@ git pull origin master -q
 
 # Move the fetched files to the target directory
 for path in "${FILE_PATHS[@]}"; do
-    new_filename=".$(basename $path)"
-    cp $SPARSE_DIR/$path $new_filename
-    echo "Copied $path to $new_filename"
+    if [ "$path" = ".version" ]; then
+        cp $SPARSE_DIR/$path .
+        echo "Copied $path"
+    else
+        new_filename=".$(basename $path)"
+        cp $SPARSE_DIR/$path $new_filename
+        echo "Copied $path to $new_filename"
+    fi
 done
 
 # Clean up
