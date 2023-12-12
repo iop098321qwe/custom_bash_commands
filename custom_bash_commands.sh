@@ -24,15 +24,11 @@ function cc() {
     # Combine all arguments into a single commit message.
     message="$@"
     
-    # If a message is provided, proceed with git operations.
+    # If a message is provided, proceed with git operations
     currentBranch=$(git symbolic-ref --short -q HEAD)  # Getting the current branch
     
     echo "Current branch: $currentBranch"
-    if [[ $1 == "-y" ]]; then
-        choice="y"
-    else
-        read -p "Do you want to continue pushing to the current branch? (y/n): " choice
-    fi
+    read -p "Do you want to continue pushing to the current branch? (y/n): " choice
     
     if [ "$choice" == "y" ]; then
         git add .
