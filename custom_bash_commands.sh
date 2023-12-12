@@ -62,6 +62,41 @@ incon() {
     git checkout master
 }
 
+# Define the custom command
+update() {
+    # Create the log directory if it doesn't exist
+    mkdir -p ~/Documents/update_logs
+
+    # Define the log file path
+    log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
+
+    # Run update commands with sudo, tee to output to terminal and append to log file
+    command="sudo apt update"
+    echo -e "\n================================================================================"
+    echo "Running command: $command" | tee -a "$log_file"
+    echo "================================================================================"
+    eval "$command" | tee -a "$log_file"
+
+    command="sudo apt upgrade -y"
+    echo -e "\n================================================================================"
+    echo "Running command: $command" | tee -a "$log_file"
+    echo "================================================================================"
+    eval "$command" | tee -a "$log_file"
+
+    command="sudo apt autoremove -y"
+    echo -e "\n================================================================================"
+    echo "Running command: $command" | tee -a "$log_file"
+    echo "================================================================================"
+    eval "$command" | tee -a "$log_file"
+
+    # Display the log file path
+    echo -e "\nUpdate logs saved to: $log_file"
+
+    # Display the command to navigate to the log file directory
+    echo -e "\nTo navigate to the log file directory, use the following command:"
+    echo -e "cd ~/Documents/update_logs"
+}
+
 echo "Custom bash commands loaded successfully."
 
 # Create a variable to store a number that will serve as the session ID, and increment it by 1 each time it is loaded
@@ -77,4 +112,3 @@ fi
 # Print the session ID
 echo "Session ID: $session_id"
 
-# test
