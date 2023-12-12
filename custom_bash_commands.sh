@@ -39,6 +39,9 @@ function cc() {
     currentBranch=$(git symbolic-ref --short -q HEAD)  # Getting the current branch
     
     echo "Current branch: $currentBranch"
+    echo "Commit message: $message"
+    echo "available branches:"
+    git branch
     read -p "Do you want to continue pushing to the current branch? (y/n): " choice
     
     if [ "$choice" == "y" ]; then
