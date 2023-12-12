@@ -21,7 +21,7 @@ function cc() {
         return 1
     fi
     
-    # Combine all arguments into a single commit message
+    # Combine all arguments into a single commit message.
     message="$@"
     
     # If a message is provided, proceed with git operations
