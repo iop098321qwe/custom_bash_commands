@@ -2,16 +2,27 @@
 
 # Function to display the version.txt file from the local repository
 display_version() {
-    # Change directory to the location of the .version.txt file
-    cd ~
-
+    # Create an alias for the display_version function
+    alias dv="display_version"
     # Read the contents of the .version.txt file and display it in the terminal
-    version_number=$(cat .version)
+    version_number=$(cat ~/.version)
     echo "Version $version_number"
 }
 
 # Call the display_version function
 display_version
+
+# Create a function to display a list of all available custom commands in this script
+custom_commands() {
+    # Display a list of all available custom commands in this script
+    echo "Available commands:"
+    echo "  display_version"
+    echo "  display_commands"
+    echo "  update_commands"
+    echo "  cc"
+    echo "  incon"
+    echo "  update"
+}
 
 # Function to combine the git add/commit process
 function cc() {
