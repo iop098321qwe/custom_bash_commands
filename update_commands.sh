@@ -32,5 +32,3 @@ cp $SPARSE_DIR/$FILE_PATH $TARGET_FILE
 rm -rf $SPARSE_DIR
 cd ~
 clear
-
-echo "test2"
