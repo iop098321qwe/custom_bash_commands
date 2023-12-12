@@ -31,6 +31,7 @@ git pull origin master -q
 for path in "${FILE_PATHS[@]}"; do
     new_filename=".$(basename $path)"
     cp $SPARSE_DIR/$path $new_filename
+    echo "Copied $path to $new_filename"
 done
 
 # Clean up
