@@ -40,7 +40,7 @@
 
 #### Additional Function options:
 
-Add to the end of the `.bashrc` file:
+##### Add to the end of the `.bashrc` file:
 ```bash
 # Custom function to make directories and switch into it, and move into the deepest directory created.
 function mkcd() {
@@ -52,7 +52,7 @@ This will create a function to make a directory or directories and change into t
 
 ---
 
-Add to the end of the `.bashrc` file: 
+##### Add to the end of the `.bashrc` file: 
 ```bash
 # Function to create a backup file of a file.
 function bkup() {
@@ -64,7 +64,7 @@ This will create a backup file of the file chosen in the same directory.
 
 ---
 
-Add to the end of the `.bashrc` file:
+##### Add to the end of the `.bashrc` file:
 ```bash
 # Function: up
 # Description: This function allows you to move up in the directory hierarchy by a specified number of levels.
@@ -204,33 +204,37 @@ function findfile() {
 ```bash
 # Define the custom command
 update() {
-    # Create the log directory if it doesn't exist
-    mkdir -p ~/Documents/update_logs
+  # Create the log directory if it doesn't exist
+  mkdir -p ~/Documents/update_logs
 
-    # Define the log file path
-    log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
+  # Define the log file path
+  log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
 
-    # Run update commands with sudo, tee to output to terminal and append to log file
-    command="sudo apt update"
-    echo -e "\n================================================================================"
-    echo "Running command: $command" | tee -a "$log_file"
-    echo "================================================================================"
-    eval "$command" | tee -a "$log_file"
+  # Run update commands with sudo, tee to output to terminal and append to log file
+  command="sudo apt update"
+  echo -e "\n================================================================================"
+  echo "Running command: $command" | tee -a "$log_file"
+  echo "================================================================================"
+  eval "$command" | tee -a "$log_file"
 
-    command="sudo apt upgrade -y"
-    echo -e "\n================================================================================"
-    echo "Running command: $command" | tee -a "$log_file"
-    echo "================================================================================"
-    eval "$command" | tee -a "$log_file"
+  command="sudo apt upgrade -y"
+  echo -e "\n================================================================================"
+  echo "Running command: $command" | tee -a "$log_file"
+  echo "================================================================================"
+  eval "$command" | tee -a "$log_file"
 
-    command="sudo apt autoremove -y"
-    echo -e "\n================================================================================"
-    echo "Running command: $command" | tee -a "$log_file"
-    echo "================================================================================"
-    eval "$command" | tee -a "$log_file"
+  command="sudo apt autoremove -y"
+  echo -e "\n================================================================================"
+  echo "Running command: $command" | tee -a "$log_file"
+  echo "================================================================================"
+  eval "$command" | tee -a "$log_file"
 
-    # Display the log file path
-    echo -e "\nUpdate logs saved to: $log_file"
+  # Display the log file path
+  echo -e "\nUpdate logs saved to: $log_file"
+
+  # Display the command to navigate to the log file directory
+  echo -e "\nTo navigate to the log file directory, use the following command:"
+  echo -e "cd ~/Documents/update_logs"
 }
 ```
 * Function to automatically run multiple update commands with logging functionality.

@@ -59,4 +59,4 @@ incon() {
     git checkout master
 }
 
-# hi test x5
+echo "Custom bash commands loaded successfully."
