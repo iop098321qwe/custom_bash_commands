@@ -28,7 +28,11 @@ function cc() {
     currentBranch=$(git symbolic-ref --short -q HEAD)  # Getting the current branch
     
     echo "Current branch: $currentBranch"
-    read -p "Do you want to continue pushing to the current branch? (y/n): " choice
+    if [[ $1 == "-y" ]]; then
+        choice="y"
+    else
+        read -p "Do you want to continue pushing to the current branch? (y/n): " choice
+    fi
     
     if [ "$choice" == "y" ]; then
         git add .
@@ -146,7 +150,7 @@ update() {
         # Check if the user wants to open the log directory
         if [[ $open_log == "y" || $open_log == "Y" ]]; then
             # Open the log file
-            cd ~/Documents/update_logs/
+            cd ~/Documents/update_logs/ && ls
         fi
         return
     fi
