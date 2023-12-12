@@ -41,7 +41,7 @@ function cc() {
 
 # A function to initialize a local git repo, create/connect it to a GitHub repo, and set up files
 incon() {
-    # Ensure the gh tool is installed
+    # Ensure the gh tool is installed.
     if ! command -v gh &> /dev/null; then
         echo "gh (GitHub CLI) not found. Please install it to proceed."
         return
