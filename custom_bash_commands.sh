@@ -118,9 +118,15 @@ update() {
 
     # Check if the '-r' flag is provided
     if [[ $1 == "-r" ]]; then
-        # Reboot the system
-        echo -e "\nRebooting the system..."
-        sudo reboot
+        # Prompt the user to confirm the reboot
+        read -p "Are you sure you want to reboot the system? (y/n): " confirm
+        if [[ $confirm == "y" || $confirm == "Y" ]]; then
+            # Reboot the system
+            echo -e "\nRebooting the system..."
+            sudo reboot
+        else
+            echo "Reboot canceled."
+        fi
     fi
 
     # Check if the '-l' flag is provided
