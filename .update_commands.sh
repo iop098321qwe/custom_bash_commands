@@ -21,13 +21,9 @@ git pull origin master -q
 # Copy the fetched file to the target location and overwrite if it exists
 cp $SPARSE_DIR/$FILE_PATH $TARGET_FILE
 
-# Also copy the .update_commands.sh file
+# Also copy the '.update_commands.sh' file
 FILE_PATH=.update_commands.sh
 TARGET_FILE=~/.update_commands.sh
-echo $FILE_PATH >> .git/info/sparse-checkout
-
-# Fetch only the desired file
-git pull origin master -q
 
 # Copy the fetched file to the target location and overwrite if it exists
 cp $SPARSE_DIR/$FILE_PATH $TARGET_FILE
@@ -37,4 +33,4 @@ rm -rf $SPARSE_DIR
 cd ~
 clear
 
-echo "Test"
+echo "test2"
