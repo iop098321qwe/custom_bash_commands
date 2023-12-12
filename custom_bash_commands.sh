@@ -9,7 +9,7 @@ display_version() {
     echo "Custom Bash Commands (by iop098321qwe) Version: $version_number"
 }
 
-# Call the display_version function
+# Call the display_version function.
 display_version
 
 # Create a function to display a list of all available custom commands in this script
