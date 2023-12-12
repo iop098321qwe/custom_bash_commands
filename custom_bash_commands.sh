@@ -76,3 +76,5 @@ fi
 
 # Print the session ID
 echo "Session ID: $session_id"
+
+# test
