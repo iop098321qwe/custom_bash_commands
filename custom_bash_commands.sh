@@ -1,9 +1,12 @@
 #!/bin/bash
 
-# Print the version number from the file version.txt
+# Without a function, print the version number from the file version.txt
 function version() {
     echo "Version: $(< version.txt)"
 }
+
+# Call the version function to print the version number
+version
 
 # Function to combine the git add/commit process
 function cc() {
