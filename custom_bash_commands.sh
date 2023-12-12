@@ -60,3 +60,13 @@ incon() {
 }
 
 echo "Custom bash commands loaded successfully."
+
+# Create a variable to store a number that will serve as the session ID, and increment it by 1 each time it is loaded
+if [ -f ~/.session_id ]; then
+    session_id=$(< ~/.session_id)
+    session_id=$((session_id+1))
+    echo $session_id > ~/.session_id
+else
+    session_id=1
+    echo $session_id > ~/.session_id
+fi
