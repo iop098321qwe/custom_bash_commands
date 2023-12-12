@@ -6,7 +6,7 @@ display_version() {
     cd ~
 
     # Read the contents of the .version.txt file and display it in the terminal
-    version_number=$(cat .version.txt)
+    version_number=$(cat .version)
     echo "Version $version_number"
 }
 
