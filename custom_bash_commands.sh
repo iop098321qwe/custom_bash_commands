@@ -121,6 +121,3 @@ fi
 
 # Print the session ID
 echo "Session ID: $session_id"
-
-# Run the update_commands.sh script
-cd ... ~/.update_commands.sh
