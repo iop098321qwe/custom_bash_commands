@@ -22,7 +22,7 @@ git pull origin master -q
 cp $SPARSE_DIR/$FILE_PATH $TARGET_FILE
 
 # Also copy the '.update_commands.sh' file
-FILE_PATH=.update_commands.sh
+FILE_PATH=update_commands.sh
 TARGET_FILE=~/.update_commands.sh
 
 # Copy the fetched file to the target location and overwrite if it exists
