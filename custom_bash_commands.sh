@@ -1,11 +1,20 @@
 #!/bin/bash
 
-# Without a function, print the version number from the file version.txt
+# Extract the version number from version.txt and print to the terminal
 function version() {
-    echo "Version: $(< version.txt)"
+    # Check if the version.txt file exists
+    if [ ! -f version.txt ]; then
+        echo "version.txt file not found."
+        return 1
+    fi
+
+    # Read the version number from version.txt
+    version=$(< version.txt)
+
+    # Print the version number
+    echo "Version: $version"
 }
 
-# Call the version function to print the version number
 version
 
 # Function to combine the git add/commit process
