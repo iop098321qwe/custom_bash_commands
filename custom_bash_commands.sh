@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Print a message to indicate that the custom bash commands are being loaded
+# Print a custom commands version number to the terminal
+echo "Custom bash commands v1.0.0"
 
 # Function to combine the git add/commit process
 function cc() {
