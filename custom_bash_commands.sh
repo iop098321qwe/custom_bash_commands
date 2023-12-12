@@ -3,7 +3,7 @@
 # Function to display the version.txt file from the local repository
 display_version() {
     # Change directory to the location of the .version.txt file
-    home
+    cd ~
 
     # Read the contents of the .version.txt file and display it in the terminal
     version_number=$(cat .version.txt)
