@@ -1,21 +1,13 @@
 #!/bin/bash
 
-# Extract the version number from version.txt and print to the terminal
+# Extract the version number from version.txt in the remote server and print to the terminal
 function version() {
-    # Check if the version.txt file exists
-    if [ ! -f version.txt ]; then
-        echo "version.txt file not found."
-        return 1
-    fi
-
-    # Read the version number from version.txt
-    version=$(< version.txt)
+    # Get the version number from the remote server
+    version=$(curl -s https://github.com/iop098321qwe/custom_bash_commands/blob/862bdc3a6fafd8b7e33a6aed556a7d6c786f9cf3/version.txt)
 
     # Print the version number
     echo "Version: $version"
 }
-
-version
 
 # Function to combine the git add/commit process
 function cc() {
