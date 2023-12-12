@@ -132,13 +132,13 @@ update() {
     # Check if the '-l' flag is provided
     if [[ $1 == "-l" ]]; then
         # Display the log file path
-        echo -e "--------------------------------------------------------------------------------"
+        echo -e "\n--------------------------------------------------------------------------------"
         echo -e "\nUpdate logs saved to: $log_file"
 
         # Display the command to navigate to the log file directory
         echo -e "\nTo navigate to the log file directory, use the following command:"
         echo -e "cd ~/Documents/update_logs"
-        echo -e "--------------------------------------------------------------------------------\n"
+        echo -e "\n--------------------------------------------------------------------------------\n"
 
         # Prompt the user if they would like to open the log file
         read -p "Would you like to open the log file? (y/n): " open_log
