@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Print a custom commands version number to the terminal
-echo "Custom bash commands v1.0.0"
+echo "Custom bash commands v1.0.1"
 
 # Function to combine the git add/commit process
 function cc() {
