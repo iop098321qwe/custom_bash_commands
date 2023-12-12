@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Print a message to indicate that the custom bash commands are being loaded
+
 # Function to combine the git add/commit process
 function cc() {
   # Check if a message was provided
