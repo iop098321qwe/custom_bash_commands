@@ -3,10 +3,11 @@
 # Extract the version number from version.txt in the remote server and print to the terminal
 function version() {
     # Get the version number from the remote server
-    version=$(curl -s https://github.com/iop098321qwe/custom_bash_commands/blob/862bdc3a6fafd8b7e33a6aed556a7d6c786f9cf3/version.txt)
+    version=$(curl -s https://github.com/iop098321qwe/custom_bash_commands/raw/862bdc3a6fafd8b7e33a6aed556a7d6c786f9cf3/version.txt)
 
     # Print the version number
-    echo "Version: $version"
+    echo "Version:"
+    echo "$version"
 }
 
 version
