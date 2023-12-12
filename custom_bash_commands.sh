@@ -9,6 +9,8 @@ function version() {
     echo "Version: $version"
 }
 
+version
+
 # Function to combine the git add/commit process
 function cc() {
   # Check if a message was provided
