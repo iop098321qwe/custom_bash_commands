@@ -79,8 +79,18 @@ incon() {
     git checkout master
 }
 
-# Define the custom command
+# Create an update command to update your Linux machine.
 update() {
+    # Check if the '-h' flag is provided
+    if [[ $1 == "-h" ]]; then
+        echo "Usage: update [option]"
+        echo "Options:"
+        echo "  -r    Reboot the system after updating"
+        echo "  -h    Display this help message"
+        echo "  -l    Display the log file path"
+        return
+    fi
+
     # Create the log directory if it doesn't exist
     mkdir -p ~/Documents/update_logs
 
@@ -105,6 +115,13 @@ update() {
     echo "Running command: $command" | tee -a "$log_file"
     echo "================================================================================"
     eval "$command" | tee -a "$log_file"
+
+    # Check if the '-r' flag is provided
+    if [[ $1 == "-r" ]]; then
+        # Reboot the system
+        echo -e "\nRebooting the system..."
+        sudo reboot
+    fi
 
     # Display the log file path
     echo -e "\nUpdate logs saved to: $log_file"
