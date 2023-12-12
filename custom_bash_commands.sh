@@ -6,7 +6,7 @@ display_version() {
     alias dv="display_version"
     # Read the contents of the .version.txt file and display it in the terminal
     version_number=$(cat ~/.version)
-    echo "Custom Commands (by iop098321qwe) Version: $version_number"
+    echo "Custom Bash Commands (by iop098321qwe) Version: $version_number"
 }
 
 # Call the display_version function
@@ -162,8 +162,6 @@ update() {
         return
     fi
 }
-
-echo "Custom bash commands loaded successfully."
 
 # Create a variable to store a number that will serve as the session ID, and increment it by 1 each time it is loaded
 if [ -f ~/.session_id ]; then
