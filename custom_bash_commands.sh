@@ -123,12 +123,16 @@ update() {
         sudo reboot
     fi
 
-    # Display the log file path
-    echo -e "\nUpdate logs saved to: $log_file"
+    # Check if the '-l' flag is provided
+    if [[ $1 == "-l" ]]; then
+        # Display the log file path
+        echo -e "\nUpdate logs saved to: $log_file"
 
-    # Display the command to navigate to the log file directory
-    echo -e "\nTo navigate to the log file directory, use the following command:"
-    echo -e "cd ~/Documents/update_logs"
+        # Display the command to navigate to the log file directory
+        echo -e "\nTo navigate to the log file directory, use the following command:"
+        echo -e "cd ~/Documents/update_logs"
+        return
+    fi
 }
 
 echo "Custom bash commands loaded successfully."
