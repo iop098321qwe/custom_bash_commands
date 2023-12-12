@@ -1,7 +1,16 @@
 #!/bin/bash
 
-# Read and display the contents of version.txt file
-cat version.txt
+# Function to display the version.txt file from the remote repository on GitHub
+display_version() {
+    # Get the raw URL of the version.txt file
+    version_url="https://raw.githubusercontent.com/iop098321qwe/custom_bash_commands/master/version.txt"
+
+    # Use curl to fetch the contents of the version.txt file and display it in the terminal
+    curl -s "$version_url"
+}
+
+# Call the display_version function
+display_version
 
 
 # Function to combine the git add/commit process
