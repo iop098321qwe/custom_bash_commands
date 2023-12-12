@@ -7,7 +7,7 @@ function version() {
 
     # Print the version number
     echo "Version:"
-    echo "$version"
+    cat <<< "$version"
 }
 
 version
