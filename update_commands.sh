@@ -3,23 +3,34 @@
 # Temporary directory for sparse checkout
 SPARSE_DIR=$(mktemp -d)
 
-# URL of the GitHub repository and the desired file path
+# URL of the GitHub repository
 REPO_URL=https://github.com/iop098321qwe/custom_bash_commands.git
-FILE_PATH=custom_bash_commands.sh
-TARGET_FILE=~/.custom_bash_commands.sh
+
+# List of file paths to download and move
+FILE_PATHS=(
+    custom_bash_commands.sh
+    version.txt
+)
 
 # Initialize an empty git repository and configure for sparse checkout
 cd $SPARSE_DIR
 git init -q
 git remote add origin $REPO_URL
 git config core.sparseCheckout true
-echo $FILE_PATH >> .git/info/sparse-checkout
 
-# Fetch only the desired file
+# Add each file path to the sparse checkout configuration
+for path in "${FILE_PATHS[@]}"; do
+    echo $path >> .git/info/sparse-checkout
+done
+
+# Fetch only the desired files
 git pull origin master -q
 
-# Copy the fetched file to the target location and overwrite if it exists
-cp $SPARSE_DIR/$FILE_PATH $TARGET_FILE
+# Move the fetched files to the target directory
+for path in "${FILE_PATHS[@]}"; do
+    new_filename=".$(basename $path)"
+    cp $SPARSE_DIR/$path $new_filename
+done
 
 # Clean up
 rm -rf $SPARSE_DIR

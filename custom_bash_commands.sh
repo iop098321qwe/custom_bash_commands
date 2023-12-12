@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Function to display the version.txt file from the remote repository on GitHub
+# Function to display the version.txt file from the local repository
 display_version() {
-    # Get the raw URL of the version.txt file
-    version_url="https://raw.githubusercontent.com/iop098321qwe/custom_bash_commands/master/version.txt?token=GHSAT0AAAAAACGX53Q5FKKIRZT47365VZS4ZLY4EQA"
+    # Change directory to the location of the .version.txt file
+    cd ...
 
-    # Use curl to fetch the contents of the version.txt file and display it in the terminal
-    version_number=$(curl -s "$version_url")
+    # Read the contents of the .version.txt file and display it in the terminal
+    version_number=$(cat .version.txt)
     echo "Version $version_number"
 }
 
