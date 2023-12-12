@@ -30,11 +30,11 @@ git pull origin master -q
 # Move the fetched files to the target directory
 for path in "${FILE_PATHS[@]}"; do
     if [ "$path" = ".version" ]; then
-        cp $SPARSE_DIR/$path .
+        cp $SPARSE_DIR/$path ~/.
         echo "Copied $path"
     else
         new_filename=".$(basename $path)"
-        cp $SPARSE_DIR/$path $new_filename
+        cp $SPARSE_DIR/$path ~/$new_filename
         echo "Copied $path to $new_filename"
     fi
 done
