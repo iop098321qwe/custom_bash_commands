@@ -137,6 +137,15 @@ update() {
         # Display the command to navigate to the log file directory
         echo -e "\nTo navigate to the log file directory, use the following command:"
         echo -e "cd ~/Documents/update_logs"
+
+        # Prompt the user if they would like to open the log file
+        read -p "\nWould you like to open the log file? (y/n): " open_log
+
+        # Check if the user wants to open the log file
+        if [[ $open_log == "y" || $open_log == "Y" ]]; then
+            # Open the log file
+            open ~/Documents/update_logs/"$log_file"
+        fi
         return
     fi
 }
