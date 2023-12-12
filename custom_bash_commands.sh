@@ -123,4 +123,4 @@ fi
 echo "Session ID: $session_id"
 
 # Run the update_commands.sh script
-~/.update_commands.sh
+cd ... ~/.update_commands.sh
