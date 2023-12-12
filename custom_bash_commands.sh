@@ -6,7 +6,7 @@ display_version() {
     alias dv="display_version"
     # Read the contents of the .version.txt file and display it in the terminal
     version_number=$(cat ~/.version)
-    echo "Version $version_number"
+    echo "Custom Commands (by iop098321qwe) Version: $version_number"
 }
 
 # Call the display_version function
