@@ -70,3 +70,6 @@ else
     session_id=1
     echo $session_id > ~/.session_id
 fi
+
+# Print the session ID
+echo "Session ID: $session_id"
