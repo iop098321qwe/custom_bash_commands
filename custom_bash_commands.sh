@@ -141,12 +141,12 @@ update() {
         echo -e "\n--------------------------------------------------------------------------------\n"
 
         # Prompt the user if they would like to open the log file
-        read -p "Would you like to open the log file? (y/n): " open_log
+        read -p "Would you like to open the log directory? (y/n): " open_log
 
-        # Check if the user wants to open the log file
+        # Check if the user wants to open the log directory
         if [[ $open_log == "y" || $open_log == "Y" ]]; then
             # Open the log file
-            open ~/Documents/update_logs/"$log_file"
+            cd ~/Documents/update_logs/
         fi
         return
     fi
