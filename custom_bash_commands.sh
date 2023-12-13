@@ -604,7 +604,7 @@ echo "Session ID: $session_id"
 neofetch
 
 # Display a welcome message using figlet and the username from the figlet configuration file and the future font with a border
-figlet -f future "Welcome $username" -F border
+figlet -f future "Welcome $(grep -oP 'username=\K.*' $figlet_config_file)" -F border
 # figlet -f future "Welcome $username" -F border
 
 # Change to the home directory
