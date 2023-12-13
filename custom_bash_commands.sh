@@ -180,7 +180,8 @@ function cc() {
     git branch
     echo "###############################################"
     echo "DID YOU SET THE .VERSION FILE NUMBER CORRECTLY?"
-    echo "###############################################\n"
+    echo "###############################################"
+    echo "                                               "
     read -p "Do you want to continue pushing to the current branch? (y/n): " choice
     
     if [ "$choice" == "y" ]; then
