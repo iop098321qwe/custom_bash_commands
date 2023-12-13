@@ -563,6 +563,43 @@ else
     echo $session_id > ~/.session_id
 fi
 
+# Prompt the user if they would like to display the session ID on terminal run and store the response in a configuration file
+if [ ! -f ~/.session_id_config ]; then
+    while true; do
+        read -p "Would you like to display the session ID on terminal run? (y/n): " enable_session_id
+
+        # Check if the user wants to enable the session ID on terminal run
+        if [[ $enable_session_id == "y" || $enable_session_id == "Y" ]]; then
+            echo "enable_session_id=y" >> ~/.session_id_config
+            break
+        elif [[ $enable_session_id == "n" || $enable_session_id == "N" ]]; then
+            echo "enable_session_id=n" >> ~/.session_id_config
+            break
+        else
+            echo "Invalid input. Please enter 'y' or 'n'."
+        fi
+    done
+fi
+
+# Create a function to remove the configuration file and refresh the terminal
+function remove_session_id_config() {
+    # Alias for the remove_session_id_config function
+    # alias rsc="remove_session_id_config"
+    # Prompt the user to confirm the removal of the session ID configuration file
+    read -p "Are you sure you want to remove the session ID configuration file? (y/n): " confirm
+
+    # Check if the user wants to remove the session ID configuration file
+    if [[ $confirm == "y" || $confirm == "Y" ]]; then
+        # Remove the session ID configuration file
+        rm ~/.session_id_config
+        echo "Session ID configuration file removed."
+        echo "Refreshing terminal..."
+        refresh
+    else
+        echo "Session ID configuration file removal canceled."
+    fi
+}
+
 ################################################################################
 # NEOFETCH CONFIGURATION
 ################################################################################
@@ -632,14 +669,18 @@ alias x='chmod +x'
 alias myip="curl http://ipecho.net/plain; echo"
 alias rfc="remove_figlet_config"
 alias rnc="remove_neofetch_config"
+alias rsc="remove_session_id_config"
 
 ###################################################################################################################################################################
 
 # Call the display_version function.
 display_version
 
-# Print the session ID
-echo "Session ID: $session_id"
+# Check if the 'enable_session_id' variable in the session ID configuration file is equal to 'n'
+if ! grep -q "enable_session_id=n" ~/.session_id_config; then
+    # Display the session ID
+    echo "Session ID: $session_id"
+fi
 
 # Check if the 'enable_neofetch' variable in the neofetch configuration file is equal to 'n'
 if ! grep -q "enable_neofetch=n" ~/.neofetch_config; then
