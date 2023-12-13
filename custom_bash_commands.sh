@@ -12,6 +12,7 @@
 
 # display_version
 # Description: This function allows you to display the version.txt file from the local repository
+# Alias: dv
 # Usage: display_version
 # Options:
 #   -h    Display this help message
@@ -54,24 +55,60 @@ cbcs() {
     echo "Available custom commands:"
     echo "##########################"
     echo " "
-    echo "  display_version,             (alias: dv)"
+    echo "  display_version,   (alias: dv)"
+    echo "         Description: Display the version number from the .version file"
     echo "  cbcs"
+    echo "         Description: Display a list of all available custom commands in this script"
     echo "  rma"
+    echo "         Description: Remove all files and directories in the current directory"
     echo "  editbash"
+    echo "         Description: Open the .bashrc file in the default text editor"
     echo "  cls"
+    echo "         Description: Clear the terminal screen"
     echo "  refresh"
+    echo "         Description: Refresh the terminal session"
     echo "  c"
+    echo "         Description: Compile and run a C program"
     echo "  gits"
+    echo "         Description: Display the status of all git repositories in the current directory"
     echo "  x"
+    echo "         Description: Extract a compressed file"
     echo "  myip"
-    echo "  findfile"
+    echo "         Description: Display the IP address of the current machine"
+    echo "  findfile,   (alias: ff)"
+    echo "         Description: Find a file in the current directory and its subdirectories"
     echo "  mkcd"
+    echo "         Description: Create a directory and switch into it"
     echo "  bkup"
+    echo "         Description: Create a backup file of a file"
     echo "  up"
+    echo "         Description: Move up one directory level"
     echo "  cc"
+    echo "         Description: Clear the clipboard contents"
     echo "  incon"
+    echo "         Description: Convert an image file to an icon file"
     echo "  update"
-    
+    echo "         Description: Update the custom bash commands script"
+    echo "  rfc"
+    echo "         Description: Remove the figlet configuration file and refresh the terminal"
+    echo "  rnc"
+    echo "         Description: Remove the neofetch configuration file and refresh the terminal"
+    echo "  rsc"
+    echo "         Description: Remove the session ID configuration file and refresh the terminal"
+    echo " docs,   (alias: cd ~/Documents && ls)"
+    echo "         Description: Change to the Documents directory and list its contents"
+    echo " home,   (alias: cd ~ && ls)"
+    echo "         Description: Change to the home directory and list its contents"
+    echo " back,   (alias: cd .. && ls)"
+    echo "         Description: Change to the parent directory and list its contents"
+    echo " cdgh,   (alias: cd ~/Documents/github_repositories && ls)"
+    echo "         Description: Change to the github_repositories directory and list its contents"
+    echo " temp,   (alias: cd ~/Documents/Temporary && ls)"
+    echo "         Description: Change to the Temporary directory and list its contents"
+    echo " cbc,   (alias: cdgh && cd custom_bash_commands && ls)"
+    echo "         Description: Change to the custom_bash_commands directory and list its contents"
+    echo " cbcc,   (alias: cdgh && cd custom_bash_commands && ls && cc)"
+    echo "         Description: Change to the custom_bash_commands directory, list its contents, and clear the clipboard contents"
 }
 
 ################################################################################
@@ -356,6 +393,7 @@ update() {
 
 # findfile
 # Description: A function to search for files matching a pattern
+# Alias: ff
 # Usage: findfile [options] [file_pattern]
 # Options:
 #   -i            Interactive mode. Prompts for parameters.
@@ -371,105 +409,106 @@ update() {
 ##########
 
 function findfile() {
-  if [[ "$1" == "-h" ]]; then
-    echo "Usage: findfile [options] [file_pattern]"
-    echo "Options:"
-    echo "  -i            Interactive mode. Prompts for parameters."
-    echo "  -s            Perform a case-sensitive search."
-    echo "  -t [type]     Search for a specific file type (e.g., f for file, d for directory)."
-    echo "  -d [dir]      Specify the directory to search in."
-    echo "  -m [days]     Search for files modified in the last 'days' days."
-    echo "  -r [pattern]  Use regular expression for searching."
-    echo "  -h            Display this help message."
-    echo ""
-    echo "Example: findfile -t f 'pattern'  Search for files matching 'pattern'."
-    return 0
-  fi
-
-  local case_sensitive="-iname"
-  local regex_mode=0
-  local interactive_mode=0
-  local file_pattern=""
-  local file_type=""
-  local search_dir="."
-  local max_days=""
-  local found=0
-
-  # Process options
-  while (( "$#" )); do
-    case "$1" in
-      -s)
-        case_sensitive="-name"
-        shift
-        ;;
-      -t)
-        file_type="-type $2"
-        shift 2
-        ;;
-      -d)
-        search_dir="$2"
-        shift 2
-        ;;
-      -m)
-        max_days="-mtime -$2"
-        shift 2
-        ;;
-      -r)
-        regex_mode=1
-        file_pattern="$2"
-        shift 2
-        ;;
-      -i)
-        interactive_mode=1
-        shift
-        ;;
-      *)
-        # If no flags, assume it's the file pattern in non-regex mode
-        if [[ -z "$file_pattern" && $regex_mode -eq 0 ]]; then
-          file_pattern="$1"
-          shift
-        else
-          echo "Unknown option: $1"
-          return 1
-        fi
-        ;;
-    esac
-  done
-
-  # Interactive mode overrides other options
-  if [ "$interactive_mode" -eq 1 ]; then
-    read -p "Enter filename or pattern: " file_pattern
-    read -p "Enter directory to search [.]: " search_dir
-    search_dir=${search_dir:-.}
-    read -p "Case sensitive? (y/n) [n]: " case_choice
-    case_sensitive=$([ "$case_choice" = "y" ] && echo "-name" || echo "-iname")
-    read -p "Enter file type (f for file, d for directory, etc.) [any]: " file_type
-    file_type=$([ -n "$file_type" ] && echo "-type $file_type" || echo "")
-    read -p "Enter max days since modification [any]: " max_days
-    max_days=$([ -n "$max_days" ] && echo "-mtime -$max_days" || echo "")
-  fi
-
-  # Regular expression mode
-  if [ "$regex_mode" -eq 1 ]; then
-    while IFS= read -r line; do
-      echo "$line"
-      echo "cd $(dirname "$line") && ls"
-      found=1
-    done < <(find "$search_dir" -regextype posix-extended -regex "$file_pattern" $file_type $max_days 2>/dev/null)
-  else
-    if [[ -n "$file_pattern" ]]; then
-      while IFS= read -r line; do
-        echo "$line"
-        echo "cd $(dirname "$line") && ls"
-        found=1
-      done < <(find "$search_dir" $case_sensitive "$file_pattern" $file_type $max_days 2>/dev/null)
+    # alias ff="findfile"
+    if [[ "$1" == "-h" ]]; then
+        echo "Usage: findfile [options] [file_pattern]"
+        echo "Options:"
+        echo "  -i            Interactive mode. Prompts for parameters."
+        echo "  -s            Perform a case-sensitive search."
+        echo "  -t [type]     Search for a specific file type (e.g., f for file, d for directory)."
+        echo "  -d [dir]      Specify the directory to search in."
+        echo "  -m [days]     Search for files modified in the last 'days' days."
+        echo "  -r [pattern]  Use regular expression for searching."
+        echo "  -h            Display this help message."
+        echo ""
+        echo "Example: findfile -t f 'pattern'  Search for files matching 'pattern'."
+        return 0
     fi
-  fi
 
-  # Check if any file was found
-  if [ $found -eq 0 ]; then
-    echo "${file_pattern:-File} not found!!!"
-  fi
+    local case_sensitive="-iname"
+    local regex_mode=0
+    local interactive_mode=0
+    local file_pattern=""
+    local file_type=""
+    local search_dir="."
+    local max_days=""
+    local found=0
+
+    # Process options
+    while (( "$#" )); do
+        case "$1" in
+            -s)
+                case_sensitive="-name"
+                shift
+                ;;
+            -t)
+                file_type="-type $2"
+                shift 2
+                ;;
+            -d)
+                search_dir="$2"
+                shift 2
+                ;;
+            -m)
+                max_days="-mtime -$2"
+                shift 2
+                ;;
+            -r)
+                regex_mode=1
+                file_pattern="$2"
+                shift 2
+                ;;
+            -i)
+                interactive_mode=1
+                shift
+                ;;
+            *)
+                # If no flags, assume it's the file pattern in non-regex mode
+                if [[ -z "$file_pattern" && $regex_mode -eq 0 ]]; then
+                    file_pattern="$1"
+                    shift
+                else
+                    echo "Unknown option: $1"
+                    return 1
+                fi
+                ;;
+        esac
+    done
+
+    # Interactive mode overrides other options
+    if [ "$interactive_mode" -eq 1 ]; then
+        read -p "Enter filename or pattern: " file_pattern
+        read -p "Enter directory to search [.]: " search_dir
+        search_dir=${search_dir:-.}
+        read -p "Case sensitive? (y/n) [n]: " case_choice
+        case_sensitive=$([ "$case_choice" = "y" ] && echo "-name" || echo "-iname")
+        read -p "Enter file type (f for file, d for directory, etc.) [any]: " file_type
+        file_type=$([ -n "$file_type" ] && echo "-type $file_type" || echo "")
+        read -p "Enter max days since modification [any]: " max_days
+        max_days=$([ -n "$max_days" ] && echo "-mtime -$max_days" || echo "")
+    fi
+
+    # Regular expression mode
+    if [ "$regex_mode" -eq 1 ]; then
+        while IFS= read -r line; do
+            echo "$line"
+            echo "cd $(dirname "$line") && ls"
+            found=1
+        done < <(find "$search_dir" -regextype posix-extended -regex "$file_pattern" $file_type $max_days 2>/dev/null)
+    else
+        if [[ -n "$file_pattern" ]]; then
+            while IFS= read -r line; do
+                echo "$line"
+                echo "cd $(dirname "$line") && ls"
+                found=1
+            done < <(find "$search_dir" $case_sensitive "$file_pattern" $file_type $max_days 2>/dev/null)
+        fi
+    fi
+
+    # Check if any file was found
+    if [ $found -eq 0 ]; then
+        echo "${file_pattern:-File} not found!!!"
+    fi
 }
 
 ################################################################################
@@ -683,6 +722,7 @@ alias myip="curl http://ipecho.net/plain; echo"
 alias rfc="remove_figlet_config"
 alias rnc="remove_neofetch_config"
 alias rsc="remove_session_id_config"
+alias ff="findfile"
 
 ###################################################################################################################################################################
 
