@@ -532,6 +532,8 @@ fi
 
 # Create a function to remove the configuration file and refresh the terminal
 function remove_figlet_config() {
+    # Alias for the remove_figlet_config function
+    # alias rfc="remove_figlet_config"
     # Prompt the user to confirm the removal of the figlet configuration file
     read -p "Are you sure you want to remove the figlet configuration file? (y/n): " confirm
 
@@ -591,6 +593,8 @@ fi
 
 # Create a function to remove the configuration file and refresh the terminal
 function remove_neofetch_config() {
+    # Alias for the remove_neofetch_config function
+    # alias rnc="remove_neofetch_config"
     # Prompt the user to confirm the removal of the neofetch configuration file
     read -p "Are you sure you want to remove the neofetch configuration file? (y/n): " confirm
 
@@ -627,6 +631,7 @@ alias gits='git status'
 alias x='chmod +x'
 alias myip="curl http://ipecho.net/plain; echo"
 alias rfc="remove_figlet_config"
+alias rnc="remove_neofetch_config"
 
 ###################################################################################################################################################################
 
