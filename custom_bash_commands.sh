@@ -50,6 +50,7 @@ display_version() {
 # Create a function to display a list of all available custom commands in this script
 cbcs() {
     # Display a list of all available custom commands and functions in this script
+    echo " "
     echo "Available custom commands:"
     echo "##########################"
     echo " "
