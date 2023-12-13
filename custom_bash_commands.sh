@@ -51,6 +51,8 @@ display_version() {
 cbcs() {
     # Display a list of all available custom commands and functions in this script
     echo "Available custom commands:"
+    echo "##########################"
+    echo " "
     echo "  display_version,             (alias: dv)"
     echo "  cbcs"
     echo "  rma"
