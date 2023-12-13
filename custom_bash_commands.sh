@@ -4,14 +4,46 @@
 # CUSTOM BASH COMMANDS
 ###################################################################################################################################################################
 
-# Function to display the version.txt file from the local repository
+################################################################################
+# DISPLAY VERSION
+################################################################################
+
+# Describe the display_version function and its options and usage
+
+# display_version
+# Description: This function allows you to display the version.txt file from the local repository
+# Usage: display_version
+# Options:
+#   -h    Display this help message
+
+# Example: display_version  ---Displays the version number from the .version file from the local repository.
+
+##########
+
+# Function to display the .version file from the local repository
 display_version() {
     # Create an alias for the display_version function
     alias dv="display_version"
-    # Read the contents of the .version.txt file and display it in the terminal
+    # Read the contents of the .version file and display it in the terminal
     version_number=$(cat ~/.version)
     echo "Custom Bash Commands (by iop098321qwe) Version: $version_number"
 }
+
+################################################################################
+# CUSTOM COMMANDS
+################################################################################
+
+# Describe the custom_commands function and its options and usage
+
+# custom_commands
+# Description: This function allows you to display a list of all available custom commands in this script
+# Usage: custom_commands
+# Options:
+#   -h    Display this help message
+
+# Example: custom_commands  ---Displays a list of all available custom commands in this script.
+
+##########
 
 # Create a function to display a list of all available custom commands in this script
 custom_commands() {
@@ -38,18 +70,65 @@ custom_commands() {
     
 }
 
+################################################################################
+# MKCD
+################################################################################
+
+# Describe the mkcd function and its options and usage
+
+# mkcd
+# Description: This function allows you to create a directory and switch into it.
+# Usage: mkcd [directory]
+# Options:
+#   -h    Display this help message
+
+# Example: mkcd test  ---Creates a directory called test and switches into it.
+
+##########
+
 # Custom function to make directories and switch into it, and move into the deepest directory created.
 function mkcd() {
   mkdir -p "$1" && cd "$1"
 }
+
+################################################################################
+# BKUP
+################################################################################
+
+# Describe the bkup function and its options and usage
+
+# bkup
+# Description: This function allows you to create a backup file of a file.
+# Usage: bkup [file]
+# Options:
+#   -h    Display this help message
+
+# Example: bkup test.txt  ---Creates a backup file of test.txt.
+
+##########
 
 # Function to create a backup file of a file.
 function bkup() {
   cp "$1" "${1}_$(date +%Y%m%d%H%M%S).bak"
 }
 
-# Function: up
+################################################################################
+# UP
+################################################################################
+
+# Describe the up function and its options and usage
+
+# up
 # Description: This function allows you to move up in the directory hierarchy by a specified number of levels.
+# Usage: up [number of levels]
+# Options:
+#   -h    Display this help message
+
+# Example: up 2  ---Moves up 2 levels in the directory hierarchy.
+
+##########
+
+# Function to move up in the directory hierarchy by a specified number of levels.
 function up() {
   local times=$1  # The number of levels to move up in the directory structure.
   local up=""     # A string that will accumulate the "../" for each level up.
@@ -62,6 +141,22 @@ function up() {
   cd $up  # Change directory to the final path constructed.
   ls
 }
+
+################################################################################
+# CC
+################################################################################
+
+# Describe the cc function and its options and usage
+
+# cc
+# Description: A function to combine the git add/commit process
+# Usage: cc [message]
+# Options:
+#   -h    Display this help message
+
+# Example: cc "Initial commit"  ---Adds all files, commits with the message "Initial commit", and pushes to the current branch.
+
+##########
 
 # Function to combine the git add/commit process
 function cc() {
@@ -91,6 +186,20 @@ function cc() {
         echo "Push to the current branch canceled."
     fi
 }
+
+################################################################################
+# INCON
+################################################################################
+
+# Describe the incon function and its options and usage
+
+# incon
+# Description: A function to initialize a local git repo, create/connect it to a GitHub repo, and set up files
+# Usage: incon
+
+# Example: incon test ---Initializes a local git repo, creates/connects it to a GitHub repo, and sets up files.
+
+##########
 
 # A function to initialize a local git repo, create/connect it to a GitHub repo, and set up files
 incon() {
@@ -131,6 +240,24 @@ incon() {
     cc "Initial test commit"
     git checkout master
 }
+
+################################################################################
+# UPDATE
+################################################################################
+
+# Describe the update function and its options and usage
+
+# update
+# Description: A function to update the system and reboot if desired
+# Usage: update [option]
+# Options:
+#   -r    Reboot the system after updating
+#   -h    Display this help message
+#   -l    Display the log file path
+
+# Example: update -r  ---Updates the system and reboots the system after updating.
+
+##########
 
 # Create an update command to update your Linux machine.
 update() {
@@ -205,11 +332,27 @@ update() {
     fi
 }
 
-# Function: findfile
-# Description: Enhanced file search function with multiple options including case sensitivity,
-#              file type, regular expression support, modification time, and interactive mode.
-#              Outputs the locations of found files/directories and a command to change to the
-#              directory containing the found file.
+################################################################################
+# FINDFILE
+################################################################################
+
+# Describe the findfile function and its options and usage
+
+# findfile
+# Description: A function to search for files matching a pattern
+# Usage: findfile [options] [file_pattern]
+# Options:
+#   -i            Interactive mode. Prompts for parameters.
+#   -s            Perform a case-sensitive search.
+#   -t [type]     Search for a specific file type (e.g., f for file, d for directory).
+#   -d [dir]      Specify the directory to search in.
+#   -m [days]     Search for files modified in the last 'days' days.
+#   -r [pattern]  Use regular expression for searching.
+#   -h            Display this help message.
+#
+# Example: findfile -t f 'pattern'  ---Search for files matching 'pattern'.
+
+##########
 
 function findfile() {
   if [[ "$1" == "-h" ]]; then
@@ -313,11 +456,54 @@ function findfile() {
   fi
 }
 
+################################################################################
+# FIGLET
+################################################################################
+
 # Check to see if figlet is installed and install it if it is not
 if ! command -v figlet &> /dev/null; then
     echo "figlet not found. Installing..."
     sudo apt install figlet -y
 fi
+
+# Create a file to store figlet configuration and message text
+figlet_config_file=~/.figlet_config
+
+# Check if the figlet configuration file exists and create it prompting the user for a username if it does not
+if [ ! -f $figlet_config_file ]; then
+    echo "Enter a username to use with figlet:"
+    read username
+
+    while true; do
+        # Prompt the user to enter a username
+        read -p "Enter a username to use with figlet: " username
+
+        # Display the entered username
+        echo "Username: $username"
+
+        # Prompt the user to confirm the username
+        read -p "Is this correct? (y/n): " confirm
+
+        case $confirm in
+            [Yy]*)
+                echo "username=$username" > $figlet_config_file
+                break
+                ;;
+            [Nn]*)
+                echo "Username not confirmed. Please try again."
+                ;;
+            *)
+                echo "Invalid input. Please enter 'y' or 'n'."
+                ;;
+        esac
+    done
+fi
+
+
+
+################################################################################
+# SESSION ID
+################################################################################
 
 # Create a variable to store a number that will serve as the session ID, and increment it by 1 each time it is loaded
 if [ -f ~/.session_id ]; then
@@ -328,6 +514,10 @@ else
     session_id=1
     echo $session_id > ~/.session_id
 fi
+
+################################################################################
+# NEOFETCH
+################################################################################
 
 # Check to see if neofetch is installed and install it if it is not, then call it
 if ! command -v neofetch &> /dev/null; then
@@ -367,8 +557,9 @@ echo "Session ID: $session_id"
 # Call neofetch
 neofetch
 
-# Display a welcome message
-figlet -f future Welcome Grymm -F border
+# Display a welcome message using figlet and the username from the figlet configuration file and the future font with a border
+figlet -f future -d ~/.figlet_fonts -c -w 200 -m 0 -k $(cat $figlet_config_file | cut -d '=' -f 2) -F border
+# figlet -f future Welcome Grymm -F border
 
 # Change to the home directory
 cd ~
