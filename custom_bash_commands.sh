@@ -231,10 +231,13 @@ incon() {
 
     # Create a .gitignore and README.md file
     touch .gitignore
+    touch README.md
+    touch .version
     repo_name=$(basename $(pwd) | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
     formatted_name=$(echo $repo_name | tr '_' ' ' | sed -e "s/\b\(.\)/\u\1/g")
     echo "# $formatted_name" > README.md
     echo "* Not started" >> README.md
+    echo "0.0.0-alpha" > .version
 
     # 2. Create a new remote public repository on GitHub using the gh tool
     gh repo create $repo_name --private || { echo "Repository creation failed. Exiting."; return; }
