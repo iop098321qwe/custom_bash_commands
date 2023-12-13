@@ -174,8 +174,11 @@ function cc() {
     # If a message is provided, proceed with git operations
     currentBranch=$(git symbolic-ref --short -q HEAD)  # Getting the current branch
     
+    echo " "
     echo "Current branch: $currentBranch"
     echo "Commit message: $message"
+    echo " "
+    echo "Current Time: $(date)"
     echo " "
     echo "available branches:"
     git branch
