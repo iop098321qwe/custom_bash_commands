@@ -26,7 +26,9 @@ display_version() {
     alias dv="display_version"
     # Read the contents of the .version file and display it in the terminal
     version_number=$(cat ~/.version)
-    echo "Custom Bash Commands (by iop098321qwe) Version: $version_number"
+    echo "Now using Custom Bash Commands (by iop098321qwe) Version: \e[14m$version_number"
+    echo -e "If you wish to stop using CBC, \e[31mremove\e[0m \e[33m.custom_bash_commands.sh\e[0m from your \e[33m.bashrc\e[0m file using \e[36meditbash\e[0m (CBC)."
+
 }
 
 ################################################################################
