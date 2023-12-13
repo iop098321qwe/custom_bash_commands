@@ -494,9 +494,14 @@ if [ ! -f $figlet_config_file ]; then
                 ;;
         esac
     done
+else
+    # Remove the figlet configuration file if the '-r' flag is provided
+    if [ "$1" = "-r" ]; then
+        rm $figlet_config_file
+        echo "Configuration file removed. Please run the script again to set a new username."
+        exit 0
+    fi
 fi
-
-
 
 ################################################################################
 # SESSION ID
