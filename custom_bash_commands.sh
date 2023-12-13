@@ -693,7 +693,7 @@ display_version
 # Check if the 'enable_session_id' variable in the session ID configuration file is equal to 'n'
 if ! grep -q "enable_session_id=n" ~/.session_id_config; then
     # Display the session ID
-    echo "Session ID: \e[33m$session_id\e[0m"
+    echo -e "Session ID: \e[33m$session_id\e[0m"
 fi
 
 # Check if the 'enable_neofetch' variable in the neofetch configuration file is equal to 'n'
