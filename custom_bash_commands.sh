@@ -412,6 +412,7 @@ function findfile() {
     # alias ff="findfile"
     if [[ "$1" == "-h" ]]; then
         echo "Usage: findfile [options] [file_pattern]"
+        echo "Alias: ff"
         echo "Options:"
         echo "  -i            Interactive mode. Prompts for parameters."
         echo "  -s            Perform a case-sensitive search."
@@ -491,6 +492,7 @@ function findfile() {
     # Regular expression mode
     if [ "$regex_mode" -eq 1 ]; then
         while IFS= read -r line; do
+            echo " "
             echo "$line"
             echo "cd $(dirname "$line") && ls"
             found=1
