@@ -25,7 +25,7 @@
 * Append `alias cdgh="cd ~/Documents/github_repositories && ls"` to the end of the `.bashrc` file in the <user> directory.
 * Append `alias temp="cd ~/Documents/Temporary && ls"` to the end of the `.bashrc` file in the <user> directory.
 * Append `alias cbc="cdgh && cd custom_bash_commands && ls"` to the end of the `.bashrc` file in the <user> directory.
-* Append `alias cbcc="cdgh && cd custom_bash_commands && ls && cc"` to the end of the `.bashrc` file in the <user> directory.
+* Append `alias cbcc="cdgh && cd custom_bash_commands && ls && echo "DID YOU CHANGE THE VERSION NUMBER????" && cc"` to the end of the `.bashrc` file in the <user> directory.
 * Append `alias myip="curl http://ipecho.net/plain; echo"` to the end of the `.bashrc` file in the <user> directory.
 * Append `alias rma='rm -rf'` to the end of the `.bashrc` file in the <user> directory.
 * Append `alias x='chmod +x'` to the end of the `.bashrc` file in the <user> directory.
