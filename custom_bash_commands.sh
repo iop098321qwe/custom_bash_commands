@@ -605,8 +605,11 @@ neofetch
 
 # Check if the 'enable_figlet' variable in the figlet configuration file is equal to 'n'
 if ! grep -q "enable_figlet=n" $figlet_config_file; then
-    # Display a welcome message using figlet and the username from the figlet configuration file and the future font with a border
-    figlet -f future "Welcome $(grep -oP 'username=\K.*' $figlet_config_file)" -F border
+    # Get the font from the figlet configuration file
+    fig_font=$(grep -oP 'font=\K.*' $figlet_config_file)
+    fig_user=$(grep -oP 'username=\K.*' $figlet_config_file)
+    # Display a welcome message using figlet and the username from the figlet configuration file and the font with a border
+    figlet -f $font "Welcome $fig_user" -F border
 fi
 # figlet -f future "Welcome $username" -F border
 
