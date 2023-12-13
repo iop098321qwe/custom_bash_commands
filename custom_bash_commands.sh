@@ -556,8 +556,7 @@ function remove_figlet_config() {
         # Remove the figlet configuration file
         rm $figlet_config_file
         echo "Figlet configuration file removed."
-        echo "Refreshing terminal..."
-        refresh
+        echo "Refresh terminal to apply changes."
     else
         echo "Figlet configuration file removal canceled."
     fi
@@ -607,8 +606,7 @@ function remove_session_id_config() {
         # Remove the session ID configuration file
         rm ~/.session_id_config
         echo "Session ID configuration file removed."
-        echo "Refreshing terminal..."
-        refresh
+        echo "Refresh terminal to apply changes."
     else
         echo "Session ID configuration file removal canceled."
     fi
@@ -654,8 +652,7 @@ function remove_neofetch_config() {
         # Remove the neofetch configuration file
         rm ~/.neofetch_config
         echo "Neofetch configuration file removed."
-        echo "Refreshing terminal..."
-        refresh
+        echo "Refresh terminal to apply changes."
     else
         echo "Neofetch configuration file removal canceled."
     fi
