@@ -540,7 +540,7 @@ function remove_figlet_config() {
         # Remove the figlet configuration file
         rm $figlet_config_file
         echo "Figlet configuration file removed."
-        echo "You must reload the terminal using 'refresh' in order to reconfigure figlet."
+        refresh
     else
         echo "Figlet configuration file removal canceled."
     fi
