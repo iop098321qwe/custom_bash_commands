@@ -1,5 +1,9 @@
 #!/bin/bash
 
+###################################################################################################################################################################
+# CUSTOM BASH COMMANDS
+###################################################################################################################################################################
+
 # Function to display the version.txt file from the local repository
 display_version() {
     # Create an alias for the display_version function
@@ -9,19 +13,54 @@ display_version() {
     echo "Custom Bash Commands (by iop098321qwe) Version: $version_number"
 }
 
-# Call the display_version function.
-display_version
-
 # Create a function to display a list of all available custom commands in this script
 custom_commands() {
-    # Display a list of all available custom commands in this script
-    echo "Available commands:"
-    echo "  display_version"
-    echo "  display_commands"
-    echo "  update_commands"
+    # Display a list of all available custom commands and functions in this script
+    echo "Available custom commands:"
+    echo "  display_version,             (alias: dv)"
+    echo "  custom_commands"
+    echo "  cbcc"
+    echo "  rma"
+    echo "  editbash"
+    echo "  cls"
+    echo "  refresh"
+    echo "  c"
+    echo "  gits"
+    echo "  x"
+    echo "  myip"
+    echo "  findfile"
+    echo "  mkcd"
+    echo "  bkup"
+    echo "  up"
     echo "  cc"
     echo "  incon"
     echo "  update"
+    
+}
+
+# Custom function to make directories and switch into it, and move into the deepest directory created.
+function mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
+
+# Function to create a backup file of a file.
+function bkup() {
+  cp "$1" "${1}_$(date +%Y%m%d%H%M%S).bak"
+}
+
+# Function: up
+# Description: This function allows you to move up in the directory hierarchy by a specified number of levels.
+function up() {
+  local times=$1  # The number of levels to move up in the directory structure.
+  local up=""     # A string that will accumulate the "../" for each level up.
+
+  while [ "$times" -gt 0 ]; do
+    up="../$up"   # Append "../" to the 'up' string for each level.
+    times=$((times - 1))  # Decrement the counter.
+  done
+
+  cd $up  # Change directory to the final path constructed.
+  ls
 }
 
 # Function to combine the git add/commit process
@@ -166,6 +205,120 @@ update() {
     fi
 }
 
+# Function: findfile
+# Description: Enhanced file search function with multiple options including case sensitivity,
+#              file type, regular expression support, modification time, and interactive mode.
+#              Outputs the locations of found files/directories and a command to change to the
+#              directory containing the found file.
+
+function findfile() {
+  if [[ "$1" == "-h" ]]; then
+    echo "Usage: findfile [options] [file_pattern]"
+    echo "Options:"
+    echo "  -i            Interactive mode. Prompts for parameters."
+    echo "  -s            Perform a case-sensitive search."
+    echo "  -t [type]     Search for a specific file type (e.g., f for file, d for directory)."
+    echo "  -d [dir]      Specify the directory to search in."
+    echo "  -m [days]     Search for files modified in the last 'days' days."
+    echo "  -r [pattern]  Use regular expression for searching."
+    echo "  -h            Display this help message."
+    echo ""
+    echo "Example: findfile -t f 'pattern'  Search for files matching 'pattern'."
+    return 0
+  fi
+
+  local case_sensitive="-iname"
+  local regex_mode=0
+  local interactive_mode=0
+  local file_pattern=""
+  local file_type=""
+  local search_dir="."
+  local max_days=""
+  local found=0
+
+  # Process options
+  while (( "$#" )); do
+    case "$1" in
+      -s)
+        case_sensitive="-name"
+        shift
+        ;;
+      -t)
+        file_type="-type $2"
+        shift 2
+        ;;
+      -d)
+        search_dir="$2"
+        shift 2
+        ;;
+      -m)
+        max_days="-mtime -$2"
+        shift 2
+        ;;
+      -r)
+        regex_mode=1
+        file_pattern="$2"
+        shift 2
+        ;;
+      -i)
+        interactive_mode=1
+        shift
+        ;;
+      *)
+        # If no flags, assume it's the file pattern in non-regex mode
+        if [[ -z "$file_pattern" && $regex_mode -eq 0 ]]; then
+          file_pattern="$1"
+          shift
+        else
+          echo "Unknown option: $1"
+          return 1
+        fi
+        ;;
+    esac
+  done
+
+  # Interactive mode overrides other options
+  if [ "$interactive_mode" -eq 1 ]; then
+    read -p "Enter filename or pattern: " file_pattern
+    read -p "Enter directory to search [.]: " search_dir
+    search_dir=${search_dir:-.}
+    read -p "Case sensitive? (y/n) [n]: " case_choice
+    case_sensitive=$([ "$case_choice" = "y" ] && echo "-name" || echo "-iname")
+    read -p "Enter file type (f for file, d for directory, etc.) [any]: " file_type
+    file_type=$([ -n "$file_type" ] && echo "-type $file_type" || echo "")
+    read -p "Enter max days since modification [any]: " max_days
+    max_days=$([ -n "$max_days" ] && echo "-mtime -$max_days" || echo "")
+  fi
+
+  # Regular expression mode
+  if [ "$regex_mode" -eq 1 ]; then
+    while IFS= read -r line; do
+      echo "$line"
+      echo "cd $(dirname "$line") && ls"
+      found=1
+    done < <(find "$search_dir" -regextype posix-extended -regex "$file_pattern" $file_type $max_days 2>/dev/null)
+  else
+    if [[ -n "$file_pattern" ]]; then
+      while IFS= read -r line; do
+        echo "$line"
+        echo "cd $(dirname "$line") && ls"
+        found=1
+      done < <(find "$search_dir" $case_sensitive "$file_pattern" $file_type $max_days 2>/dev/null)
+    fi
+  fi
+
+  # Check if any file was found
+  if [ $found -eq 0 ]; then
+    echo "${file_pattern:-File} not found!!!"
+  fi
+}
+
+# Check to see if figlet is installed and install it if it is not
+if ! command -v figlet &> /dev/null; then
+    echo "figlet not found. Installing..."
+    sudo apt install figlet -y
+fi
+
 # Create a variable to store a number that will serve as the session ID, and increment it by 1 each time it is loaded
 if [ -f ~/.session_id ]; then
     session_id=$(< ~/.session_id)
@@ -176,14 +329,46 @@ else
     echo $session_id > ~/.session_id
 fi
 
-# Print the session ID
-echo "Session ID: $session_id"
-
 # Check to see if neofetch is installed and install it if it is not, then call it
 if ! command -v neofetch &> /dev/null; then
     echo "neofetch not found. Installing..."
     sudo apt install neofetch -y
 fi
+
+###################################################################################################################################################################
+# ALIASES
+###################################################################################################################################################################
+
+# Create aliases for common commands
+alias docs="cd ~/Documents && ls"
+alias home="cd ~ && ls"
+alias back="cd .. && ls"
+alias cdgh="cd ~/Documents/github_repositories && ls"
+alias temp="cd ~/Documents/Temporary && ls"
+alias cbc="cdgh && cd custom_bash_commands && ls"
+alias cbcc="cdgh && cd custom_bash_commands && ls && cc"
+alias rma='rm -rf'
+alias editbash='code ~/.bashrc && source ~/.bashrc'
+alias cls='clear && ls'
+alias refresh='source ~/.bashrc'
+alias c='clear'
+alias gits='git status'
+alias x='chmod +x'
+alias myip="curl http://ipecho.net/plain; echo"
+
+###################################################################################################################################################################
+
+# Call the display_version function.
+display_version
+
+# Print the session ID
+echo "Session ID: $session_id"
+
+# Call neofetch
 neofetch
 
+# Display a welcome message
+figlet -f future Welcome Grymm -F border
+
+# Change to the home directory
 cd ~
