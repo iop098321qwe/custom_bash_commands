@@ -32,28 +32,27 @@ display_version() {
 }
 
 ################################################################################
-# CUSTOM COMMANDS
+# CBCS
 ################################################################################
 
-# Describe the custom_commands function and its options and usage
+# Describe the cbcs function and its options and usage
 
-# custom_commands
+# cbcs
 # Description: This function allows you to display a list of all available custom commands in this script
-# Usage: custom_commands
+# Usage: cbcs
 # Options:
 #   -h    Display this help message
 
-# Example: custom_commands  ---Displays a list of all available custom commands in this script.
+# Example: cbcs  ---Displays a list of all available custom commands in this script.
 
 ##########
 
 # Create a function to display a list of all available custom commands in this script
-custom_commands() {
+cbcs() {
     # Display a list of all available custom commands and functions in this script
     echo "Available custom commands:"
     echo "  display_version,             (alias: dv)"
-    echo "  custom_commands"
-    echo "  cbcc"
+    echo "  cbcs"
     echo "  rma"
     echo "  editbash"
     echo "  cls"
