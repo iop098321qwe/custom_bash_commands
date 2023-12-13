@@ -457,7 +457,7 @@ function findfile() {
 }
 
 ################################################################################
-# FIGLET
+# FIGLET CONFIGURATION
 ################################################################################
 
 # Check to see if figlet is installed and install it if it is not
@@ -469,25 +469,31 @@ fi
 # Create a file to store figlet configuration and message text
 figlet_config_file=~/.figlet_config
 
-# Check if the figlet configuration file exists and create it prompting the user for a username if it does not
+# Check if the figlet configuration file exists and create it prompting the user for a username and font if it does not
 if [ ! -f $figlet_config_file ]; then
     while true; do
         # Prompt the user to enter a username
         read -p "Enter a username to use with figlet: " username
 
-        # Display the entered username
-        echo "Username: $username"
+        # Prompt the user to enter a font
+        read -p "Enter a font to use with figlet [future]: " font
+        font=${font:-future}
 
-        # Prompt the user to confirm the username
+        # Display the entered username and font
+        echo "Username: $username"
+        echo "Font: $font"
+
+        # Prompt the user to confirm the username and font
         read -p "Is this correct? (y/n): " confirm
 
         case $confirm in
             [Yy]*)
                 echo "username=$username" > $figlet_config_file
+                echo "font=$font" >> $figlet_config_file
                 break
                 ;;
             [Nn]*)
-                echo "Username not confirmed. Please try again."
+                echo "Username and font not confirmed. Please try again."
                 ;;
             *)
                 echo "Invalid input. Please enter 'y' or 'n'."
@@ -513,19 +519,25 @@ function remove_figlet_config() {
         # Prompt the user to enter a username
         read -p "Enter a username to use with figlet: " username
 
-        # Display the entered username
-        echo "Username: $username"
+        # Prompt the user to enter a font
+        read -p "Enter a font to use with figlet [future]: " font
+        font=${font:-future}
 
-        # Prompt the user to confirm the username
+        # Display the entered username and font
+        echo "Username: $username"
+        echo "Font: $font"
+
+        # Prompt the user to confirm the username and font
         read -p "Is this correct? (y/n): " confirm
 
         case $confirm in
             [Yy]*)
                 echo "username=$username" > $figlet_config_file
+                echo "font=$font" >> $figlet_config_file
                 break
                 ;;
             [Nn]*)
-                echo "Username not confirmed. Please try again."
+                echo "Username and font not confirmed. Please try again."
                 ;;
             *)
                 echo "Invalid input. Please enter 'y' or 'n'."
@@ -539,7 +551,7 @@ fi
 }
 
 ################################################################################
-# SESSION ID
+# SESSION ID GENERATION
 ################################################################################
 
 # Create a variable to store a number that will serve as the session ID, and increment it by 1 each time it is loaded
@@ -553,7 +565,7 @@ else
 fi
 
 ################################################################################
-# NEOFETCH
+# NEOFETCH CONFIGURATION
 ################################################################################
 
 # Check to see if neofetch is installed and install it if it is not, then call it
