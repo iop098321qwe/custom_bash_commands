@@ -658,7 +658,7 @@ alias back="cd .. && ls"
 alias cdgh="cd ~/Documents/github_repositories && ls"
 alias temp="cd ~/Documents/Temporary && ls"
 alias cbc="cdgh && cd custom_bash_commands && ls"
-alias cbcc="cdgh && cd custom_bash_commands && ls && echo "DID YOU CHANGE THE VERSION NUMBER????" && cc"
+alias cbcc="cdgh && cd custom_bash_commands && ls && cc"
 alias rma='rm -rf'
 alias editbash='code ~/.bashrc && source ~/.bashrc'
 alias cls='clear && ls'
@@ -696,7 +696,6 @@ if ! grep -q "enable_figlet=n" $figlet_config_file; then
     # Display a welcome message using figlet and the username from the figlet configuration file and the font with a border
     figlet -f $font "Welcome $fig_user" -F border
 fi
-# figlet -f future "Welcome $username" -F border
 
 # Change to the home directory
 cd ~
