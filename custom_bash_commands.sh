@@ -175,12 +175,15 @@ function cc() {
     currentBranch=$(git symbolic-ref --short -q HEAD)  # Getting the current branch
     
     echo "Current branch: $currentBranch"
+    echo "##############"
     echo "Commit message: $message"
+    echo "##############"
     echo "available branches:"
     git branch
-    echo "###############################################"
-    echo "DID YOU SET THE .VERSION FILE NUMBER CORRECTLY?"
-    echo "###############################################"
+    echo "##############"
+    echo "#####################################################"
+    echo "## DID YOU SET THE .VERSION FILE NUMBER CORRECTLY? ##"
+    echo "#####################################################"
     echo "                                               "
     read -p "Do you want to continue pushing to the current branch? (y/n): " choice
     
