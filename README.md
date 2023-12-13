@@ -253,6 +253,7 @@ update() {
 * Create a test workflow for testing the custom commands.
 * Change the figlet command to prompt the user for a username on first run, then run the command when the custom_bash_commands.sh script is loaded.
 * Create a function to change the figlet configuration.
+* Consolidate the config files for optional items.
 
 # To Test
 

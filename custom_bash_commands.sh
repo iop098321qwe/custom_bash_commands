@@ -530,7 +530,7 @@ if [ ! -f $figlet_config_file ]; then
     fi
 fi
 
-# Create a function to remove the configuration file and prompt the user to create a new one
+# Create a function to remove the configuration file and refresh the terminal
 function remove_figlet_config() {
     # Prompt the user to confirm the removal of the figlet configuration file
     read -p "Are you sure you want to remove the figlet configuration file? (y/n): " confirm
@@ -540,6 +540,7 @@ function remove_figlet_config() {
         # Remove the figlet configuration file
         rm $figlet_config_file
         echo "Figlet configuration file removed."
+        echo "Refreshing terminal..."
         refresh
     else
         echo "Figlet configuration file removal canceled."
@@ -569,6 +570,41 @@ if ! command -v neofetch &> /dev/null; then
     echo "neofetch not found. Installing..."
     sudo apt install neofetch -y
 fi
+
+# Prompt the user if they would like to enable neofetch on terminal run and store the response in a configuration file
+if [ ! -f ~/.neofetch_config ]; then
+    while true; do
+        read -p "Would you like to enable neofetch on terminal run? (y/n): " enable_neofetch
+
+        # Check if the user wants to enable neofetch on terminal run
+        if [[ $enable_neofetch == "y" || $enable_neofetch == "Y" ]]; then
+            echo "enable_neofetch=y" >> ~/.neofetch_config
+            break
+        elif [[ $enable_neofetch == "n" || $enable_neofetch == "N" ]]; then
+            echo "enable_neofetch=n" >> ~/.neofetch_config
+            break
+        else
+            echo "Invalid input. Please enter 'y' or 'n'."
+        fi
+    done
+fi
+
+# Create a function to remove the configuration file and refresh the terminal
+function remove_neofetch_config() {
+    # Prompt the user to confirm the removal of the neofetch configuration file
+    read -p "Are you sure you want to remove the neofetch configuration file? (y/n): " confirm
+
+    # Check if the user wants to remove the neofetch configuration file
+    if [[ $confirm == "y" || $confirm == "Y" ]]; then
+        # Remove the neofetch configuration file
+        rm ~/.neofetch_config
+        echo "Neofetch configuration file removed."
+        echo "Refreshing terminal..."
+        refresh
+    else
+        echo "Neofetch configuration file removal canceled."
+    fi
+}
 
 ###################################################################################################################################################################
 # ALIASES
@@ -600,8 +636,11 @@ display_version
 # Print the session ID
 echo "Session ID: $session_id"
 
-# Call neofetch
-neofetch
+# Check if the 'enable_neofetch' variable in the neofetch configuration file is equal to 'n'
+if ! grep -q "enable_neofetch=n" ~/.neofetch_config; then
+    # Display system information using neofetch
+    neofetch
+fi
 
 # Check if the 'enable_figlet' variable in the figlet configuration file is equal to 'n'
 if ! grep -q "enable_figlet=n" $figlet_config_file; then
