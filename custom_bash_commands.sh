@@ -496,6 +496,46 @@ if [ ! -f $figlet_config_file ]; then
     done
 fi
 
+# Create a function to remove the configuration file and prompt the user to create a new one
+function remove_figlet_config() {
+    # Prompt the user to confirm the removal of the figlet configuration file
+    read -p "Are you sure you want to remove the figlet configuration file? (y/n): " confirm
+
+    # Check if the user wants to remove the figlet configuration file
+    if [[ $confirm == "y" || $confirm == "Y" ]]; then
+        # Remove the figlet configuration file
+        rm $figlet_config_file
+        echo "Figlet configuration file removed."
+        if [ ! -f $figlet_config_file ]; then
+    while true; do
+        # Prompt the user to enter a username
+        read -p "Enter a username to use with figlet: " username
+
+        # Display the entered username
+        echo "Username: $username"
+
+        # Prompt the user to confirm the username
+        read -p "Is this correct? (y/n): " confirm
+
+        case $confirm in
+            [Yy]*)
+                echo "username=$username" > $figlet_config_file
+                break
+                ;;
+            [Nn]*)
+                echo "Username not confirmed. Please try again."
+                ;;
+            *)
+                echo "Invalid input. Please enter 'y' or 'n'."
+                ;;
+        esac
+    done
+fi
+    else
+        echo "Figlet configuration file removal canceled."
+    fi
+}
+
 ################################################################################
 # SESSION ID
 ################################################################################
