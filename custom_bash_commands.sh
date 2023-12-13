@@ -696,6 +696,7 @@ if ! grep -q "enable_figlet=n" $figlet_config_file; then
     # Display a welcome message using figlet and the username from the figlet configuration file and the font with a border
     figlet -f $font "Welcome $fig_user" -F border
 fi
+# figlet -f future "Welcome $username" -F border
 
 # Change to the home directory
 cd ~
