@@ -472,8 +472,8 @@ figlet_config_file=~/.figlet_config
 # Check if the figlet configuration file exists and create it prompting the user for a username and font if it does not
 if [ ! -f $figlet_config_file ]; then
 
-    # Check if the enable_figlet variable exists
-    if [ -z "$enable_figlet" ]; then
+    # Check if the enable_figlet variable does not exist in the figlet configuration file
+    if ! grep -q "enable_figlet" $figlet_config_file; then
     
         # Prompt the user if they want to enable the welcome message
         while true; do
@@ -490,6 +490,9 @@ if [ ! -f $figlet_config_file ]; then
                 echo "Invalid input. Please enter 'y' or 'n'."
             fi
         done
+
+        # Store the enable_figlet variable in the figlet configuration file
+        echo "enable_figlet=$enable_figlet" >> $figlet_config_file
     fi
 
     # Check if the welcome message is enabled
@@ -512,7 +515,7 @@ if [ ! -f $figlet_config_file ]; then
 
             case $confirm in
                 [Yy]*)
-                    echo "username=$username" > $figlet_config_file
+                    echo "username=$username" >> $figlet_config_file
                     echo "font=$font" >> $figlet_config_file
                     break
                     ;;
@@ -529,8 +532,6 @@ fi
 
 # Create a function to remove the configuration file and prompt the user to create a new one
 function remove_figlet_config() {
-    # Create an alias for the remove_figlet_config function
-    # alias rfc="remove_figlet_config"
     # Prompt the user to confirm the removal of the figlet configuration file
     read -p "Are you sure you want to remove the figlet configuration file? (y/n): " confirm
 
@@ -539,37 +540,7 @@ function remove_figlet_config() {
         # Remove the figlet configuration file
         rm $figlet_config_file
         echo "Figlet configuration file removed."
-        if [ ! -f $figlet_config_file ]; then
-    while true; do
-        # Prompt the user to enter a username
-        read -p "Enter a username to use with figlet: " username
-
-        # Prompt the user to enter a font
-        read -p "Enter a font to use with figlet [future]: " font
-        font=${font:-future}
-
-        # Display the entered username and font
-        echo "Username: $username"
-        echo "Font: $font"
-
-        # Prompt the user to confirm the username and font
-        read -p "Is this correct? (y/n): " confirm
-
-        case $confirm in
-            [Yy]*)
-                echo "username=$username" > $figlet_config_file
-                echo "font=$font" >> $figlet_config_file
-                break
-                ;;
-            [Nn]*)
-                echo "Username and font not confirmed. Please try again."
-                ;;
-            *)
-                echo "Invalid input. Please enter 'y' or 'n'."
-                ;;
-        esac
-    done
-fi
+        echo "You must reload the terminal using 'refresh' in order to reconfigure figlet."
     else
         echo "Figlet configuration file removal canceled."
     fi
