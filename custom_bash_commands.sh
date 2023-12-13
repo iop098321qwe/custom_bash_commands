@@ -500,6 +500,7 @@ function findfile() {
     else
         if [[ -n "$file_pattern" ]]; then
             while IFS= read -r line; do
+                echo " "
                 echo "$line"
                 echo "cd $(dirname "$line") && ls"
                 found=1
