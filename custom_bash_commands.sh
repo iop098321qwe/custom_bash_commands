@@ -471,9 +471,6 @@ figlet_config_file=~/.figlet_config
 
 # Check if the figlet configuration file exists and create it prompting the user for a username if it does not
 if [ ! -f $figlet_config_file ]; then
-    echo "Enter a username to use with figlet:"
-    read username
-
     while true; do
         # Prompt the user to enter a username
         read -p "Enter a username to use with figlet: " username
@@ -558,8 +555,8 @@ echo "Session ID: $session_id"
 neofetch
 
 # Display a welcome message using figlet and the username from the figlet configuration file and the future font with a border
-figlet -f future -d ~/.figlet_fonts -c -w 200 -m 0 -k $(cat $figlet_config_file | cut -d '=' -f 2) -F border
-# figlet -f future Welcome Grymm -F border
+figlet -f future "Welcome $username" -F border
+# figlet -f future "Welcome $username" -F border
 
 # Change to the home directory
 cd ~
