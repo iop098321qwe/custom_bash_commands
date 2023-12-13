@@ -698,5 +698,8 @@ if ! grep -q "enable_figlet=n" $figlet_config_file; then
 fi
 # figlet -f future "Welcome $username" -F border
 
+# Refresh the terminal
+refresh
+
 # Change to the home directory
 cd ~
