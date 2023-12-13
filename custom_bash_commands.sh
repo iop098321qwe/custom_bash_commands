@@ -27,7 +27,7 @@ display_version() {
     # Read the contents of the .version file and display it in the terminal
     version_number=$(cat ~/.version)
     echo -e "Now using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$version_number\e[0m"
-    echo -e "If you wish to stop using CBC, \e[31mremove\e[0m \e[33m.custom_bash_commands.sh\e[0m from your \e[33m.bashrc\e[0m file using \e[36meditbash\e[0m (CBC)."
+    echo -e "If you wish to stop using \e[32mCBC\e[0m, \e[31mremove\e[0m \e[33m.custom_bash_commands.sh\e[0m from your \e[33m.bashrc\e[0m file using \e[36meditbash\e[0m (\e[32mCBC\e[0m)."
 
 }
 
@@ -690,7 +690,7 @@ display_version
 # Check if the 'enable_session_id' variable in the session ID configuration file is equal to 'n'
 if ! grep -q "enable_session_id=n" ~/.session_id_config; then
     # Display the session ID
-    echo "Session ID: $session_id"
+    echo "Session ID: \e[33m$session_id\e[0m"
 fi
 
 # Check if the 'enable_neofetch' variable in the neofetch configuration file is equal to 'n'
