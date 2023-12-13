@@ -181,7 +181,7 @@ function cc() {
     echo "###############################################"
     echo "DID YOU SET THE .VERSION FILE NUMBER CORRECTLY?"
     echo "###############################################"
-    read -p "Do you want to continue pushing to the current branch? (y/n): " choice
+    read -p "\nDo you want to continue pushing to the current branch? (y/n): " choice
     
     if [ "$choice" == "y" ]; then
         git add .
