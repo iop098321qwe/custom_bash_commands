@@ -471,35 +471,60 @@ figlet_config_file=~/.figlet_config
 
 # Check if the figlet configuration file exists and create it prompting the user for a username and font if it does not
 if [ ! -f $figlet_config_file ]; then
-    while true; do
-        # Prompt the user to enter a username
-        read -p "Enter a username to use with figlet: " username
 
-        # Prompt the user to enter a font
-        read -p "Enter a font to use with figlet [future]: " font
-        font=${font:-future}
+    # Check if the enable_figlet variable exists
+    if [ -z "$enable_figlet" ]; then
+    
+        # Prompt the user if they want to enable the welcome message
+        while true; do
+            read -p "Would you like to enable the welcome message? (y/n): " enable_welcome
 
-        # Display the entered username and font
-        echo "Username: $username"
-        echo "Font: $font"
-
-        # Prompt the user to confirm the username and font
-        read -p "Is this correct? (y/n): " confirm
-
-        case $confirm in
-            [Yy]*)
-                echo "username=$username" > $figlet_config_file
-                echo "font=$font" >> $figlet_config_file
+            # Check if the user wants to enable the welcome message
+            if [[ $enable_welcome == "y" || $enable_welcome == "Y" ]]; then
+                enable_figlet="y"
                 break
-                ;;
-            [Nn]*)
-                echo "Username and font not confirmed. Please try again."
-                ;;
-            *)
+            elif [[ $enable_welcome == "n" || $enable_welcome == "N" ]]; then
+                enable_figlet="n"
+                break
+            else
                 echo "Invalid input. Please enter 'y' or 'n'."
-                ;;
-        esac
-    done
+            fi
+        done
+    fi
+
+    # Check if the welcome message is enabled
+    if [[ $enable_figlet == "y" || $enable_figlet == "Y" ]]; then
+        while true; do  
+
+            # Prompt the user to enter a username
+            read -p "Enter a username to use with figlet: " username
+
+            # Prompt the user to enter a font
+            read -p "Enter a font to use with figlet [future]: " font
+            font=${font:-future}
+
+            # Display the entered username and font
+            echo "Username: $username"
+            echo "Font: $font"
+
+            # Prompt the user to confirm the username and font
+            read -p "Is this correct? (y/n): " confirm
+
+            case $confirm in
+                [Yy]*)
+                    echo "username=$username" > $figlet_config_file
+                    echo "font=$font" >> $figlet_config_file
+                    break
+                    ;;
+                [Nn]*)
+                    echo "Username and font not confirmed. Please try again."
+                    ;;
+                *)
+                    echo "Invalid input. Please enter 'y' or 'n'."
+                    ;;
+            esac
+        done
+    fi
 fi
 
 # Create a function to remove the configuration file and prompt the user to create a new one
