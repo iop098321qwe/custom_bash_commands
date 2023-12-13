@@ -498,6 +498,8 @@ fi
 
 # Create a function to remove the configuration file and prompt the user to create a new one
 function remove_figlet_config() {
+    # Create an alias for the remove_figlet_config function
+    # alias rfc="remove_figlet_config"
     # Prompt the user to confirm the removal of the figlet configuration file
     read -p "Are you sure you want to remove the figlet configuration file? (y/n): " confirm
 
@@ -580,6 +582,7 @@ alias c='clear'
 alias gits='git status'
 alias x='chmod +x'
 alias myip="curl http://ipecho.net/plain; echo"
+alias rfc="remove_figlet_config"
 
 ###################################################################################################################################################################
 
