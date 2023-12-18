@@ -254,6 +254,8 @@ update() {
 * Change the figlet command to prompt the user for a username on first run, then run the command when the custom_bash_commands.sh script is loaded.
 * Create a function to change the figlet configuration.
 * Consolidate the config files for optional items.
+* Create `odt` command to create a .odt file and open it in the directory specified and prompt to name it
+* Create `ods` command to create a .ods file and open it in the directory specified and prompt to name it
 
 # To Test
 
