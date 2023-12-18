@@ -750,7 +750,7 @@ if ! grep -q "enable_figlet=n" $figlet_config_file; then
     fig_font=$(grep -oP 'font=\K.*' $figlet_config_file)
     fig_user=$(grep -oP 'username=\K.*' $figlet_config_file)
     # Display a welcome message using figlet and the username from the figlet configuration file and the font with a border
-    figlet -f $font "Welcome $fig_user" -F border
+    figlet -f $fig_font "Welcome $fig_user" -F border
 fi
 # figlet -f future "Welcome $username" -F border
 
