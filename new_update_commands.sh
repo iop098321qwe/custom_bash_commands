@@ -12,6 +12,23 @@ echo "Copied update_commands.sh"
 cp .version ~/.version
 echo "Copied .version"
 
+# Create several folders (temporary, update_logs, github_repositories, ai) in the ~/Documents folder
+mkdir -p ~/Documents/update_logs ~/Documents/github_repositories ~/Documents/ai
+echo "Created ~/Documents/update_logs, ~/Documents/github_repositories, ~/Documents/ai"
+# Create a folder (temporary) in the home directory
+mkdir -p ~/temporary
+echo "Created ~/temporary"
+
+# Verify that the current directory is the custom_bash_commands directory in the path ~/Documents/github_repositories/custom_bash_commands
+if [ "$PWD" != "$HOME/Documents/github_repositories/custom_bash_commands" ]; then
+    echo "##########################################################################################"
+    echo "## ERROR: Current directory is NOT ~/Documents/github_repositories/custom_bash_commands ##"
+    echo "##########################################################################################"
+    exit 1
+else
+    echo "Custom Bash Commands directory successfully placed"
+fi
+
 # Print completion message
 echo "Custom bash commands updated successfully."
 
