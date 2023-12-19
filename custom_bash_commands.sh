@@ -29,7 +29,6 @@ display_version() {
     version_number=$(cat ~/.version)
     echo -e "Now using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$version_number\e[0m"
     echo -e "If you wish to stop using \e[32mCBC\e[0m, \e[31mremove\e[0m \e[33m.custom_bash_commands.sh\e[0m from your \e[33m.bashrc\e[0m file using \e[36meditbash\e[0m (\e[32mCBC\e[0m)."
-
 }
 
 ################################################################################
@@ -403,7 +402,7 @@ update() {
 #   -m [days]     Search for files modified in the last 'days' days.
 #   -r [pattern]  Use regular expression for searching.
 #   -h            Display this help message.
-#
+
 # Example: findfile -t f 'pattern'  ---Search for files matching 'pattern'.
 
 ##########
@@ -700,6 +699,26 @@ function remove_neofetch_config() {
     else
         echo "Neofetch configuration file removal canceled."
     fi
+}
+
+################################################################################
+# ODT
+################################################################################
+
+# Describe the odt function and its options and usage
+
+# odt
+# Description: A function to create a .odt file in the current directory and open it
+# Usage: odt [filename]
+# Options:
+#   -h    Display this help message
+
+# Example: odt test  ---Creates a .odt file called test and opens it in the current directory.
+
+# Create odt command to create a .odt file in the current directory and open it
+function odt() {
+    touch "$1.odt"
+    libreoffice "$1.odt"
 }
 
 ###################################################################################################################################################################
