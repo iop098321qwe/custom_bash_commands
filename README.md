@@ -257,6 +257,7 @@ update() {
 * Create `odt` command to create a .odt file and open it in the directory specified and prompt to name it
 * Create `ods` command to create a .ods file and open it in the directory specified and prompt to name it
 * Ensure that all custom commands have the "-h" help flag functionality.
+* Create a command to toggle between the `master` and `test` branches for easy testing.
 
 # To Test
 
