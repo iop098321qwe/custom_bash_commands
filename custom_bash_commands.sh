@@ -755,4 +755,4 @@ fi
 # figlet -f future "Welcome $username" -F border
 
 # Change to the home directory
-cd ~
+# cd ~
