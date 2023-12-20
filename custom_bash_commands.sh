@@ -149,7 +149,11 @@ function mkcd() {
 
 # Function to create a backup file of a file.
 function bkup() {
-  cp "$1" "${1}_$(date +%Y%m%d%H%M%S).bak"
+    local filename=$(basename "$1")  # Get the base name of the file
+    local timestamp=$(date +%Y.%m.%d.%H.%M.%S)  # Get the current timestamp
+    local backup_filename="${filename}_backup_${timestamp}.bak"  # Create the backup file name
+
+    cp "$1" "$backup_filename"
 }
 
 ################################################################################
