@@ -31,6 +31,54 @@ display_version() {
     echo -e "If you wish to stop using \e[32mCBC\e[0m, \e[31mremove\e[0m \e[33m.custom_bash_commands.sh\e[0m from your \e[33m.bashrc\e[0m file using \e[36meditbash\e[0m (\e[32mCBC\e[0m)."
 }
 
+# Create a file to store the display_version configuration
+display_version_config_file=~/.display_version_config
+
+# Check if the display_version configuration file exists and create it prompting the user for a username and font if it does not
+if [ ! -f $display_version_config_file ]; then
+
+    # Check if the enable_display_version variable does not exist in the display_version configuration file
+    if ! grep -q "enable_display_version" $display_version_config_file; then
+    
+        # Prompt the user if they want to enable the welcome message
+        while true; do
+            read -p "Would you like to enable the display_version message? (y/n): " enable_display_version
+
+            # Check if the user wants to enable the display_version message
+            if [[ $enable_display_version == "y" || $enable_display_version == "Y" ]]; then
+                enable_display_version="y"
+                break
+            elif [[ $enable_display_version == "n" || $enable_display_version == "N" ]]; then
+                enable_display_version="n"
+                break
+            else
+                echo "Invalid input. Please enter 'y' or 'n'."
+            fi
+        done
+
+        # Store the enable_display_version variable in the display_version configuration file
+        echo "enable_display_version=$enable_display_version" >> $display_version_config_file
+    fi
+fi
+
+# Create a function to remove the configuration file and refresh the terminal
+function remove_display_version_config() {
+    # Alias for the remove_display_version_config function
+    # alias rdvc="remove_display_version_config"
+    # Prompt the user to confirm the removal of the display_version configuration file
+    read -p "Are you sure you want to remove the display_version configuration file? (y/n): " confirm
+
+    # Check if the user wants to remove the display_version configuration file
+    if [[ $confirm == "y" || $confirm == "Y" ]]; then
+        # Remove the display_version configuration file
+        rm $display_version_config_file
+        echo "Display version configuration file removed."
+        echo "Refresh terminal to apply changes."
+    else
+        echo "Display version configuration file removal canceled."
+    fi
+}
+
 ################################################################################
 # CBCS
 ################################################################################
@@ -752,8 +800,12 @@ alias ff="findfile"
 
 ###################################################################################################################################################################
 
-# Call the display_version function.
-display_version
+# Check if the 'enable_display_version' variable in the display version configuration file is equal to 'n'
+if ! grep -q "enable_display_version=n" $display_version_config_file; then
+    # Display the version number using the display_version function
+    display_version
+
+#display_version
 
 # Check if the 'enable_session_id' variable in the session ID configuration file is equal to 'n'
 if ! grep -q "enable_session_id=n" ~/.session_id_config; then
