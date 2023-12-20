@@ -258,6 +258,7 @@ update() {
 * Create `ods` command to create a .ods file and open it in the directory specified and prompt to name it
 * Ensure that all custom commands have the "-h" help flag functionality.
 * Create a command to toggle between the `master` and `test` branches for easy testing.
+* Create a command to display information from "Shortcut-Terminal_Documentation" in the terminal for easy referencing.
 
 # To Test
 
