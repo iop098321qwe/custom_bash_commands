@@ -24,7 +24,7 @@ for path in "${FILE_PATHS[@]}"; do
     echo $path >> .git/info/sparse-checkout
 done
 
-# Fetch only the desired files
+# Fetch only the desired files from the master branch
 git pull origin master -q
 
 # Move the fetched files to the target directory
@@ -37,6 +37,16 @@ for path in "${FILE_PATHS[@]}"; do
         cp $SPARSE_DIR/$path ~/$new_filename
         echo "Copied $path to $new_filename"
     fi
+done
+
+# Fetch only the desired files from the test branch
+git pull origin test -q
+
+# Move the fetched files to the target directory with '.test_' prefix
+for path in "${FILE_PATHS[@]}"; do
+    new_filename=".test_$(basename $path)"
+        cp $SPARSE_DIR/$path ~/$new_filename
+        echo "Copied $path to $new_filename"
 done
 
 # Clean up

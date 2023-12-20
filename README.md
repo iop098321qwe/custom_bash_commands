@@ -8,7 +8,8 @@
 
 ### Current configuration:
 
-* Set up `.bashrc` in the <user> directory (with hidden files) with the `source ~/.custom_bash_commands.sh` appended to the end.
+#### OLD METHOD:
+* Set up `.bashrc` in the home directory (with hidden files) with the `source ~/.custom_bash_commands.sh` appended to the end.
     * To open the `.bashrc` file, use this command in the Terminal: `open .bashrc`
 * Ensure the most up-to-date version of the github repository is added to the user file (with hidden files).
 * Open a new terminal as this will not work without the `.bashrc` file being reloaded.
@@ -17,26 +18,16 @@
 * This is done by creating a temporary directory, then initializing and cloning the github repo in it, then copying the file to the correct location, then delete itself.
 * This ensures that every time you run the terminal you have the latest version of the custom commands already installed.
 
+#### NEW METHOD:
+* Append the following code to the end of the `.bashrc` file.
+```bash
+source ~/.update_commands.sh
+source ~/.custom_bash_commands.sh
+```
+
 #### Additional Alias options:
 
-* Append `alias docs="cd ~/Documents && ls"` to the end of the `.bashrc` file in the <user> directory.
-* Append `alias ...="cd ~ && ls"` to the end of the `.bashrc` file in the <user> directory.
-* Append `alias back="cd .. && ls"` to the end of the `.bashrc` file in the <user> directory.
-* Append `alias cdgh="cd ~/Documents/github_repositories && ls"` to the end of the `.bashrc` file in the <user> directory.
-* Append `alias temp="cd ~/Documents/Temporary && ls"` to the end of the `.bashrc` file in the <user> directory.
-* Append `alias cbc="cdgh && cd custom_bash_commands && ls"` to the end of the `.bashrc` file in the <user> directory.
-* Append `alias cbcc="cdgh && cd custom_bash_commands && ls && cc"` to the end of the `.bashrc` file in the <user> directory.
-* Append `alias myip="curl http://ipecho.net/plain; echo"` to the end of the `.bashrc` file in the <user> directory.
-* Append `alias rma='rm -rf'` to the end of the `.bashrc` file in the <user> directory.
-* Append `alias x='chmod +x'` to the end of the `.bashrc` file in the <user> directory.
-    * This will make whichever file that follows the command executable.
-    * Syntax: `x <filename>`
-* Append `alias gits='git status'` to the end of the `.bashrc` file in the <user> directory.
-    * This will get the status of the git repository you are in quickly.
-* Append `alias editbash='code ~/.bashrc && source ~/.bashrc'` to the end of the `.bashrc` file in the <user> directory.
-* Append `alias cls='clear && ls'` to the end of the `.bashrc` file in the <user> directory.
-* Append `alias refresh='source ~/.bashrc'` to the end of the `.bashrc` file in the <user> directory.
-* Append `alias c='clear'` to the end of the `.bashrc` file in the <user> directory.
+
 
 #### Additional Function options:
 
