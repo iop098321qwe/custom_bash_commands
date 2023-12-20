@@ -978,3 +978,15 @@ fi
 cd ~
 
 ###################################################################################################################################################################
+
+# If session ID is 1, display the welcome message and run cbcs -h
+if [ $session_id -eq 1 ]; then
+    # Display the welcome message
+    echo " "
+    figlet -f future -F border Welcome to the custom bash commands script!
+    echo " "
+    echo "Run cbcs [-h] with help flag to display descriptions and usage."
+    echo " "
+    # Run cbcs -h
+    cbcs -h
+fi
