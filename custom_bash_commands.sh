@@ -994,7 +994,7 @@ function ods() {
 # Create aliases for common commands
 alias docs="cd ~/Documents && ls"
 alias home="cd ~ && ls"
-alias back="cd .. && ls"
+alias back="cd ..; ls"
 alias cdgh="cd ~/Documents/github_repositories && ls"
 alias temp="cd ~/Documents/Temporary && ls"
 alias cbc="cdgh && cd custom_bash_commands && ls"
