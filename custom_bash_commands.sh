@@ -118,7 +118,7 @@ cbcs() {
         echo "         Description: Display a list of all available custom commands in this script"
         echo "         Usage: cbcs [-h]"
         echo "  rma"
-        echo "         Description: Remove all files from a directory and the directory"
+        echo "         Description: Remove the directory and all files it contains"
         echo "         Usage: rma [directory]"
         echo "  editbash"
         echo "         Description: Open the .bashrc file in the default text editor"
