@@ -804,7 +804,7 @@ alias ff="findfile"
 if ! grep -q "enable_display_version=n" ~/.display_version_config; then
     # Display the version number using the display_version function
     display_version
-
+fi
 #display_version
 
 # Check if the 'enable_session_id' variable in the session ID configuration file is equal to 'n'
