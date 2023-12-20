@@ -932,7 +932,7 @@ alias rsc="remove_session_id_config"
 alias ff="findfile"
 alias dv="display_version"
 alias rdvc="remove_display_version_config"
-alias remove_all_cbc_configs="racc"
+alias racc="remove_all_cbc_configs"
 
 ###################################################################################################################################################################
 
@@ -983,7 +983,7 @@ cd ~
 if [ $session_id -eq 1 ]; then
     # Display the welcome message
     echo " "
-    figlet -f future -F border Welcome to the custom bash commands script!
+    figlet -f future -F border Welcome to custom bash commands!
     echo " "
     echo "Run cbcs [-h] with help flag to display descriptions and usage."
     echo " "
