@@ -21,7 +21,7 @@
 
 ##########
 
-# Function to display the .version file from the local repository
+# Function to display the .version file from the local repository.
 display_version() {
     if [ "$1" = "-h" ]; then
         echo "Description: This function allows you to display the version number from the .version file from the local repository."
