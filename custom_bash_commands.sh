@@ -342,10 +342,7 @@ function remove_all_cbc_configs() {
     # Alias for the remove_all_cbc_configs function
     # alias remove_all_cbc_configs="racc"
     # Call the rfc, rnc, rsc, and rdvc functions
-    rfc
-    rnc
-    rsc
-    rdvc
+    remove_figlet_config; remove_neofetch_config; remove_session_id_config; remove_display_version_config
 }
 
 ################################################################################
