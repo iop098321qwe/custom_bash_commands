@@ -146,6 +146,8 @@ cbcs() {
         echo "         Description: Remove the session ID configuration file and refresh the terminal"
         echo "  remove_display_version_config,   (alias: rdvc)"
         echo "         Description: Remove the display version configuration file and refresh the terminal"
+        echo "  remove_all_cbc_configs,   (alias: racc)"
+        echo "         Description: Remove all configuration files associated with CBC"
         echo "  odt"
         echo "         Description: Create a .odt file in the current directory and open it"
         echo "  ods"
@@ -191,6 +193,7 @@ cbcs() {
         echo "  remove_neofetch_config,   (alias: rnc)"
         echo "  remove_session_id_config,   (alias: rsc)"
         echo "  remove_display_version_config,   (alias: rdvc)"
+        echo "  remove_all_cbc_configs,   (alias: racc)"
         echo "  odt"
         echo "  ods"
         echo "  docs,   (alias: cd ~/Documents && ls)"
@@ -280,7 +283,7 @@ function up() {
 }
 
 ################################################################################
-# RMAC
+# REMOVE ALL CBC CONFIGS
 ################################################################################
 
 # Describe the rmac function and its options and usage
@@ -294,7 +297,9 @@ function up() {
 # Example: rmac  ---Removes all configuration files associated with CBC.
 
 # Create a function to call rfc, rnc, rsc, and rdvc
-function rmac() {
+function remove_all_cbc_configs() {
+    # Alias for the remove_all_cbc_configs function
+    # alias remove_all_cbc_configs="racc"
     # Call the rfc, rnc, rsc, and rdvc functions
     rfc
     rnc
@@ -887,6 +892,7 @@ alias rsc="remove_session_id_config"
 alias ff="findfile"
 alias dv="display_version"
 alias rdvc="remove_display_version_config"
+alias remove_all_cbc_configs="racc"
 
 ###################################################################################################################################################################
 
