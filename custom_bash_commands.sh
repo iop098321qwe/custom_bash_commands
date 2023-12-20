@@ -801,7 +801,7 @@ alias ff="findfile"
 ###################################################################################################################################################################
 
 # Check if the 'enable_display_version' variable in the display version configuration file is equal to 'n'
-if ! grep -q "enable_display_version=n" $display_version_config_file; then
+if ! grep -q "enable_display_version=n" ~/.display_version_config; then
     # Display the version number using the display_version function
     display_version
 
