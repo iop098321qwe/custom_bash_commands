@@ -326,15 +326,16 @@ function up() {
 # REMOVE ALL CBC CONFIGS
 ################################################################################
 
-# Describe the rmac function and its options and usage
+# Describe the remove_all_cbc_configs function and its options and usage
 
-# rmac
-# Description: This function allows you to remove all configuration files associated with CBC.
-# Usage: rmac
+# remove_all_cbc_configs
+# Description: A function to remove all configuration files associated with CBC
+# Alias: racc
+# Usage: remove_all_cbc_configs
 # Options:
 #   -h    Display this help message
 
-# Example: rmac  ---Removes all configuration files associated with CBC.
+# Example: remove_all_cbc_configs  ---Removes all configuration files associated with CBC.
 
 # Create a function to call rfc, rnc, rsc, and rdvc
 function remove_all_cbc_configs() {
