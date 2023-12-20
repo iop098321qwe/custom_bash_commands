@@ -17,7 +17,7 @@
 # Options:
 #   -h    Display this help message
 
-# Example: display_version  ---Displays the version number from the .version file from the local repository.
+# Example: display_version  ---Displays the version number from the .version file from the local repository
 
 ##########
 
