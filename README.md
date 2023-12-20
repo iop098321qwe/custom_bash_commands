@@ -268,3 +268,4 @@ update() {
 # Useful Commands to Remember:
 
 * `neofetch`: graphically shows system information with a beautiful output and ASCII Art of the Desktop Environment installed on Linux.
+* `rsync`: tool to synchronize directories or files.
