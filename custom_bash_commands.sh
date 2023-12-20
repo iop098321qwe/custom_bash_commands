@@ -24,10 +24,10 @@
 # Function to display the .version file from the local repository
 display_version() {
     # Create an alias for the display_version function
-    alias dv="display_version"
+    # alias dv="display_version"
     # Read the contents of the .version file and display it in the terminal
     version_number=$(cat ~/.version)
-    echo -e "Now using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$version_number\e[0m"
+    echo -e "Now using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$version_number\e[0m | You can show commands included with `cbcs [-h]`."
     echo -e "If you wish to stop using \e[32mCBC\e[0m, \e[31mremove\e[0m \e[33m.custom_bash_commands.sh\e[0m from your \e[33m.bashrc\e[0m file using \e[36meditbash\e[0m (\e[32mCBC\e[0m)."
 }
 
@@ -87,7 +87,7 @@ function remove_display_version_config() {
 
 # cbcs
 # Description: This function allows you to display a list of all available custom commands in this script
-# Usage: cbcs
+# Usage: cbcs [-h]
 # Options:
 #   -h    Display this help message
 
@@ -97,65 +97,106 @@ function remove_display_version_config() {
 
 # Create a function to display a list of all available custom commands in this script
 cbcs() {
-    # Display a list of all available custom commands and functions in this script
-    echo " "
-    echo "Available custom commands:"
-    echo "##########################"
-    echo " "
-    echo "  display_version,   (alias: dv)"
-    echo "         Description: Display the version number from the .version file"
-    echo "  cbcs"
-    echo "         Description: Display a list of all available custom commands in this script"
-    echo "  rma"
-    echo "         Description: Remove all files and directories in the current directory"
-    echo "  editbash"
-    echo "         Description: Open the .bashrc file in the default text editor"
-    echo "  cls"
-    echo "         Description: Clear the terminal screen"
-    echo "  refresh"
-    echo "         Description: Refresh the terminal session"
-    echo "  c"
-    echo "         Description: Compile and run a C program"
-    echo "  gits"
-    echo "         Description: Display the status of all git repositories in the current directory"
-    echo "  x"
-    echo "         Description: Extract a compressed file"
-    echo "  myip"
-    echo "         Description: Display the IP address of the current machine"
-    echo "  findfile,   (alias: ff)"
-    echo "         Description: Find a file in the current directory and its subdirectories"
-    echo "  mkcd"
-    echo "         Description: Create a directory and switch into it"
-    echo "  bkup"
-    echo "         Description: Create a backup file of a file"
-    echo "  up"
-    echo "         Description: Move up one directory level"
-    echo "  cc"
-    echo "         Description: Clear the clipboard contents"
-    echo "  incon"
-    echo "         Description: Convert an image file to an icon file"
-    echo "  update"
-    echo "         Description: Update the custom bash commands script"
-    echo "  rfc"
-    echo "         Description: Remove the figlet configuration file and refresh the terminal"
-    echo "  rnc"
-    echo "         Description: Remove the neofetch configuration file and refresh the terminal"
-    echo "  rsc"
-    echo "         Description: Remove the session ID configuration file and refresh the terminal"
-    echo " docs,   (alias: cd ~/Documents && ls)"
-    echo "         Description: Change to the Documents directory and list its contents"
-    echo " home,   (alias: cd ~ && ls)"
-    echo "         Description: Change to the home directory and list its contents"
-    echo " back,   (alias: cd .. && ls)"
-    echo "         Description: Change to the parent directory and list its contents"
-    echo " cdgh,   (alias: cd ~/Documents/github_repositories && ls)"
-    echo "         Description: Change to the github_repositories directory and list its contents"
-    echo " temp,   (alias: cd ~/Documents/Temporary && ls)"
-    echo "         Description: Change to the Temporary directory and list its contents"
-    echo " cbc,   (alias: cdgh && cd custom_bash_commands && ls)"
-    echo "         Description: Change to the custom_bash_commands directory and list its contents"
-    echo " cbcc,   (alias: cdgh && cd custom_bash_commands && ls && cc)"
-    echo "         Description: Change to the custom_bash_commands directory, list its contents, and clear the clipboard contents"
+    if [[ $1 == "-h" ]]; then
+        # Display a list of all available custom commands and functions in this script with descriptions
+        echo " "
+        echo "Available custom commands:"
+        echo "##########################"
+        echo " "
+        echo "  display_version,   (alias: dv)"
+        echo "         Description: Display the version number from the .version file"
+        echo "  cbcs"
+        echo "         Description: Display a list of all available custom commands in this script"
+        echo "  rma"
+        echo "         Description: Remove all files and directories in the current directory"
+        echo "  editbash"
+        echo "         Description: Open the .bashrc file in the default text editor"
+        echo "  cls"
+        echo "         Description: Clear the terminal screen"
+        echo "  refresh"
+        echo "         Description: Refresh the terminal session"
+        echo "  c"
+        echo "         Description: Compile and run a C program"
+        echo "  gits"
+        echo "         Description: Display the status of all git repositories in the current directory"
+        echo "  x"
+        echo "         Description: Extract a compressed file"
+        echo "  myip"
+        echo "         Description: Display the IP address of the current machine"
+        echo "  findfile,   (alias: ff)"
+        echo "         Description: Find a file in the current directory and its subdirectories"
+        echo "  mkcd"
+        echo "         Description: Create a directory and switch into it"
+        echo "  bkup"
+        echo "         Description: Create a backup file of a file"
+        echo "  up"
+        echo "         Description: Move up one directory level"
+        echo "  cc"
+        echo "         Description: Clear the clipboard contents"
+        echo "  incon"
+        echo "         Description: Convert an image file to an icon file"
+        echo "  update"
+        echo "         Description: Update the custom bash commands script"
+        echo "  remove_figlet_config,   (alias: rfc)"
+        echo "         Description: Remove the figlet configuration file and refresh the terminal"
+        echo "  remove_neofetch_config,   (alias: rnc)"
+        echo "         Description: Remove the neofetch configuration file and refresh the terminal"
+        echo "  remove_session_id_config,   (alias: rsc)"
+        echo "         Description: Remove the session ID configuration file and refresh the terminal"
+        echo "  remove_display_version_config,   (alias: rdvc)"
+        echo "         Description: Remove the display version configuration file and refresh the terminal"
+        echo "  odt"
+        echo "         Description: Create a .odt file in the current directory and open it"
+        echo " docs,   (alias: cd ~/Documents && ls)"
+        echo "         Description: Change to the Documents directory and list its contents"
+        echo " home,   (alias: cd ~ && ls)"
+        echo "         Description: Change to the home directory and list its contents"
+        echo " back,   (alias: cd .. && ls)"
+        echo "         Description: Change to the parent directory and list its contents"
+        echo " cdgh,   (alias: cd ~/Documents/github_repositories && ls)"
+        echo "         Description: Change to the github_repositories directory and list its contents"
+        echo " temp,   (alias: cd ~/Documents/Temporary && ls)"
+        echo "         Description: Change to the Temporary directory and list its contents"
+        echo " cbc,   (alias: cdgh && cd custom_bash_commands && ls)"
+        echo "         Description: Change to the custom_bash_commands directory and list its contents"
+        echo " cbcc,   (alias: cdgh && cd custom_bash_commands && ls && cc)"
+        echo "         Description: Change to the custom_bash_commands directory, list its contents, and clear the clipboard contents"
+    else
+        # Display a list of all available custom commands and functions in this script
+        echo " "
+        echo "Available custom commands:"
+        echo "##########################"
+        echo " "
+        echo "  display_version,   (alias: dv)"
+        echo "  cbcs"
+        echo "  rma"
+        echo "  editbash"
+        echo "  cls"
+        echo "  refresh"
+        echo "  c"
+        echo "  gits"
+        echo "  x"
+        echo "  myip"
+        echo "  findfile,   (alias: ff)"
+        echo "  mkcd"
+        echo "  bkup"
+        echo "  up"
+        echo "  cc"
+        echo "  incon"
+        echo "  update"
+        echo "  remove_figlet_config,   (alias: rfc)"
+        echo "  remove_neofetch_config,   (alias: rnc)"
+        echo "  remove_session_id_config,   (alias: rsc)"
+        echo "  remove_display_version_config,   (alias: rdvc)"
+        echo "  odt"
+        echo "  docs,   (alias: cd ~/Documents && ls)"
+        echo "  home,   (alias: cd ~ && ls)"
+        echo "  back,   (alias: cd .. && ls)"
+        echo "  cdgh,   (alias: cd ~/Documents/github_repositories && ls)"
+        echo "  temp,   (alias: cd ~/Documents/Temporary && ls)"
+        echo "  cbc,   (alias: cdgh && cd custom_bash_commands && ls)"
+        echo "  cbcc,   (alias: cdgh && cd custom_bash_commands && ls && cc)"
+    fi
 }
 
 ################################################################################
@@ -797,6 +838,8 @@ alias rfc="remove_figlet_config"
 alias rnc="remove_neofetch_config"
 alias rsc="remove_session_id_config"
 alias ff="findfile"
+alias dv="display_version"
+alias rdvc="remove_display_version_config"
 
 ###################################################################################################################################################################
 
@@ -805,7 +848,10 @@ if ! grep -q "enable_display_version=n" ~/.display_version_config; then
     # Display the version number using the display_version function
     display_version
 fi
+
 #display_version
+
+###################################################################################################################################################################
 
 # Check if the 'enable_session_id' variable in the session ID configuration file is equal to 'n'
 if ! grep -q "enable_session_id=n" ~/.session_id_config; then
@@ -813,11 +859,15 @@ if ! grep -q "enable_session_id=n" ~/.session_id_config; then
     echo -e "Session ID: \e[33m$session_id\e[0m"
 fi
 
+###################################################################################################################################################################
+
 # Check if the 'enable_neofetch' variable in the neofetch configuration file is equal to 'n'
 if ! grep -q "enable_neofetch=n" ~/.neofetch_config; then
     # Display system information using neofetch
     neofetch
 fi
+
+###################################################################################################################################################################
 
 # Check if the 'enable_figlet' variable in the figlet configuration file is equal to 'n'
 if ! grep -q "enable_figlet=n" $figlet_config_file; then
@@ -829,5 +879,9 @@ if ! grep -q "enable_figlet=n" $figlet_config_file; then
 fi
 # figlet -f future "Welcome $username" -F border ###### DELETE? ######
 
+###################################################################################################################################################################
+
 # Change to the home directory
 cd ~
+
+###################################################################################################################################################################
