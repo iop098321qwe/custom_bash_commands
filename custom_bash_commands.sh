@@ -280,6 +280,29 @@ function up() {
 }
 
 ################################################################################
+# RMAC
+################################################################################
+
+# Describe the rmac function and its options and usage
+
+# rmac
+# Description: This function allows you to remove all configuration files associated with CBC.
+# Usage: rmac
+# Options:
+#   -h    Display this help message
+
+# Example: rmac  ---Removes all configuration files associated with CBC.
+
+# Create a function to call rfc, rnc, rsc, and rdvc
+function rmac() {
+    # Call the rfc, rnc, rsc, and rdvc functions
+    rfc
+    rnc
+    rsc
+    rdvc
+}
+
+################################################################################
 # CC
 ################################################################################
 
