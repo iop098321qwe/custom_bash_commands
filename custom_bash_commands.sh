@@ -310,16 +310,16 @@ function bkup() {
 
 # Function to move up in the directory hierarchy by a specified number of levels.
 function up() {
-  local times=$1  # The number of levels to move up in the directory structure.
-  local up=""     # A string that will accumulate the "../" for each level up.
+    local times=$1  # The number of levels to move up in the directory structure.
+    local up=""     # A string that will accumulate the "../" for each level up.
 
-  while [ "$times" -gt 0 ]; do
-    up="../$up"   # Append "../" to the 'up' string for each level.
-    times=$((times - 1))  # Decrement the counter.
-  done
+    while [ "$times" -gt 0 ]; do
+        up="../$up"   # Append "../" to the 'up' string for each level.
+        times=$((times - 1))  # Decrement the counter.
+    done
 
-  cd $up  # Change directory to the final path constructed.
-  ls
+    cd $up  # Change directory to the final path constructed.
+    ls
 }
 
 ################################################################################
@@ -340,7 +340,7 @@ function up() {
 # Create a function to call rfc, rnc, rsc, and rdvc
 function remove_all_cbc_configs() {
     # Alias for the remove_all_cbc_configs function
-    # alias remove_all_cbc_configs="racc"
+    # Alias: remove_all_cbc_configs="racc"
     # Call the rfc, rnc, rsc, and rdvc functions
     remove_figlet_config; remove_neofetch_config; remove_session_id_config; remove_display_version_config
 }
