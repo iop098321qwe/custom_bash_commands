@@ -101,8 +101,10 @@ cbcs() {
     if [[ $1 == "-h" ]]; then
         # Display a list of all available custom commands and functions in this script with descriptions
         echo " "
-        echo "Available custom commands:"
-        echo "##########################"
+        #echo "################################"
+        #echo "## Available custom commands: ##"
+        #echo "################################"
+        figlet -f future -F border Available custom commands:
         echo " "
         echo "  display_version,   (alias: dv)"
         echo "         Description: Display the version number from the .version file"
