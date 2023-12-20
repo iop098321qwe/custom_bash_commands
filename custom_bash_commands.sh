@@ -223,6 +223,9 @@ cbcs() {
         echo "  gswt"
         echo "         Description: Quickly switch to the test branch of a git repository"
         echo "         Usage: gswt"
+        echo "  filehash,   (alias: fh)"
+        echo "         Description: Display the hash of a file"
+        echo "         Usage: filehash [file] [hash_type]"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -263,7 +266,8 @@ cbcs() {
         echo "  gsw"
         echo "  gswm"
         echo "  gswt"
-    fi
+        echo "  filehash,   (alias: fh)"
+        fi
 }
 
 ################################################################################
@@ -931,6 +935,7 @@ function remove_neofetch_config() {
     fi
     # Alias for the remove_neofetch_config function
     # alias rnc="remove_neofetch_config"
+
     # Prompt the user to confirm the removal of the neofetch configuration file
     read -p "Are you sure you want to remove the neofetch configuration file? (y/n): " confirm
 
@@ -999,6 +1004,52 @@ function ods() {
     libreoffice "$1.ods"
 }
 
+################################################################################
+# FILEHASH
+################################################################################
+
+# Describe the filehash function and its options and usage
+
+# filehash
+# Description: A function to generate a hash of a file
+# Usage: filehash [file] [method]
+# Options:
+#   -h    Display this help message
+
+# Example: filehash test.txt sha256  ---Generates a sha256 hash of test.txt.
+
+# Define the filehash function to generate a hash of a file
+function filehash() {
+    if [ "$1" = "-h" ]; then
+        # Display help message if -h option is provided
+        echo "Description: A function to generate a hash of a file"
+        echo "Usage: filehash [file] [method]"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
+    # Alias for the filehash function
+    # alias fh="filehash"
+
+    # Check if a file was provided
+    if [ $# -eq 0 ]; then
+        echo "File is not provided"
+        return 1
+    fi
+
+    # Set the default hash method to md5 if not provided
+    local method=${2:-md5}
+
+    # Generate hash based on the specified method
+    case "$method" in
+        md5) md5sum $1 ;;
+        sha1) sha1sum $1 ;;
+        sha256) sha256sum $1 ;;
+        sha512) sha512sum $1 ;;
+        *) echo "Unsupported method: $method" ;;
+    esac
+}
+
 ###################################################################################################################################################################
 # ALIASES
 ###################################################################################################################################################################
@@ -1030,6 +1081,7 @@ alias racc="remove_all_cbc_configs"
 alias gsw='git switch'
 alias gswm='git switch master'
 alias gswt='git switch test'
+alias fh="filehash"
 
 ###################################################################################################################################################################
 
