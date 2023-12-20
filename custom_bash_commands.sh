@@ -214,6 +214,15 @@ cbcs() {
         echo " cbcc,   (alias: cdgh && cd custom_bash_commands && ls && cc)"
         echo "         Description: Change to the custom_bash_commands directory, list its contents, and clear the clipboard contents"
         echo "         Usage: cbcc [message],   (alias: cdgh && cd custom_bash_commands && ls && cc) (Enter the commit message in quotes)"
+        echo "  gsw"
+        echo "         Description: Alias for 'git switch'"
+        echo "         Usage: gsw [branch]"
+        echo "  gswm"
+        echo "         Description: Quickly switch to the master branch of a git repository"
+        echo "         Usage: gswm"
+        echo "  gswt"
+        echo "         Description: Quickly switch to the test branch of a git repository"
+        echo "         Usage: gswt"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -251,6 +260,9 @@ cbcs() {
         echo "  temp,   (alias: cd ~/Documents/Temporary && ls)"
         echo "  cbc,   (alias: cdgh && cd custom_bash_commands && ls)"
         echo "  cbcc,   (alias: cdgh && cd custom_bash_commands && ls && cc)"
+        echo "  gsw"
+        echo "  gswm"
+        echo "  gswt"
     fi
 }
 
@@ -1014,7 +1026,10 @@ alias ff="findfile"
 alias dv="display_version"
 alias rdvc="remove_display_version_config"
 alias racc="remove_all_cbc_configs"
-alias testcbc='source ~/.test_update_commands.sh; source ~/.test_custom_bash_commands.sh'
+#alias testcbc='source ~/.test_update_commands.sh; source ~/.test_custom_bash_commands.sh'
+alias gsw='git switch'
+alias gswm='git switch master'
+alias gswt='git switch test'
 
 ###################################################################################################################################################################
 
