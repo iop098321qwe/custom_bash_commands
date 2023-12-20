@@ -935,7 +935,7 @@ alias racc="remove_all_cbc_configs"
 ###################################################################################################################################################################
 
 # Check if the 'enable_display_version' variable in the display version configuration file is equal to 'n'
-if ! grep -s "enable_display_version=n" ~/.display_version_config; then
+if ! grep -q "enable_display_version=n" ~/.display_version_config; then
     # Display the version number using the display_version function
     display_version
 fi
@@ -945,7 +945,7 @@ fi
 ###################################################################################################################################################################
 
 # Check if the 'enable_session_id' variable in the session ID configuration file is equal to 'n'
-if ! grep -s "enable_session_id=n" ~/.session_id_config; then
+if ! grep -q "enable_session_id=n" ~/.session_id_config; then
     # Display the session ID
     echo -e "Session ID: \e[33m$session_id\e[0m"
 fi
@@ -953,7 +953,7 @@ fi
 ###################################################################################################################################################################
 
 # Check if the 'enable_neofetch' variable in the neofetch configuration file is equal to 'n'
-if ! grep -s "enable_neofetch=n" ~/.neofetch_config; then
+if ! grep -q "enable_neofetch=n" ~/.neofetch_config; then
     # Display system information using neofetch
     neofetch
 fi
@@ -961,7 +961,7 @@ fi
 ###################################################################################################################################################################
 
 # Check if the 'enable_figlet' variable in the figlet configuration file is equal to 'n'
-if ! grep -s "enable_figlet=n" $figlet_config_file; then
+if ! grep -q "enable_figlet=n" $figlet_config_file; then
     # Get the font from the figlet configuration file
     fig_font=$(grep -oP 'font=\K.*' $figlet_config_file)
     fig_user=$(grep -oP 'username=\K.*' $figlet_config_file)
