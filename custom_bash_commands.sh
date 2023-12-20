@@ -210,7 +210,7 @@ cbcs() {
         # Display a list of all available custom commands and functions in this script
         echo " "
         figlet -f future -F border Available custom commands:
-        echo "Rerun cbcs [-h] to display descriptions and usage."
+        echo "Rerun cbcs [-h] with help flag to display descriptions and usage."
         echo " "
         echo "  display_version,   (alias: dv)"
         echo "  cbcs"
