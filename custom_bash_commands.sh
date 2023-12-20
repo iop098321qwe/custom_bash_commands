@@ -23,6 +23,14 @@
 
 # Function to display the .version file from the local repository
 display_version() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: This function allows you to display the version number from the .version file from the local repository."
+        echo "Alias: dv"
+        echo "Usage: display_version"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
     # Create an alias for the display_version function
     # alias dv="display_version"
     # Read the contents of the .version file and display it in the terminal
@@ -264,7 +272,14 @@ cbcs() {
 
 # Custom function to make directories and switch into it, and move into the deepest directory created.
 function mkcd() {
-  mkdir -p "$1" && cd "$1"
+    if [ "$1" = "-h" ]; then
+        echo "Description: This function allows you to create a directory and switch into it."
+        echo "Usage: mkcd [directory]"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
+    mkdir -p "$1" && cd "$1"
 }
 
 ################################################################################
@@ -285,6 +300,13 @@ function mkcd() {
 
 # Function to create a backup file of a file.
 function bkup() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: This function allows you to create a backup file of a file."
+        echo "Usage: bkup [file]"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
     local filename=$(basename "$1")  # Get the base name of the file
     local timestamp=$(date +%Y.%m.%d.%H.%M.%S)  # Get the current timestamp
     local backup_filename="${filename}_backup_${timestamp}.bak"  # Create the backup file name
@@ -310,6 +332,14 @@ function bkup() {
 
 # Function to move up in the directory hierarchy by a specified number of levels.
 function up() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: This function allows you to move up in the directory hierarchy by a specified number of levels."
+        echo "Usage: up [number of levels]"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
+
     local times=$1  # The number of levels to move up in the directory structure.
     local up=""     # A string that will accumulate the "../" for each level up.
 
@@ -339,6 +369,14 @@ function up() {
 
 # Create a function to call rfc, rnc, rsc, and rdvc
 function remove_all_cbc_configs() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: A function to remove all configuration files associated with CBC"
+        echo "Alias: racc"
+        echo "Usage: remove_all_cbc_configs"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
     # Alias for the remove_all_cbc_configs function
     # Alias: remove_all_cbc_configs="racc"
     # Call the rfc, rnc, rsc, and rdvc functions
@@ -415,6 +453,13 @@ function cc() {
 
 # A function to initialize a local git repo, create/connect it to a GitHub repo, and set up files
 incon() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: A function to initialize a local git repo, create/connect it to a GitHub repo, and set up files"
+        echo "Usage: incon [repo_name]"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
     # Ensure the gh tool is installed.
     if ! command -v gh &> /dev/null; then
         echo "gh (GitHub CLI) not found. Please install it to proceed."
@@ -752,6 +797,14 @@ fi
 
 # Create a function to remove the configuration file and refresh the terminal
 function remove_figlet_config() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: A function to remove the figlet configuration file and refresh the terminal"
+        echo "Alias: rfc"
+        echo "Usage: remove_figlet_config"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
     # Alias for the remove_figlet_config function
     # alias rfc="remove_figlet_config"
     # Prompt the user to confirm the removal of the figlet configuration file
@@ -800,8 +853,16 @@ if [ ! -f ~/.session_id_config ]; then
     done
 fi
 
-# Create a function to remove the configuration file and refresh the terminal
+# Create a function to remove the configuration file
 function remove_session_id_config() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: A function to remove the session ID configuration file"
+        echo "Alias: rsc"
+        echo "Usage: remove_session_id_config"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
     # Alias for the remove_session_id_config function
     # alias rsc="remove_session_id_config"
     # Prompt the user to confirm the removal of the session ID configuration file
@@ -848,6 +909,14 @@ fi
 
 # Create a function to remove the configuration file and refresh the terminal
 function remove_neofetch_config() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: A function to remove the neofetch configuration file and refresh the terminal"
+        echo "Alias: rnc"
+        echo "Usage: remove_neofetch_config"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
     # Alias for the remove_neofetch_config function
     # alias rnc="remove_neofetch_config"
     # Prompt the user to confirm the removal of the neofetch configuration file
@@ -880,6 +949,13 @@ function remove_neofetch_config() {
 
 # Create odt command to create a .odt file in the current directory and open it
 function odt() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: A function to create a .odt file in the current directory and open it"
+        echo "Usage: odt [filename]"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
     touch "$1.odt"
     libreoffice "$1.odt"
 }
@@ -900,6 +976,13 @@ function odt() {
 
 # Create ods command to create a .ods file in the current directory and open it
 function ods() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: A function to create a .ods file in the current directory and open it"
+        echo "Usage: ods [filename]"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
     touch "$1.ods"
     libreoffice "$1.ods"
 }

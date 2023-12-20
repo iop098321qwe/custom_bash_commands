@@ -13,10 +13,10 @@ cp .version ~/.version
 echo "Copied .version"
 
 # Create several folders (temporary, update_logs, github_repositories, ai) in the ~/Documents folder
-mkdir -p ~/Documents/update_logs ~/Documents/github_repositories ~/Documents/ai
+mkdir -p ~/Documents/update_logs ~/Documents/github_repositories ~/Documents/ai 2>/dev/null
 echo "Created ~/Documents/update_logs, ~/Documents/github_repositories, ~/Documents/ai"
 # Create a folder (temporary) in the home directory
-mkdir -p ~/temporary
+mkdir -p ~/temporary 2>/dev/null
 echo "Created ~/temporary"
 
 # Verify that the current directory is the custom_bash_commands directory in the path ~/Documents/github_repositories/custom_bash_commands
@@ -31,5 +31,3 @@ fi
 
 # Print completion message
 echo "Custom bash commands updated successfully."
-
-
