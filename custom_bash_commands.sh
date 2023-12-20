@@ -148,6 +148,8 @@ cbcs() {
         echo "         Description: Remove the display version configuration file and refresh the terminal"
         echo "  odt"
         echo "         Description: Create a .odt file in the current directory and open it"
+        echo "  ods"
+        echo "         Description: Create a .ods file in the current directory and open it"
         echo " docs,   (alias: cd ~/Documents && ls)"
         echo "         Description: Change to the Documents directory and list its contents"
         echo " home,   (alias: cd ~ && ls)"
@@ -190,6 +192,7 @@ cbcs() {
         echo "  remove_session_id_config,   (alias: rsc)"
         echo "  remove_display_version_config,   (alias: rdvc)"
         echo "  odt"
+        echo "  ods"
         echo "  docs,   (alias: cd ~/Documents && ls)"
         echo "  home,   (alias: cd ~ && ls)"
         echo "  back,   (alias: cd .. && ls)"
@@ -813,6 +816,26 @@ function remove_neofetch_config() {
 function odt() {
     touch "$1.odt"
     libreoffice "$1.odt"
+}
+
+################################################################################
+# ODS
+################################################################################
+
+# Describe the ods function and its options and usage
+
+# ods
+# Description: A function to create a .ods file in the current directory and open it
+# Usage: ods [filename]
+# Options:
+#   -h    Display this help message
+
+# Example: ods test  ---Creates a .ods file called test and opens it in the current directory.
+
+# Create ods command to create a .ods file in the current directory and open it
+function ods() {
+    touch "$1.ods"
+    libreoffice "$1.ods"
 }
 
 ###################################################################################################################################################################
