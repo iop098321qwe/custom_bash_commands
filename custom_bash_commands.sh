@@ -226,6 +226,9 @@ cbcs() {
         echo "  filehash,   (alias: fh)"
         echo "         Description: Display the hash of a file"
         echo "         Usage: filehash [file] [hash_type]"
+        echo "  display_info,  (alias: di)"
+        echo "         Description: Display CBC information"
+        echo "         Usage: display_info"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -267,6 +270,7 @@ cbcs() {
         echo "  gswm"
         echo "  gswt"
         echo "  filehash,   (alias: fh)"
+        echo "  display_info,  (alias: di)"
         fi
 }
 
@@ -1050,6 +1054,60 @@ function filehash() {
     esac
 }
 
+################################################################################
+# DISPLAY INFO
+################################################################################
+
+# Describe the display_info function and its options and usage
+
+# display_info
+# Description: A function to display information
+# Usage: display_info
+# Options:
+#   -h    Display this help message
+
+# Example: display_info  ---Displays information.
+
+# Function to display information
+function display_info() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: A function to display CBC information"
+        echo "Usage: display_info"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
+    # Alias for the display_info function
+    # alias di="display_info"
+
+    # Check if the 'enable_display_version' variable in the display version configuration file is equal to 'n'
+    if ! grep -q "enable_display_version=n" ~/.display_version_config; then
+        # Display the version number using the display_version function
+        display_version
+    fi
+
+    # Check if the 'enable_session_id' variable in the session ID configuration file is equal to 'n'
+    if ! grep -q "enable_session_id=n" ~/.session_id_config; then
+        # Display the session ID
+        echo -e "Session ID: \e[33m$session_id\e[0m"
+    fi
+
+    # Check if the 'enable_neofetch' variable in the neofetch configuration file is equal to 'n'
+    if ! grep -q "enable_neofetch=n" ~/.neofetch_config; then
+        # Display system information using neofetch
+        neofetch
+    fi
+
+    # Check if the 'enable_figlet' variable in the figlet configuration file is equal to 'n'
+    if ! grep -q "enable_figlet=n" $figlet_config_file; then
+        # Get the font from the figlet configuration file
+        fig_font=$(grep -oP 'font=\K.*' $figlet_config_file)
+        fig_user=$(grep -oP 'username=\K.*' $figlet_config_file)
+        # Display a welcome message using figlet and the username from the figlet configuration file and the font with a border
+        figlet -f $fig_font "Welcome $fig_user" -F border
+    fi
+}
+
 ###################################################################################################################################################################
 # ALIASES
 ###################################################################################################################################################################
@@ -1066,7 +1124,7 @@ alias rma='rm -rf'
 alias editbash='code ~/.bashrc && source ~/.bashrc'
 alias cls='clear && ls'
 alias refresh='source ~/.bashrc'
-alias c='clear && dv'
+alias c='clear && di'
 alias gits='git status'
 alias x='chmod +x'
 alias myip="curl http://ipecho.net/plain; echo"
@@ -1082,44 +1140,12 @@ alias gsw='git switch'
 alias gswm='git switch master'
 alias gswt='git switch test'
 alias fh="filehash"
+alias di="display_info"
 
 ###################################################################################################################################################################
 
-# Check if the 'enable_display_version' variable in the display version configuration file is equal to 'n'
-if ! grep -q "enable_display_version=n" ~/.display_version_config; then
-    # Display the version number using the display_version function
-    display_version
-fi
-
-#display_version
-
-###################################################################################################################################################################
-
-# Check if the 'enable_session_id' variable in the session ID configuration file is equal to 'n'
-if ! grep -q "enable_session_id=n" ~/.session_id_config; then
-    # Display the session ID
-    echo -e "Session ID: \e[33m$session_id\e[0m"
-fi
-
-###################################################################################################################################################################
-
-# Check if the 'enable_neofetch' variable in the neofetch configuration file is equal to 'n'
-if ! grep -q "enable_neofetch=n" ~/.neofetch_config; then
-    # Display system information using neofetch
-    neofetch
-fi
-
-###################################################################################################################################################################
-
-# Check if the 'enable_figlet' variable in the figlet configuration file is equal to 'n'
-if ! grep -q "enable_figlet=n" $figlet_config_file; then
-    # Get the font from the figlet configuration file
-    fig_font=$(grep -oP 'font=\K.*' $figlet_config_file)
-    fig_user=$(grep -oP 'username=\K.*' $figlet_config_file)
-    # Display a welcome message using figlet and the username from the figlet configuration file and the font with a border
-    figlet -f $fig_font "Welcome $fig_user" -F border
-fi
-# figlet -f future "Welcome $username" -F border ###### DELETE? ######
+# Call the function to display information
+display_info
 
 ###################################################################################################################################################################
 
