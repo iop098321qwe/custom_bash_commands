@@ -229,6 +229,12 @@ cbcs() {
         echo "  display_info,  (alias: di)"
         echo "         Description: Display CBC information"
         echo "         Usage: display_info"
+        echo "  py"
+        echo "         Description: Alias for 'python3'"
+        echo "         Usage: py [file]"
+        echo "  python"
+        echo "         Description: Alias for 'python3'"
+        echo "         Usage: python [file]"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -271,6 +277,8 @@ cbcs() {
         echo "  gswt"
         echo "  filehash,   (alias: fh)"
         echo "  display_info,  (alias: di)"
+        echo "  py"
+        echo "  python"
         fi
 }
 
@@ -1141,6 +1149,8 @@ alias gswm='git switch master'
 alias gswt='git switch test'
 alias fh="filehash"
 alias di="display_info"
+alias py="python3"
+alias python="python3"
 
 ###################################################################################################################################################################
 
