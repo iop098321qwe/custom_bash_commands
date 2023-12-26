@@ -1143,7 +1143,6 @@ alias ff="findfile"
 alias dv="display_version"
 alias rdvc="remove_display_version_config"
 alias racc="remove_all_cbc_configs"
-#alias testcbc='source ~/.test_update_commands.sh; source ~/.test_custom_bash_commands.sh'
 alias gsw='git switch'
 alias gswm='git switch master'
 alias gswt='git switch test'
