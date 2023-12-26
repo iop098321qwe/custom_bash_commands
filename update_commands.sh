@@ -49,7 +49,7 @@ for path in "${FILE_PATHS[@]}"; do
         echo "Copied $path to $new_filename"
 done
 
-# Clean up
+# Clean up.
 rm -rf $SPARSE_DIR
 cd ~
 clear
