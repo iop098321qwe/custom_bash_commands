@@ -39,6 +39,7 @@ for path in "${FILE_PATHS[@]}"; do
     fi
 done
 
+: '
 # Fetch only the desired files from the test branch
 git pull origin test -q
 
@@ -48,8 +49,9 @@ for path in "${FILE_PATHS[@]}"; do
         cp $SPARSE_DIR/$path ~/$new_filename
         echo "Copied $path to $new_filename"
 done
+'
 
-# Clean up.
+# Clean up
 rm -rf $SPARSE_DIR
 cd ~
 clear
