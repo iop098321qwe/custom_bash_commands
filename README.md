@@ -25,10 +25,6 @@ source ~/.update_commands.sh
 source ~/.custom_bash_commands.sh
 ```
 
-#### Additional Alias options:
-
-
-
 #### Additional Function options:
 
 ##### Add to the end of the `.bashrc` file:
