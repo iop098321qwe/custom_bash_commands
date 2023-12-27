@@ -29,15 +29,15 @@ git pull origin master -q
 
 # Move the fetched files to the target directory
 for path in "${FILE_PATHS[@]}"; do
-    # Use the full path of SPARSE_DIR when copying files
-    if [ "$path" = ".version" ]; then
-        cp $SPARSE_DIR/$path ~/
-        echo "Copied $path"
-    else
-        new_filename=".$(basename $path)"
-        cp $SPARSE_DIR/$path ~/$new_filename
-        echo "Copied $path to $new_filename"
+    # Determine the new filename with '.' prefix (if not already prefixed)
+    new_filename="$(basename $path)"
+    if [[ $new_filename != .* ]]; then
+        new_filename=".$new_filename"
     fi
+
+    # Copy the file to the home directory with the new filename
+    cp $SPARSE_DIR/$path ~/$new_filename
+    echo "Copied $path to $new_filename"
 done
 
 # Clean up
