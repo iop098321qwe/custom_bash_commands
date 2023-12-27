@@ -29,8 +29,9 @@ git pull origin master -q
 
 # Move the fetched files to the target directory
 for path in "${FILE_PATHS[@]}"; do
+    # Use the full path of SPARSE_DIR when copying files
     if [ "$path" = ".version" ]; then
-        cp $SPARSE_DIR/$path ~/.
+        cp $SPARSE_DIR/$path ~/
         echo "Copied $path"
     else
         new_filename=".$(basename $path)"
@@ -38,18 +39,6 @@ for path in "${FILE_PATHS[@]}"; do
         echo "Copied $path to $new_filename"
     fi
 done
-
-: '
-# Fetch only the desired files from the test branch
-git pull origin test -q
-
-# Move the fetched files to the target directory with '.test_' prefix
-for path in "${FILE_PATHS[@]}"; do
-    new_filename=".test_$(basename $path)"
-        cp $SPARSE_DIR/$path ~/$new_filename
-        echo "Copied $path to $new_filename"
-done
-'
 
 # Clean up
 rm -rf $SPARSE_DIR
