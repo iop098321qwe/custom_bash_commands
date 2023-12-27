@@ -31,3 +31,23 @@ fi
 
 # Print completion message
 echo "Custom bash commands updated successfully."
+
+# Add the following lines to the .bashrc file:
+# source ~/.update_commands.sh
+# source ~/.custom_bash_commands.sh
+echo "source ~/.update_commands.sh" >> ~/.bashrc
+echo "source ~/.custom_bash_commands.sh" >> ~/.bashrc
+
+# Print completion message
+echo "Added source commands to .bashrc"
+
+# Countdown from 10 seconds
+echo "Refreshing in 10 seconds..."
+for i in {10..1}; do
+    echo -ne "$i\r"
+    sleep 1
+done
+
+# Source the .bashrc file
+source ~/.bashrc
+
