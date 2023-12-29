@@ -1,7 +1,11 @@
 #!/bin/bash
 
 ###################################################################################################################################################################
+<<<<<<< HEAD
 # CUSTOM BASH COMMANDS
+=======
+# CUSTOM BASH COMMANDSgit 
+>>>>>>> master
 ###################################################################################################################################################################
 
 ################################################################################
@@ -1143,6 +1147,10 @@ alias ff="findfile"
 alias dv="display_version"
 alias rdvc="remove_display_version_config"
 alias racc="remove_all_cbc_configs"
+<<<<<<< HEAD
+=======
+#alias testcbc='source ~/.test_update_commands.sh; source ~/.test_custom_bash_commands.sh'
+>>>>>>> master
 alias gsw='git switch'
 alias gswm='git switch master'
 alias gswt='git switch test'
