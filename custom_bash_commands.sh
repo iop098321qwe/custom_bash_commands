@@ -151,6 +151,7 @@ cbcs() {
         echo "                 -d [dir]      Specify the directory to search in."
         echo "                 -m [days]     Search for files modified in the last 'days' days."
         echo "                 -r [pattern]  Use regular expression for searching."
+        echo "                 -e [ext]      Search for files with a specific extension."
         echo "                 -h            Display this help message."
         echo "  mkcd"
         echo "         Description: Create a directory and switch into it"
@@ -637,8 +638,29 @@ update() {
 #   -d [dir]      Specify the directory to search in.
 #   -m [days]     Search for files modified in the last 'days' days.
 #   -r [pattern]  Use regular expression for searching.
+#   -e [ext]      Search for files with a specific extension.
 #   -h            Display this help message.
 
+function findfile() {
+    # alias ff="findfile"
+    if [[ "$1" == "-h" ]]; then
+        echo "Usage: findfile [options] [file_pattern]"
+        echo "Alias: ff"
+        echo "Options:"
+        echo "  -i            Interactive mode. Prompts for parameters."
+        echo "  -s            Perform a case-sensitive search."
+        echo "  -t [type]     Search for a specific file type (e.g., f for file, d for directory)."
+        echo "  -d [dir]      Specify the directory to search in."
+        echo "  -m [days]     Search for files modified in the last 'days' days."
+        echo "  -r [pattern]  Use regular expression for searching."
+        echo "  -e [extension] Search for files with a specific extension."
+        echo "  -h            Display this help message."
+        echo ""
+        echo "Example: findfile -t f -e txt 'pattern'  Search for text files matching 'pattern'."
+        return 0
+    fi
+
+    local case_sensitive="-iname"
 # Example: findfile -t f 'pattern'  ---Search for files matching 'pattern'.
 
 ##########
@@ -655,6 +677,7 @@ function findfile() {
         echo "  -d [dir]      Specify the directory to search in."
         echo "  -m [days]     Search for files modified in the last 'days' days."
         echo "  -r [pattern]  Use regular expression for searching."
+        echo "  -e [extension] Search for files with a specific extension."
         echo "  -h            Display this help message."
         echo ""
         echo "Example: findfile -t f 'pattern'  Search for files matching 'pattern'."
@@ -668,6 +691,7 @@ function findfile() {
     local file_type=""
     local search_dir="."
     local max_days=""
+    local extension=""
     local found=0
 
     # Process options
@@ -692,6 +716,10 @@ function findfile() {
             -r)
                 regex_mode=1
                 file_pattern="$2"
+                shift 2
+                ;;
+            -e)
+                extension="$2"
                 shift 2
                 ;;
             -i)
@@ -722,6 +750,7 @@ function findfile() {
         file_type=$([ -n "$file_type" ] && echo "-type $file_type" || echo "")
         read -p "Enter max days since modification [any]: " max_days
         max_days=$([ -n "$max_days" ] && echo "-mtime -$max_days" || echo "")
+        read -p "Enter file extension: " extension
     fi
 
     # Regular expression mode
@@ -739,7 +768,7 @@ function findfile() {
                 echo "$line"
                 echo "cd $(dirname "$line") && ls"
                 found=1
-            done < <(find "$search_dir" $case_sensitive "$file_pattern" $file_type $max_days 2>/dev/null)
+            done < <(find "$search_dir" $case_sensitive "$file_pattern" $file_type $max_days -name "*.$extension" 2>/dev/null)
         fi
     fi
 
