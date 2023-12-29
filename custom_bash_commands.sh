@@ -162,6 +162,8 @@ cbcs() {
         echo "  up"
         echo "         Description: Move up one directory level"
         echo "         Usage: up [number of levels]"
+        # SEPARATE ALIAS SECTION ###############################################################################
+        #figlet -f future -F border Available custom aliases:
         echo "  cc"
         echo "         Description: Combine the git add/commit and git push process"
         echo "         Usage: cc [message] (Enter the commit message in quotes)" 
@@ -259,6 +261,8 @@ cbcs() {
         echo "  mkcd"
         echo "  bkup"
         echo "  up"
+        # SEPARATE ALIAS SECTION ###############################################################################
+        #figlet -f future -F border Available custom aliases:
         echo "  cc"
         echo "  incon"
         echo "  update"
