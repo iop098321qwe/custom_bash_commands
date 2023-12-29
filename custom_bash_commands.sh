@@ -110,6 +110,7 @@ cbcs() {
         # Display a list of all available custom commands and functions in this script with descriptions
         echo " "
         figlet -f future -F border Available custom commands:
+        echo "NOT CURRENTLY ALPHABETICAL"
         echo " "
         echo "  display_version,   (alias: dv)"
         echo "         Description: Display the version number from the .version file"
@@ -242,7 +243,7 @@ cbcs() {
         # Display a list of all available custom commands and functions in this script
         echo " "
         figlet -f future -F border Available custom commands:
-        echo "Rerun cbcs [-h] with help flag to display descriptions and usage."
+        echo "Use cbcs [-h] with help flag to display descriptions and usage. (NOT CURRENTLY ALPHABETICAL)"
         echo " "
         echo "  display_version,   (alias: dv)"
         echo "  cbcs"
