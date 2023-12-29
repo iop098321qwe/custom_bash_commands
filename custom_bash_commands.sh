@@ -621,6 +621,101 @@ update() {
 }
 
 ################################################################################
+# REGEX HELP
+################################################################################
+
+# Describe the regex_help function and its options and usage
+
+# regex_help
+# Description: A function to display help for regular expressions
+
+regex_help() {
+    # Default flavor
+    local flavor="POSIX-extended"
+
+    # Check for arguments
+    while (( "$#" )); do
+        case "$1" in
+            -f|--flavor) # Option for specifying the regex flavor
+                if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
+                    flavor=$2
+                    shift 2
+                else
+                    echo "Error: Argument for $1 is missing" >&2
+                    return 1
+                fi
+                ;;
+            -h|--help) # Help flag
+                echo "Usage: regex_help [-f|--flavor <flavor>] [-h|--help]"
+                echo "Flavors: POSIX-extended, POSIX-basic, PCRE"
+                return 0
+                ;;
+            *) # Handle unexpected options
+                echo "Error: Unsupported flag $1" >&2
+                return 1
+                ;;
+        esac
+    done
+
+    # Displaying regex information based on the chosen flavor
+    case "$flavor" in
+        # POSIX-extended regex
+        "POSIX-extended")
+            echo "POSIX-extended regex selected."
+            echo "Syntax and common patterns:"
+            echo "  - .: Matches any single character"
+            echo "  - ^: Matches the start of a line"
+            echo "  - $: Matches the end of a line"
+            echo "  - *: Matches zero or more occurrences"
+            echo "  - +: Matches one or more occurrences"
+            echo "  - ?: Matches zero or one occurrence"
+            echo "  - [abc]: Matches any one of the characters a, b, or c"
+            echo "  - [^abc]: Matches any character not in the set a, b, or c"
+            echo "  - (ab|cd): Matches either the sequence 'ab' or 'cd'"
+            ;;
+        # POSIX-basic regex
+        "POSIX-basic")
+            echo "POSIX-basic regex selected."
+            echo "Syntax and common patterns:"
+            echo "  - .: Matches any single character except newline"
+            echo "  - ^: Matches the start of a line"
+            echo "  - $: Matches the end of a line"
+            echo "  - *: Matches zero or more occurrences of the preceding element"
+            echo "  - [abc]: Matches any one of the characters a, b, or c"
+            echo "  - [^abc]: Matches any character not in the set a, b, or c"
+            echo "  - \\(ab\\|cd\\): Backslashes are used to escape special characters"
+            ;;
+        # PCRE regex
+        "PCRE")
+            echo "Perl-compatible regex (PCRE) selected."
+            echo "Syntax and common patterns:"
+            echo "  - .: Matches any character except newline"
+            echo "  - ^: Matches the start of the string"
+            echo "  - $: Matches the end of the string"
+            echo "  - *: Matches 0 or more of the preceding element"
+            echo "  - +: Matches 1 or more of the preceding element"
+            echo "  - ?: Makes the preceding quantifier lazy"
+            echo "  - \\d: Matches any digit character"
+            echo "  - \\D: Matches any non-digit character"
+            echo "  - \\w: Matches any word character (alphanumeric plus '_')"
+            echo "  - \\W: Matches any non-word character"
+            echo "  - (abc|def): Matches either 'abc' or 'def'"
+            ;;
+        # Help flag
+        "help")
+            echo "Usage: regex_help [-f|--flavor <flavor>] [-h|--help]"
+            echo "Flavors: POSIX-extended, POSIX-basic, PCRE"
+            return 0
+            ;;
+        *)
+            # Handle unexpected flavors
+            echo "Error: Unsupported flavor $flavor" >&2
+            return 1
+            ;;
+    esac
+}
+
+################################################################################
 # FINDFILE
 ################################################################################
 
