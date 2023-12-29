@@ -663,7 +663,6 @@ function findfile() {
         echo "Example: findfile -t f -e txt 'pattern'  Search for text files matching 'pattern'."
         return 0
     fi
-}
 
     local case_sensitive="-iname"
     local regex_mode=0
