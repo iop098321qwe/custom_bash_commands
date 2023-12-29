@@ -235,6 +235,9 @@ cbcs() {
         echo "  python"
         echo "         Description: Alias for 'python3'"
         echo "         Usage: python [file]"
+        echo "  regex_help"
+        echo "         Description: Display help for regular expressions"
+        echo "         Usage: regex_help [-f|--flavor <flavor>] [-h|--help]"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -279,6 +282,7 @@ cbcs() {
         echo "  display_info,  (alias: di)"
         echo "  py"
         echo "  python"
+        echo "  regex_help"
         fi
 }
 
@@ -1261,6 +1265,7 @@ alias fh="filehash"
 alias di="display_info"
 alias py="python3"
 alias python="python3"
+alias rh="regex_help"
 
 ###################################################################################################################################################################
 
