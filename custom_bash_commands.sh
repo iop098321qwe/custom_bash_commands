@@ -641,26 +641,6 @@ update() {
 #   -e [ext]      Search for files with a specific extension.
 #   -h            Display this help message.
 
-function findfile() {
-    # alias ff="findfile"
-    if [[ "$1" == "-h" ]]; then
-        echo "Usage: findfile [options] [file_pattern]"
-        echo "Alias: ff"
-        echo "Options:"
-        echo "  -i            Interactive mode. Prompts for parameters."
-        echo "  -s            Perform a case-sensitive search."
-        echo "  -t [type]     Search for a specific file type (e.g., f for file, d for directory)."
-        echo "  -d [dir]      Specify the directory to search in."
-        echo "  -m [days]     Search for files modified in the last 'days' days."
-        echo "  -r [pattern]  Use regular expression for searching."
-        echo "  -e [extension] Search for files with a specific extension."
-        echo "  -h            Display this help message."
-        echo ""
-        echo "Example: findfile -t f -e txt 'pattern'  Search for text files matching 'pattern'."
-        return 0
-    fi
-
-    local case_sensitive="-iname"
 # Example: findfile -t f 'pattern'  ---Search for files matching 'pattern'.
 
 ##########
@@ -677,12 +657,13 @@ function findfile() {
         echo "  -d [dir]      Specify the directory to search in."
         echo "  -m [days]     Search for files modified in the last 'days' days."
         echo "  -r [pattern]  Use regular expression for searching."
-        echo "  -e [extension] Search for files with a specific extension."
+        echo "  -e [ext]      Search for files with a specific extension."
         echo "  -h            Display this help message."
         echo ""
-        echo "Example: findfile -t f 'pattern'  Search for files matching 'pattern'."
+        echo "Example: findfile -t f -e txt 'pattern'  Search for text files matching 'pattern'."
         return 0
     fi
+}
 
     local case_sensitive="-iname"
     local regex_mode=0
@@ -1221,4 +1202,3 @@ fi
 ###################################################################################################################################################################
 ###################################################################################################################################################################
 ###################################################################################################################################################################
-
