@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###################################################################################################################################################################
-# CUSTOM BASH COMMANDSgit 
+# CUSTOM BASH COMMANDS
 ###################################################################################################################################################################
 
 ################################################################################
@@ -539,9 +539,9 @@ incon() {
 # Description: A function to update the system and reboot if desired
 # Usage: update [option]
 # Options:
-#   -r    Reboot the system after updating
-#   -h    Display this help message
-#   -l    Display the log file path
+#   -r           Reboot the system after updating
+#   -h|--help    Display this help message
+#   -l           Display the log file path
 
 # Example: update -r  ---Updates the system and reboots the system after updating.
 
@@ -549,8 +549,9 @@ incon() {
 
 # Create an update command to update your Linux machine.
 update() {
-    # Check if the '-h' flag is provided
-    if [[ $1 == "-h" ]]; then
+    # Check if the '-h' or '--help' flag is provided
+    if [[ $1 == "-h" || $1 == "--help" ]]; then
+        # Display the help message
         echo "Usage: update [option]"
         echo "Options:"
         echo "  -r    Reboot the system after updating"
@@ -621,15 +622,29 @@ update() {
 }
 
 ################################################################################
-# REGEX HELP
+# REGEX HELP (REWRITE)
 ################################################################################
 
 # Describe the regex_help function and its options and usage
 
 # regex_help
 # Description: A function to display help for regular expressions
+# Usage: regex_help [-f|--flavor <flavor>] [-h|--help]
+# Options:
+#   -f|--flavor <flavor>    Specify the regex flavor (e.g., POSIX-extended, POSIX-basic, PCRE)
+#   -h|--help               Display this help message
+#   --example               Display an example of the regex flavor
 
+# Example: regex_help -f PCRE  ---Displays help for PCRE regular expressions.
+
+# Create a function to display help for regular expressions
 regex_help() {
+    # Check if the '-h' flag is provided
+    # PLACEHOLDER
+
+    # Check if the '--help' flag is provided and provide a more detailed help message
+    # PLACEHOLDER
+
     # Default flavor
     local flavor="POSIX-extended"
 
