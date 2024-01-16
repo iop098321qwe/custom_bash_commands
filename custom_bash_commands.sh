@@ -241,6 +241,9 @@ cbcs() {
         echo "  regex_help"
         echo "         Description: Display help for regular expressions"
         echo "         Usage: regex_help [-f|--flavor <flavor>] [-h|--help]"
+        echo "  dt"
+        echo "         Description: Switch to the Deeptree directory and list its contents"
+        echo "         Usage: dt"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -288,6 +291,7 @@ cbcs() {
         echo "  py"
         echo "  python"
         echo "  regex_help"
+        echo "  dt"
         fi
 }
 
@@ -1271,6 +1275,7 @@ alias di="display_info"
 alias py="python3"
 alias python="python3"
 alias rh="regex_help"
+alias dt="cd ~/Documents/Deeptree && ls"
 
 ###################################################################################################################################################################
 

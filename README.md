@@ -27,6 +27,8 @@ source ~/.custom_bash_commands.sh
 
 #### Additional Function options:
 
+# There are plans to create a comprehensive guide for all the functions included in the script.
+
 ##### Add to the end of the `.bashrc` file:
 ```bash
 # Custom function to make directories and switch into it, and move into the deepest directory created.
