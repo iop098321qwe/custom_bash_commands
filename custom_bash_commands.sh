@@ -244,6 +244,9 @@ cbcs() {
         echo "  dt"
         echo "         Description: Switch to the Deeptree directory and list its contents"
         echo "         Usage: dt"
+        echo "  dtr"
+        echo "         Description: Switch to the Deeptree Reference Material directory and list its contents"
+        echo "         Usage: dtr"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -292,6 +295,7 @@ cbcs() {
         echo "  python"
         echo "  regex_help"
         echo "  dt"
+        echo "  dtr"
         fi
 }
 
@@ -1276,6 +1280,7 @@ alias py="python3"
 alias python="python3"
 alias rh="regex_help"
 alias dt="cd ~/Documents/Deeptree && ls"
+alias dtr="cd ~/Documents/Deeptree/reference_material && ls"
 
 ###################################################################################################################################################################
 
