@@ -1196,6 +1196,13 @@ function filehash() {
     # Check if the -a tag is provided to run each hash method
     if [ "$1" = "-a" ]; then
         shift
+        if [ $# -eq 0 ]; then
+            echo " "
+            echo "#########################################"
+            echo "## File was not provided... Try again. ##"
+            echo "#########################################"
+            return
+        fi
         local file=$1
         shift
         echo " "
@@ -1220,7 +1227,7 @@ function filehash() {
         local method=${1:-sha256}
         echo " "
         echo "#########################################################"
-        echo "## Ran $method hash on files in the current directory. ##"
+        echo "## Ran $method hash on files in the current directory.  ##"
         echo "#########################################################"
         echo " "
         for file in *; do
