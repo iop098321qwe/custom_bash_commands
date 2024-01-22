@@ -1165,6 +1165,8 @@ function filehash() {
         echo "Usage: filehash [file] [method]"
         echo "Options:"
         echo "  -h    Display this help message"
+        echo "  -m    Display available hash methods"
+        echo "  -a    Run all hash methods on the file"
         return
     fi
     # Alias for the filehash function
