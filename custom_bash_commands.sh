@@ -1215,7 +1215,7 @@ function filehash() {
         echo "----------------------------------------------------"
         for file in *; do
             if [ -f "$file" ]; then
-                echo "$file: $(sha256sum $file)"
+                echo "$(sha256sum $file)"
             fi
         done
         return
