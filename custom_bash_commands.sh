@@ -1254,9 +1254,9 @@ function filehash() {
         for file in *; do
             if [ -f "$file" ]; then
                 echo " "
-                echo "#############################################"
-                echo "## Running all hash methods on file: $file ##"
-                echo "#############################################"
+                echo "##########################################################################################"
+                echo "Running all hash methods on file: $file "
+                echo "##########################################################################################"
                 echo " "
                 echo "MD5:     $(md5sum $file)"
                 echo "SHA-1:   $(sha1sum $file)"
