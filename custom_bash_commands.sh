@@ -1154,8 +1154,10 @@ function ods() {
 # Usage: filehash [file] [method]
 # Options:
 #   -h    Display this help message
+#   -d    Iterate through the current directory and run the specified hash method on each file
 
 # Example: filehash test.txt sha256  ---Generates a sha256 hash of test.txt.
+# Example: filehash -d sha256  ---Generates a sha256 hash of each file in the current directory.
 
 # Define the filehash function to generate a hash of a file
 function filehash() {
@@ -1167,6 +1169,7 @@ function filehash() {
         echo "  -h    Display this help message"
         echo "  -m    Display available hash methods"
         echo "  -a    Run all hash methods on the file"
+        echo "  -d    Iterate through the current directory and run the specified hash method on each file"
         return
     fi
     # Alias for the filehash function
@@ -1201,6 +1204,20 @@ function filehash() {
         echo "SHA-512: $(sha512sum $file)"
         echo "BLAKE2b: $(b2sum $file)"
         # Add additional hash methods here
+        return
+    fi
+
+    # Check if the -d tag is provided to iterate through the current directory
+    if [ "$1" = "-d" ]; then
+        shift
+        local method=${1:-sha256}
+        echo "Running $method hash on files in the current directory"
+        echo "----------------------------------------------------"
+        for file in *; do
+            if [ -f "$file" ]; then
+                echo "$file: $(sha256sum $file)"
+            fi
+        done
         return
     fi
 
