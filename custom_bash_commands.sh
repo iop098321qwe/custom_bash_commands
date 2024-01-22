@@ -1177,7 +1177,11 @@ function filehash() {
 
     # Check if the first argument is a tag for displaying available methods
     if [ "$1" = "-m" ]; then
-        echo "Available hash methods:"
+        echo " "
+        echo "#############################"
+        echo "## Available hash methods: ##"
+        echo "#############################"
+        echo " "
         echo "  md5     - MD5 hash"
         echo "  sha1    - SHA-1 hash"
         echo "  sha224  - SHA-224 hash"
@@ -1194,8 +1198,11 @@ function filehash() {
         shift
         local file=$1
         shift
-        echo "Running all hash methods on file: $file"
-        echo "-------------------------------------"
+        echo " "
+        echo "#############################################"
+        echo "## Running all hash methods on file: $file ##"
+        echo "#############################################"
+        echo " "
         echo "MD5:     $(md5sum $file)"
         echo "SHA-1:   $(sha1sum $file)"
         echo "SHA-224: $(sha224sum $file)"
@@ -1211,8 +1218,11 @@ function filehash() {
     if [ "$1" = "-d" ]; then
         shift
         local method=${1:-sha256}
-        echo "Running $method hash on files in the current directory"
-        echo "----------------------------------------------------"
+        echo " "
+        echo "#########################################################"
+        echo "## Ran $method hash on files in the current directory. ##"
+        echo "#########################################################"
+        echo " "
         for file in *; do
             if [ -f "$file" ]; then
                 echo "$(sha256sum $file)"
