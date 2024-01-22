@@ -1155,9 +1155,13 @@ function ods() {
 # Options:
 #   -h    Display this help message
 #   -d    Iterate through the current directory and run the specified hash method on each file
+#   -a    Run all hash methods on the file
+#   -da   Run all hash methods on all files in the current directory
 
 # Example: filehash test.txt sha256  ---Generates a sha256 hash of test.txt.
 # Example: filehash -d sha256  ---Generates a sha256 hash of each file in the current directory.
+# Example: filehash -a test.txt  ---Runs all hash methods on test.txt.
+# Example: filehash -da  ---Runs all hash methods on all files in the current directory.
 
 # Define the filehash function to generate a hash of a file
 function filehash() {
@@ -1170,6 +1174,7 @@ function filehash() {
         echo "  -m    Display available hash methods"
         echo "  -a    Run all hash methods on the file"
         echo "  -d    Iterate through the current directory and run the specified hash method on each file"
+        echo "  -da   Run all hash methods on all files in the current directory"
         return
     fi
     # Alias for the filehash function
@@ -1235,6 +1240,35 @@ function filehash() {
                 echo "$(sha256sum $file)"
             fi
         done
+        return
+    fi
+
+    # Check if the -da tag is provided to run all hash methods on all files in the current directory
+    if [ "$1" = "-da" ]; then
+        shift
+        echo " "
+        echo "#############################################"
+        echo "## Running all hash methods on all files.  ##"
+        echo "#############################################"
+        echo " "
+        for file in *; do
+            if [ -f "$file" ]; then
+                echo " "
+                echo "#############################################"
+                echo "## Running all hash methods on file: $file ##"
+                echo "#############################################"
+                echo " "
+                echo "MD5:     $(md5sum $file)"
+                echo "SHA-1:   $(sha1sum $file)"
+                echo "SHA-224: $(sha224sum $file)"
+                echo "SHA-256: $(sha256sum $file)"
+                echo "SHA-384: $(sha384sum $file)"
+                echo "SHA-512: $(sha512sum $file)"
+                echo "BLAKE2b: $(b2sum $file)"
+                # Add additional hash methods here
+            fi
+        done
+        echo "##########################################################################################"
         return
     fi
 
