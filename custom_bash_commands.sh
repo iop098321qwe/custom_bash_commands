@@ -1170,21 +1170,61 @@ function filehash() {
     # Alias for the filehash function
     # alias fh="filehash"
 
+    # Check if the first argument is a tag for displaying available methods
+    if [ "$1" = "-m" ]; then
+        echo "Available hash methods:"
+        echo "  md5     - MD5 hash"
+        echo "  sha1    - SHA-1 hash"
+        echo "  sha224  - SHA-224 hash"
+        echo "  sha256  - SHA-256 hash"
+        echo "  sha384  - SHA-384 hash"
+        echo "  sha512  - SHA-512 hash"
+        echo "  blake2b - BLAKE2b hash"
+        # Add additional methods and descriptions here
+        return
+    fi
+
+    # Check if the -a tag is provided to run each hash method
+    if [ "$1" = "-a" ]; then
+        shift
+        local file=$1
+        shift
+        echo "Running all hash methods on file: $file"
+        echo "-------------------------------------"
+        echo "MD5:     $(md5sum $file)"
+        echo "SHA-1:   $(sha1sum $file)"
+        echo "SHA-224: $(sha224sum $file)"
+        echo "SHA-256: $(sha256sum $file)"
+        echo "SHA-384: $(sha384sum $file)"
+        echo "SHA-512: $(sha512sum $file)"
+        echo "BLAKE2b: $(b2sum $file)"
+        # Add additional hash methods here
+        return
+    fi
+
     # Check if a file was provided
     if [ $# -eq 0 ]; then
-        echo "File is not provided"
+        echo " "
+        echo "#########################################"
+        echo "## File was not provided... Try again. ##"
+        echo "#########################################"
+        echo " "
         return 1
     fi
 
-    # Set the default hash method to md5 if not provided
-    local method=${2:-md5}
+    # Set the default hash method to sha256 if not provided
+    local method=${2:-sha256}
 
     # Generate hash based on the specified method
     case "$method" in
         md5) md5sum $1 ;;
         sha1) sha1sum $1 ;;
+        sha224) sha224sum $1 ;;
         sha256) sha256sum $1 ;;
+        sha384) sha384sum $1 ;;
         sha512) sha512sum $1 ;;
+        blake2b) b2sum $1 ;;
+        # Additional cases for other hash methods
         *) echo "Unsupported method: $method" ;;
     esac
 }
