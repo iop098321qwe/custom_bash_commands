@@ -1165,98 +1165,54 @@ function ods() {
 
 # Define the filehash function to generate a hash of a file
 function filehash() {
-    if [ "$1" = "-h" ]; then
-        # Display help message if -h option is provided
-        echo "Description: A function to generate a hash of a file"
-        echo "Usage: filehash [file] [method]"
-        echo "Options:"
-        echo "  -h    Display this help message"
-        echo "  -m    Display available hash methods"
-        echo "  -a    Run all hash methods on the file"
-        echo "  -d    Iterate through the current directory and run the specified hash method on each file"
-        echo "  -da   Run all hash methods on all files in the current directory"
-        return
-    fi
-    # Alias for the filehash function
-    # alias fh="filehash"
+    local method="sha256"
+    local file=""
 
-    # Check if the first argument is a tag for displaying available methods
-    if [ "$1" = "-m" ]; then
-        echo " "
-        echo "#############################"
-        echo "## Available hash methods: ##"
-        echo "#############################"
-        echo " "
-        echo "  md5     - MD5 hash"
-        echo "  sha1    - SHA-1 hash"
-        echo "  sha224  - SHA-224 hash"
-        echo "  sha256  - SHA-256 hash"
-        echo "  sha384  - SHA-384 hash"
-        echo "  sha512  - SHA-512 hash"
-        echo "  blake2b - BLAKE2b hash"
-        # Add additional methods and descriptions here
-        return
-    fi
-
-    # Check if the -a tag is provided to run each hash method
-    if [ "$1" = "-a" ]; then
-        shift
-        if [ $# -eq 0 ]; then
-            echo " "
-            echo "#########################################"
-            echo "## File was not provided... Try again. ##"
-            echo "#########################################"
-            return
-        fi
-        local file=$1
-        shift
-        echo " "
-        echo "#############################################"
-        echo "## Running all hash methods on file: $file ##"
-        echo "#############################################"
-        echo " "
-        echo "MD5:     $(md5sum $file)"
-        echo "SHA-1:   $(sha1sum $file)"
-        echo "SHA-224: $(sha224sum $file)"
-        echo "SHA-256: $(sha256sum $file)"
-        echo "SHA-384: $(sha384sum $file)"
-        echo "SHA-512: $(sha512sum $file)"
-        echo "BLAKE2b: $(b2sum $file)"
-        # Add additional hash methods here
-        return
-    fi
-
-    # Check if the -d tag is provided to iterate through the current directory
-    if [ "$1" = "-d" ]; then
-        shift
-        local method=${1:-sha256}
-        echo " "
-        echo "#########################################################"
-        echo "## Ran $method hash on files in the current directory.  ##"
-        echo "#########################################################"
-        echo " "
-        for file in *; do
-            if [ -f "$file" ]; then
-                echo "$(sha256sum $file)"
-            fi
-        done
-        return
-    fi
-
-    # Check if the -da tag is provided to run all hash methods on all files in the current directory
-    if [ "$1" = "-da" ]; then
-        shift
-        echo " "
-        echo "#############################################"
-        echo "## Running all hash methods on all files.  ##"
-        echo "#############################################"
-        echo " "
-        for file in *; do
-            if [ -f "$file" ]; then
+    # Parse command line options
+    while getopts ":hmda" opt; do
+        case $opt in
+            h)
+                # Display help message
+                echo "Description: A function to generate a hash of a file"
+                echo "Usage: filehash [file] [method]"
+                echo "Options:"
+                echo "  -h    Display this help message"
+                echo "  -m    Display available hash methods"
+                echo "  -a    Run all hash methods on the file"
+                echo "  -d    Iterate through the current directory and run the specified hash method on each file"
+                echo "  -da   Run all hash methods on all files in the current directory"
+                return
+                ;;
+            m)
+                # Display available hash methods
                 echo " "
-                echo "##########################################################################################"
-                echo "Running all hash methods on file: $file "
-                echo "##########################################################################################"
+                echo "#############################"
+                echo "## Available hash methods: ##"
+                echo "#############################"
+                echo " "
+                echo "  md5     - MD5 hash"
+                echo "  sha1    - SHA-1 hash"
+                echo "  sha224  - SHA-224 hash"
+                echo "  sha256  - SHA-256 hash"
+                echo "  sha384  - SHA-384 hash"
+                echo "  sha512  - SHA-512 hash"
+                echo "  blake2b - BLAKE2b hash"
+                # Add additional methods and descriptions here
+                return
+                ;;
+            a)
+                # Run all hash methods on the file
+                if [ -z "$file" ]; then
+                    echo " "
+                    echo "#########################################"
+                    echo "## File was not provided... Try again. ##"
+                    echo "#########################################"
+                    return
+                fi
+                echo " "
+                echo "#############################################"
+                echo "## Running all hash methods on file: $file ##"
+                echo "#############################################"
                 echo " "
                 echo "MD5:     $(md5sum $file)"
                 echo "SHA-1:   $(sha1sum $file)"
@@ -1266,13 +1222,32 @@ function filehash() {
                 echo "SHA-512: $(sha512sum $file)"
                 echo "BLAKE2b: $(b2sum $file)"
                 # Add additional hash methods here
-            fi
-        done
-        echo "##########################################################################################"
-        return
-    fi
+                return
+                ;;
+            d)
+                # Iterate through the current directory
+                local method=${OPTARG:-sha256}
+                echo " "
+                echo "#########################################################"
+                echo "## Ran $method hash on files in the current directory.  ##"
+                echo "#########################################################"
+                echo " "
+                for file in *; do
+                    if [ -f "$file" ]; then
+                        echo "$(sha256sum $file)"
+                    fi
+                done
+                return
+                ;;
+            \?)
+                echo "Invalid option: -$OPTARG" >&2
+                return 1
+                ;;
+        esac
+    done
 
     # Check if a file was provided
+    shift $((OPTIND - 1))
     if [ $# -eq 0 ]; then
         echo " "
         echo "#########################################"
@@ -1282,18 +1257,19 @@ function filehash() {
         return 1
     fi
 
-    # Set the default hash method to sha256 if not provided
-    local method=${2:-sha256}
+    # Set the file and method
+    file=$1
+    method=${2:-sha256}
 
     # Generate hash based on the specified method
     case "$method" in
-        md5) md5sum $1 ;;
-        sha1) sha1sum $1 ;;
-        sha224) sha224sum $1 ;;
-        sha256) sha256sum $1 ;;
-        sha384) sha384sum $1 ;;
-        sha512) sha512sum $1 ;;
-        blake2b) b2sum $1 ;;
+        md5) md5sum $file ;;
+        sha1) sha1sum $file ;;
+        sha224) sha224sum $file ;;
+        sha256) sha256sum $file ;;
+        sha384) sha384sum $file ;;
+        sha512) sha512sum $file ;;
+        blake2b) b2sum $file ;;
         # Additional cases for other hash methods
         *) echo "Unsupported method: $method" ;;
     esac
