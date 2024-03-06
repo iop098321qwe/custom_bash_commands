@@ -572,6 +572,7 @@ update() {
         echo "Usage: update [option]"
         echo "Options:"
         echo "  -r    Reboot the system after updating"
+        echo "  -s    Shutdown the system after updating"
         echo "  -h    Display this help message"
         echo "  -l    Display the log file path"
         return
@@ -612,6 +613,19 @@ update() {
             sudo reboot
         else
             echo "Reboot canceled."
+        fi
+    fi
+
+    # Check if the '-s' flag is provided
+    if [[ $1 == "-s" ]]; then
+        # Prompt the user to confirm the shutdown
+        read -p "Are you sure you want to shutdown the system? (y/n): " confirm
+        if [[ $confirm == "y" || $confirm == "Y" ]]; then
+            # Shutdown the system
+            echo -e "\nShutting down the system..."
+            sudo shutdown now
+        else
+            echo "Shutdown canceled."
         fi
     fi
 
