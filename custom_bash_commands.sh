@@ -52,7 +52,7 @@ if [ ! -f $display_version_config_file ]; then
     
         # Prompt the user if they want to enable the welcome message
         while true; do
-            read -p "Would you like to enable the display_version message? \e[31mHIGHLY RECOMMENDED\e[0m (y/n): " enable_display_version
+            read -p "Would you like to enable the display_version message? HIGHLY RECOMMENDED (y/n): " enable_display_version
 
             # Check if the user wants to enable the display_version message
             if [[ $enable_display_version == "y" || $enable_display_version == "Y" ]]; then
