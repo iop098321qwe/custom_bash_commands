@@ -41,13 +41,13 @@ source ~/.custom_bash_commands.sh
 
 **INCOMPLETE**
 
-A full list of functions will be added here for reference of what the script offers.
+A full list of functions will be added here for reference of what the script offers along with a short description.
 
 #### Aliases:
 
 **INCOMPLETE**
 
-A full list of aliases will be added here for reference of what the script offers.
+A full list of aliases will be added here for reference of what the script offers along with a short description.
 
 ## Additional Plans:
 
