@@ -83,4 +83,4 @@ A full list of aliases will be added here for reference of what the script offer
 
 * `neofetch`: graphically shows system information with a beautiful output and ASCII Art of the Desktop Environment installed on Linux.
 * `rsync`: tool to synchronize directories or files.
-* `htop`: #####
+* `htop`: interactive and real-time view of the processes running on a system
