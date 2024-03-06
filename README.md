@@ -1,5 +1,15 @@
 # Custom Bash Commands Instructions
 
+[Add to Path](https://github.com/iop098321qwe/custom_bash_commands?tab=readme-ov-file#follow-the-instructions-below-to-add-to-path)
+[Current Configuration](https://github.com/iop098321qwe/custom_bash_commands?tab=readme-ov-file#current-configuration)
+[Old Method](https://github.com/iop098321qwe/custom_bash_commands?tab=readme-ov-file#old-method)
+[New Method](https://github.com/iop098321qwe/custom_bash_commands?tab=readme-ov-file#new-method)
+[Functions](https://github.com/iop098321qwe/custom_bash_commands?tab=readme-ov-file#functions)
+[Aliases](https://github.com/iop098321qwe/custom_bash_commands?tab=readme-ov-file#aliases)
+[Additional Plans](https://github.com/iop098321qwe/custom_bash_commands?tab=readme-ov-file#additional-plans)
+[To Test](https://github.com/iop098321qwe/custom_bash_commands?tab=readme-ov-file#to-test)
+[Useful Commands to Remember](https://github.com/iop098321qwe/custom_bash_commands?tab=readme-ov-file#useful-commands-to-remember)
+
 ## Follow the instructions below to add to path.
 
 * [Best Option (Linux)](https://medium.com/devnetwork/how-to-create-your-own-custom-terminal-commands-c5008782a78e)
