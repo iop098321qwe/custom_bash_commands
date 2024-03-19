@@ -1413,7 +1413,7 @@ function call_alias_commands() {
         "rh:regex_help"
         "dt:cd ~/Documents/Deeptree && ls"
         "dtr:cd ~/Documents/Deeptree/reference_material && ls"
-        "dispatch:cd ~/Documents/Deeptree/dispatch && ls"
+        "dispatch:cd ~/Documents/Deeptree/reference_material/dispatch && ls"
     )
 
     # Loop through the alias command pairs
