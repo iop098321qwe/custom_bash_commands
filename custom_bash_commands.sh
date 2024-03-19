@@ -248,6 +248,9 @@ cbcs() {
         echo "  dtr"
         echo "         Description: Switch to the Deeptree Reference Material directory and list its contents"
         echo "         Usage: dtr"
+        echo "  dispatch"
+        echo "         Description: Change to the Dispatch directory and list its contents"
+        echo "         Usage: dispatch"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -297,6 +300,7 @@ cbcs() {
         echo "  regex_help"
         echo "  dt"
         echo "  dtr"
+        echo "  dispatch"
         fi
 }
 
@@ -1409,6 +1413,7 @@ function call_alias_commands() {
         "rh:regex_help"
         "dt:cd ~/Documents/Deeptree && ls"
         "dtr:cd ~/Documents/Deeptree/reference_material && ls"
+        "dispatch:cd ~/Documents/Deeptree/dispatch && ls"
     )
 
     # Loop through the alias command pairs
