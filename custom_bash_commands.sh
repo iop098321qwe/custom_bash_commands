@@ -1471,8 +1471,6 @@ fi
 # Check if zoxide is installed, and if it is, source the zoxide init script
 if command -v zoxide &> /dev/null; then
     eval "$(zoxide init bash)"
-fi
-
 # If zoxide is not installed, display a message
 else
     echo "zoxide not found. Install zoxide to enable directory navigation features."
