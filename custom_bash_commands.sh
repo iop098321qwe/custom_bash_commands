@@ -1465,17 +1465,26 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 ###################################################################################################################################################################
-
-
+# Ensure zoxide and fzf are installed, and if not prompt the user to install.
+###################################################################################################################################################################
 
 # Check if zoxide is installed, and if it is, source the zoxide init script
 if command -v zoxide &> /dev/null; then
     eval "$(zoxide init --cmd cd bash)"
-# If zoxide is not installed, display a message
+# If zoxide is not installed, install it
 else
-    echo "zoxide not found. Install zoxide to enable directory navigation features."
-    echo "zoxide can be installed using the following command for the installation script in Bash:"
-    echo "curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash"
+    echo "zoxide not found. Installing..."
+    sleep 3
+    curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+    echo "Please use 'refresh' to refresh the terminal"
+fi
+
+# Check if fzf is installed, if not installed, install it using "sudo apt install fzf -y after waiting 3 seconds"
+if ! command -v fzf &> /dev/null; then
+    echo "fzf not found. Installing..."
+    sleep 3
+    sudo apt install fzf -y
+    echo "Please use 'refresh' to refresh the terminal"
 fi
 
 ###################################################################################################################################################################

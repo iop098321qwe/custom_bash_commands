@@ -31,11 +31,15 @@
 #### NEW METHOD:
 * Append the following code to the end of the `.bashrc` file.
 ```bash
+###################################################################################################################################################################
+# Custom Additions
+###################################################################################################################################################################
+
 source ~/.update_commands.sh
 source ~/.custom_bash_commands.sh
 ```
-
 * This can be done using the `editbash` command after it has been initially installed.
+
 
 #### Functions:
 
@@ -51,17 +55,17 @@ A full list of aliases will be added here for reference of what the script offer
 
 ## Additional Plans:
 
-* Add the alias functions above into the .custom_bash_commands.sh file for simple one file upload.
+* ~~Add the alias functions above into the .custom_bash_commands.sh file for simple one file upload.~~
 * ~~Add a command to automatically update/copy the most recent version of the file into the <user> directory.~~
 * Add a smart function to automatically check if there were any updates before performing the automatic update of the .custom_bash_commands.sh script in the ~/ directory.
-* Add descriptions for alias' and custom functions in the README.md file.
-* Move all functions and alias' to the `custom_bash_commands.sh` script for easy transferral and one file to manage them all.
+* ~~Add descriptions for alias' and custom functions in the README.md file.~~
+* ~~Move all functions and alias' to the `custom_bash_commands.sh` script for easy transferral and one file to manage them all.~~
 * Create a test workflow for testing the custom commands.
-* Change the figlet command to prompt the user for a username on first run, then run the command when the custom_bash_commands.sh script is loaded.
-* Create a function to change the figlet configuration.
+* ~~Change the figlet command to prompt the user for a username on first run, then run the command when the custom_bash_commands.sh script is loaded.~~
+* ~~Create a function to change the figlet configuration.~~
 * Consolidate the config files for optional items.
-* Create `odt` command to create a .odt file and open it in the directory specified and prompt to name it
-* Create `ods` command to create a .ods file and open it in the directory specified and prompt to name it
+* Edit `odt` command to create a .odt file and open it in the directory specified and prompt to name it
+* Edit `ods` command to create a .ods file and open it in the directory specified and prompt to name it
 * Ensure that all custom commands have the "-h" help flag functionality.
 * Create a command to toggle between the `master` and `test` branches for easy testing.
 * Create a command to display information from "Shortcut-Terminal_Documentation" in the terminal for easy referencing.
@@ -72,6 +76,7 @@ A full list of aliases will be added here for reference of what the script offer
 * Build an SOP for documenting changes.
 * Create a list of commands (Useful Commands to Remember) that can be displayed using a command, potentially in the help command for CBC.
    * The idea is to have additional tools not created with the script to install additionally and display information about.
+* Set up zoxide and fzf automatic installation with setup.
 
 # To Test
 
