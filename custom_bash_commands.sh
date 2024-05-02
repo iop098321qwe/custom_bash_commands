@@ -1514,9 +1514,17 @@ fi
 # Check if eza is installed, and if not display a message to install it.
 ###################################################################################################################################################################
 
-# Check if eza is installed, and if not display a message to install it
+# Check if eza is installed, and if not display a message to install it, if installed, set aliases for eza
 if ! command -v eza &> /dev/null; then
     echo -e "Eza is not installed. Please run \e[34m'sudo apt install eza -y'\e[0m to install it."
+else
+    # Aliases for eza: 
+    alias ld=’eza -lD’
+    alias lf=’eza -lf --color=always | grep -v /’
+    alias lh=’eza -dl .* --group-directories-first’
+    alias ll=’eza -al --group-directories-first’
+    alias ls=’eza -alf --color=always --sort=size | grep -v /’
+    alias lt=’eza -al --sort=modified’
 fi
 
 ###################################################################################################################################################################
