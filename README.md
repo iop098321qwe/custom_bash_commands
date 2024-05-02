@@ -76,6 +76,7 @@ A full list of aliases will be added here for reference of what the script offer
     * session ID
     * display info command
     * figlet
+    * neovim
         * Set up to optionally display info on terminal start, or by using command only
         * Set up to configure the display info command settings
     * Modularize the code better.
@@ -85,7 +86,6 @@ A full list of aliases will be added here for reference of what the script offer
 * Create a list of commands (Useful Commands to Remember) that can be displayed using a command, potentially in the help command for CBC.
    * The idea is to have additional tools not created with the script to install additionally and display information about.
 * ~~Set up zoxide and fzf automatic installation with setup.~~
-* Set up neovim installation in the script.
 
 # To Test
 
