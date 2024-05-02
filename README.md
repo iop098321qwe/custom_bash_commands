@@ -78,6 +78,8 @@ A full list of aliases will be added here for reference of what the script offer
     * figlet
     * neovim
     * tldr (short manuals)
+    * Pika Backup (?) (file backups)
+    * Timeshift (?) (system snapshots)
     * (some type of better terminal history manager)
     * GNU Stow (dotfile farm manager)
     * eza (better ls command)
