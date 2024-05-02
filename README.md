@@ -40,7 +40,6 @@ source ~/.custom_bash_commands.sh
 ```
 * This can be done using the `editbash` command after it has been initially installed.
 
-
 #### Functions:
 
 **INCOMPLETE**
@@ -70,13 +69,15 @@ A full list of aliases will be added here for reference of what the script offer
 * Create a command to toggle between the `master` and `test` branches for easy testing.
 * Create a command to display information from "Shortcut-Terminal_Documentation" in the terminal for easy referencing.
 * Update cbcc commands and definition for calling aliases.
-* Create a script to install all the necessary files and assist with setting up for the first time.
+* Create a script to install all the necessary files and assist with setting up for the first time, including optional add-ons.
 * Build a wiki to keep information organized.
 * Build a SOP for creating new functions/aliases.
 * Build an SOP for documenting changes.
 * Create a list of commands (Useful Commands to Remember) that can be displayed using a command, potentially in the help command for CBC.
    * The idea is to have additional tools not created with the script to install additionally and display information about.
-* Set up zoxide and fzf automatic installation with setup.
+* ~~Set up zoxide and fzf automatic installation with setup.~~
+* Set up neovim installation in the script.
+* Create an installation command to install extra goodies and modularize the additional options to install.
 
 # To Test
 

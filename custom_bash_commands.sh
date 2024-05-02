@@ -1465,7 +1465,7 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 ###################################################################################################################################################################
-# Ensure zoxide and fzf are installed, and if not prompt the user to install.
+# Ensure zoxide and fzf are installed, and if not install it.
 ###################################################################################################################################################################
 
 # Check if zoxide is installed, and if it is, source the zoxide init script
@@ -1486,6 +1486,17 @@ if ! command -v fzf &> /dev/null; then
     sudo apt install fzf -y
     echo "Please use 'refresh' to refresh the terminal"
 fi
+
+# Change so that each piece of software is installed using a function to modularize the code.
+# If zoxide is installed, source the zoxide init script
+# If not installed, do nothing.
+# Create a command to install zoxide if it is not installed.
+# Create a command to install fzf if it is not installed.
+# Echo a message to inform the user that they need to refresh the terminal after installing zoxide and fzf.
+# Create a function to check for additional software, and if it is not installed, create options for the user to select if they would like to install any.
+# This allows full customization of the additional software.
+# This can be part of a separate set up script that can be run for an initial installation.
+# The set up script should set up the .bashrc file, install additional software, and set up the custom bash commands in the correct directories.
 
 ###################################################################################################################################################################
 ###################################################################################################################################################################
