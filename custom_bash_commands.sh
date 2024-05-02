@@ -1414,6 +1414,7 @@ function call_alias_commands() {
         "dt:cd ~/Documents/Deeptree && ls"
         "dtr:cd ~/Documents/Deeptree/reference_material && ls"
         "dispatch:cd ~/Documents/Deeptree/reference_material/dispatch && ls"
+        "z:eza"
     )
 
     # Loop through the alias command pairs
