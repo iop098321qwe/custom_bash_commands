@@ -1507,7 +1507,7 @@ if command -v nvim &> /dev/null; then
     export PATH="$PATH:/opt/nvim-linux64/bin"
     # If neovim is not installed, display a message stating "neovim is not installed."
 else
-    echo -e "Neovim is not installed. Please run \e[34m'sudo apt install neovim'\e[0m to install it."
+    echo -e "Neovim is not installed. Please run \e[34m'sudo apt install neovim -y'\e[0m to install it."
 fi
 
 ###################################################################################################################################################################
@@ -1516,7 +1516,16 @@ fi
 
 # Check if eza is installed, and if not display a message to install it
 if ! command -v eza &> /dev/null; then
-    echo -e "Eza is not installed. Please run \e[34m'sudo apt install eza'\e[0m to install it."
+    echo -e "Eza is not installed. Please run \e[34m'sudo apt install eza -y'\e[0m to install it."
+fi
+
+###################################################################################################################################################################
+# Check if btop is installed, and if not, install it.
+###################################################################################################################################################################
+
+# Check if btop is installed, and if not, display a message to install it.
+if ! command -v btop &> /dev/null; then
+    echo -e "Btop is not installed. Please run \e[34m'sudo apt install btop -y'\e[0m to install it."
 fi
 
 ###################################################################################################################################################################
