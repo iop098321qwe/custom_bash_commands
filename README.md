@@ -77,6 +77,8 @@ A full list of aliases will be added here for reference of what the script offer
     * display info command
     * figlet
     * neovim
+    * tldr (short manuals)
+    * (some type of better terminal history manager)
     * GNU Stow (dotfile farm manager)
     * eza (better ls command)
         * Set up to optionally display info on terminal start, or by using command only
