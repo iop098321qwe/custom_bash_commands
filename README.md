@@ -70,6 +70,15 @@ A full list of aliases will be added here for reference of what the script offer
 * Create a command to display information from "Shortcut-Terminal_Documentation" in the terminal for easy referencing.
 * Update cbcc commands and definition for calling aliases.
 * Create a script to install all the necessary files and assist with setting up for the first time, including optional add-ons.
+    * zoxide
+    * fzf
+    * neofetch
+    * session ID
+    * display info command
+    * figlet
+        * Set up to optionally display info on terminal start, or by using command only
+        * Set up to configure the display info command settings
+    * Modularize the code better.
 * Build a wiki to keep information organized.
 * Build a SOP for creating new functions/aliases.
 * Build an SOP for documenting changes.
@@ -77,7 +86,6 @@ A full list of aliases will be added here for reference of what the script offer
    * The idea is to have additional tools not created with the script to install additionally and display information about.
 * ~~Set up zoxide and fzf automatic installation with setup.~~
 * Set up neovim installation in the script.
-* Create an installation command to install extra goodies and modularize the additional options to install.
 
 # To Test
 
