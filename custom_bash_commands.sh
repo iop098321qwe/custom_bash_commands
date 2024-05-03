@@ -1477,6 +1477,7 @@ else
     echo "zoxide not found. Installing..."
     sleep 3
     curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+    sudo apt install zoxide -y
     eval "$(zoxide init --cmd cd bash)"
     echo "Please use 'refresh' to refresh the terminal"
 fi
@@ -1518,7 +1519,14 @@ fi
 
 # Check if eza is installed, and if not display a message to install it, if installed, set aliases for eza
 if ! command -v eza &> /dev/null; then
-    echo -e "Eza is not installed. Please run \e[34m'sudo apt install eza -y'\e[0m to install it."
+    echo -e "Eza is not installed. Installing now..."
+    sudo mkdir -p /etc/apt/keyrings
+    wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+    sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
+    sudo apt update
+    sudo apt install eza -y
+    echo "Eza has been installed."
 # else
     # Aliases for eza: 
     # alias ld=’eza -lD’
