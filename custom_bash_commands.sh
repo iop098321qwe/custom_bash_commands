@@ -1477,6 +1477,7 @@ else
     echo "zoxide not found. Installing..."
     sleep 3
     curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+    eval "$(zoxide init --cmd cd bash)"
     echo "Please use 'refresh' to refresh the terminal"
 fi
 
