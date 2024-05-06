@@ -6,11 +6,12 @@ SPARSE_DIR=$(mktemp -d)
 # URL of the GitHub repository
 REPO_URL=https://github.com/iop098321qwe/custom_bash_commands.git
 
-# List of file paths to download and move
+# List of file paths and directories to download
 FILE_PATHS=(
     custom_bash_commands.sh
     .version
     update_commands.sh
+    .cbcconfig
 )
 
 # Initialize an empty git repository and configure for sparse checkout
@@ -24,27 +25,21 @@ for path in "${FILE_PATHS[@]}"; do
     echo $path >> .git/info/sparse-checkout
 done
 
-# Fetch only the desired files from the master branch
+# Fetch only the desired files and directories from the master branch
 git pull origin master -q
 
 # Move the fetched files to the target directory
 for path in "${FILE_PATHS[@]}"; do
-    # Determine the new filename with '.' prefix (if not already prefixed)
-    new_filename="$(basename $path)"
-    if [[ $new_filename != .* ]]; then
-        new_filename=".$new_filename"
+    if [[ -d $path && $path == "cbcconfig" ]]; then
+        # Handle copying the directory as a hidden directory
+        cp -r $path ~/.cbcconfig
+        echo "Copied directory $path to ~/.cbcconfig"
+    elif [[ -f $path ]]; then
+        # Handle copying files, rename with a dot prefix if necessary
+        cp $path ~/$path
+        echo "Copied file $path to home directory"
     fi
-
-    # Copy the file to the home directory with the new filename
-    cp $SPARSE_DIR/$path ~/$new_filename
-    echo "Copied $path to $new_filename"
 done
-
-# Additionally, copy the entire .cbcconfig directory to the home directory as a hidden directory, with the same name, and keep the original directory structure, if and only if it does not already exist in the home directory
-if [ ! -d ~/.cbcconfig ]; then
-    cp -r $SPARSE_DIR/.cbcconfig ~
-    echo "Copied .cbcconfig directory to ~"
-fi
 
 # Clean up
 rm -rf $SPARSE_DIR
