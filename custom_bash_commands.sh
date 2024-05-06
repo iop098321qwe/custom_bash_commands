@@ -1555,11 +1555,6 @@ fi
 
 # Script to install software based on the configuration file
 
-# If the .cbcconfig directory does not exist, copy the default config file to the home directory inlcuding all subdirectories and files
-if [ ! -d ~/.cbcconfig ]; then
-    cp -r ~/custom_bash_commands/.cbcconfig ~
-fi
-
 # set apt_conf to the path of apt_packages.conf in .cbcconfig directory
 # apt_conf="$HOME/.cbcconfig/apt_packages.conf"
 

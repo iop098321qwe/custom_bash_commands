@@ -40,10 +40,10 @@ for path in "${FILE_PATHS[@]}"; do
     echo "Copied $path to $new_filename"
 done
 
-# If the .cbcconfig directory does not exist in the home directory, copy it
+# Check if .cbcconfig directory exists in the home directory, and if not copy it from the github repository to the home directory.
 if [ ! -d ~/.cbcconfig ]; then
     cp -r $SPARSE_DIR/.cbcconfig ~/.cbcconfig
-    echo "Copied .cbcconfig directory"
+    echo "Copied .cbcconfig directory to the home directory."
 fi
 
 # Clean up
