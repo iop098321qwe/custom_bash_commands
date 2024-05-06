@@ -11,7 +11,7 @@ FILE_PATHS=(
     custom_bash_commands.sh
     .version
     update_commands.sh
-    .cbcconfig/apt_packages.conf
+    /.cbcconfig/apt_packages.conf
 )
 
 # Initialize an empty git repository and configure for sparse checkout
