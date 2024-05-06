@@ -1372,6 +1372,44 @@ function display_info() {
     fi
 }
 
+################################################################################
+# UPDATE COMMANDS COMMAND
+################################################################################
+
+# Create a function to update the custom bash commands script and display the version number
+
+# update_commands
+# Description: A function to update the custom bash commands script
+# Usage: update_commands
+# Options:
+#   -h    Display this help message
+
+# Function to update the custom bash commands script using the update_commands script
+# function update_commands() {
+#     if [ "$1" = "-h" ]; then
+#         echo "Description: A function to update the custom bash commands script"
+#         echo "Usage: update_commands"
+#         echo "Options:"
+#         echo "  -h    Display this help message"
+#         return
+#     fi
+#     # Alias for the update_commands function
+#     # alias uc="update_commands"
+
+#     # Check if the custom_bash_commands.sh file exists
+#     if [ -f ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh ]; then
+#         # Copy the custom_bash_commands.sh file to the home directory
+#         cp ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh ~/custom_bash_commands.sh
+#         # Display a message that the custom bash commands script has been updated
+#         echo "Custom bash commands script updated."
+#         # Display the version number using the display_version function
+#         display_version
+#     else
+#         # Display an error message if the custom_bash_commands.sh file does not exist
+#         echo "Error: custom_bash_commands.sh file not found."
+#     fi
+# }
+
 ###################################################################################################################################################################
 # ALIASES
 ###################################################################################################################################################################
@@ -1554,6 +1592,11 @@ fi
 # Check if the config file exists in the home directory, and if it does not, copy the default config file to the home directory
 
 # Script to install software based on the configuration file
+
+# If .cbcconfig directory does not exist in the home directory, create it
+ if [ ! -d "$HOME/.cbcconfig" ]; then
+    mkdir "$HOME/.cbcconfig"
+fi
 
 # set apt_conf to the path of apt_packages.conf in .cbcconfig directory
 # apt_conf="$HOME/.cbcconfig/apt_packages.conf"

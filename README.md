@@ -95,6 +95,8 @@ A full list of aliases will be added here for reference of what the script offer
 * Set up `wiki` command to open default browser directly to the wiki page for CBC
 * Set up `readme` command to open the default browser directly to the README.md page for CBC
 
+# Create a command to update the custom commands script instead of using an automatic script.
+
 # To Test
 
 * Change the `.bashrc` file to read `source ~/.test_update_commands.sh`
