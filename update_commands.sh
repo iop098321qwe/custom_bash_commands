@@ -24,11 +24,6 @@ for path in "${FILE_PATHS[@]}"; do
     echo $path >> .git/info/sparse-checkout
 done
 
-# Move .cbcconfig directory and its contents to the sparse checkout configuration if and only if it doesn't already exist in the home directory as a hidden directory
-if [ ! -d ~/.cbcconfig ]; then
-    echo ".cbcconfig" >> .git/info/sparse-checkout
-fi
-
 # Fetch only the desired files from the master branch
 git pull origin master -q
 
@@ -44,6 +39,12 @@ for path in "${FILE_PATHS[@]}"; do
     cp $SPARSE_DIR/$path ~/$new_filename
     echo "Copied $path to $new_filename"
 done
+
+# Additionally, copy the entire .cbcconfig directory to the home directory as a hidden directory, with the same name, and keep the original directory structure, if and only if it does not already exist in the home directory
+if [ ! -d ~/.cbcconfig ]; then
+    cp -r $SPARSE_DIR/.cbcconfig ~
+    echo "Copied .cbcconfig directory to ~"
+fi
 
 # Clean up
 rm -rf $SPARSE_DIR
