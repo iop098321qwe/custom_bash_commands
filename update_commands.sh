@@ -11,7 +11,6 @@ FILE_PATHS=(
     custom_bash_commands.sh
     .version
     update_commands.sh
-    /.cbcconfig/apt_packages.conf
 )
 
 # Initialize an empty git repository and configure for sparse checkout
@@ -24,6 +23,11 @@ git config core.sparseCheckout true
 for path in "${FILE_PATHS[@]}"; do
     echo $path >> .git/info/sparse-checkout
 done
+
+# Move .cbcconfig directory and its contents to the sparse checkout configuration if and only if it doesn't already exist in the home directory
+if [ ! -d ~/.cbcconfig ]; then
+    echo ".cbcconfig" >> .git/info/sparse-checkout
+fi
 
 # Fetch only the desired files from the master branch
 git pull origin master -q
