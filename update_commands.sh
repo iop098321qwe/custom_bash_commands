@@ -11,6 +11,7 @@ FILE_PATHS=(
     custom_bash_commands.sh
     .version
     update_commands.sh
+    .cbcconfig/
 )
 
 # Initialize an empty git repository and configure for sparse checkout
@@ -39,12 +40,6 @@ for path in "${FILE_PATHS[@]}"; do
     cp $SPARSE_DIR/$path ~/$new_filename
     echo "Copied $path to $new_filename"
 done
-
-# Check if .cbcconfig directory exists in the home directory, and if not copy it from the github repository to the home directory.
-if [ ! -d ~/.cbcconfig ]; then
-    cp -r $SPARSE_DIR/.cbcconfig ~/.cbcconfig
-    echo "Copied .cbcconfig directory to the home directory."
-fi
 
 # Clean up
 rm -rf $SPARSE_DIR
