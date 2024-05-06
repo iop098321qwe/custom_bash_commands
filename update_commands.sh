@@ -40,6 +40,12 @@ for path in "${FILE_PATHS[@]}"; do
     echo "Copied $path to $new_filename"
 done
 
+# If the .cbcconfig directory does not exist in the home directory, copy it
+if [ ! -d ~/.cbcconfig ]; then
+    cp -r $SPARSE_DIR/.cbcconfig ~/.cbcconfig
+    echo "Copied .cbcconfig directory"
+fi
+
 # Clean up
 rm -rf $SPARSE_DIR
 cd ~
