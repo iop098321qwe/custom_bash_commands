@@ -1538,6 +1538,33 @@ if ! command -v btop &> /dev/null; then
 fi
 
 ###################################################################################################################################################################
+# Create a config file for installing additional software that may not already be installed where commented out software is not installed.
+###################################################################################################################################################################
+
+# Create a default config file to load information for installing additional software
+# Check if the config file exists in the home directory, and if it does not, copy the default config file to the home directory
+
+# Script to install software based on the configuration file
+
+# If the .cbcconfig directory does not exist, copy the default config file to the home directory inlcuding all subdirectories and files
+if [ ! -d ~/.cbcconfig ]; then
+    cp -r ~/custom_bash_commands/.cbcconfig ~
+fi
+
+# set apt_conf to the path of apt_packages.conf in .cbcconfig directory
+# apt_conf="$HOME/.cbcconfig/apt_packages.conf"
+
+#Read the config file and install the software
+#while IFS= read -r line; do
+#    if [[ ! "$line" =~ ^#.*$ ]] && [[ -n "$line" ]]; then
+#        echo "Installing $line..."
+#        sudo apt install "$line" -y
+#    fi
+#done < "$apt_conf"
+
+
+
+###################################################################################################################################################################
 ###################################################################################################################################################################
 ###################################################################################################################################################################
 ###################################################################################################################################################################
