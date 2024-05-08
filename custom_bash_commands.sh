@@ -1543,12 +1543,13 @@ fi
 # Check if bat is installed, and if not, install it.
 ###################################################################################################################################################################
 
-# Check if bat is installed, and if not, install it using "sudo apt install bat -y"
-if ! command -v bat &> /dev/null; then
-    echo "Bat not found. Installing..."
-    sudo apt install bat -y
-    echo "Bat has been installed."
-fi
+# First check if bat is install, if installed do nothing, if not, install it.
+#if ! command -v bat &> /dev/null; then
+#    echo "bat not found. Installing..."
+#    sleep 3
+#    sudo apt install bat -y
+#    echo "Please use 'refresh' to refresh the terminal"
+#fi
 
 ###################################################################################################################################################################
 # Check if neovim is installed, and if it is, add it to PATH.
