@@ -1546,9 +1546,11 @@ fi
 # Check if neovim is installed, and if it is, add it to PATH
 if command -v nvim &> /dev/null; then
     export PATH="$PATH:/opt/nvim-linux64/bin"
-    # If neovim is not installed, display a message stating "neovim is not installed."
+    # If neovim is not installed, install it using "sudo apt install neovim -y"
 else
-    echo -e "Neovim is not installed. Please run \e[34m'sudo apt install neovim -y'\e[0m to install it."
+    echo "Neovim not found. Installing..."
+    sudo apt install neovim -y
+    echo "Neovim has been installed."
 fi
 
 ###################################################################################################################################################################
