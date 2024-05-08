@@ -251,6 +251,9 @@ cbcs() {
         echo "  dispatch"
         echo "         Description: Change to the Dispatch directory and list its contents"
         echo "         Usage: dispatch"
+        echo "  updatecbc,   (alias: ucbc)"
+        echo "         Description: Update the custom bash commands script"
+        echo "         Usage: updatecbc"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -301,6 +304,7 @@ cbcs() {
         echo "  dt"
         echo "  dtr"
         echo "  dispatch"
+        echo "  updatecbc,   (alias: ucbc)"
         fi
 }
 
@@ -1373,42 +1377,74 @@ function display_info() {
 }
 
 ################################################################################
-# UPDATE COMMANDS COMMAND
+# UPDATE CBC COMMANDS COMMAND
 ################################################################################
 
 # Create a function to update the custom bash commands script and display the version number
 
-# update_commands
-# Description: A function to update the custom bash commands script
-# Usage: update_commands
+# updatecbc
+# Description: A function to update the custom bash commands script and display the version number
+# Usage: updatecbc
 # Options:
 #   -h    Display this help message
 
-# Function to update the custom bash commands script using the update_commands script
-# function update_commands() {
-#     if [ "$1" = "-h" ]; then
-#         echo "Description: A function to update the custom bash commands script"
-#         echo "Usage: update_commands"
-#         echo "Options:"
-#         echo "  -h    Display this help message"
-#         return
-#     fi
-#     # Alias for the update_commands function
-#     # alias uc="update_commands"
+# Create a function to update the custom bash commands script and display the version number
+updatecbc() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: A function to update the custom bash commands"
+        echo "Usage: updatecbc"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
+    # Temporary directory for sparse checkout
+    SPARSE_DIR=$(mktemp -d)
 
-#     # Check if the custom_bash_commands.sh file exists
-#     if [ -f ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh ]; then
-#         # Copy the custom_bash_commands.sh file to the home directory
-#         cp ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh ~/custom_bash_commands.sh
-#         # Display a message that the custom bash commands script has been updated
-#         echo "Custom bash commands script updated."
-#         # Display the version number using the display_version function
-#         display_version
-#     else
-#         # Display an error message if the custom_bash_commands.sh file does not exist
-#         echo "Error: custom_bash_commands.sh file not found."
-#     fi
-# }
+    # URL of the GitHub repository
+    REPO_URL=https://github.com/iop098321qwe/custom_bash_commands.git
+
+    # List of file paths to download and move
+    FILE_PATHS=(
+        custom_bash_commands.sh
+        .version
+        update_commands.sh
+    )
+
+    # Initialize an empty git repository and configure for sparse checkout
+    cd $SPARSE_DIR
+    git init -q
+    git remote add origin $REPO_URL
+    git config core.sparseCheckout true
+
+    # Add each file path to the sparse checkout configuration
+    for path in "${FILE_PATHS[@]}"; do
+        echo $path >> .git/info/sparse-checkout
+    done
+
+    # Fetch only the desired files from the master branch
+    git pull origin master -q
+
+    # Move the fetched files to the target directory
+    for path in "${FILE_PATHS[@]}"; do
+        # Determine the new filename with '.' prefix (if not already prefixed)
+        new_filename="$(basename $path)"
+        if [[ $new_filename != .* ]]; then
+            new_filename=".$new_filename"
+        fi
+
+        # Copy the file to the home directory with the new filename
+        cp $SPARSE_DIR/$path ~/$new_filename
+        echo "Copied $path to $new_filename"
+    done
+
+    # Clean up
+    rm -rf $SPARSE_DIR
+    cd ~
+    clear
+
+    # Source the updated commands
+    source ~/.custom_bash_commands.sh
+}
 
 ###################################################################################################################################################################
 # ALIASES
@@ -1453,6 +1489,7 @@ function call_alias_commands() {
         "dtr:cd ~/Documents/Deeptree/reference_material && ls"
         "dispatch:cd ~/Documents/Deeptree/reference_material/dispatch && ls"
         "z:eza"
+        "ucbc:updatecbc"
     )
 
     # Loop through the alias command pairs
@@ -1504,29 +1541,38 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 ###################################################################################################################################################################
-# Ensure zoxide and fzf are installed, and if not install it.
+# Ensure zoxide is installed, and if not install it.
 ###################################################################################################################################################################
 
-# Check if zoxide is installed, and if it is, source the zoxide init script
-if command -v zoxide &> /dev/null; then
-    eval "$(zoxide init --cmd cd bash)"
-# If zoxide is not installed, install it
-else
-    echo "zoxide not found. Installing..."
-    sleep 3
-    curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
-    sudo apt install zoxide -y
-    eval "$(zoxide init --cmd cd bash)"
-    echo "Please use 'refresh' to refresh the terminal"
-fi
+# Function to check if zoxide is installed and install it if necessary
+function check_install_zoxide() {
+    # Check if zoxide is installed, and if it is, source the zoxide init script
+    if command -v zoxide &> /dev/null; then
+        eval "$(zoxide init --cmd cd bash)"
+    # If zoxide is not installed, install it
+    else
+        echo "zoxide not found. Installing..."
+        sleep 3
+        curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+        sudo apt install zoxide -y
+        eval "$(zoxide init --cmd cd bash)"
+        echo "Please use 'refresh' to refresh the terminal"
+    fi
+}
 
-# Check if fzf is installed, if not installed, install it using "sudo apt install fzf -y after waiting 3 seconds"
-if ! command -v fzf &> /dev/null; then
-    echo "fzf not found. Installing..."
-    sleep 3
-    sudo apt install fzf -y
-    echo "Please use 'refresh' to refresh the terminal"
-fi
+###################################################################################################################################################################
+# Ensure fzf is installed, and if not install it.
+###################################################################################################################################################################
+
+# Function to check if fzf is installed and install it if necessary
+function check_install_fzf() {
+    if ! command -v fzf &> /dev/null; then
+        echo "fzf not found. Installing..."
+        sleep 3
+        sudo apt install fzf -y
+        echo "Please use 'refresh' to refresh the terminal"
+    fi
+}
 
 # Change so that each piece of software is installed using a function to modularize the code.
 # If zoxide is installed, source the zoxide init script
@@ -1634,6 +1680,9 @@ fi
 # Additional Software Installation
 ###################################################################################################################################################################
 
+# Call the function to check neovim installation and install neovim
+check_install_neovim
+
 # Call the function to check bat installation and install bat
 check_install_bat
 
@@ -1643,8 +1692,11 @@ check_install_eza
 # Call the function to check btop installation and install btop
 check_install_btop
 
-# Call the function to check neovim installation and install neovim
-check_install_neovim
+# Call the function to check and install zoxide
+check_install_zoxide
+
+# Call the function to check and install fzf
+check_install_fzf
 
 ###################################################################################################################################################################
 ###################################################################################################################################################################
