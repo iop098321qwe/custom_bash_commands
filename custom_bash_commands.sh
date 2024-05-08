@@ -1544,10 +1544,12 @@ fi
 ###################################################################################################################################################################
 
 # Check if bat is installed, and if not, install it using "sudo apt install bat -y"
-if ! command -v bat &> /dev/null; then
-    echo "bat not found. Installing..."
+if command -v bat &> /dev/null; then
+    # If bat is not installed, install it using "sudo apt install bat -y"
+else
+    echo "Bat not found. Installing..."
     sudo apt install bat -y
-    echo "bat has been installed."
+    echo "Bat has been installed."
 fi
 
 ###################################################################################################################################################################
