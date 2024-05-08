@@ -1544,12 +1544,12 @@ fi
 ###################################################################################################################################################################
 
 # First check if bat is install, if installed do nothing, if not, install it.
-#if ! command -v bat &> /dev/null; then
-#    echo "bat not found. Installing..."
-#    sleep 3
-#    sudo apt install bat -y
-#    echo "Please use 'refresh' to refresh the terminal"
-#fi
+if ! command -v batcat &> /dev/null; then
+    echo "bat not found. Installing..."
+    sleep 3
+    sudo apt install bat -y
+    echo "Please use 'refresh' to refresh the terminal"
+fi
 
 ###################################################################################################################################################################
 # Check if neovim is installed, and if it is, add it to PATH.
