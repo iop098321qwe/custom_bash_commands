@@ -1544,9 +1544,7 @@ fi
 ###################################################################################################################################################################
 
 # Check if bat is installed, and if not, install it using "sudo apt install bat -y"
-if command -v bat &> /dev/null; then
-    # If bat is not installed, install it using "sudo apt install bat -y"
-else
+if ! command -v bat &> /dev/null; then
     echo "Bat not found. Installing..."
     sudo apt install bat -y
     echo "Bat has been installed."
@@ -1599,9 +1597,11 @@ fi
 # Check if btop is installed, and if not, install it.
 ###################################################################################################################################################################
 
-# Check if btop is installed, and if not, display a message to install it.
+# Check if btop is installed, and if not, install it.
 if ! command -v btop &> /dev/null; then
-    echo -e "Btop is not installed. Please run \e[34m'sudo apt install btop -y'\e[0m to install it."
+    echo "Btop not found. Installing..."
+    sudo apt install btop -y
+    echo "Btop has been installed."
 fi
 
 ###################################################################################################################################################################
