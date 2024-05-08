@@ -1556,20 +1556,22 @@ function check_install_bat() {
 # Check if neovim is installed, and if it is, add it to PATH.
 ###################################################################################################################################################################
 
-# Check if neovim is installed, and if it is, add it to PATH
-if command -v nvim &> /dev/null; then
-    export PATH="$PATH:/opt/nvim-linux64/bin"
-    # If neovim is not installed, install it using "sudo apt install neovim -y"
-else
-    echo "Neovim not found. Installing..."
-    sudo apt install neovim -y
-    echo "Neovim has been installed."
-fi
+# Function to check if neovim is installed and add it to PATH
+function check_install_neovim() {
+    if command -v nvim &> /dev/null; then
+        export PATH="$PATH:/opt/nvim-linux64/bin"
+        # If neovim is not installed, install it using "sudo apt install neovim -y"
+    else
+        echo "Neovim not found. Installing..."
+        sudo apt install neovim -y
+        echo "Neovim has been installed."
+    fi
 
-# Set the default editor to neovim if and only if neovim is installed
-if command -v nvim &> /dev/null; then
-    export EDITOR=nvim
-fi
+    # Set the default editor to neovim if and only if neovim is installed
+    if command -v nvim &> /dev/null; then
+        export EDITOR=nvim
+    fi
+}
 
 ###################################################################################################################################################################
 # Check if eza is installed, and if not display a message to install it.
@@ -1638,8 +1640,11 @@ check_install_bat
 # Call the function to check eza installation and install eza
 check_install_eza
 
-# Call the function to check and install btop
+# Call the function to check btop installation and install btop
 check_install_btop
+
+# Call the function to check neovim installation and install neovim
+check_install_neovim
 
 ###################################################################################################################################################################
 ###################################################################################################################################################################
