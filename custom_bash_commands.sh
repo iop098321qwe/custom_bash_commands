@@ -1594,12 +1594,14 @@ function check_install_eza() {
 # Check if btop is installed, and if not, install it.
 ###################################################################################################################################################################
 
-# Check if btop is installed, and if not, install it.
-if ! command -v btop &> /dev/null; then
-    echo "Btop not found. Installing..."
-    sudo apt install btop -y
-    echo "Btop has been installed."
-fi
+# Function to check if btop is installed and install it if not
+function check_install_btop() {
+    if ! command -v btop &> /dev/null; then
+        echo "Btop not found. Installing..."
+        sudo apt install btop -y
+        echo "Btop has been installed."
+    fi
+}
 
 ###################################################################################################################################################################
 # Create a config file for installing additional software that may not already be installed where commented out software is not installed.
@@ -1635,6 +1637,9 @@ check_install_bat
 
 # Call the function to check eza installation and install eza
 check_install_eza
+
+# Call the function to check and install btop
+check_install_btop
 
 ###################################################################################################################################################################
 ###################################################################################################################################################################
