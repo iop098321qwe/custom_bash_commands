@@ -1463,7 +1463,7 @@ function call_alias_commands() {
         "rma:rm -rf"
         "editbash:code ~/.bashrc && source ~/.bashrc"
         "cls:clear && di && ls"
-        "refresh:source ~/.bashrc"
+        "refresh:source ~/.bashrc && clear && di"
         "c:clear && di"
         "gits:git status"
         "x:chmod +x"
