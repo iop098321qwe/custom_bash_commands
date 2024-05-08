@@ -1543,13 +1543,14 @@ fi
 # Check if bat is installed, and if not, install it.
 ###################################################################################################################################################################
 
-# First check if bat is install, if installed do nothing, if not, install it.
-if ! command -v batcat &> /dev/null; then
-    echo "bat not found. Installing..."
-    sleep 3
-    sudo apt install bat -y
-    echo "Please use 'refresh' to refresh the terminal"
-fi
+# Function to check and install bat if not already installed
+function check_install_bat() {
+    if ! command -v batcat &> /dev/null; then
+        echo "bat not found. Installing..."
+        sudo apt install bat -y
+        echo "Please use 'refresh' to refresh the terminal"
+    fi
+}
 
 ###################################################################################################################################################################
 # Check if neovim is installed, and if it is, add it to PATH.
@@ -1575,24 +1576,19 @@ fi
 ###################################################################################################################################################################
 
 # Check if eza is installed, and if not display a message to install it, if installed, set aliases for eza
-if ! command -v eza &> /dev/null; then
-    echo -e "Eza is not installed. Installing now..."
-    sudo mkdir -p /etc/apt/keyrings
-    wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
-    echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
-    sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
-    sudo apt update
-    sudo apt install eza -y
-    echo "Eza has been installed."
-# else
-    # Aliases for eza: 
-    # alias ld=’eza -lD’
-    # alias lf=’eza -lf --color=always | grep -v /’
-    # alias lh=’eza -dl .* --group-directories-first’
-    # alias ll=’eza -al --group-directories-first’
-    # alias ls=’eza -alf --color=always --sort=size | grep -v /’
-    # alias lt=’eza -al --sort=modified’
-fi
+# Function to check and install eza if not already installed
+function check_install_eza() {
+    if ! command -v eza &> /dev/null; then
+        echo -e "Eza is not installed. Installing now..."
+        sudo mkdir -p /etc/apt/keyrings
+        wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+        echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+        sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
+        sudo apt update
+        sudo apt install eza -y
+        echo "Eza has been installed."
+    fi
+}
 
 ###################################################################################################################################################################
 # Check if btop is installed, and if not, install it.
@@ -1629,6 +1625,16 @@ fi
 #        sudo apt install "$line" -y
 #    fi
 #done < "$apt_conf"
+
+###################################################################################################################################################################
+# Additional Software Installation
+###################################################################################################################################################################
+
+# Call the function to check bat installation and install bat
+check_install_bat
+
+# Call the function to check eza installation and install eza
+check_install_eza
 
 ###################################################################################################################################################################
 ###################################################################################################################################################################
