@@ -1,6 +1,6 @@
 #!/bin/bash
 
-update_commands() {
+updatecbc() {
     # Temporary directory for sparse checkout
     SPARSE_DIR=$(mktemp -d)
 
