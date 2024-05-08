@@ -1389,7 +1389,7 @@ function display_info() {
 #   -h    Display this help message
 
 # Create a function to update the custom bash commands script and display the version number
-updatecbc() {
+function updatecbc() {
     if [ "$1" = "-h" ]; then
         echo "Description: A function to update the custom bash commands"
         echo "Usage: updatecbc"
