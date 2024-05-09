@@ -1489,6 +1489,7 @@ function call_alias_commands() {
         "dispatch:cd ~/Documents/Deeptree/reference_material/dispatch && ls"
         "z:eza"
         "ucbc:updatecbc"
+        "ls:eza"
     )
 
     # Loop through the alias command pairs
