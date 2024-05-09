@@ -116,8 +116,6 @@ function append_to_bashrc() {
         echo " " >> "$HOME/.bashrc"
         echo "#source ~/.update_commands.sh" >> "$HOME/.bashrc"
         echo "source ~/.custom_bash_commands.sh" >> "$HOME/.bashrc"
-    else
-        echo "CBC script already sourced in .bashrc file."
     fi
 }
 
