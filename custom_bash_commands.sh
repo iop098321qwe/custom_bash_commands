@@ -192,20 +192,20 @@ function wiki() {
 ##########
 
 # Function to open the doftiles repository in the default browser
-function doftiles() {
+function dotfiles() {
     if [ "$1" = "-h" ]; then
-        echo "Description: Function to open the doftiles repository in the default browser"
-        echo "Usage: doftiles"
+        echo "Description: Function to open the dotfiles repository in the default browser"
+        echo "Usage: dotfiles"
         echo "Options:"
         echo "  -h    Display this help message"
         return
     fi
 
-    # Define the doftiles repository URL
-    doftiles_url="https://github.com/iop098321qwe/dotfiles"
+    # Define the dotfiles repository URL
+    dotfiles_url="https://github.com/iop098321qwe/dotfiles"
 
-    # Open the doftiles repository in the default browser
-    xdg-open "$doftiles_url"
+    # Open the dotfiles repository in the default browser
+    xdg-open "$dotfiles_url"
 }
 
 ################################################################################
