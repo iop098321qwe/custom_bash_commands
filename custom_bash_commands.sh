@@ -1489,7 +1489,6 @@ function call_alias_commands() {
         "dispatch:cd ~/Documents/Deeptree/reference_material/dispatch && ls"
         "z:eza"
         "ucbc:updatecbc"
-        "ls:eza --group-directories-first"
     )
 
     # Loop through the alias command pairs
@@ -1631,6 +1630,10 @@ function check_install_eza() {
         sudo apt install eza -y
         echo "Eza has been installed."
     fi
+
+    # Set ls aliases for eza
+    alias ls="eza --group-directories-first"
+    alias l="eza --group-directories-first -F"
 }
 
 ###################################################################################################################################################################
