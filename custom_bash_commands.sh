@@ -1637,6 +1637,19 @@ function check_install_eza() {
 }
 
 ###################################################################################################################################################################
+# Check if zellij is installed, and if not, install it.
+###################################################################################################################################################################
+
+# Function to check if zellij is installed and install it if not
+function check_install_zellij() {
+    if ! command -v zellij &> /dev/null; then
+        echo "Zellij not found. Installing..."
+        sudo snap install zellij --classic
+        echo "Zellij has been installed."
+    fi
+}
+
+###################################################################################################################################################################
 # Check if btop is installed, and if not, install it.
 ###################################################################################################################################################################
 
@@ -1678,23 +1691,82 @@ fi
 # Additional Software Installation
 ###################################################################################################################################################################
 
-# Call the function to check neovim installation and install neovim
-check_install_neovim
+# Set config file path
+CONFIG_FILE="$HOME/.cbc.config"
 
-# Call the function to check bat installation and install bat
-check_install_bat
+# If config file does not exist, create it with default values
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "NEOVIM=false" >> "$CONFIG_FILE"
+    echo "BAT=false" >> "$CONFIG_FILE"
+    echo "EZA=false" >> "$CONFIG_FILE"
+    echo "BTOP=false" >> "$CONFIG_FILE"
+    echo "ZOXIDE=false" >> "$CONFIG_FILE"
+    echo "FZF=false" >> "$CONFIG_FILE"
+    echo "ZELLIJ=false" >> "$CONFIG_FILE"
+fi
 
-# Call the function to check eza installation and install eza
-check_install_eza
+# Read the configuration file and check if NEOVIM=true
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+    if [[ "${NEOVIM:=false}" == "true" ]]; then
+        # Call the function to check neovim installation and install neovim
+        check_install_neovim
+    fi
+fi
 
-# Call the function to check btop installation and install btop
-check_install_btop
+# Read the configuration file and check if BAT=true
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+    if [[ "${BAT:=false}" == "true" ]]; then
+        # Call the function to check bat installation and install bat
+        check_install_bat
+    fi
+fi
 
-# Call the function to check and install zoxide
-check_install_zoxide
+# Read the configuration file and check if EZA=true
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+    if [[ "${EZA:=false}" == "true" ]]; then
+        # Call the function to check eza installation and install eza
+        check_install_eza
+    fi
+fi
 
-# Call the function to check and install fzf
-check_install_fzf
+# Read the configuration file and check if BTOP=true
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+    if [[ "$BTOP" = "true" ]]; then
+        # Call the function to check btop installation and install btop
+        check_install_btop
+    fi
+fi
+
+# Read the configuration file and check if ZOXIDE=true
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+    if [[ "$ZOXIDE" = "true" ]]; then
+        # Call the function to check zoxide installation and install zoxide
+        check_install_zoxide
+    fi
+fi
+
+# Read the configuration file and check if FZF=true
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+    if [[ "$FZF" = "true" ]]; then
+        # Call the function to check fzf installation and install fzf
+        check_install_fzf
+    fi
+fi
+
+# Read the configuration file and check if ZELLIJ=true
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+    if [[ "$ZELLIJ" = "true" ]]; then
+        # Call the function to check zellij installation and install zellij
+        check_install_zellij
+    fi
+fi
 
 ###################################################################################################################################################################
 ###################################################################################################################################################################
