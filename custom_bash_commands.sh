@@ -157,7 +157,7 @@ function wiki() {
 }
 
 ################################################################################
-# Create a function to set up directories and files for the CBC script
+# Create a function to set up directories
 ################################################################################
 
 # Function to set up directories (Temporary, GitHub Repositories)
