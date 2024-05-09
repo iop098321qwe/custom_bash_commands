@@ -96,7 +96,8 @@ function first_time_setup() {
         echo " "
         echo "Setup complete! Please restart your terminal to apply the changes."
     else
-        # Do nothing if the setup has already been completed.
+        # Do not print a message or do anything
+        :
     fi
 }
 
