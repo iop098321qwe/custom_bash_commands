@@ -70,25 +70,25 @@ function first_time_setup() {
 
         # Check the user's choices and update the config file
         if [[ $software_choices == *"1"* ]]; then
-            echo "NEOVIM=true" >> "$CONFIG_FILE"
+            sed -i 's/NEOVIM=false/NEOVIM=true/' "$CONFIG_FILE"
         fi
         if [[ $software_choices == *"2"* ]]; then
-            echo "BAT=true" >> "$CONFIG_FILE"
+            sed -i 's/BAT=false/BAT=true/' "$CONFIG_FILE"
         fi
         if [[ $software_choices == *"3"* ]]; then
-            echo "EZA=true" >> "$CONFIG_FILE"
+            sed -i 's/EZA=false/EZA=true/' "$CONFIG_FILE"
         fi
         if [[ $software_choices == *"4"* ]]; then
-            echo "BTOP=true" >> "$CONFIG_FILE"
+            sed -i 's/BTOP=false/BTOP=true/' "$CONFIG_FILE"
         fi
         if [[ $software_choices == *"5"* ]]; then
-            echo "ZOXIDE=true" >> "$CONFIG_FILE"
+            sed -i 's/ZOXIDE=false/ZOXIDE=true/' "$CONFIG_FILE"
         fi
         if [[ $software_choices == *"6"* ]]; then
-            echo "FZF=true" >> "$CONFIG_FILE"
+            sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
         fi
         if [[ $software_choices == *"7"* ]]; then
-            echo "ZELLIJ=true" >> "$CONFIG_FILE"
+            sed -i 's/ZELLIJ=false/ZELLIJ=true/' "$CONFIG_FILE"
         fi
 
         # Update the FIRST_TIME variable in the config file
