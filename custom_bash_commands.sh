@@ -1584,7 +1584,6 @@ function call_alias_commands() {
         "dt:cd ~/Documents/Deeptree && ls"
         "dtr:cd ~/Documents/Deeptree/reference_material && ls"
         "dispatch:cd ~/Documents/Deeptree/reference_material/dispatch && ls"
-        "z:eza"
         "ucbc:updatecbc"
     )
 
@@ -1774,9 +1773,9 @@ function check_install_btop() {
 # Script to install software based on the configuration file
 
 # If .cbcconfig directory does not exist in the home directory, create it
- if [ ! -d "$HOME/.cbcconfig" ]; then
-    mkdir "$HOME/.cbcconfig"
-fi
+#if [ ! -d "$HOME/.cbcconfig" ]; then
+#    mkdir "$HOME/.cbcconfig"
+#fi
 
 # set apt_conf to the path of apt_packages.conf in .cbcconfig directory
 # apt_conf="$HOME/.cbcconfig/apt_packages.conf"
@@ -1854,6 +1853,11 @@ if [[ -f "$CONFIG_FILE" ]]; then
         # Call the function to check zellij installation and install zellij
         check_install_zellij
     fi
+fi
+
+# Check if zoxide is installed, and if it is, source the zoxide init script
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init --cmd cd bash)"
 fi
 
 ###################################################################################################################################################################
