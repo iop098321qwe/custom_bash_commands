@@ -102,6 +102,29 @@ function first_time_setup() {
 }
 
 ################################################################################
+# Create function to open the wiki using the default browser
+################################################################################
+
+# wiki
+# Description: Function to open the CBC wiki in the default browser
+# Usage: wiki
+# Options:
+#   -h    Display this help message
+#   -c    Copy the wiki URL to the clipboard
+#   -C    Open the wiki to the CBC commands section
+#   -A    Open the wiki to the CBC aliases section
+#   -F    Open the wiki to the CBC functions section
+
+# Example: wiki  ---Opens the CBC wiki in the default browser.
+
+##########
+
+# Function to open the CBC wiki in the default browser
+function wiki() {
+    xdg-open "https://github.com/iop098321qwe/custom_bash_commands/wiki"
+}
+
+################################################################################
 # DISPLAY VERSION
 ################################################################################
 
