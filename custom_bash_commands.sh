@@ -178,6 +178,37 @@ function wiki() {
 }
 
 ################################################################################
+# Create a function to open the doftiles repository in the default browser
+################################################################################
+
+# doftiles
+# Description: Function to open the doftiles repository in the default browser
+# Usage: doftiles
+# Options:
+#   -h    Display this help message
+
+# Example: doftiles  ---Opens the doftiles repository in the default browser.
+
+##########
+
+# Function to open the doftiles repository in the default browser
+function doftiles() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: Function to open the doftiles repository in the default browser"
+        echo "Usage: doftiles"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
+
+    # Define the doftiles repository URL
+    doftiles_url="https://github.com/iop098321qwe/dotfiles"
+
+    # Open the doftiles repository in the default browser
+    xdg-open "$doftiles_url"
+}
+
+################################################################################
 # Create a function to set up directories
 ################################################################################
 
@@ -355,6 +386,12 @@ cbcs() {
         echo "  up"
         echo "         Description: Move up one directory level"
         echo "         Usage: up [number of levels]"
+        echo "  wiki"
+        echo "         Description: Open the CBC wiki in the default browser"
+        echo "         Usage: wiki"
+        echo "  doftiles"
+        echo "         Description: Open the doftiles repository in the default browser"
+        echo "         Usage: doftiles"
         # SEPARATE ALIAS SECTION ###############################################################################
         #figlet -f future -F border Available custom aliases:
         echo "  cc"
@@ -467,6 +504,8 @@ cbcs() {
         echo "  mkcd"
         echo "  bkup"
         echo "  up"
+        echo "  wiki"
+        echo "  doftiles"
         # SEPARATE ALIAS SECTION ###############################################################################
         #figlet -f future -F border Available custom aliases:
         echo "  cc"
