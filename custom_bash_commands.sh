@@ -102,6 +102,29 @@ function first_time_setup() {
 }
 
 ################################################################################
+# Append to end of .bashrc function
+################################################################################
+
+# Function to append the CBC script to the end of the .bashrc file
+function append_to_bashrc() {
+    # Check if the CBC script is already sourced in the .bashrc file
+    if ! grep -q ".custom_bash_commands.sh" "$HOME/.bashrc"; then
+        # Append the CBC script to the end of the .bashrc file
+        echo "###################################################################################################################################################################" >> "$HOME/.bashrc"
+        echo "# Custom Additions" >> "$HOME/.bashrc"
+        echo "###################################################################################################################################################################" >> "$HOME/.bashrc"
+        echo " " >> "$HOME/.bashrc"
+        echo "#source ~/.update_commands.sh" >> "$HOME/.bashrc"
+        echo "source ~/.custom_bash_commands.sh" >> "$HOME/.bashrc"
+    else
+        echo "CBC script already sourced in .bashrc file."
+    fi
+}
+
+# Call the append_to_bashrc function
+append_to_bashrc
+
+################################################################################
 # Create function to open the wiki using the default browser
 ################################################################################
 
