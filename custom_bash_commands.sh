@@ -20,7 +20,7 @@ function create_config_file() {
     echo " "
     echo "# Settings for additional software installation"
     echo " "
-    echo "NEOVIM=false" >> "$CONFIG_FILE"
+    echo "NEOVIM=true" >> "$CONFIG_FILE"
     echo "BAT=false" >> "$CONFIG_FILE"
     echo "EZA=false" >> "$CONFIG_FILE"
     echo "BTOP=false" >> "$CONFIG_FILE"
@@ -96,7 +96,7 @@ function first_time_setup() {
         echo "Setup complete! Please restart your terminal to apply the changes."
     else
         echo "Configuration can be edited in $CONFIG_FILE or by using 'conf' command."
-        alias conf="editor $CONFIG_FILE"
+        alias conf="nvim $CONFIG_FILE"
     fi
 }
 
