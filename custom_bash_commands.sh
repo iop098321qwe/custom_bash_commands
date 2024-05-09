@@ -157,6 +157,22 @@ function wiki() {
 }
 
 ################################################################################
+# Create a function to set up directories and files for the CBC script
+################################################################################
+
+# Function to set up directories (Temporary, GitHub Repositories)
+function setup_directories() {
+    # Create the Temporary directory if it does not exist
+    mkdir -p ~/Documents/Temporary
+
+    # Create the GitHub Repositories directory if it does not exist
+    mkdir -p ~/Documents/github_repositories
+}
+
+# Call the setup_directories function
+setup_directories
+
+################################################################################
 # DISPLAY VERSION
 ################################################################################
 
