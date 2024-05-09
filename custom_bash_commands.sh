@@ -95,7 +95,7 @@ function first_time_setup() {
         echo " "
         echo "Setup complete! Please restart your terminal to apply the changes."
     else
-        echo "Configuration can be edited in $CONFIG_FILE or by using the default text editor."
+        echo "Configuration can be edited in $CONFIG_FILE or by using `conf` command."
         alias conf="$EDITOR $CONFIG_FILE"
     fi
 }
