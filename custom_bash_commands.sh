@@ -95,7 +95,7 @@ function first_time_setup() {
         echo " "
         echo "Setup complete! Please restart your terminal to apply the changes."
     else
-        echo "First-time setup has already been completed."
+        echo "Configuration can be edited in $CONFIG_FILE."
     fi
 }
 
