@@ -4,6 +4,103 @@
 # CUSTOM BASH COMMANDS
 ###################################################################################################################################################################
 
+# Set config file path
+CONFIG_FILE="$HOME/.cbc.config"
+
+################################################################################
+# Create config file function
+################################################################################
+
+# Function to create the config file with default values if it does not exist
+function create_config_file() {
+    echo "# Configuration file for Custom Bash Commands (CBC) by iop098321qwe"
+    echo " "
+    echo "# First-time setup?"
+    echo "FIRST_TIME=true" >> "$CONFIG_FILE"
+    echo " "
+    echo "# Settings for additional software installation"
+    echo " "
+    echo "NEOVIM=false" >> "$CONFIG_FILE"
+    echo "BAT=false" >> "$CONFIG_FILE"
+    echo "EZA=false" >> "$CONFIG_FILE"
+    echo "BTOP=false" >> "$CONFIG_FILE"
+    echo "ZOXIDE=false" >> "$CONFIG_FILE"
+    echo "FZF=false" >> "$CONFIG_FILE"
+    echo "ZELLIJ=false" >> "$CONFIG_FILE"
+}
+
+# Check if config file exists, and if not, create it with default values
+if [ ! -f "$CONFIG_FILE" ]; then
+    create_config_file
+fi
+
+################################################################################
+# First-time setup function
+################################################################################
+
+# Function to run the first-time setup for Custom Bash Commands
+function first_time_setup() {
+
+    # Read the FIRST_TIME variable from the config file
+    source "$CONFIG_FILE"
+
+    # Check if it is the first time running the setup
+    if [ "$FIRST_TIME" = true ]; then
+        echo "Welcome to Custom Bash Commands (CBC) by iop098321qwe!"
+        echo "This setup will guide you through the initial configuration."
+        echo " "
+        echo "Let's get started!"
+        echo " "
+
+        # Prompt the user to install additional software
+        echo "Additional Software Installation:"
+        echo " "
+        echo "Would you like to install the following software packages?"
+        echo " "
+        echo "1. Neovim"
+        echo "2. Bat"
+        echo "3. exa"
+        echo "4. btop"
+        echo "5. Zoxide"
+        echo "6. fzf"
+        echo "7. Zellij"
+        echo " "
+        read -p "Enter the corresponding numbers separated by spaces (e.g., '1 2 3'): " software_choices
+
+        # Check the user's choices and update the config file
+        if [[ $software_choices == *"1"* ]]; then
+            echo "NEOVIM=true" >> "$CONFIG_FILE"
+        fi
+        if [[ $software_choices == *"2"* ]]; then
+            echo "BAT=true" >> "$CONFIG_FILE"
+        fi
+        if [[ $software_choices == *"3"* ]]; then
+            echo "EZA=true" >> "$CONFIG_FILE"
+        fi
+        if [[ $software_choices == *"4"* ]]; then
+            echo "BTOP=true" >> "$CONFIG_FILE"
+        fi
+        if [[ $software_choices == *"5"* ]]; then
+            echo "ZOXIDE=true" >> "$CONFIG_FILE"
+        fi
+        if [[ $software_choices == *"6"* ]]; then
+            echo "FZF=true" >> "$CONFIG_FILE"
+        fi
+        if [[ $software_choices == *"7"* ]]; then
+            echo "ZELLIJ=true" >> "$CONFIG_FILE"
+        fi
+
+        # Update the FIRST_TIME variable in the config file
+        sed -i 's/FIRST_TIME=true/FIRST_TIME=false/' "$CONFIG_FILE"
+
+        echo " "
+        echo "Setup complete! Please restart your terminal to apply the changes."
+    else
+        # Do nothing if the setup has already been completed.
+        echo "First-time setup has already been completed."
+    fi
+}
+
 ################################################################################
 # DISPLAY VERSION
 ################################################################################
@@ -1509,18 +1606,23 @@ call_alias_commands
 display_info
 
 ###################################################################################################################################################################
+# FIRST TIME SET UP
+###################################################################################################################################################################
 
-# If session ID is 1, display the welcome message and run cbcs -h
-if [ $session_id -eq 1 ]; then
+# If FIRST_TIME is set to true in the config file, display the welcome message and run cbcs -h
+if [ "$FIRST_TIME" = "true" ]; then
     # Display the welcome message
     echo " "
-    figlet -f future -F border Welcome to custom bash commands!
+    figlet -f future Welcome to custom bash commands!
     echo " "
     echo "Run cbcs [-h] with help flag to display descriptions and usage."
     echo " "
     # Run cbcs -h
     cbcs -h
 fi
+
+# Call the first time set up function
+first_time_setup
 
 ###################################################################################################################################################################
 ###################################################################################################################################################################
@@ -1690,20 +1792,6 @@ fi
 ###################################################################################################################################################################
 # Additional Software Installation
 ###################################################################################################################################################################
-
-# Set config file path
-CONFIG_FILE="$HOME/.cbc.config"
-
-# If config file does not exist, create it with default values
-if [ ! -f "$CONFIG_FILE" ]; then
-    echo "NEOVIM=false" >> "$CONFIG_FILE"
-    echo "BAT=false" >> "$CONFIG_FILE"
-    echo "EZA=false" >> "$CONFIG_FILE"
-    echo "BTOP=false" >> "$CONFIG_FILE"
-    echo "ZOXIDE=false" >> "$CONFIG_FILE"
-    echo "FZF=false" >> "$CONFIG_FILE"
-    echo "ZELLIJ=false" >> "$CONFIG_FILE"
-fi
 
 # Read the configuration file and check if NEOVIM=true
 if [[ -f "$CONFIG_FILE" ]]; then
