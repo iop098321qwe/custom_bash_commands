@@ -121,7 +121,39 @@ function first_time_setup() {
 
 # Function to open the CBC wiki in the default browser
 function wiki() {
-    xdg-open "https://github.com/iop098321qwe/custom_bash_commands/wiki"
+    if [ "$1" = "-h" ]; then
+        echo "Description: Function to open the CBC wiki in the default browser"
+        echo "Usage: wiki"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        echo "  -c    Copy the wiki URL to the clipboard"
+        echo "  -C    Open the wiki to the CBC commands section"
+        echo "  -A    Open the wiki to the CBC aliases section"
+        echo "  -F    Open the wiki to the CBC functions section"
+        return
+    fi
+
+    # Define the CBC wiki URL
+    wiki_url="https://github.com/iop098321qwe/custom_bash_commands/wiki"
+
+    # Check for options
+    if [ "$1" = "-c" ]; then
+        # Copy the wiki URL to the clipboard
+        echo "$wiki_url" | xclip -selection clipboard
+        echo "Wiki URL copied to clipboard."
+    elif [ "$1" = "-C" ]; then
+        # Open the wiki to the CBC commands section
+        xdg-open "$wiki_url#cbc-commands"
+    elif [ "$1" = "-A" ]; then
+        # Open the wiki to the CBC aliases section
+        xdg-open "$wiki_url#cbc-aliases"
+    elif [ "$1" = "-F" ]; then
+        # Open the wiki to the CBC functions section
+        xdg-open "$wiki_url#cbc-functions"
+    else
+        # Open the CBC wiki in the default browser
+        xdg-open "$wiki_url"
+    fi
 }
 
 ################################################################################
