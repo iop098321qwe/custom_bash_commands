@@ -13,13 +13,13 @@ CONFIG_FILE="$HOME/.cbc.config"
 
 # Function to create the config file with default values if it does not exist
 function create_config_file() {
-    echo "# Configuration file for Custom Bash Commands (CBC) by iop098321qwe"
-    echo " "
-    echo "# First-time setup?"
+    echo "# Configuration file for Custom Bash Commands (CBC) by iop098321qwe" >> "$CONFIG_FILE"
+    echo " " >> "$CONFIG_FILE"
+    echo "# First-time setup?" >> "$CONFIG_FILE"
     echo "FIRST_TIME=true" >> "$CONFIG_FILE"
-    echo " "
-    echo "# Settings for additional software installation"
-    echo " "
+    echo " " >> "$CONFIG_FILE"
+    echo "# Settings for additional software installation" >> "$CONFIG_FILE"
+    echo " " >> "$CONFIG_FILE"
     echo "NEOVIM=true" >> "$CONFIG_FILE"
     echo "BAT=false" >> "$CONFIG_FILE"
     echo "EZA=false" >> "$CONFIG_FILE"
@@ -27,6 +27,7 @@ function create_config_file() {
     echo "ZOXIDE=false" >> "$CONFIG_FILE"
     echo "FZF=false" >> "$CONFIG_FILE"
     echo "ZELLIJ=false" >> "$CONFIG_FILE"
+    echo "Config file created at $CONFIG_FILE"
 }
 
 # Check if config file exists, and if not, create it with default values
