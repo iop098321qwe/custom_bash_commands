@@ -92,12 +92,10 @@ function first_time_setup() {
 
         # Update the FIRST_TIME variable in the config file
         sed -i 's/FIRST_TIME=true/FIRST_TIME=false/' "$CONFIG_FILE"
-
         echo " "
         echo "Setup complete! Please restart your terminal to apply the changes."
     else
-        # Do not print a message or do anything
-        :
+        echo "First-time setup has already been completed."
     fi
 }
 
