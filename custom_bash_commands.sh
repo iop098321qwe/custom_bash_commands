@@ -489,15 +489,17 @@ cbcs() {
         echo "  fcom"
         echo "         Description: Fuzzy find a command and run it"
         echo "         Usage: fcom"
-        echo "  hsearch"
+        echo "  historysearch"
         echo "         Description: Search using fuzzy finder in the command history"
-        echo "         Usage: hsearch"
+        echo "         Usage: historysearch"
         echo "  hs"
-        echo "         Description: Alias for 'hsearch'"
+        echo "         Description: Alias for 'historysearch'"
         echo "         Usage: hs"
         echo "  hse"
-        echo "         Description: Search using fuzzy finder with exact mode in the command history"
+        echo "         Description: Alias for 'historysearch' using exact mode"
         echo "         Usage: hse"
+        echo "  hsearch"
+        echo "         Description: Alias for 'historysearch'"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -554,9 +556,10 @@ cbcs() {
         echo "  updatecbc,   (alias: ucbc)"
         echo "  fman"
         echo "  fcom"
-        echo "  hsearch"
+        echo "  historysearch"
         echo "  hs"
         echo "  hse"
+        echo "  hsearch"
         fi
 }
 
@@ -1743,6 +1746,7 @@ function call_alias_commands() {
         "ucbc:updatecbc"
         "fman:compgen -c | fzf | xargs man"
         "historysearch:history | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap"
+        "hsearch:historysearch"
         "hs:historysearch"
         "hse:historysearch -e"
     )
