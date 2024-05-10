@@ -1810,11 +1810,12 @@ function check_install_zoxide() {
 # Function to check if thefuck is installed and install it if necessary
 function check_install_thefuck() {
     if ! command -v thefuck &> /dev/null; then
-    echo "thefuck not found. Installing..."
-    sleep 3
-    sudo apt update
-    sudo apt install python3-dev python3-pip python3-setuptools
-    pip3 install thefuck --user
+        echo "thefuck not found. Installing..."
+        sleep 3
+        sudo apt update
+        sudo apt install python3-dev python3-pip python3-setuptools
+        pip3 install thefuck --user
+    fi
 }
 
 ###################################################################################################################################################################
