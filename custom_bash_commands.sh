@@ -330,7 +330,7 @@ cbcs() {
     if [[ $1 == "-h" ]]; then
         # Display a list of all available custom commands and functions in this script with descriptions
         echo " "
-        figlet -f future -F border Available custom commands:
+        figlet -f future border Available custom commands:
         echo "NOT CURRENTLY ALPHABETICAL"
         echo " "
         echo "  display_version,   (alias: dv)"
@@ -492,6 +492,12 @@ cbcs() {
         echo "  historysearch"
         echo "         Description: Search using fuzzy finder in the command history"
         echo "         Usage: historysearch"
+        echo "  historysearchcopy"
+        echo "         Description: Search using fuzzy finder in the command history and copy the selected command to the clipboard"
+        echo "         Usage: historysearchcopy"
+        echo "  hsc"
+        echo "         Description: Alias for 'historysearchcopy'"
+        echo "         Usage: hsc"
         echo "  hs"
         echo "         Description: Alias for 'historysearch'"
         echo "         Usage: hs"
@@ -500,6 +506,10 @@ cbcs() {
         echo "         Usage: hse"
         echo "  hsearch"
         echo "         Description: Alias for 'historysearch'"
+        echo "         Usage: hsearch"
+        echo "  codecbc"
+        echo "         Description: Open the custom_bash_commands directory in Visual Studio Code"
+        echo "         Usage: codecbc"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -557,9 +567,12 @@ cbcs() {
         echo "  fman"
         echo "  fcom"
         echo "  historysearch"
+        echo "  historysearchcopy"
+        echo "  hsc"
         echo "  hs"
         echo "  hse"
         echo "  hsearch"
+        echo "  codecbc"
         fi
 }
 
@@ -1743,6 +1756,8 @@ alias dispatch='cd ~/Documents/Deeptree/reference_material/dispatch && ls'
 alias ucbc='updatecbc'
 alias fman='compgen -c | fzf | xargs man'
 alias historysearch='history | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap'
+alias historysearchcopy='history | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
+alias hsc='historysearchcopy'
 alias hsearch='historysearch'
 alias hs='historysearch'
 alias hse='historysearch -e'
