@@ -483,6 +483,9 @@ cbcs() {
         echo "  updatecbc,   (alias: ucbc)"
         echo "         Description: Update the custom bash commands script"
         echo "         Usage: updatecbc"
+        echo "  fman"
+        echo "         Description: Fuzzy find a command and open the man page"
+        echo "         Usage: fman"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -537,6 +540,7 @@ cbcs() {
         echo "  dtr"
         echo "  dispatch"
         echo "  updatecbc,   (alias: ucbc)"
+        echo "  fman"
         fi
 }
 
@@ -1721,6 +1725,7 @@ function call_alias_commands() {
         "dtr:cd ~/Documents/Deeptree/reference_material && ls"
         "dispatch:cd ~/Documents/Deeptree/reference_material/dispatch && ls"
         "ucbc:updatecbc"
+        "fman:compgen -c | fzf| xargs man"
     )
 
     # Loop through the alias command pairs
