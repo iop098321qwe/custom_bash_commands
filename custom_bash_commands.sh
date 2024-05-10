@@ -1140,36 +1140,6 @@ function findfile() {
 }
 
 ################################################################################
-# FIND COMMAND
-################################################################################
-
-# Describe the fcom function and its options and usage
-
-# fcom
-# Description: Fuzzy find a command and run it
-# Usage: fcom
-
-# Example: fcom ---Fuzzy finds a command and runs it.
-
-##########
-
-# A function to fuzzy find a command and run it (eval '$(compgen -c | fzf)')"
-function fcom() {
-    # Check if fzf is installed
-    if ! command -v fzf &> /dev/null; then
-        echo "fzf not found. Please install fzf to use this function."
-        return
-    fi
-
-    # Fuzzy find a command and run it
-    local command=$(compgen -c | fzf)
-    if [ -n "$command" ]; then
-        echo "Running command: $command"
-        eval "$command"
-    fi
-}
-
-################################################################################
 # FIGLET CONFIGURATION
 ################################################################################
 
@@ -1760,6 +1730,7 @@ function call_alias_commands() {
         "dispatch:cd ~/Documents/Deeptree/reference_material/dispatch && ls"
         "ucbc:updatecbc"
         "fman:compgen -c | fzf | xargs man"
+        "fcom:eval '$(compgen -c | fzf)'"
     )
 
     # Loop through the alias command pairs
