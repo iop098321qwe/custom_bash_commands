@@ -486,6 +486,9 @@ cbcs() {
         echo "  fman"
         echo "         Description: Fuzzy find a command and open the man page"
         echo "         Usage: fman"
+        echo "  fcom"
+        echo "         Description: Fuzzy find a command and run it"
+        echo "         Usage: fcom"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -541,6 +544,7 @@ cbcs() {
         echo "  dispatch"
         echo "  updatecbc,   (alias: ucbc)"
         echo "  fman"
+        echo "  fcom"
         fi
 }
 
@@ -1726,6 +1730,7 @@ function call_alias_commands() {
         "dispatch:cd ~/Documents/Deeptree/reference_material/dispatch && ls"
         "ucbc:updatecbc"
         "fman:compgen -c | fzf | xargs man"
+        "fcom:eval '$(compgen -c | fzf)'"
     )
 
     # Loop through the alias command pairs
