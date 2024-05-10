@@ -1730,7 +1730,6 @@ function call_alias_commands() {
         "dispatch:cd ~/Documents/Deeptree/reference_material/dispatch && ls"
         "ucbc:updatecbc"
         "fman:compgen -c | fzf | xargs man"
-        "fcom:eval '$(compgen -c | fzf)'"
     )
 
     # Loop through the alias command pairs
@@ -1741,6 +1740,9 @@ function call_alias_commands() {
         alias "$alias"="$command"
     done
 }
+
+# Separately set up find command alias
+alias fcom='eval "$(compgen -c | fzf)"'
 
 # Call the function to set up alias commands
 call_alias_commands
