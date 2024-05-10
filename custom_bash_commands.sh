@@ -489,6 +489,15 @@ cbcs() {
         echo "  fcom"
         echo "         Description: Fuzzy find a command and run it"
         echo "         Usage: fcom"
+        echo "  hsearch"
+        echo "         Description: Search using fuzzy finder in the command history"
+        echo "         Usage: hsearch"
+        echo "  hs"
+        echo "         Description: Alias for 'hsearch'"
+        echo "         Usage: hs"
+        echo "  hse"
+        echo "         Description: Search using fuzzy finder with exact mode in the command history"
+        echo "         Usage: hse"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -545,6 +554,9 @@ cbcs() {
         echo "  updatecbc,   (alias: ucbc)"
         echo "  fman"
         echo "  fcom"
+        echo "  hsearch"
+        echo "  hs"
+        echo "  hse"
         fi
 }
 
@@ -1730,6 +1742,9 @@ function call_alias_commands() {
         "dispatch:cd ~/Documents/Deeptree/reference_material/dispatch && ls"
         "ucbc:updatecbc"
         "fman:compgen -c | fzf | xargs man"
+        "historysearch:'history | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap'"
+        "hs:historysearch"
+        "hse:historysearch -e"
     )
 
     # Loop through the alias command pairs
