@@ -1747,7 +1747,7 @@ alias hsearch='historysearch'
 alias hs='historysearch'
 alias hse='historysearch -e'
 alias fcom='eval "$(compgen -c | fzf)"'
-alias codecbc='cbc; code .; exit'
+alias codecbc='code ~/Documents/github_repositories/custom_bash_commands/; exit'
 
 ###################################################################################################################################################################
 
