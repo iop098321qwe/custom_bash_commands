@@ -1742,7 +1742,7 @@ function call_alias_commands() {
         "dispatch:cd ~/Documents/Deeptree/reference_material/dispatch && ls"
         "ucbc:updatecbc"
         "fman:compgen -c | fzf | xargs man"
-        "historysearch:'history | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap'"
+        "historysearch:history | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap"
         "hs:historysearch"
         "hse:historysearch -e"
     )
