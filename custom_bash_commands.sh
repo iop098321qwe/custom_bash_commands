@@ -380,9 +380,9 @@ cbcs() {
         echo "  mkcd"
         echo "         Description: Create a directory and switch into it"
         echo "         Usage: mkcd [directory]"
-        echo "  bkup"
+        echo "  backup"
         echo "         Description: Create a backup file of a file"
-        echo "         Usage: bkup [file]"
+        echo "         Usage: backup [file]"
         echo "  up"
         echo "         Description: Move up one directory level"
         echo "         Usage: up [number of levels]"
@@ -529,7 +529,7 @@ cbcs() {
         echo "  myip"
         echo "  findfile,   (alias: ff)"
         echo "  mkcd"
-        echo "  bkup"
+        echo "  backup"
         echo "  up"
         echo "  wiki"
         echo "  doftiles"
@@ -605,26 +605,26 @@ function mkcd() {
 }
 
 ################################################################################
-# BKUP
+# BACKUP
 ################################################################################
 
-# Describe the bkup function and its options and usage
+# Describe the backup function and its options and usage
 
-# bkup
+# backup
 # Description: This function allows you to create a backup file of a file.
-# Usage: bkup [file]
+# Usage: backup [file]
 # Options:
 #   -h    Display this help message
 
-# Example: bkup test.txt  ---Creates a backup file of test.txt.
+# Example: backup test.txt  ---Creates a backup file of test.txt.
 
 ##########
 
 # Function to create a backup file of a file.
-function bkup() {
+function backup() {
     if [ "$1" = "-h" ]; then
         echo "Description: This function allows you to create a backup file of a file."
-        echo "Usage: bkup [file]"
+        echo "Usage: backup [file]"
         echo "Options:"
         echo "  -h    Display this help message"
         return
