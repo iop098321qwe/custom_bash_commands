@@ -392,6 +392,9 @@ cbcs() {
         echo "  doftiles"
         echo "         Description: Open the doftiles repository in the default browser"
         echo "         Usage: doftiles"
+        echo "  extract"
+        echo "         Description: Extract compressed files"
+        echo "         Usage: extract [file]"
         # SEPARATE ALIAS SECTION ###############################################################################
         #figlet -f future -F border Available custom aliases:
         echo "  cc"
@@ -536,6 +539,7 @@ cbcs() {
         echo "  up"
         echo "  wiki"
         echo "  doftiles"
+        echo "  extract"
         # SEPARATE ALIAS SECTION ###############################################################################
         #figlet -f future -F border Available custom aliases:
         echo "  cc"
@@ -1039,6 +1043,61 @@ regex_help() {
             echo "Error: Unsupported flavor $flavor" >&2
             return 1
             ;;
+    esac
+}
+
+################################################################################
+# EXTRACT
+################################################################################
+
+# Describe the extract function and its options and usage
+
+# extract
+# Description: A function to extract compressed files
+# Usage: extract [file]
+# Options:
+#   -h    Display this help message
+
+# Example: extract file.tar.gz  ---Extracts the file file.tar.gz.
+
+##########
+
+# Function to extract compressed files
+function extract() {
+    if [ "$1" = "-h" ]; then
+        echo "Description: A function to extract compressed files"
+        echo "Usage: extract [file]"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
+
+    if [ -z "$1" ]; then
+        echo "Error: No file specified"
+        return 1
+    fi
+
+    if [ ! -f "$1" ]; then
+        echo "Error: File not found"
+        return 1
+    fi
+
+    case "$1" in
+        *.tar.bz2)   tar xjf "$1"     ;;
+        *.tar.gz)    tar xzf "$1"     ;;
+        *.bz2)       bunzip2 "$1"      ;;
+        *.rar)       unrar x "$1"      ;;
+        *.gz)        gunzip "$1"       ;;
+        *.tar)       tar xf "$1"      ;;
+        *.tbz2)      tar xjf "$1"     ;;
+        *.tgz)       tar xzf "$1"     ;;
+        *.zip)       unzip "$1"        ;;
+        *.Z)         uncompress "$1"   ;;
+        *.7z)        7z x "$1"         ;;
+        *.deb)       ar x "$1"         ;;
+        *.tar.xz)    tar xf "$1"     ;;
+        *.tar.zst)   unzstd "$1"     ;;
+        *)           echo "'$1' cannot be extracted using extract()" ;;
     esac
 }
 
