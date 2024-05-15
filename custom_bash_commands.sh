@@ -512,7 +512,7 @@ cbcs() {
         echo "         Usage: codecbc"
         echo "  i"
         echo "         Description: Alias for 'sudo apt install -y'"
-        echo "         Usage: i [package]"≈`
+        echo "         Usage: i [package]"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
