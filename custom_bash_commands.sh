@@ -510,6 +510,9 @@ cbcs() {
         echo "  codecbc"
         echo "         Description: Open the custom_bash_commands directory in Visual Studio Code"
         echo "         Usage: codecbc"
+        echo "  i"
+        echo "         Description: Alias for 'sudo apt install -y'"
+        echo "         Usage: i [package]"≈`
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -573,6 +576,7 @@ cbcs() {
         echo "  hse"
         echo "  hsearch"
         echo "  codecbc"
+        echo "  i"
         fi
 }
 
@@ -1763,6 +1767,7 @@ alias hs='historysearch'
 alias hse='historysearch -e'
 alias fcom='eval "$(compgen -c | fzf)"'
 alias codecbc='code ~/Documents/github_repositories/custom_bash_commands/; exit'
+alias i='sudo apt install -y'
 
 ###################################################################################################################################################################
 
