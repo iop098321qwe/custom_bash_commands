@@ -1842,6 +1842,7 @@ alias codecbc='code ~/Documents/github_repositories/custom_bash_commands/; exit'
 alias i='sudo apt install -y'
 alias downloads='cd ~/Downloads && la'
 alias dl='downloads'
+alias ext='extract'
 
 ###################################################################################################################################################################
 
