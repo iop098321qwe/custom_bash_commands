@@ -522,6 +522,9 @@ cbcs() {
         echo "  dl"
         echo "         Description: Alias for 'downloads'"
         echo "         Usage: dl"
+        echo "  ext"
+        echo "         Description: Alias for extract function"
+        echo "         Usage: ext [file]"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -589,6 +592,7 @@ cbcs() {
         echo "  i"
         echo "  downloads"
         echo "  dl"
+        echo "  ext"
         fi
 }
 
@@ -1062,6 +1066,7 @@ regex_help() {
 
 # extract
 # Description: A function to extract compressed files
+# Alias: ext
 # Usage: extract [file]
 # Options:
 #   -h    Display this help message
