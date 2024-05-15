@@ -516,6 +516,12 @@ cbcs() {
         echo "  i"
         echo "         Description: Alias for 'sudo apt install -y'"
         echo "         Usage: i [package]"
+        echo "  downloads"
+        echo "         Description: Change to the Downloads directory and list its contents"
+        echo "         Usage: downloads"
+        echo "  dl"
+        echo "         Description: Alias for 'downloads'"
+        echo "         Usage: dl"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -581,6 +587,8 @@ cbcs() {
         echo "  hsearch"
         echo "  codecbc"
         echo "  i"
+        echo "  downloads"
+        echo "  dl"
         fi
 }
 
@@ -1827,6 +1835,8 @@ alias hse='historysearch -e'
 alias fcom='eval "$(compgen -c | fzf)"'
 alias codecbc='code ~/Documents/github_repositories/custom_bash_commands/; exit'
 alias i='sudo apt install -y'
+alias downloads='cd ~/Downloads && la'
+alias dl='downloads'
 
 ###################################################################################################################################################################
 
