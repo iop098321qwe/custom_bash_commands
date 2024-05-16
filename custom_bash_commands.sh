@@ -1847,7 +1847,7 @@ alias i='sudo apt install -y'
 alias downloads='cd ~/Downloads && la'
 alias dl='downloads'
 alias ext='extract'
-alias please='sudo !!'
+alias please='sudo $(fc -ln -1)'
 
 ###################################################################################################################################################################
 
