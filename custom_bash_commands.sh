@@ -525,9 +525,9 @@ cbcs() {
         echo "  ext"
         echo "         Description: Alias for extract function"
         echo "         Usage: ext [file]"
-        echo "  please"
-        echo "         Description: Alias for 'sudo !!'. Re-run the previous command with sudo"
-        echo "         Usage: please"
+        echo "  vim"
+        echo "         Description: Alias for 'nvim'"
+        echo "         Usage: vim [file]"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -596,7 +596,7 @@ cbcs() {
         echo "  downloads"
         echo "  dl"
         echo "  ext"
-        echo "  please"
+        echo "  vim"
         fi
 }
 
@@ -1847,7 +1847,7 @@ alias i='sudo apt install -y'
 alias downloads='cd ~/Downloads && la'
 alias dl='downloads'
 alias ext='extract'
-alias please='sudo $(fc -ln -1)'
+alias vim='nvim'
 
 ###################################################################################################################################################################
 
