@@ -2003,6 +2003,22 @@ function check_install_eza() {
 }
 
 ###################################################################################################################################################################
+# Check if starship is installed, and if not, install it.
+###################################################################################################################################################################
+
+# Function to check if starship is installed and install it if not
+function check_install_starship() {
+    if ! command -v starship &> /dev/null; then
+        echo "Starship not found. Installing..."
+        curl -sS https://starship.rs/install.sh | sh
+        echo "Starship has been installed."
+    fi
+}
+
+# Call the function to check if starship is installed and install it if necessary
+check_install_starship
+
+###################################################################################################################################################################
 # Check if zellij is installed, and if not, install it.
 ###################################################################################################################################################################
 
