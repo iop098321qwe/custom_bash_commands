@@ -532,6 +532,18 @@ cbcs() {
         echo "  vim"
         echo "         Description: Alias for 'nvim'"
         echo "         Usage: vim [file]"
+        echo "  mv"
+        echo "         Description: Alias for 'mv' with the '-i' option"
+        echo "         Usage: mv [source] [destination]"
+        echo "  cp"
+        echo "         Description: Alias for 'cp' with the '-i' option"
+        echo "         Usage: cp [source] [destination]"
+        echo "  rm"
+        echo "         Description: Alias for 'rm' with the '-i' option"
+        echo "         Usage: rm [file]"
+        echo "  ln"
+        echo "         Description: Alias for 'ln' with the '-i' option"
+        echo "         Usage: ln [source] [destination]"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -601,6 +613,10 @@ cbcs() {
         echo "  dl"
         echo "  ext"
         echo "  vim"
+        echo "  mv"
+        echo "  cp"
+        echo "  rm"
+        echo "  ln"
         fi
 }
 
@@ -1852,6 +1868,10 @@ alias downloads='cd ~/Downloads && la'
 alias dl='downloads'
 alias ext='extract'
 alias vim='nvim'
+alias mv='mv -i'
+alias cp='cp -i'
+alias rm='rm -i'
+alias ln='ln -i'
 
 ###################################################################################################################################################################
 
