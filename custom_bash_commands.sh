@@ -65,6 +65,7 @@ function first_time_setup() {
         echo "5. Zoxide"
         echo "6. fzf"
         echo "7. Zellij"
+        echo "8. thefuck"
         echo " "
         read -p "Enter the corresponding numbers separated by spaces (e.g., '1 2 3'): " software_choices
 
@@ -89,6 +90,9 @@ function first_time_setup() {
         fi
         if [[ $software_choices == *"7"* ]]; then
             sed -i 's/ZELLIJ=false/ZELLIJ=true/' "$CONFIG_FILE"
+        fi
+        if [[ $software_choices == *"8"* ]]; then
+            sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
         fi
 
         # Update the FIRST_TIME variable in the config file
@@ -1973,9 +1977,10 @@ function check_install_neovim() {
         echo "Neovim has been installed."
     fi
 
-    # Set the default editor to neovim if and only if neovim is installed
+    # Set the default editor to neovim if and only if neovim is installed and set manpager as neovim
     if command -v nvim &> /dev/null; then
         export EDITOR=nvim
+        export MANPAGER="nvim +Man!"
     fi
 }
 
@@ -2141,8 +2146,14 @@ if command -v zoxide &> /dev/null; then
     eval "$(zoxide init --cmd cd bash)"
 fi
 
-# Call the function to check thefuck installation
-check_install_thefuck
+# Read the configuration file and check if THEFUCK=true
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+    if [[ "$THEFUCK" = "true" ]]; then
+        # Call the function to check thefuck installation and install thefuck
+        check_install_thefuck
+    fi
+fi
 
 ###################################################################################################################################################################
 ###################################################################################################################################################################
