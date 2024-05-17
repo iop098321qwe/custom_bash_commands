@@ -1945,6 +1945,20 @@ function check_install_thefuck() {
 }
 
 ###################################################################################################################################################################
+# Ensure obsidian is installed, and if not install it.
+###################################################################################################################################################################
+
+# Function to check if obsidian is installed and install it if necessary
+function check_install_obsidian() {
+    if ! command -v obsidian &> /dev/null; then
+        echo "obsidian not found. Installing..."
+        sleep 3
+        sudo snap install obsidian --classic
+        echo "Obsidian installed. Please use 'refresh' to refresh the terminal."
+    fi
+}
+
+###################################################################################################################################################################
 # Ensure fzf is installed, and if not install it.
 ###################################################################################################################################################################
 
@@ -2112,6 +2126,15 @@ if [[ -f "$CONFIG_FILE" ]]; then
     if [[ "${NEOVIM:=false}" == "true" ]]; then
         # Call the function to check neovim installation and install neovim
         check_install_neovim
+    fi
+fi
+
+# Read the configuration file and check if OBSIDIAN=true
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+    if [[ "${OBSIDIAN:=false}" == "true" ]]; then
+        # Call the function to check obsidian installation and install obsidian
+        check_install_obsidian
     fi
 fi
 
