@@ -1954,6 +1954,11 @@ function check_install_obsidian() {
         echo "obsidian not found. Installing..."
         sleep 3
         sudo snap install obsidian --classic
+        if command -v nvim &> /dev/null; then
+            sudo apt install ripgrep
+            sudo apt install xclip
+            git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+        fi
         echo "Obsidian installed. Please use 'refresh' to refresh the terminal."
     fi
 }
