@@ -1992,9 +1992,17 @@ function check_install_neovim() {
         export PATH="$PATH:/opt/nvim-linux64/bin"
         # If neovim is not installed, install it using "sudo apt install neovim -y"
     else
-        echo "Neovim not found. Installing..."
-        sudo apt install neovim -y
-        echo "Neovim has been installed."
+        echo "Neovim not found. Please install from https://github.com/neovim/neovim/releases"
+        echo "Download the nvim.appimage file, use 'chmod +x nvim.appimage' to make it executable, and run 'sudo mv nvim.appimage /bin/nvim' to install."
+
+        # Download the neovim appimage file
+        wget https://github.com/neovim/neovim/releases/download/v0.10.0/nvim.appimage
+
+        # Make the appimage file executable
+        chmod +x nvim.appimage
+
+        # Move the appimage file to /bin/nvim
+        sudo mv nvim.appimage /bin/nvim        
     fi
 
     # Set the default editor to neovim if and only if neovim is installed and set manpager as neovim
