@@ -66,6 +66,7 @@ function first_time_setup() {
         echo "6. fzf"
         echo "7. Zellij"
         echo "8. thefuck"
+        echo "9. Obsidian"
         echo " "
         read -p "Enter the corresponding numbers separated by spaces (e.g., '1 2 3'): " software_choices
 
@@ -94,6 +95,9 @@ function first_time_setup() {
         if [[ $software_choices == *"8"* ]]; then
             sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
         fi
+        if [[ $software_choices == *"9"* ]]; then
+            sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
+        fi
 
         # Update the FIRST_TIME variable in the config file
         sed -i 's/FIRST_TIME=true/FIRST_TIME=false/' "$CONFIG_FILE"
@@ -102,6 +106,20 @@ function first_time_setup() {
     else
         echo "Configuration can be edited in $CONFIG_FILE or by using 'conf' command."
         alias conf="nvim $CONFIG_FILE"
+    fi
+}
+
+################################################################################
+# Remove cbc configuration file
+################################################################################
+
+# Function to remove configuration file for CBC
+function rmconf() {
+    if [ -f "$CONFIG_FILE" ]; then
+        rm "$CONFIG_FILE"
+        echo "Config file removed."
+    else
+        echo "Config file does not exist."
     fi
 }
 
@@ -388,6 +406,9 @@ cbcs() {
         echo "  extract"
         echo "         Description: Extract compressed files"
         echo "         Usage: extract [file]"
+        echo "  rmconf"
+        echo "         Description: Remove the configuration file for CBC"
+        echo "         Usage: rmconf"
         # SEPARATE ALIAS SECTION ###############################################################################
         #figlet -f future -F border Available custom aliases:
         echo "  cc"
@@ -556,6 +577,7 @@ cbcs() {
         echo "  wiki"
         echo "  doftiles"
         echo "  extract"
+        echo "  rmconf"
         # SEPARATE ALIAS SECTION ###############################################################################
         #figlet -f future -F border Available custom aliases:
         echo "  cc"
