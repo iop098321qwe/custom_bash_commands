@@ -27,6 +27,8 @@ function create_config_file() {
     echo "ZOXIDE=false" >> "$CONFIG_FILE"
     echo "FZF=false" >> "$CONFIG_FILE"
     echo "ZELLIJ=false" >> "$CONFIG_FILE"
+    echo "THEFUCK=false" >> "$CONFIG_FILE"
+    echo "OBSIDIAN=false" >> "$CONFIG_FILE"
     echo "Config file created at $CONFIG_FILE"
 }
 
@@ -68,35 +70,48 @@ function first_time_setup() {
         echo "8. thefuck"
         echo "9. Obsidian"
         echo " "
-        read -p "Enter the corresponding numbers separated by spaces (e.g., '1 2 3'): " software_choices
+        echo "Enter the corresponding numbers separated by spaces (e.g., '1 2 3'), or enter 'a' to install all: "
+        read -p "Your choice: " software_choices
 
         # Check the user's choices and update the config file
-        if [[ $software_choices == *"1"* ]]; then
+        if [[ $software_choices == *"a"* ]]; then
             sed -i 's/NEOVIM=false/NEOVIM=true/' "$CONFIG_FILE"
-        fi
-        if [[ $software_choices == *"2"* ]]; then
             sed -i 's/BAT=false/BAT=true/' "$CONFIG_FILE"
-        fi
-        if [[ $software_choices == *"3"* ]]; then
             sed -i 's/EZA=false/EZA=true/' "$CONFIG_FILE"
-        fi
-        if [[ $software_choices == *"4"* ]]; then
             sed -i 's/BTOP=false/BTOP=true/' "$CONFIG_FILE"
-        fi
-        if [[ $software_choices == *"5"* ]]; then
             sed -i 's/ZOXIDE=false/ZOXIDE=true/' "$CONFIG_FILE"
-        fi
-        if [[ $software_choices == *"6"* ]]; then
             sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
-        fi
-        if [[ $software_choices == *"7"* ]]; then
             sed -i 's/ZELLIJ=false/ZELLIJ=true/' "$CONFIG_FILE"
-        fi
-        if [[ $software_choices == *"8"* ]]; then
             sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
-        fi
-        if [[ $software_choices == *"9"* ]]; then
             sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
+        else
+            if [[ $software_choices == *"1"* ]]; then
+                sed -i 's/NEOVIM=false/NEOVIM=true/' "$CONFIG_FILE"
+            fi
+            if [[ $software_choices == *"2"* ]]; then
+                sed -i 's/BAT=false/BAT=true/' "$CONFIG_FILE"
+            fi
+            if [[ $software_choices == *"3"* ]]; then
+                sed -i 's/EZA=false/EZA=true/' "$CONFIG_FILE"
+            fi
+            if [[ $software_choices == *"4"* ]]; then
+                sed -i 's/BTOP=false/BTOP=true/' "$CONFIG_FILE"
+            fi
+            if [[ $software_choices == *"5"* ]]; then
+                sed -i 's/ZOXIDE=false/ZOXIDE=true/' "$CONFIG_FILE"
+            fi
+            if [[ $software_choices == *"6"* ]]; then
+                sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
+            fi
+            if [[ $software_choices == *"7"* ]]; then
+                sed -i 's/ZELLIJ=false/ZELLIJ=true/' "$CONFIG_FILE"
+            fi
+            if [[ $software_choices == *"8"* ]]; then
+                sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
+            fi
+            if [[ $software_choices == *"9"* ]]; then
+                sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
+            fi
         fi
 
         # Update the FIRST_TIME variable in the config file
