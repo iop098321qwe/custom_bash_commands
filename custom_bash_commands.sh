@@ -370,17 +370,6 @@ cbcs() {
         echo "  myip"
         echo "         Description: Display the IP address of the current machine"
         echo "         Usage: myip"
-        echo "  findfile,   (alias: ff)"
-        echo "         Description: Find a file in the current directory and its subdirectories"
-        echo "         Usage: findfile [options] [file_pattern]"
-        echo "             Options:"
-        echo "                 -i            Interactive mode. Prompts for parameters."
-        echo "                 -s            Perform a case-sensitive search."
-        echo "                 -t [type]     Search for a specific file type (e.g., f for file, d for directory)."
-        echo "                 -d [dir]      Specify the directory to search in."
-        echo "                 -m [days]     Search for files modified in the last 'days' days."
-        echo "                 -r [pattern]  Use regular expression for searching."
-        echo "                 -h            Display this help message."
         echo "  mkcd"
         echo "         Description: Create a directory and switch into it"
         echo "         Usage: mkcd [directory]"
@@ -561,7 +550,6 @@ cbcs() {
         echo "  gs"
         echo "  x"
         echo "  myip"
-        echo "  findfile,   (alias: ff)"
         echo "  mkcd"
         echo "  backup"
         echo "  up"
@@ -1139,135 +1127,6 @@ function extract() {
 }
 
 ################################################################################
-# FINDFILE
-################################################################################
-
-# Describe the findfile function and its options and usage
-
-# findfile
-# Description: A function to search for files matching a pattern
-# Alias: ff
-# Usage: findfile [options] [file_pattern]
-# Options:
-#   -i            Interactive mode. Prompts for parameters.
-#   -s            Perform a case-sensitive search.
-#   -t [type]     Search for a specific file type (e.g., f for file, d for directory).
-#   -d [dir]      Specify the directory to search in.
-#   -m [days]     Search for files modified in the last 'days' days.
-#   -r [pattern]  Use regular expression for searching.
-#   -h            Display this help message.
-
-# Example: findfile -t f 'pattern'  ---Search for files matching 'pattern'.
-
-##########
-
-function findfile() {
-    # alias ff="findfile"
-    if [[ "$1" == "-h" ]]; then
-        echo "Usage: findfile [options] [file_pattern]"
-        echo "Alias: ff"
-        echo "Options:"
-        echo "  -i            Interactive mode. Prompts for parameters."
-        echo "  -s            Perform a case-sensitive search."
-        echo "  -t [type]     Search for a specific file type (e.g., f for file, d for directory)."
-        echo "  -d [dir]      Specify the directory to search in."
-        echo "  -m [days]     Search for files modified in the last 'days' days."
-        echo "  -r [pattern]  Use regular expression for searching."
-        echo "  -h            Display this help message."
-        echo ""
-        echo "Example: findfile -t f 'pattern'  Search for files matching 'pattern'."
-        return 0
-    fi
-
-    local case_sensitive="-iname"
-    local regex_mode=0
-    local interactive_mode=0
-    local file_pattern=""
-    local file_type=""
-    local search_dir="."
-    local max_days=""
-    local found=0
-
-    # Process options
-    while (( "$#" )); do
-        case "$1" in
-            -s)
-                case_sensitive="-name"
-                shift
-                ;;
-            -t)
-                file_type="-type $2"
-                shift 2
-                ;;
-            -d)
-                search_dir="$2"
-                shift 2
-                ;;
-            -m)
-                max_days="-mtime -$2"
-                shift 2
-                ;;
-            -r)
-                regex_mode=1
-                file_pattern="$2"
-                shift 2
-                ;;
-            -i)
-                interactive_mode=1
-                shift
-                ;;
-            *)
-                # If no flags, assume it's the file pattern in non-regex mode
-                if [[ -z "$file_pattern" && $regex_mode -eq 0 ]]; then
-                    file_pattern="$1"
-                    shift
-                else
-                    echo "Unknown option: $1"
-                    return 1
-                fi
-                ;;
-        esac
-    done
-
-    # Interactive mode overrides other options
-    if [ "$interactive_mode" -eq 1 ]; then
-        read -p "Enter filename or pattern: " file_pattern
-        read -p "Enter directory to search [.]: " search_dir
-        search_dir=${search_dir:-.}
-        read -p "Case sensitive? (y/n) [n]: " case_choice
-        case_sensitive=$([ "$case_choice" = "y" ] && echo "-name" || echo "-iname")
-        read -p "Enter file type (f for file, d for directory, etc.) [any]: " file_type
-        file_type=$([ -n "$file_type" ] && echo "-type $file_type" || echo "")
-        read -p "Enter max days since modification [any]: " max_days
-        max_days=$([ -n "$max_days" ] && echo "-mtime -$max_days" || echo "")
-    fi
-
-    # Regular expression mode
-    if [ "$regex_mode" -eq 1 ]; then
-        while IFS= read -r line; do
-            echo " "
-            echo "$line"
-            echo "cd $(dirname "$line") && ls"
-            found=1
-        done < <(find "$search_dir" -regextype posix-extended -regex "$file_pattern" $file_type $max_days 2>/dev/null)
-    else
-        if [[ -n "$file_pattern" ]]; then
-            while IFS= read -r line; do
-                echo " "
-                echo "$line"
-                echo "cd $(dirname "$line") && ls"
-                found=1
-            done < <(find "$search_dir" $case_sensitive "$file_pattern" $file_type $max_days 2>/dev/null)
-        fi
-    fi
-
-    # Check if any file was found
-    if [ $found -eq 0 ]; then
-        echo "${file_pattern:-File} not found!!!"
-    fi
-}
-
-################################################################################
 # FIGLET CONFIGURATION
 ################################################################################
 
@@ -1837,7 +1696,6 @@ alias myip='curl http://ipecho.net/plain; echo'
 alias rfc='remove_figlet_config'
 alias rnc='remove_neofetch_config'
 alias rsc='remove_session_id_config'
-alias ff='findfile'
 alias dv='display_version'
 alias rdvc='remove_display_version_config'
 alias racc='remove_all_cbc_configs'
