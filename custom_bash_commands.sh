@@ -361,9 +361,9 @@ cbcs() {
         echo "  c"
         echo "         Description: Clear the terminal screen and display the version number from the .version file"
         echo "         Usage: c"
-        echo "  gits"
+        echo "  gs"
         echo "         Description: Display the git status of the current directory"
-        echo "         Usage: gits"
+        echo "         Usage: gs"
         echo "  x"
         echo "         Description: Make a file executable"
         echo "         Usage: x [file]"
@@ -558,7 +558,7 @@ cbcs() {
         echo "  cls"
         echo "  refresh"
         echo "  c"
-        echo "  gits"
+        echo "  gs"
         echo "  x"
         echo "  myip"
         echo "  findfile,   (alias: ff)"
@@ -1831,7 +1831,7 @@ alias seebash='batcat ~/.bashrc'
 alias cls='clear && di && ls'
 alias refresh='source ~/.bashrc && clear && di'
 alias c='clear && di'
-alias gits='git status'
+alias gs='git status'
 alias x='chmod +x'
 alias myip='curl http://ipecho.net/plain; echo'
 alias rfc='remove_figlet_config'
