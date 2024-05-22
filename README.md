@@ -109,3 +109,10 @@ A full list of aliases will be added here for reference of what the script offer
 * `rsync`: tool to synchronize directories or files.
 * `htop`: interactive and real-time view of the processes running on a syste
     * `btop`: alternative to htop that has better formatting
+
+
+ADD 
+```bash
+alias fobsidian='find ~/Documents/grymms_grimoires -type f | fzf | xargs -I {} obsidian "obsidian://open?vault=$(basename ~/Documents/grymms_grimoires)&file={}'
+alias fobs='fobsidian'
+```
