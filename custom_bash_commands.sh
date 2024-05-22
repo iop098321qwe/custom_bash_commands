@@ -292,7 +292,7 @@ display_version() {
     # Create an alias for the display_version function
     # alias dv="display_version"
     # Read the contents of the .version file and display it in the terminal
-    version_number=VERSION
+    version_number=$VERSION
     echo -e "Now using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$version_number\e[0m"
     echo -e "You can show commands included with cbcs [-h]."
     echo -e "If you wish to stop using \e[32mCBC\e[0m, \e[31mremove\e[0m \e[33m.custom_bash_commands.sh\e[0m from your \e[33m.bashrc\e[0m file using \e[36meditbash\e[0m (\e[32mCBC\e[0m)."
