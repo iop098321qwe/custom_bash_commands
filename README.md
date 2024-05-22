@@ -24,7 +24,7 @@
 * Ensure the most up-to-date version of the github repository is added to the user file (with hidden files).
 * Open a new terminal as this will not work without the `.bashrc` file being reloaded.
 * You can also optionally run `source .bashrc` to refresh the `.bashrc` file. (or `source .bash_profile`).
-* There is a .update_commands.sh script that will run at the start of every terminal open that will automatically update to the latest version of the custom_bash_commands.sh file and add it to the correct directory
+* There is a .update_commands.sh script that will run at the start of every terminal open that will automatically update to the latest version of the custom_bash_commands.sh file and add it to the correct directory.
 * This is done by creating a temporary directory, then initializing and cloning the github repo in it, then copying the file to the correct location, then delete itself.
 * This ensures that every time you run the terminal you have the latest version of the custom commands already installed.
 
@@ -120,3 +120,10 @@ A full list of aliases will be added here for reference of what the script offer
 * `rsync`: tool to synchronize directories or files.
 * `htop`: interactive and real-time view of the processes running on a syste
     * `btop`: alternative to htop that has better formatting
+
+
+ADD 
+```bash
+alias fobsidian='find ~/Documents/grymms_grimoires -type f | fzf | xargs -I {} obsidian "obsidian://open?vault=$(basename ~/Documents/grymms_grimoires)&file={}'
+alias fobs='fobsidian'
+```
