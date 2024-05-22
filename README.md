@@ -95,6 +95,17 @@ A full list of aliases will be added here for reference of what the script offer
 * Set up `wiki` command to open default browser directly to the wiki page for CBC
 * Set up `readme` command to open the default browser directly to the README.md page for CBC
 
+# Adjusting settings on Linux
+
+## Installing Kitty Terminal Emulator
+
+* Install the kitty terminal emulator
+* Adjust the default application settings to `kitty` instead of `Konsole`
+* Set the terminal shortcuts to `Ctrl + Alt + T` for kitty
+    * In Settings > Shortcuts, add the `kitty` application
+    * Change the custom shortcut
+    * Select 'okay' if it prompts to override Konsole
+
 # Create a command to update the custom commands script instead of using an automatic script.
 
 # To Test
