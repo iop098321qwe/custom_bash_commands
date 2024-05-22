@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.19.13"
+VERSION="1.19.14"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -525,12 +525,9 @@ cbcs() {
         echo "  historysearch"
         echo "         Description: Search using fuzzy finder in the command history"
         echo "         Usage: historysearch"
-        echo "  historysearchcopy"
-        echo "         Description: Search using fuzzy finder in the command history and copy the selected command to the clipboard"
-        echo "         Usage: historysearchcopy"
-        echo "  hsc"
-        echo "         Description: Alias for 'historysearchcopy'"
-        echo "         Usage: hsc"
+        echo "  historysearchexact"
+        echo "         Description: Search using fuzzy finder in the command history using exact mode"
+        echo "         Usage: historysearchexact"
         echo "  hs"
         echo "         Description: Alias for 'historysearch'"
         echo "         Usage: hs"
@@ -634,8 +631,7 @@ cbcs() {
         echo "  fman"
         echo "  fcom"
         echo "  historysearch"
-        echo "  historysearchcopy"
-        echo "  hsc"
+        echo "  historysearchexact"
         echo "  hs"
         echo "  hse"
         echo "  hsearch"
@@ -1768,12 +1764,11 @@ alias dtr='cd ~/Documents/Deeptree/reference_material && ls'
 alias dispatch='cd ~/Documents/Deeptree/reference_material/dispatch && ls'
 alias ucbc='updatecbc'
 alias fman='compgen -c | fzf | xargs man'
-alias historysearch='history | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap'
-alias historysearchcopy='history | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
-alias hsc='historysearchcopy'
+alias historysearch='history | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
+alias historysearchexact='history | fzf -m -e --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
 alias hsearch='historysearch'
 alias hs='historysearch'
-alias hse='historysearch -e'
+alias hse='historysearchexact'
 alias fcom='eval "$(compgen -c | fzf)"'
 alias codecbc='code ~/Documents/github_repositories/custom_bash_commands/'
 alias i='sudo apt install -y'
