@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.19.15"
+VERSION="1.19.16"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1755,8 +1755,8 @@ alias dtr='cd ~/Documents/Deeptree/reference_material && ls'
 alias dispatch='cd ~/Documents/Deeptree/reference_material/dispatch && ls'
 alias ucbc='updatecbc'
 alias fman='compgen -c | fzf | xargs man'
-alias historysearch='history | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
-alias historysearchexact='history | fzf -m -e --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
+alias historysearch='history | sort -nr | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
+alias historysearchexact='history | sort -nr | fzf -m -e --query="$1" --no-sort --preview="echo {}" --preview-window=up:3:hidden:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
 alias hsearch='historysearch'
 alias hs='historysearch'
 alias hse='historysearchexact'
