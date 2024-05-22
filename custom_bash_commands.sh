@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.19.11"
+VERSION="1.19.12"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -570,6 +570,12 @@ cbcs() {
         echo "  ln"
         echo "         Description: Alias for 'ln' with the '-i' option"
         echo "         Usage: ln [source] [destination]"
+        echo "  fobsidian"
+        echo "         Description: Open a file from the Obsidian vault in Obsidian"
+        echo "         Usage: fobsidian [file]"
+        echo "  fobs"
+        echo "         Description: Alias for 'fobsidian'"
+        echo "         Usage: fobs [file]"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -643,6 +649,8 @@ cbcs() {
         echo "  cp"
         echo "  rm"
         echo "  ln"
+        echo "  fobsidian"
+        echo "  fobs"
         fi
 }
 
@@ -1768,6 +1776,8 @@ alias mv='mv -i'
 alias cp='cp -i'
 alias rm='rm -i'
 alias ln='ln -i'
+alias fobsidian='find ~/Documents/grymms_grimoires -type f | fzf | xargs -I {} obsidian "obsidian://open?vault=$(basename ~/Documents/grymms_grimoires)&file={}'
+alias fobs='fobsidian'
 
 ###################################################################################################################################################################
 
