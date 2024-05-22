@@ -1776,7 +1776,7 @@ alias mv='mv -i'
 alias cp='cp -i'
 alias rm='rm -i'
 alias ln='ln -i'
-alias fobsidian='find ~/Documents/grymms_grimoires -type f | fzf | xargs -I {} obsidian "obsidian://open?vault=$(basename ~/Documents/grymms_grimoires)&file={}'
+alias fobsidian='find ~/Documents/grymms_grimoires -type f | fzf | xargs -I {} obsidian "obsidian://open?vault=$(basename ~/Documents/grymms_grimoires)&file={}"'
 alias fobs='fobsidian'
 
 ###################################################################################################################################################################
