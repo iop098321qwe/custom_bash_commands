@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.20.1"
+VERSION="1.20.2"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -576,6 +576,9 @@ cbcs() {
         echo "  z"
         echo "         Description: Alias for 'zellij'"
         echo "         Usage: z [options]"
+        echo "  ch"
+        echo "         Description: Alias for 'chezmoi'"
+        echo "         Usage: ch [options]"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -651,6 +654,7 @@ cbcs() {
         echo "  fobsidian"
         echo "  fobs"
         echo "  z"
+        echo "  ch"
         fi
 }
 
@@ -1778,6 +1782,7 @@ alias ln='ln -i'
 alias fobsidian='find ~/Documents/grymms_grimoires -type f | fzf | xargs -I {} obsidian "obsidian://open?vault=$(basename ~/Documents/grymms_grimoires)&file={}"'
 alias fobs='fobsidian'
 alias z='zellij'
+alias ch='chezmoi'
 
 ###################################################################################################################################################################
 
