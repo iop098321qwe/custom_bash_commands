@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.20.2"
+VERSION="1.20.3"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -30,6 +30,7 @@ function create_config_file() {
     echo "ZELLIJ=false" >> "$CONFIG_FILE"
     echo "THEFUCK=false" >> "$CONFIG_FILE"
     echo "OBSIDIAN=false" >> "$CONFIG_FILE"
+    echo "VSCODE=false" >> "$CONFIG_FILE"
     echo "Config file created at $CONFIG_FILE"
 }
 
@@ -1993,6 +1994,18 @@ function check_install_zellij() {
 }
 
 ###################################################################################################################################################################
+# Check if vscode is installed, and if not, install it.
+###################################################################################################################################################################
+
+# Function to check if vscode is installed and install it if not
+function check_install_vscode() {
+    if ! command -v vscode &> /dev/null; then
+        echo "VSCode not found. Installing..."
+        sudo snap install vscode --classic
+        echo "VSCode has been installed."
+}
+
+###################################################################################################################################################################
 # Check if btop is installed, and if not, install it.
 ###################################################################################################################################################################
 
@@ -2037,7 +2050,7 @@ function check_install_btop() {
 # Read the configuration file and check if NEOVIM=true
 if [[ -f "$CONFIG_FILE" ]]; then
     source "$CONFIG_FILE"
-    if [[ "${NEOVIM:=false}" == "true" ]]; then
+    if [[ "${NEOVIM:=true}" == "true" ]]; then
         # Call the function to check neovim installation and install neovim
         check_install_neovim
     fi
@@ -2073,7 +2086,7 @@ fi
 # Read the configuration file and check if BTOP=true
 if [[ -f "$CONFIG_FILE" ]]; then
     source "$CONFIG_FILE"
-    if [[ "$BTOP" = "true" ]]; then
+    if [[ "${BTOP:=false}" == "true" ]]; then
         # Call the function to check btop installation and install btop
         check_install_btop
     fi
@@ -2082,7 +2095,7 @@ fi
 # Read the configuration file and check if ZOXIDE=true
 if [[ -f "$CONFIG_FILE" ]]; then
     source "$CONFIG_FILE"
-    if [[ "$ZOXIDE" = "true" ]]; then
+    if [[ "${ZOXIDE:=false}" == "true" ]]; then
         # Call the function to check zoxide installation and install zoxide
         check_install_zoxide
     fi
@@ -2091,16 +2104,25 @@ fi
 # Read the configuration file and check if FZF=true
 if [[ -f "$CONFIG_FILE" ]]; then
     source "$CONFIG_FILE"
-    if [[ "$FZF" = "true" ]]; then
+    if [[ "${FZF:=false}" == "true" ]]; then
         # Call the function to check fzf installation and install fzf
         check_install_fzf
+    fi
+fi
+
+# Read the configuration file and check if VSCODE=true
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+    if [[ "${VSCODE:=false}" == "true" ]]; then
+        # Call the function to check vscdoe installation and install vscode
+        check_install_vscode
     fi
 fi
 
 # Read the configuration file and check if ZELLIJ=true
 if [[ -f "$CONFIG_FILE" ]]; then
     source "$CONFIG_FILE"
-    if [[ "$ZELLIJ" = "true" ]]; then
+    if [[ "${ZELLIJ:=false}" == "true" ]]; then
         # Call the function to check zellij installation and install zellij
         check_install_zellij
     fi
