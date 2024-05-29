@@ -2003,6 +2003,7 @@ function check_install_vscode() {
         echo "VSCode not found. Installing..."
         sudo snap install vscode --classic
         echo "VSCode has been installed."
+    fi
 }
 
 ###################################################################################################################################################################
