@@ -298,7 +298,7 @@ display_version() {
     # Read the contents of the .version file and display it in the terminal
     version_number=$VERSION
     echo -e "Now using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$version_number\e[0m"
-    echo -e "You can show commands included with cbcs [-h] or typing commands (comm for shortcut)."
+    echo -e "You can show commands included with \e[36mcbcs [-h]\e[0m or typing \e[36mcommands\e[0m (\e[36mcomm\e[0m for shortcut)."
     echo -e "If you wish to stop using \e[32mCBC\e[0m, \e[31mremove\e[0m \e[33m.custom_bash_commands.sh\e[0m from your \e[33m.bashrc\e[0m file using \e[36meditbash\e[0m (\e[32mCBC\e[0m)."
     echo -e "Check out the Wiki for more information: \e[34mhttps://github.com/iop098321qwe/custom_bash_commands/wiki\e[0m"
 }
