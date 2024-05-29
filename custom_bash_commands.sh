@@ -372,7 +372,7 @@ cbcs() {
     if [[ $1 == "-h" ]]; then
         # Display a list of all available custom commands and functions in this script with descriptions
         echo " "
-        figlet -f future border custom commands:
+        figlet -c -f future Custom Commands:
         echo "NOT CURRENTLY ALPHABETICAL"
         echo " "
         echo "  backup"
@@ -594,7 +594,7 @@ cbcs() {
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
-        figlet -f future -F border Available custom commands:
+        figlet -c -f future Custom Commands:
         echo "Use cbcs [-h] with help flag to display descriptions and usage. (NOT CURRENTLY ALPHABETICAL)"
         echo " "
         echo "  display_version,   (alias: dv)"
