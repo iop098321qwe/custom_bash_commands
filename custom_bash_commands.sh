@@ -1999,7 +1999,7 @@ function check_install_zellij() {
 
 # Function to check if vscode is installed and install it if not
 function check_install_vscode() {
-    if ! command -v vscode &> /dev/null; then
+    if ! command -v code &> /dev/null; then
         echo "VSCode not found. Installing..."
         sudo snap install vscode --classic
         echo "VSCode has been installed."
