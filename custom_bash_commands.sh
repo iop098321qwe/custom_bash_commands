@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.20.3"
+VERSION="1.20.4"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -258,6 +258,9 @@ function setup_directories() {
 
     # Create the GitHub Repositories directory if it does not exist
     mkdir -p ~/Documents/github_repositories
+
+    # Create the grymms_grimoires directory if it does not exist
+    mkdir -p ~/Documents/grymms_grimoires
 }
 
 # Call the setup_directories function
@@ -295,7 +298,7 @@ display_version() {
     # Read the contents of the .version file and display it in the terminal
     version_number=$VERSION
     echo -e "Now using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$version_number\e[0m"
-    echo -e "You can show commands included with cbcs [-h]."
+    echo -e "You can show commands included with cbcs [-h] or typing commands (comm for shortcut)."
     echo -e "If you wish to stop using \e[32mCBC\e[0m, \e[31mremove\e[0m \e[33m.custom_bash_commands.sh\e[0m from your \e[33m.bashrc\e[0m file using \e[36meditbash\e[0m (\e[32mCBC\e[0m)."
     echo -e "Check out the Wiki for more information: \e[34mhttps://github.com/iop098321qwe/custom_bash_commands/wiki\e[0m"
 }
@@ -580,6 +583,12 @@ cbcs() {
         echo "  ch"
         echo "         Description: Alias for 'chezmoi'"
         echo "         Usage: ch [options]"
+        echo "  commands"
+        echo "         Description: Display a list of all available custom commands in this script"
+        echo "         Usage: commands"
+        echo "  comm"
+        echo "         Description: Alias for 'commands'"
+        echo "         Usage: comm"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -656,6 +665,8 @@ cbcs() {
         echo "  fobs"
         echo "  z"
         echo "  ch"
+        echo "  commands"
+        echo "  comm"
         fi
 }
 
@@ -1784,6 +1795,8 @@ alias fobsidian='find ~/Documents/grymms_grimoires -type f | fzf | xargs -I {} o
 alias fobs='fobsidian'
 alias z='zellij'
 alias ch='chezmoi'
+alias commands='cbcs -h | batcat'
+alias comm='commands'
 
 ###################################################################################################################################################################
 
