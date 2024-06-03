@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.20.4"
+VERSION="1.20.5"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -258,9 +258,6 @@ function setup_directories() {
 
     # Create the GitHub Repositories directory if it does not exist
     mkdir -p ~/Documents/github_repositories
-
-    # Create the grymms_grimoires directory if it does not exist
-    mkdir -p ~/Documents/grymms_grimoires
 }
 
 # Call the setup_directories function
@@ -1885,6 +1882,7 @@ function check_install_obsidian() {
         sudo apt install xclip
         git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
         echo "Obsidian installed. Please use 'refresh' to refresh the terminal."
+        git clone https://github.com/iop098321qwe/grymms_grimoires.git ~/Documents/
     fi
 }
 
