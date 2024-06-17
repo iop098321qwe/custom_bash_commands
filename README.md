@@ -85,6 +85,7 @@ A full list of aliases will be added here for reference of what the script offer
     * eza (better ls command)
         * Set up to optionally display info on terminal start, or by using command only
         * Set up to configure the display info command settings
+    * Ranger (terminal file manager)
     * Modularize the code better.
 * Build a wiki to keep information organized.
 * Build a SOP for creating new functions/aliases.
