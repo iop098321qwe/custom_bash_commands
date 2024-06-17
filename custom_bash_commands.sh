@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.20.5"
+VERSION="1.21.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -31,6 +31,7 @@ function create_config_file() {
     echo "THEFUCK=false" >> "$CONFIG_FILE"
     echo "OBSIDIAN=false" >> "$CONFIG_FILE"
     echo "VSCODE=false" >> "$CONFIG_FILE"
+    echo "RANGER=true" >> "$CONFIG_FILE"
     echo "Config file created at $CONFIG_FILE"
 }
 
@@ -1854,6 +1855,20 @@ function check_install_zoxide() {
 }
 
 ###################################################################################################################################################################
+# Ensure that ranger is installed, and if not install it.
+###################################################################################################################################################################
+
+# Function to check if ranger is installed and install it if necessary
+function check_install_ranger() {
+    if ! command -v ranger &> /dev/null; then
+        echo "ranger not found. Installing..."
+        sleep 3
+        sudo apt install ranger -y
+        echo "Please use 'refresh' to refresh the terminal"
+    fi
+}
+
+###################################################################################################################################################################
 # Ensure thefuck is installed, and if not install it.
 ###################################################################################################################################################################
 
@@ -2085,6 +2100,15 @@ if [[ -f "$CONFIG_FILE" ]]; then
     if [[ "${BAT:=false}" == "true" ]]; then
         # Call the function to check bat installation and install bat
         check_install_bat
+    fi
+fi
+
+# Read the configuration file and check if RANGER=true
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+    if [[ "${RANGER:=true}" == "true" ]]; then
+        # Call the function to check ranger installation and install ranger
+        check_install_ranger
     fi
 fi
 
