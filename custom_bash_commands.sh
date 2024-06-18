@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.21.0"
+VERSION="1.21.4"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -382,6 +382,9 @@ cbcs() {
         echo "  cls"
         echo "         Description: Clear the terminal screen and print the contents of the current directory"
         echo "         Usage: cls"
+        echo "  cla"
+        echo "         Description: Clear the terminal screen and print the contents of the current directory including hidden files"
+        echo "         Usage: cla"
         echo "  display_version,   (alias: dv)"
         echo "         Description: Display the version number from the .version file"
         echo "         Usage: display_version   (alias: dv)"
@@ -589,6 +592,24 @@ cbcs() {
         echo "  ch"
         echo "         Description: Alias for 'chezmoi'"
         echo "         Usage: ch [options]"
+        echo "  commands"
+        echo "         Description: Display a list of all available custom commands in this script"
+        echo "         Usage: commands"
+        echo "  comm"
+        echo "         Description: Alias for 'commands'"
+        echo "         Usage: comm"
+        echo "  fopen"
+        echo "         Description: Fuzzy find a file and open it"
+        echo "         Usage: fopen"
+        echo "  fopenexact"
+        echo "         Description: Fuzzy find a file and open it using exact mode"
+        echo "         Usage: fopenexact"
+        echo "  fo"
+        echo "         Description: Alias for 'fopen'"
+        echo "         Usage: fo"
+        echo "  foe"
+        echo "         Description: Alias for 'fopenexact'"
+        echo "         Usage: foe"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -601,6 +622,7 @@ cbcs() {
         echo "  editbash"
         echo "  seebash"
         echo "  cls"
+        echo "  cla"
         echo "  refresh"
         echo "  c"
         echo "  gs"
@@ -667,6 +689,10 @@ cbcs() {
         echo "  ch"
         echo "  commands"
         echo "  comm"
+        echo "  fopen"
+        echo "  fopenexact"
+        echo "  fo"
+        echo "  foe"
         fi
 }
 
@@ -1750,6 +1776,7 @@ alias rma='rm -rf'
 alias editbash='nvim ~/.bashrc'
 alias seebash='batcat ~/.bashrc'
 alias cls='clear && di && ls'
+alias cla='clear && di && la'
 alias refresh='source ~/.bashrc && clear && di'
 alias c='clear && di'
 alias gs='git status'
@@ -1797,6 +1824,10 @@ alias z='zellij'
 alias ch='chezmoi'
 alias commands='cbcs -h | batcat'
 alias comm='commands'
+alias fopen='fzf --multi | xargs -r -I {} open "{}"'
+alias fopenexact='fzf -e --multi | xargs -r -I {} open "{}"'
+alias fo='fopen'
+alias foe='fopenexact'
 
 ###################################################################################################################################################################
 
