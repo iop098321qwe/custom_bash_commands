@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.21.4"
+VERSION="1.21.3"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -382,9 +382,6 @@ cbcs() {
         echo "  cls"
         echo "         Description: Clear the terminal screen and print the contents of the current directory"
         echo "         Usage: cls"
-        echo "  cla"
-        echo "         Description: Clear the terminal screen and print the contents of the current directory including hidden files"
-        echo "         Usage: cla"
         echo "  display_version,   (alias: dv)"
         echo "         Description: Display the version number from the .version file"
         echo "         Usage: display_version   (alias: dv)"
@@ -622,7 +619,6 @@ cbcs() {
         echo "  editbash"
         echo "  seebash"
         echo "  cls"
-        echo "  cla"
         echo "  refresh"
         echo "  c"
         echo "  gs"
@@ -1776,7 +1772,6 @@ alias rma='rm -rf'
 alias editbash='nvim ~/.bashrc'
 alias seebash='batcat ~/.bashrc'
 alias cls='clear && di && ls'
-alias cla='clear && di && la'
 alias refresh='source ~/.bashrc && clear && di'
 alias c='clear && di'
 alias gs='git status'
@@ -1825,7 +1820,7 @@ alias ch='chezmoi'
 alias commands='cbcs -h | batcat'
 alias comm='commands'
 alias fopen='fzf --multi | xargs -r -I {} open "{}"'
-alias fopenexact='fzf -e --multi | xargs -r -I {} open "{}"'
+alias fopenexact='fzf --multi | xargs -r -I {} open "{}"'
 alias fo='fopen'
 alias foe='fopenexact'
 
