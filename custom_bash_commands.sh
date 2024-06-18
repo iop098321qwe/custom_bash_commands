@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.21.0"
+VERSION="1.21.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -589,6 +589,24 @@ cbcs() {
         echo "  ch"
         echo "         Description: Alias for 'chezmoi'"
         echo "         Usage: ch [options]"
+        echo "  commands"
+        echo "         Description: Display a list of all available custom commands in this script"
+        echo "         Usage: commands"
+        echo "  comm"
+        echo "         Description: Alias for 'commands'"
+        echo "         Usage: comm"
+        echo "  fopen"
+        echo "         Description: Fuzzy find a file and open it"
+        echo "         Usage: fopen"
+        echo "  fopenexact"
+        echo "         Description: Fuzzy find a file and open it using exact mode"
+        echo "         Usage: fopenexact"
+        echo "  fo"
+        echo "         Description: Alias for 'fopen'"
+        echo "         Usage: fo"
+        echo "  foe"
+        echo "         Description: Alias for 'fopenexact'"
+        echo "         Usage: foe"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -667,6 +685,10 @@ cbcs() {
         echo "  ch"
         echo "  commands"
         echo "  comm"
+        echo "  fopen"
+        echo "  fopenexact"
+        echo "  fo"
+        echo "  foe"
         fi
 }
 
@@ -1797,6 +1819,10 @@ alias z='zellij'
 alias ch='chezmoi'
 alias commands='cbcs -h | batcat'
 alias comm='commands'
+alias fopen='open $(fzf)'
+alias fopenexact='open $(fzf -e)'
+alias fo='fopen'
+alias foe='fopenexact'
 
 ###################################################################################################################################################################
 
