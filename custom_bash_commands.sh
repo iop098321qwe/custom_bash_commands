@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.21.2"
+VERSION="1.21.3"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1819,8 +1819,8 @@ alias z='zellij'
 alias ch='chezmoi'
 alias commands='cbcs -h | batcat'
 alias comm='commands'
-alias fopen='open $(fzf)'
-alias fopenexact='open $(fzf -e)'
+alias fopen='fzf --multi | xargs -r -I {} open "{}"'
+alias fopenexact='fzf --multi | xargs -r -I {} open "{}"'
 alias fo='fopen'
 alias foe='fopenexact'
 
