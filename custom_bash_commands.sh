@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.21.7"
+VERSION="1.21.8"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -607,6 +607,9 @@ cbcs() {
         echo "  ch"
         echo "         Description: Alias for 'chezmoi'"
         echo "         Usage: ch [options]"
+        echo "  chup"
+        echo "         Description: Alias for 'chezmoi update'"
+        echo "         Usage: chup"
         echo "  commands"
         echo "         Description: Display a list of all available custom commands in this script"
         echo "         Usage: commands"
@@ -707,6 +710,7 @@ cbcs() {
         echo "  fobs"
         echo "  z"
         echo "  ch"
+        echo "  chup"
         echo "  commands"
         echo "  comm"
         echo "  fopen"
@@ -1847,6 +1851,7 @@ alias fobsidian='find ~/Documents/grymms_grimoires -type f | fzf | xargs -I {} o
 alias fobs='fobsidian'
 alias z='zellij'
 alias ch='chezmoi'
+alias chup='chezmoi update'
 alias commands='cbcs -h | batcat'
 alias comm='commands'
 alias fopen='fzf --multi | xargs -r -I {} open "{}"'
