@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.21.6"
+VERSION="1.21.7"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -535,6 +535,21 @@ cbcs() {
         echo "  fcom"
         echo "         Description: Fuzzy find a command and run it"
         echo "         Usage: fcom"
+        echo "  fcomexact"
+        echo "         Description: Fuzzy find a command and run it using exact mode"
+        echo "         Usage: fcomexact"
+        echo "  fcome"
+        echo "         Description: Alias for 'fcomexact'"
+        echo "         Usage: fcome"
+        echo "  fhelp"
+        echo "         Description: Fuzzy find a command and display its help information"
+        echo "         Usage: fhelp"
+        echo "  fhelpexact"
+        echo "         Description: Fuzzy find a command and display its help information using exact mode"
+        echo "         Usage: fhelpexact"
+        echo "  fhelpe"
+        echo "         Description: Alias for 'fhelpexact'"
+        echo "         Usage: fhelpe"
         echo "  historysearch"
         echo "         Description: Search using fuzzy finder in the command history"
         echo "         Usage: historysearch"
@@ -668,6 +683,11 @@ cbcs() {
         echo "  updatecbc,   (alias: ucbc)"
         echo "  fman"
         echo "  fcom"
+        echo "  fcomexact"
+        echo "  fcome"
+        echo "  fhelp"
+        echo "  fhelpexact"
+        echo "  fhelpe"
         echo "  historysearch"
         echo "  historysearchexact"
         echo "  hs"
@@ -1808,6 +1828,11 @@ alias hsearch='historysearch'
 alias hs='historysearch'
 alias hse='historysearchexact'
 alias fcom='eval "$(compgen -c | fzf)"'
+alias fcomexact='eval "$(compgen -c | fzf -e)"'
+alias fcome='fcomexact'
+alias fhelp='eval "$(compgen -c | fzf)" -h'
+alias fhelpexact='eval "$(compgen -c | fzf -e)" -h'
+alias fhelpe='fhelpexact'
 alias codecbc='code ~/Documents/github_repositories/custom_bash_commands/'
 alias i='sudo apt install -y'
 alias downloads='cd ~/Downloads && la'
