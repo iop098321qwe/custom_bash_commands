@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.21.9"
+VERSION="1.21.10"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -27,7 +27,7 @@ function create_config_file() {
     echo "BTOP=false" >> "$CONFIG_FILE"
     echo "ZOXIDE=false" >> "$CONFIG_FILE"
     echo "FZF=false" >> "$CONFIG_FILE"
-    echo "ZELLIJ=false" >> "$CONFIG_FILE"
+    echo "ZELLI=false" >> "$CONFIG_FILE"
     echo "THEFUCK=false" >> "$CONFIG_FILE"
     echo "OBSIDIAN=false" >> "$CONFIG_FILE"
     echo "VSCODE=false" >> "$CONFIG_FILE"
@@ -84,7 +84,7 @@ function first_time_setup() {
             sed -i 's/BTOP=false/BTOP=true/' "$CONFIG_FILE"
             sed -i 's/ZOXIDE=false/ZOXIDE=true/' "$CONFIG_FILE"
             sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
-            sed -i 's/ZELLIJ=false/ZELLIJ=true/' "$CONFIG_FILE"
+            sed -i 's/ZELLI=false/ZELLI=true/' "$CONFIG_FILE"
             sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
             sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
         else
@@ -107,7 +107,7 @@ function first_time_setup() {
                 sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
             fi
             if [[ $software_choices == *"7"* ]]; then
-                sed -i 's/ZELLIJ=false/ZELLIJ=true/' "$CONFIG_FILE"
+                sed -i 's/ZELLI=false/ZELLI=true/' "$CONFIG_FILE"
             fi
             if [[ $software_choices == *"8"* ]]; then
                 sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
@@ -2224,10 +2224,10 @@ if [[ -f "$CONFIG_FILE" ]]; then
     fi
 fi
 
-# Read the configuration file and check if ZELLIJ=true
+# Read the configuration file and check if ZELLI=true
 if [[ -f "$CONFIG_FILE" ]]; then
     source "$CONFIG_FILE"
-    if [[ "${ZELLIJ:=false}" == "true" ]]; then
+    if [[ "${ZELLI:=false}" == "true" ]]; then
         # Call the function to check zellij installation and install zellij
         check_install_zellij
     fi
