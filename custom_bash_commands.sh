@@ -1008,7 +1008,7 @@ update() {
     # Run update commands with sudo, tee to output to terminal and append to log file
     # Define an array of commands to run
     commands=(
-        "sudo apt update"
+        "sudo apt update -y"
         "sudo apt upgrade -y"
         "sudo apt autoremove -y"
         "sudo apt autoclean"
