@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.21.8"
+VERSION="1.21.9"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1006,23 +1006,29 @@ update() {
     log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
 
     # Run update commands with sudo, tee to output to terminal and append to log file
-    command="sudo apt update"
-    echo -e "\n================================================================================"
-    echo "Running command: $command" | tee -a "$log_file"
-    echo "================================================================================"
-    eval "$command" | tee -a "$log_file"
+    # Define an array of commands to run
+    commands=(
+        "sudo apt update"
+        "sudo apt upgrade -y"
+        "sudo apt autoremove -y"
+        "sudo apt autoclean"
+        "sudo flatpak update -y"
+        "sudo snap refresh"
+    )
 
-    command="sudo apt upgrade -y"
-    echo -e "\n================================================================================"
-    echo "Running command: $command" | tee -a "$log_file"
-    echo "================================================================================"
-    eval "$command" | tee -a "$log_file"
+    # Function to run a command and log the output
+    run_command() {
+        local command="$1"
+        echo -e "\n================================================================================"
+        echo "Running command: $command" | tee -a "$log_file"
+        echo "================================================================================"
+        eval "$command" | tee -a "$log_file"
+    }
 
-    command="sudo apt autoremove -y"
-    echo -e "\n================================================================================"
-    echo "Running command: $command" | tee -a "$log_file"
-    echo "================================================================================"
-    eval "$command" | tee -a "$log_file"
+    # Iterate through the list of commands and run them
+    for command in "${commands[@]}"; do
+        run_command "$command"
+    done
 
     # Check if the '-r' flag is provided
     if [[ $1 == "-r" ]]; then
