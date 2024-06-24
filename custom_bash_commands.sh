@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.21.10"
+VERSION="1.21.11"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -72,6 +72,8 @@ function first_time_setup() {
         echo "7. Zellij"
         echo "8. thefuck"
         echo "9. Obsidian"
+        echo "10. VSCode"
+        echo "11. Ranger"
         echo " "
         echo "Enter the corresponding numbers separated by spaces (e.g., '1 2 3'), or enter 'a' to install all: "
         read -p "Your choice: " software_choices
@@ -87,6 +89,8 @@ function first_time_setup() {
             sed -i 's/ZELLI=false/ZELLI=true/' "$CONFIG_FILE"
             sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
             sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
+            sed -i 's/VSCODE=false/VSCODE=true/' "$CONFIG_FILE"
+            sed -i 's/RANGER=false/RANGER=true/' "CONFIG_FILE"
         else
             if [[ $software_choices == *"1"* ]]; then
                 sed -i 's/NEOVIM=false/NEOVIM=true/' "$CONFIG_FILE"
@@ -114,6 +118,12 @@ function first_time_setup() {
             fi
             if [[ $software_choices == *"9"* ]]; then
                 sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
+            fi
+            if [[ $software_choices == *"10"* ]]; then
+                sed -i 's/VSCODE=false/VSCODE=true/' "$CONFIG_FILE"
+            fi
+            if [[ $software_choices == *"11"* ]]; then
+                sed -i 's/RANGER=false/RANGER=true/' "CONFIG_FILE"
             fi
         fi
 
