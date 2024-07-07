@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.21.0"
+VERSION="1.21.11"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -27,7 +27,7 @@ function create_config_file() {
     echo "BTOP=false" >> "$CONFIG_FILE"
     echo "ZOXIDE=false" >> "$CONFIG_FILE"
     echo "FZF=false" >> "$CONFIG_FILE"
-    echo "ZELLIJ=false" >> "$CONFIG_FILE"
+    echo "ZELLI=false" >> "$CONFIG_FILE"
     echo "THEFUCK=false" >> "$CONFIG_FILE"
     echo "OBSIDIAN=false" >> "$CONFIG_FILE"
     echo "VSCODE=false" >> "$CONFIG_FILE"
@@ -72,6 +72,8 @@ function first_time_setup() {
         echo "7. Zellij"
         echo "8. thefuck"
         echo "9. Obsidian"
+        echo "10. VSCode"
+        echo "11. Ranger"
         echo " "
         echo "Enter the corresponding numbers separated by spaces (e.g., '1 2 3'), or enter 'a' to install all: "
         read -p "Your choice: " software_choices
@@ -84,9 +86,11 @@ function first_time_setup() {
             sed -i 's/BTOP=false/BTOP=true/' "$CONFIG_FILE"
             sed -i 's/ZOXIDE=false/ZOXIDE=true/' "$CONFIG_FILE"
             sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
-            sed -i 's/ZELLIJ=false/ZELLIJ=true/' "$CONFIG_FILE"
+            sed -i 's/ZELLI=false/ZELLI=true/' "$CONFIG_FILE"
             sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
             sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
+            sed -i 's/VSCODE=false/VSCODE=true/' "$CONFIG_FILE"
+            sed -i 's/RANGER=false/RANGER=true/' "CONFIG_FILE"
         else
             if [[ $software_choices == *"1"* ]]; then
                 sed -i 's/NEOVIM=false/NEOVIM=true/' "$CONFIG_FILE"
@@ -107,13 +111,19 @@ function first_time_setup() {
                 sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
             fi
             if [[ $software_choices == *"7"* ]]; then
-                sed -i 's/ZELLIJ=false/ZELLIJ=true/' "$CONFIG_FILE"
+                sed -i 's/ZELLI=false/ZELLI=true/' "$CONFIG_FILE"
             fi
             if [[ $software_choices == *"8"* ]]; then
                 sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
             fi
             if [[ $software_choices == *"9"* ]]; then
                 sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
+            fi
+            if [[ $software_choices == *"10"* ]]; then
+                sed -i 's/VSCODE=false/VSCODE=true/' "$CONFIG_FILE"
+            fi
+            if [[ $software_choices == *"11"* ]]; then
+                sed -i 's/RANGER=false/RANGER=true/' "CONFIG_FILE"
             fi
         fi
 
@@ -382,6 +392,9 @@ cbcs() {
         echo "  cls"
         echo "         Description: Clear the terminal screen and print the contents of the current directory"
         echo "         Usage: cls"
+        echo "  cla"
+        echo "         Description: Clear the terminal screen and print the contents of the current directory including hidden"
+        echo "         Usage: cla"
         echo "  display_version,   (alias: dv)"
         echo "         Description: Display the version number from the .version file"
         echo "         Usage: display_version   (alias: dv)"
@@ -532,6 +545,21 @@ cbcs() {
         echo "  fcom"
         echo "         Description: Fuzzy find a command and run it"
         echo "         Usage: fcom"
+        echo "  fcomexact"
+        echo "         Description: Fuzzy find a command and run it using exact mode"
+        echo "         Usage: fcomexact"
+        echo "  fcome"
+        echo "         Description: Alias for 'fcomexact'"
+        echo "         Usage: fcome"
+        echo "  fhelp"
+        echo "         Description: Fuzzy find a command and display its help information"
+        echo "         Usage: fhelp"
+        echo "  fhelpexact"
+        echo "         Description: Fuzzy find a command and display its help information using exact mode"
+        echo "         Usage: fhelpexact"
+        echo "  fhelpe"
+        echo "         Description: Alias for 'fhelpexact'"
+        echo "         Usage: fhelpe"
         echo "  historysearch"
         echo "         Description: Search using fuzzy finder in the command history"
         echo "         Usage: historysearch"
@@ -589,6 +617,27 @@ cbcs() {
         echo "  ch"
         echo "         Description: Alias for 'chezmoi'"
         echo "         Usage: ch [options]"
+        echo "  chup"
+        echo "         Description: Alias for 'chezmoi update'"
+        echo "         Usage: chup"
+        echo "  commands"
+        echo "         Description: Display a list of all available custom commands in this script"
+        echo "         Usage: commands"
+        echo "  comm"
+        echo "         Description: Alias for 'commands'"
+        echo "         Usage: comm"
+        echo "  fopen"
+        echo "         Description: Fuzzy find a file and open it"
+        echo "         Usage: fopen"
+        echo "  fopenexact"
+        echo "         Description: Fuzzy find a file and open it using exact mode"
+        echo "         Usage: fopenexact"
+        echo "  fo"
+        echo "         Description: Alias for 'fopen'"
+        echo "         Usage: fo"
+        echo "  foe"
+        echo "         Description: Alias for 'fopenexact'"
+        echo "         Usage: foe"
     else
         # Display a list of all available custom commands and functions in this script
         echo " "
@@ -601,6 +650,7 @@ cbcs() {
         echo "  editbash"
         echo "  seebash"
         echo "  cls"
+        echo "  cla"
         echo "  refresh"
         echo "  c"
         echo "  gs"
@@ -646,6 +696,11 @@ cbcs() {
         echo "  updatecbc,   (alias: ucbc)"
         echo "  fman"
         echo "  fcom"
+        echo "  fcomexact"
+        echo "  fcome"
+        echo "  fhelp"
+        echo "  fhelpexact"
+        echo "  fhelpe"
         echo "  historysearch"
         echo "  historysearchexact"
         echo "  hs"
@@ -665,8 +720,13 @@ cbcs() {
         echo "  fobs"
         echo "  z"
         echo "  ch"
+        echo "  chup"
         echo "  commands"
         echo "  comm"
+        echo "  fopen"
+        echo "  fopenexact"
+        echo "  fo"
+        echo "  foe"
         fi
 }
 
@@ -956,23 +1016,29 @@ update() {
     log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
 
     # Run update commands with sudo, tee to output to terminal and append to log file
-    command="sudo apt update"
-    echo -e "\n================================================================================"
-    echo "Running command: $command" | tee -a "$log_file"
-    echo "================================================================================"
-    eval "$command" | tee -a "$log_file"
+    # Define an array of commands to run
+    commands=(
+        "sudo apt update -y"
+        "sudo apt upgrade -y"
+        "sudo apt autoremove -y"
+        "sudo apt autoclean"
+        "sudo flatpak update -y"
+        "sudo snap refresh"
+    )
 
-    command="sudo apt upgrade -y"
-    echo -e "\n================================================================================"
-    echo "Running command: $command" | tee -a "$log_file"
-    echo "================================================================================"
-    eval "$command" | tee -a "$log_file"
+    # Function to run a command and log the output
+    run_command() {
+        local command="$1"
+        echo -e "\n================================================================================"
+        echo "Running command: $command" | tee -a "$log_file"
+        echo "================================================================================"
+        eval "$command" | tee -a "$log_file"
+    }
 
-    command="sudo apt autoremove -y"
-    echo -e "\n================================================================================"
-    echo "Running command: $command" | tee -a "$log_file"
-    echo "================================================================================"
-    eval "$command" | tee -a "$log_file"
+    # Iterate through the list of commands and run them
+    for command in "${commands[@]}"; do
+        run_command "$command"
+    done
 
     # Check if the '-r' flag is provided
     if [[ $1 == "-r" ]]; then
@@ -1750,6 +1816,7 @@ alias rma='rm -rf'
 alias editbash='nvim ~/.bashrc'
 alias seebash='batcat ~/.bashrc'
 alias cls='clear && di && ls'
+alias cla='clear && di && la'
 alias refresh='source ~/.bashrc && clear && di'
 alias c='clear && di'
 alias gs='git status'
@@ -1781,6 +1848,11 @@ alias hsearch='historysearch'
 alias hs='historysearch'
 alias hse='historysearchexact'
 alias fcom='eval "$(compgen -c | fzf)"'
+alias fcomexact='eval "$(compgen -c | fzf -e)"'
+alias fcome='fcomexact'
+alias fhelp='eval "$(compgen -c | fzf)" -h'
+alias fhelpexact='eval "$(compgen -c | fzf -e)" -h'
+alias fhelpe='fhelpexact'
 alias codecbc='code ~/Documents/github_repositories/custom_bash_commands/'
 alias i='sudo apt install -y'
 alias downloads='cd ~/Downloads && la'
@@ -1795,8 +1867,13 @@ alias fobsidian='find ~/Documents/grymms_grimoires -type f | fzf | xargs -I {} o
 alias fobs='fobsidian'
 alias z='zellij'
 alias ch='chezmoi'
+alias chup='chezmoi update'
 alias commands='cbcs -h | batcat'
 alias comm='commands'
+alias fopen='fzf --multi | xargs -r -I {} open "{}"'
+alias fopenexact='fzf --multi | xargs -r -I {} open "{}"'
+alias fo='fopen'
+alias foe='fopenexact'
 
 ###################################################################################################################################################################
 
@@ -2029,7 +2106,7 @@ function check_install_zellij() {
 function check_install_vscode() {
     if ! command -v code &> /dev/null; then
         echo "VSCode not found. Installing..."
-        sudo snap install vscode --classic
+        sudo snap install code --classic
         echo "VSCode has been installed."
     fi
 }
@@ -2157,10 +2234,10 @@ if [[ -f "$CONFIG_FILE" ]]; then
     fi
 fi
 
-# Read the configuration file and check if ZELLIJ=true
+# Read the configuration file and check if ZELLI=true
 if [[ -f "$CONFIG_FILE" ]]; then
     source "$CONFIG_FILE"
-    if [[ "${ZELLIJ:=false}" == "true" ]]; then
+    if [[ "${ZELLI:=false}" == "true" ]]; then
         # Call the function to check zellij installation and install zellij
         check_install_zellij
     fi
