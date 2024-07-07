@@ -88,7 +88,7 @@ A full list of aliases will be added here for reference of what the script offer
     * Ranger (terminal file manager)
     * Modularize the code better.
 * Build a wiki to keep information organized.
-* Build a SOP for creating new functions/aliases.
+* ~~Build a SOP for creating new functions/aliases.~~
 * Build an SOP for documenting changes.
 * Create a list of commands (Useful Commands to Remember) that can be displayed using a command, potentially in the help command for CBC.
    * The idea is to have additional tools not created with the script to install additionally and display information about.
