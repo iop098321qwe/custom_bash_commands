@@ -999,22 +999,23 @@ incon() {
 
 # Function to create a directory and switch into it
 mkdirs() {
-    if [ "$1" == "-h" || $1 == "--help" ]; then
+    # Check for the help flag
+    if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
         # Display the help message
         echo "Description: A function to create a directory then switch into it"
         echo "Usage: mkdirs [directory]"
         echo "Options:"
-        echo "  -h    Display this help message"
+        echo "  -h, --help    Display this help message"
         return
     fi
 
     # Check if the directory name is provided
     if [ -z "$1" ]; then
         echo "Error: Directory name is not provided."
-        return
+        return 1
     else
         # Create the directory and switch into it
-        mkdir -p "$1" && cd "$1" || return
+        mkdir -p "$1" && cd "$1" || return 1
     fi
 }
 
