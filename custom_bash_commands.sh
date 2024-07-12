@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.21.11"
+VERSION="1.21.12"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -437,6 +437,9 @@ cbcs() {
         echo "  rmconf"
         echo "         Description: Remove the configuration file for CBC"
         echo "         Usage: rmconf"
+        echo "  mkdirs"
+        echo "         Description: Create a directory and switch into it"
+        echo "         Usage: mkdirs [directory]"
         echo " "
         echo "########################## SEPARATE ALIAS SECTION ######################################################"
         echo " "
@@ -663,6 +666,7 @@ cbcs() {
         echo "  doftiles"
         echo "  extract"
         echo "  rmconf"
+        echo "  mkdirs"
         # SEPARATE ALIAS SECTION ###############################################################################
         #figlet -f future -F border Available custom aliases:
         echo "  cc"
@@ -978,6 +982,43 @@ incon() {
 }
 
 ################################################################################
+# MKDIRS
+################################################################################
+
+# Describe the mkdirs function and its options and usage
+
+# mkdirs
+# Description: A function to create a directory then switch into it
+# Usage: mkdirs [directory]
+# Options:
+#   -h    Display this help message
+
+# Example: mkdirs test  ---Creates a directory called test and switches into it.
+
+##########
+
+# Function to create a directory and switch into it
+mkdirs() {
+    if [ "$1" == "-h" || $1 == "--help" ]; then
+        # Display the help message
+        echo "Description: A function to create a directory then switch into it"
+        echo "Usage: mkdirs [directory]"
+        echo "Options:"
+        echo "  -h    Display this help message"
+        return
+    fi
+
+    # Check if the directory name is provided
+    if [ -z "$1" ]; then
+        echo "Error: Directory name is not provided."
+        return
+    else
+        # Create the directory and switch into it
+        mkdir -p "$1" && cd "$1" || return
+    fi
+}
+
+################################################################################
 # UPDATE
 ################################################################################
 
@@ -1000,6 +1041,7 @@ update() {
     # Check if the '-h' or '--help' flag is provided
     if [[ $1 == "-h" || $1 == "--help" ]]; then
         # Display the help message
+        echo "Description: A function to update the system and reboot if desired"
         echo "Usage: update [option]"
         echo "Options:"
         echo "  -r    Reboot the system after updating"
