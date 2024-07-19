@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.21.12"
+VERSION="1.22.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -32,6 +32,7 @@ function create_config_file() {
     echo "OBSIDIAN=false" >> "$CONFIG_FILE"
     echo "VSCODE=false" >> "$CONFIG_FILE"
     echo "RANGER=true" >> "$CONFIG_FILE"
+    echo "HSTR=true" >> "$CONFIG_FILE"
     echo "Config file created at $CONFIG_FILE"
 }
 
@@ -2168,6 +2169,36 @@ function check_install_btop() {
 }
 
 ###################################################################################################################################################################
+# Check if hstr is installed, and if not, install it.
+###################################################################################################################################################################
+
+# Function to check if hstr is installed and install it if not
+function check_install_hstr() {
+    if ! command -v hstr &> /dev/null; then
+        echo "Hstr not found. Installing..."
+        sudo apt install hstr -y
+        echo "hstr has been installed."
+    fi
+}
+
+# If hstr is installed, set configs for hstr
+if command -v hstr &> /dev/null; then
+    # HSTR configuration - add this to ~/.bashrc
+    alias hh=hstr                    # hh to be alias for hstr
+    export HSTR_CONFIG=hicolor       # get more colors
+    shopt -s histappend              # append new history items to .bash_history
+    export HISTCONTROL=ignorespace   # leading space hides commands from history
+    export HISTFILESIZE=10000        # increase history file size (default is 500)
+    export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
+    # ensure synchronization between bash memory and history file
+    export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"
+    # if this is interactive shell, then bind hstr to Ctrl-r (for Vi mode check doc)
+    if [[ $- =~ .*i.* ]]; then bind '"\C-r": "\C-a hstr -- \C-j"'; fi
+    # if this is interactive shell, then bind 'kill last command' to Ctrl-x k
+    if [[ $- =~ .*i.* ]]; then bind '"\C-xk": "\C-a hstr -k \C-j"'; fi
+fi
+
+###################################################################################################################################################################
 # Create a config file for installing additional software that may not already be installed where commented out software is not installed.
 ###################################################################################################################################################################
 
@@ -2297,6 +2328,15 @@ if [[ -f "$CONFIG_FILE" ]]; then
     if [[ "$THEFUCK" = "true" ]]; then
         # Call the function to check thefuck installation and install thefuck
         check_install_thefuck
+    fi
+fi
+
+# Read the configuration file and check if HSTR=true
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+    if [[ "${HSTR:=true}" == "true" ]]; then
+        # Call the function to check hstr installation and install hstr
+        check_install_hstr
     fi
 fi
 
