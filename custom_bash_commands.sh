@@ -75,6 +75,7 @@ function first_time_setup() {
         echo "9. Obsidian"
         echo "10. VSCode"
         echo "11. Ranger"
+        echo "12. hstr"
         echo " "
         echo "Enter the corresponding numbers separated by spaces (e.g., '1 2 3'), or enter 'a' to install all: "
         read -p "Your choice: " software_choices
@@ -125,6 +126,9 @@ function first_time_setup() {
             fi
             if [[ $software_choices == *"11"* ]]; then
                 sed -i 's/RANGER=false/RANGER=true/' "CONFIG_FILE"
+            fi
+            if [[ $software_choices == *"12"* ]]; then
+                sed -i 's/HSTR=false/HSTR=true/' "CONFIG_FILE"
             fi
         fi
 
