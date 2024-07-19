@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.22.0"
+VERSION="1.22.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2187,17 +2187,22 @@ function check_install_hstr() {
 
 # If hstr is installed, set configs for hstr
 if command -v hstr &> /dev/null; then
-    # HSTR configuration - add this to ~/.bashrc
-    alias hh=hstr                    # hh to be alias for hstr
-    export HSTR_CONFIG=hicolor       # get more colors
-    shopt -s histappend              # append new history items to .bash_history
-    export HISTCONTROL=ignorespace   # leading space hides commands from history
-    export HISTFILESIZE=10000        # increase history file size (default is 500)
-    export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
+    # Set alias for hstr
+    alias hh=hstr
+    # Configure hstr with colors and prompt at the bottom
+    export HSTR_CONFIG=hicolor,prompt-bottom,blacklist
+    # Append new history items to .bash_history
+    shopt -s histappend
+    # Ignore commands starting with a space in history
+    export HISTCONTROL=ignorespace
+    # Increase history file size
+    export HISTFILESIZE=10000
+    # Increase history size
+    export HISTSIZE=${HISTFILESIZE}
     # ensure synchronization between bash memory and history file
     export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"
     # if this is interactive shell, then bind hstr to Ctrl-r (for Vi mode check doc)
-    if [[ $- =~ .*i.* ]]; then bind '"\C-r": "\C-a hstr -- \C-j"'; fi
+    if [[ $- =~ .*i.* ]]; then bind '"\C-r": "\e^ihstr -- \n"'; fi
     # if this is interactive shell, then bind 'kill last command' to Ctrl-x k
     if [[ $- =~ .*i.* ]]; then bind '"\C-xk": "\C-a hstr -k \C-j"'; fi
 fi
