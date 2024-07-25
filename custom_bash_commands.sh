@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.23.0"
+VERSION="1.23.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1902,7 +1902,7 @@ alias cdgh='cd ~/Documents/github_repositories && ls'
 alias temp='cd ~/Documents/Temporary && ls'
 alias cbc='cdgh && cd custom_bash_commands && ls'
 alias cbcc='cdgh && cd custom_bash_commands && ls && dv && cc'
-alias rma='rm -rf'
+alias rma='rm -rfi'
 alias editbash='nvim ~/.bashrc'
 alias seebash='batcat ~/.bashrc'
 alias cls='clear && di && ls'
