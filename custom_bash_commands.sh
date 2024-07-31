@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.24.1"
+VERSION="1.24.2"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1208,9 +1208,9 @@ makeman() {
     done
     shift $((OPTIND -1))
 
-    # Check for command if FILE is not provided
+    # Process remaining arguments as the command
     if [ -z "$FILE" ]; then
-        if [ -z "$1" ]; then
+        if [ $# -eq 0 ]; then
             echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
             return 1
         fi
