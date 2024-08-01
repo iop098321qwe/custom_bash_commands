@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.24.2"
+VERSION="1.24.3"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1166,7 +1166,108 @@ update() {
 ##########
 
 # Function to generate a PDF file from a man page or a list of commands
-makeman() {
+function makeman() {
+    local file=""
+    local output_dir="$HOME/Documents/grymms_grimoires/command_manuals"
+    local command=""
+    local remove_unlisted=false
+
+    # Parse options
+    while getopts ":hf:o:r" opt; do
+        case ${opt} in
+            h )
+                echo "Description: Function to generate a PDF file from a man page"
+                echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
+                echo "Options:"
+                echo "  -h           Display this help message"
+                echo "  -f <file>    Specify a file with a list of commands"
+                echo "  -o <dir>     Specify an output directory (default: ~/Documents/grymms_grimoires/command_manuals)"
+                echo "  -r           Remove existing files in the output directory that are not listed in the specified file"
+                return 0
+                ;;
+            f )
+                file=$OPTARG
+                ;;
+            o )
+                output_dir=$OPTARG
+                ;;
+            r )
+                remove_unlisted=true
+                ;;
+            \? )
+                echo "Invalid option: -$OPTARG" >&2
+                echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
+                return 1
+                ;;
+            : )
+                echo "Option -$OPTARG requires an argument." >&2
+                echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
+                return 1
+                ;;
+        esac
+    done
+    shift $((OPTIND -1))
+
+    # Process remaining arguments as the command
+    if [ -z "$file" ]; then
+        if [ $# -eq 0 ]; then
+            echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
+            return 1
+        fi
+        command=$1
+    fi
+
+    # Function to process a single command
+    process_command() {
+        local cmd=$1
+        local output_file="${output_dir}/${cmd}.pdf"
+        mkdir -p "$output_dir"
+        if ! man -w "$cmd" &> /dev/null; then
+            echo "Error: No manual entry for command '$cmd'"
+            return 1
+        fi
+        if ! man -t "$cmd" | ps2pdf - "$output_file"; then
+            echo "Error: Failed to convert man page to PDF for command '$cmd'"
+            return 1
+        fi
+        echo "PDF file created at: $output_file"
+    }
+
+    # Process commands from file or single command
+    if [ -n "$file" ]; then
+        if [ ! -f "$file" ]; then
+            echo "Error: File '$file' not found"
+            return 1
+        fi
+        
+        local cmd_list=()
+        while IFS= read -r cmd; do
+            [ -z "$cmd" ] && continue  # Skip empty lines
+            cmd_list+=("$cmd")
+            process_command "$cmd"
+        done < "$file"
+        
+        if $remove_unlisted; then
+            for existing_file in "$output_dir"/*.pdf; do
+                local basename=$(basename "$existing_file" .pdf)
+                if [[ ! " ${cmd_list[@]} " =~ " ${basename} " ]]; then
+                    echo "Removing unlisted file: $existing_file"
+                    rm "$existing_file"
+                fi
+            done
+        fi
+    else
+        process_command "$command"
+    fi
+}
+
+# Example usage:
+# makeman ls
+# makeman -f commands.txt
+# makeman -o /custom/output/directory ls
+# makeman -f commands.txt -r
+# Function to generate a PDF file from a man page or a list of commands
+function makeman() {
     local FILE=""
     local OUTPUT_DIR="$HOME/Documents/grymms_grimoires/command_manuals"
     local COMMAND=""
