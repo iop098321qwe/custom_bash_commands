@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.24.3"
+VERSION="1.24.4"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1172,6 +1172,9 @@ function makeman() {
     local command=""
     local remove_unlisted=false
 
+    # Reset OPTIND to 1 to ensure option parsing starts correctly
+    OPTIND=1
+
     # Parse options
     while getopts ":hf:o:r" opt; do
         case ${opt} in
@@ -1206,7 +1209,7 @@ function makeman() {
                 ;;
         esac
     done
-    shift $((OPTIND -1))
+    shift $((OPTIND - 1))
 
     # Process remaining arguments as the command
     if [ -z "$file" ]; then
@@ -1258,107 +1261,6 @@ function makeman() {
         fi
     else
         process_command "$command"
-    fi
-}
-
-# Example usage:
-# makeman ls
-# makeman -f commands.txt
-# makeman -o /custom/output/directory ls
-# makeman -f commands.txt -r
-# Function to generate a PDF file from a man page or a list of commands
-function makeman() {
-    local FILE=""
-    local OUTPUT_DIR="$HOME/Documents/grymms_grimoires/command_manuals"
-    local COMMAND=""
-    local REMOVE_UNLISTED=false
-
-    # Parse options
-    while getopts ":hf:o:r" opt; do
-        case ${opt} in
-            h )
-                echo "Description: Function to generate a PDF file from a man page"
-                echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
-                echo "Options:"
-                echo "  -h           Display this help message"
-                echo "  -f <file>    Specify a file with a list of commands"
-                echo "  -o <dir>     Specify an output directory (default: ~/Documents/grymms_grimoires/command_manuals)"
-                echo "  -r           Remove existing files in the output directory that are not listed in the specified file"
-                return
-                ;;
-            f )
-                FILE=$OPTARG
-                ;;
-            o )
-                OUTPUT_DIR=$OPTARG
-                ;;
-            r )
-                REMOVE_UNLISTED=true
-                ;;
-            \? )
-                echo "Invalid option: -$OPTARG" >&2
-                echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
-                return 1
-                ;;
-            : )
-                echo "Option -$OPTARG requires an argument." >&2
-                echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
-                return 1
-                ;;
-        esac
-    done
-    shift $((OPTIND -1))
-
-    # Process remaining arguments as the command
-    if [ -z "$FILE" ]; then
-        if [ $# -eq 0 ]; then
-            echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
-            return 1
-        fi
-        COMMAND=$1
-    fi
-
-    # Function to process a single command
-    process_command() {
-        local CMD=$1
-        local OUTPUT_FILE="${OUTPUT_DIR}/${CMD}.pdf"
-        mkdir -p "$OUTPUT_DIR"
-        if ! man -w "$CMD" &> /dev/null; then
-            echo "Error: No manual entry for command '$CMD'"
-            return
-        fi
-        if ! man -t "$CMD" | ps2pdf - "$OUTPUT_FILE"; then
-            echo "Error: Failed to convert man page to PDF for command '$CMD'"
-            return
-        fi
-        echo "PDF file created at: $OUTPUT_FILE"
-    }
-
-    # Process commands from file or single command
-    if [ -n "$FILE" ]; then
-        if [ ! -f "$FILE" ]; then
-            echo "Error: File '$FILE' not found"
-            return 1
-        fi
-        
-        local CMD_LIST=()
-        while IFS= read -r CMD; do
-            [ -z "$CMD" ] && continue  # Skip empty lines
-            CMD_LIST+=("$CMD")
-            process_command "$CMD"
-        done < "$FILE"
-        
-        if $REMOVE_UNLISTED; then
-            for EXISTING_FILE in "$OUTPUT_DIR"/*.pdf; do
-                local BASENAME=$(basename "$EXISTING_FILE" .pdf)
-                if [[ ! " ${CMD_LIST[@]} " =~ " ${BASENAME} " ]]; then
-                    echo "Removing unlisted file: $EXISTING_FILE"
-                    rm "$EXISTING_FILE"
-                fi
-            done
-        fi
-    else
-        process_command "$COMMAND"
     fi
 }
 
