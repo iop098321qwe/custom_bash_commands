@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.24.7"
+VERSION="1.24.8"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2051,7 +2051,6 @@ alias rsc='remove_session_id_config'
 alias dv='display_version'
 alias rdvc='remove_display_version_config'
 alias racc='remove_all_cbc_configs'
-#alias testcbc='source ~/.test_update_commands.sh; source ~/.test_custom_bash_commands.sh'
 alias gsw='git switch'
 alias gswm='git switch master'
 alias gswt='git switch test'
@@ -2098,6 +2097,7 @@ alias fopen='fzf --multi | xargs -r -I {} open "{}"'
 alias fopenexact='fzf --multi | xargs -r -I {} open "{}"'
 alias fo='fopen'
 alias foe='fopenexact'
+alias ':q'='exit'
 
 ###################################################################################################################################################################
 
