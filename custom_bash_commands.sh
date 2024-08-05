@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.24.5"
+VERSION="1.24.6"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -394,6 +394,9 @@ cbcs() {
         echo "  cbcs"
         echo "         Description: Display a list of all available custom commands in this script"
         echo "         Usage: cbcs [-h]"
+        echo "  cht.sh"
+        echo "         Description: Open the Cheat.sh client in the terminal"
+        echo "         Usage: cht.sh [query]"
         echo "  cls"
         echo "         Description: Clear the terminal screen and print the contents of the current directory"
         echo "         Usage: cls"
@@ -661,6 +664,7 @@ cbcs() {
         echo "  backup"
         echo "  c"
         echo "  cbcs"
+        echo "  cht.sh"
         echo "  cla"
         echo "  cls"
         echo "  display_version,   (alias: dv)"
@@ -2382,6 +2386,20 @@ if command -v hstr &> /dev/null; then
 fi
 
 ###################################################################################################################################################################
+# Check if cht.sh is installed, and if not, install it.
+###################################################################################################################################################################
+
+# Function to check if cht.sh is installed and install it if not
+function check_install_cht() {
+    if ! command -v cht.sh &> /dev/null; then
+        echo "cht.sh not found. Installing..."
+        sudo apt install rlwrap -y
+        curl -s https://cht.sh/:cht.sh | sudo tee /usr/local/bin/cht.sh && sudo chmod +x /usr/local/bin/cht.sh
+        echo "cht.sh has been installed."
+    fi
+}
+
+###################################################################################################################################################################
 # Create a config file for installing additional software that may not already be installed where commented out software is not installed.
 ###################################################################################################################################################################
 
@@ -2522,6 +2540,9 @@ if [[ -f "$CONFIG_FILE" ]]; then
         check_install_hstr
     fi
 fi
+
+# Install cht.sh using check_install_cht
+check_install_cht
 
 ###################################################################################################################################################################
 ###################################################################################################################################################################
