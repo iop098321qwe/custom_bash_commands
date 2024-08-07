@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.24.8"
+VERSION="1.24.9"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1084,6 +1084,7 @@ update() {
         "sudo apt autoclean"
         "sudo flatpak update -y"
         "sudo snap refresh"
+        "sudo apt install ttf-mscorefonts-installer -y"
     )
 
     # Function to run a command and log the output
