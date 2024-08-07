@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.24.9"
+VERSION="1.24.10"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1075,17 +1075,27 @@ update() {
     # Define the log file path
     log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
 
+    # Function to check if ttf-mscorefonts-installer is installed
+    check_install_mscorefonts() {
+        # Check if the package is installed
+        if dpkg-query -W -f='${Status}' ttf-mscorefonts-installer 2>/dev/null | grep -q "install ok installed"; then
+            echo "ttf-mscorefonts-installer is already installed."
+        else
+            echo "ttf-mscorefonts-installer is not installed. Please run 'i ttf-mscorefonts-installer' to install it."
+        fi
+    }
+
     # Run update commands with sudo, tee to output to terminal and append to log file
     # Define an array of commands to run
     commands=(
         "sudo apt update -y"
-        "sudo apt upgrade -y"
+        "sudo apt full-upgrade -y"
         "sudo apt autoremove -y"
         "sudo apt autoclean"
         "sudo flatpak update -y"
         "sudo snap refresh"
-        "sudo apt install ttf-mscorefonts-installer -y"
-    )
+        "check_install_mscorefonts"
+     )
 
     # Function to run a command and log the output
     run_command() {
