@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.24.12"
+VERSION="1.24.13"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2274,12 +2274,6 @@ function check_install_neovim() {
         # Move the appimage file to /bin/nvim
         sudo mv nvim.appimage /bin/nvim        
     fi
-
-    # Set the default editor to neovim if and only if neovim is installed and set manpager as neovim
-    if command -v nvim &> /dev/null; then
-        export EDITOR=nvim
-        export MANPAGER="nvim +Man!"
-    fi
 }
 
 ###################################################################################################################################################################
@@ -2567,6 +2561,12 @@ export HISTCONTROL=ignoredups:erasedups
 
 # Set terminal behavior to mimic vim
 set -o vi
+
+# Set the default editor to neovim if and only if neovim is installed and set manpager as neovim
+if command -v nvim &> /dev/null; then
+    export EDITOR=nvim
+    export MANPAGER="nvim +Man!"
+fi
 
 ###################################################################################################################################################################
 ###################################################################################################################################################################
