@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.24.14"
+VERSION="1.24.15"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2566,7 +2566,7 @@ set -o vi
 # Set the default editor to neovim if and only if neovim is installed and set manpager as neovim
 if command -v nvim &> /dev/null; then
     export EDITOR=nvim
-    export MANPAGER="nvim +Man!"
+    # export MANPAGER="nvim +Man!"
 fi
 
 ###################################################################################################################################################################
