@@ -610,6 +610,9 @@ cbcs() {
         echo "  vim"
         echo "         Description: Alias for 'nvim'"
         echo "         Usage: vim [file]"
+        echo "  v"
+        echo "         Description: Alias for 'nvim'"
+        echo "         Usage: v [file]"
         echo "  mv"
         echo "         Description: Alias for 'mv' with the '-i' option"
         echo "         Usage: mv [source] [destination]"
@@ -747,6 +750,7 @@ cbcs() {
         echo "  update"
         echo "  updatecbc,   (alias: ucbc)"
         echo "  vim"
+        echo "  v"
         echo "  z"
         fi
 }
