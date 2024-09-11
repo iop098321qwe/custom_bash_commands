@@ -1108,6 +1108,7 @@ update() {
     "sudo flatpak update -y"
     "sudo snap refresh"
     "check_install_mscorefonts"
+    "chezmoi re-add"
   )
 
   # Function to run a command and log the output
