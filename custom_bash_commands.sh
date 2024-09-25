@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.24.18"
+VERSION="1.24.19"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -524,7 +524,7 @@ cbcs() {
     echo "         Description: Alias for 'git switch'"
     echo "         Usage: gsw [branch]"
     echo "  gswm"
-    echo "         Description: Quickly switch to the master branch of a git repository"
+    echo "         Description: Quickly switch to the main branch of a git repository"
     echo "         Usage: gswm"
     echo "  gswt"
     echo "         Description: Quickly switch to the test branch of a git repository"
@@ -658,6 +658,9 @@ cbcs() {
     echo "  foe"
     echo "         Description: Alias for 'fopenexact'"
     echo "         Usage: foe"
+    echo "  lg"
+    echo "         Description: Alias for 'lazygit'"
+    echo "         Usage: lg"
   else
     # Display a list of all available custom commands and functions in this script
     echo " "
@@ -733,6 +736,7 @@ cbcs() {
     echo "  hsearch"
     echo "  i"
     echo "  incon"
+    echo "  lg"
     echo "  ln"
     echo "  mv"
     echo "  ods"
@@ -1000,15 +1004,15 @@ incon() {
 
   # 4. Add all files, commit, and push
   cc "Initial commit"
-  git push -u origin master || {
-    echo "Push to master failed. Exiting."
+  git push -u origin main || {
+    echo "Push to main failed. Exiting."
     return
   }
 
-  # 5. Create a test branch, switch to it, and then switch back to master
+  # 5. Create a test branch, switch to it, and then switch back to main
   git checkout -b test
   cc "Initial test commit"
-  git checkout master
+  git checkout main
 }
 
 ################################################################################
@@ -1985,8 +1989,8 @@ function updatecbc() {
     echo $path >>.git/info/sparse-checkout
   done
 
-  # Fetch only the desired files from the master branch
-  git pull origin master -q
+  # Fetch only the desired files from the main branch
+  git pull origin main -q
 
   # Move the fetched files to the target directory
   for path in "${FILE_PATHS[@]}"; do
@@ -2095,7 +2099,7 @@ alias fopenexact='fzf --multi | xargs -r -I {} open "{}"'
 alias fzf='fzf -m'
 alias gs='git status'
 alias gsw='git switch'
-alias gswm='git switch master'
+alias gswm='git switch main'
 alias gswt='git switch test'
 alias historysearch='history | sort -nr | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=down:20%:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
 alias historysearchexact='history | sort -nr | fzf -m -e --query="$1" --no-sort --preview="echo {}" --preview-window=down:20%:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
@@ -2104,6 +2108,7 @@ alias hs='historysearch'
 alias hse='historysearchexact'
 alias hsearch='historysearch'
 alias i='sudo apt install -y'
+alias lg='lazygit'
 alias ln='ln -i'
 alias man='sudo man'
 alias mv='mv -i'
