@@ -43,7 +43,7 @@ updatecbc() {
 
   # Clean up
   rm -rf $SPARSE_DIR
-  cd ~
+  builtin cd ~
   clear
 
   # Source the updated commands
