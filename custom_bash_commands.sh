@@ -986,7 +986,6 @@ incon() {
   # Create a .gitignore and README.md file
   touch .gitignore
   touch README.md
-  touch .version
   repo_name=$(basename $(pwd) | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
   formatted_name=$(echo $repo_name | tr '_' ' ' | sed -e "s/\b\(.\)/\u\1/g")
   echo "# $formatted_name" >README.md
