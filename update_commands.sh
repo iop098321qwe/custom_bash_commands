@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 updatecbc() {
   # Temporary directory for sparse checkout
