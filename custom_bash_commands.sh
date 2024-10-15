@@ -596,7 +596,7 @@ cbcs() {
     echo "         Description: Open the custom_bash_commands directory in Visual Studio Code"
     echo "         Usage: codecbc"
     echo "  i"
-    echo "         Description: Alias for 'sudo apt install -y'"
+    echo "         Description: Alias for 'sudo apt install'"
     echo "         Usage: i [package]"
     echo "  downloads"
     echo "         Description: Change to the Downloads directory and list its contents"
@@ -1108,11 +1108,11 @@ update() {
   # Run update commands with sudo, tee to output to terminal and append to log file
   # Define an array of commands to run
   commands=(
-    "sudo apt update -y"
-    "sudo apt full-upgrade -y"
-    "sudo apt autoremove -y"
+    "sudo apt update"
+    "sudo apt full-upgrade"
+    "sudo apt autoremove"
     "sudo apt autoclean"
-    "sudo flatpak update -y"
+    "sudo flatpak update"
     "sudo snap refresh"
     "check_install_mscorefonts"
     "chezmoi re-add"
@@ -1478,7 +1478,7 @@ function extract() {
 # Check to see if figlet is installed and install it if it is not
 if ! command -v figlet &>/dev/null; then
   echo "figlet not found. Installing..."
-  sudo apt install figlet -y
+  sudo apt install figlet
 fi
 
 # Create a file to store figlet configuration and message text
@@ -1636,7 +1636,7 @@ function remove_session_id_config() {
 # Check to see if neofetch is installed and install it if it is not, then call it
 if ! command -v neofetch &>/dev/null; then
   echo "neofetch not found. Installing..."
-  sudo apt install neofetch -y
+  sudo apt install neofetch
 fi
 
 # Prompt the user if they would like to enable neofetch on terminal run and store the response in a configuration file
@@ -2110,7 +2110,7 @@ alias home='cd ~ && ls'
 alias hs='historysearch'
 alias hse='historysearchexact'
 alias hsearch='historysearch'
-alias i='sudo apt install -y'
+alias i='sudo apt install'
 alias lg='lazygit'
 alias ln='ln -i'
 alias man='sudo man'
@@ -2186,7 +2186,7 @@ function check_install_zoxide() {
     echo "zoxide not found. Installing..."
     sleep 3
     curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
-    sudo apt install zoxide -y
+    sudo apt install zoxide
     eval "$(zoxide init --cmd cd bash)"
     echo "Please use 'refresh' to refresh the terminal"
   fi
@@ -2201,7 +2201,7 @@ function check_install_ranger() {
   if ! command -v ranger &>/dev/null; then
     echo "ranger not found. Installing..."
     sleep 3
-    sudo apt install ranger -y
+    sudo apt install ranger
     echo "Please use 'refresh' to refresh the terminal"
   fi
 }
@@ -2231,7 +2231,7 @@ function check_install_obsidian() {
     echo "obsidian not found. Installing..."
     sleep 3
     sudo snap install obsidian --classic
-    sudo apt install ripgrep -y
+    sudo apt install ripgrep
     sudo apt install xclip
     git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
     echo "Obsidian installed. Please use 'refresh' to refresh the terminal."
@@ -2248,7 +2248,7 @@ function check_install_fzf() {
   if ! command -v fzf &>/dev/null; then
     echo "fzf not found. Installing..."
     sleep 3
-    sudo apt install fzf -y
+    sudo apt install fzf
     echo "Please use 'refresh' to refresh the terminal"
   fi
 }
@@ -2272,7 +2272,7 @@ function check_install_fzf() {
 function check_install_bat() {
   if ! command -v batcat &>/dev/null; then
     echo "bat not found. Installing..."
-    sudo apt install bat -y
+    sudo apt install bat
     echo "Please use 'refresh' to refresh the terminal"
   fi
 }
@@ -2285,7 +2285,7 @@ function check_install_bat() {
 function check_install_neovim() {
   if command -v nvim &>/dev/null; then
     export PATH="$PATH:/opt/nvim-linux64/bin"
-    # If neovim is not installed, install it using "sudo apt install neovim -y"
+    # If neovim is not installed, install it using "sudo apt install neovim"
   else
     echo "Neovim not found. Please install from https://github.com/neovim/neovim/releases"
     echo "Download the nvim.appimage file, use 'chmod +x nvim.appimage' to make it executable, and run 'sudo mv nvim.appimage /bin/nvim' to install."
@@ -2315,7 +2315,7 @@ function check_install_eza() {
     echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
     sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
     sudo apt update
-    sudo apt install eza -y
+    sudo apt install eza
     echo "Eza has been installed."
   fi
 
@@ -2374,7 +2374,7 @@ function check_install_vscode() {
 function check_install_btop() {
   if ! command -v btop &>/dev/null; then
     echo "Btop not found. Installing..."
-    sudo apt install btop -y
+    sudo apt install btop
     echo "Btop has been installed."
   fi
 }
@@ -2387,7 +2387,7 @@ function check_install_btop() {
 function check_install_hstr() {
   if ! command -v hstr &>/dev/null; then
     echo "Hstr not found. Installing..."
-    sudo apt install hstr -y
+    sudo apt install hstr
     echo "hstr has been installed."
   fi
 }
@@ -2424,7 +2424,7 @@ fi
 function check_install_cht() {
   if ! command -v cht.sh &>/dev/null; then
     echo "cht.sh not found. Installing..."
-    sudo apt install rlwrap -y
+    sudo apt install rlwrap
     curl -s https://cht.sh/:cht.sh | sudo tee /usr/local/bin/cht.sh && sudo chmod +x /usr/local/bin/cht.sh
     echo "cht.sh has been installed."
   fi
@@ -2451,7 +2451,7 @@ function check_install_cht() {
 #while IFS= read -r line; do
 #    if [[ ! "$line" =~ ^#.*$ ]] && [[ -n "$line" ]]; then
 #        echo "Installing $line..."
-#        sudo apt install "$line" -y
+#        sudo apt install "$line"
 #    fi
 #done < "$apt_conf"
 
