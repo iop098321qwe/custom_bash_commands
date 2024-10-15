@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.24.20"
+VERSION="1.25.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -661,6 +661,9 @@ cbcs() {
     echo "  lg"
     echo "         Description: Alias for 'lazygit'"
     echo "         Usage: lg"
+    echo "  s"
+    echo "         Description: Alias for 's'"
+    echo "         Usage : s <command>"
   else
     # Display a list of all available custom commands and functions in this script
     echo " "
@@ -750,6 +753,7 @@ cbcs() {
     echo "  remove_neofetch_config,   (alias: rnc)"
     echo "  remove_session_id_config,   (alias: rsc)"
     echo "  rm"
+    echo "  s"
     echo "  temp,   (alias: cd ~/Documents/Temporary && ls)"
     echo "  update"
     echo "  updatecbc,   (alias: ucbc)"
@@ -2113,6 +2117,7 @@ alias man='sudo man'
 alias mv='mv -i'
 alias myip='curl http://ipecho.net/plain; echo'
 alias py='python3'
+alias s='sudo'
 alias python='python3'
 alias racc='remove_all_cbc_configs'
 alias rdvc='remove_display_version_config'
