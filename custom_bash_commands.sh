@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.25.0"
+VERSION="1.25.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1109,9 +1109,7 @@ update() {
   # Define an array of commands to run
   commands=(
     "sudo apt update"
-    "sudo apt full-upgrade"
     "sudo apt autoremove"
-    "sudo apt autoclean"
     "sudo flatpak update"
     "sudo snap refresh"
     "check_install_mscorefonts"
