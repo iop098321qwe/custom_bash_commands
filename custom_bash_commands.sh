@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.25.1"
+VERSION="1.26.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -435,7 +435,7 @@ cbcs() {
     echo "         Usage: mvfiles"
     echo "  up"
     echo "         Description: Move up one directory level"
-    echo "         Usage: up [number of levels]"
+    echo "         Usage: up [number of levels] [-a (all)] [-h (help)] [-r (root)] [-q (quiet)] [-c (clear)] [-p (print)] [l (list)]"
     echo "  wiki"
     echo "         Description: Open the CBC wiki in the default browser"
     echo "         Usage: wiki"
