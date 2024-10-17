@@ -841,24 +841,132 @@ function backup() {
 
 # Function to move up in the directory hierarchy by a specified number of levels.
 function up() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: This function allows you to move up in the directory hierarchy by a specified number of levels."
-    echo "Usage: up [number of levels]"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
+  # Initialize flags with default values
+  local clear_terminal=false
+  local print_directory=false
+  local quiet_mode=false
+  local detailed_listing=false
+  local times=1
 
-  local times=$1 # The number of levels to move up in the directory structure.
-  local up=""    # A string that will accumulate the "../" for each level up.
-
-  while [ "$times" -gt 0 ]; do
-    up="../$up"          # Append "../" to the 'up' string for each level.
-    times=$((times - 1)) # Decrement the counter.
+  # Parse command-line arguments
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+    -h)
+      # Display help message and return
+      echo "Description: This function allows you to move up in the directory hierarchy by a specified number of levels."
+      echo "Usage: up [options] [number of levels]"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      echo "  -a    Return to the home directory"
+      echo "  -r    Go to the root directory"
+      echo "  -c    Clear the terminal after moving"
+      echo "  -p    Print the current directory after moving"
+      echo "  -q    Suppress the ls output"
+      echo "  -l    Use ls -l for a detailed listing after changing directories"
+      return
+      ;;
+    -a)
+      # Change to home directory
+      cd ~ || {
+        echo "Error: Failed to return to home directory."
+        return 1
+      }
+      # List contents if quiet mode is not enabled
+      if [ "$quiet_mode" = false ]; then
+        if [ "$detailed_listing" = true ]; then
+          ls -l
+        else
+          ls
+        fi
+      fi
+      return
+      ;;
+    -r)
+      # Change to root directory
+      cd / || {
+        echo "Error: Failed to change to root directory."
+        return 1
+      }
+      # List contents if quiet mode is not enabled
+      if [ "$quiet_mode" = false ]; then
+        if [ "$detailed_listing" = true ]; then
+          ls -l
+        else
+          ls
+        fi
+      fi
+      return
+      ;;
+    -c)
+      # Set flag to clear terminal after moving
+      clear_terminal=true
+      ;;
+    -p)
+      # Set flag to print the current directory after moving
+      print_directory=true
+      ;;
+    -q)
+      # Set flag to suppress ls output
+      quiet_mode=true
+      ;;
+    -l)
+      # Set flag to use detailed listing (ls -l)
+      detailed_listing=true
+      ;;
+    [1-9][0-9]*)
+      # Set the number of levels to move up
+      times=$1
+      ;;
+    *)
+      # Handle invalid arguments
+      echo "Error: Invalid argument. Use -h for help."
+      return 1
+      ;;
+    esac
+    shift
   done
 
-  cd $up # Change directory to the final path constructed.
-  ls
+  # Construct the path to move up the specified number of levels
+  local up=()
+  while [ "$times" -gt 0 ]; do
+    up+=("..")
+    times=$((times - 1))
+  done
+
+  # Function to join array elements with a delimiter
+  join_by() {
+    local IFS="$1"
+    shift
+    echo "$*"
+  }
+
+  # Join the array to create the path
+  local path="$(join_by / "${up[@]}")"
+
+  # Change directory to the constructed path
+  if ! cd "$path"; then
+    echo "Error: Failed to change directory."
+    return 1
+  fi
+
+  # Clear terminal if the flag is set
+  if [ "$clear_terminal" = true ]; then
+    clear
+  fi
+
+  # Print the current directory if the flag is set
+  if [ "$print_directory" = true ]; then
+    pwd
+  fi
+
+  # List directory contents unless quiet mode is enabled
+  if [ "$quiet_mode" = false ]; then
+    if [ "$detailed_listing" = true ]; then
+      ls -l
+    else
+      ls
+    fi
+  fi
 }
 
 ################################################################################
