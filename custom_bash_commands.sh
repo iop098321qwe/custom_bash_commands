@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.26.2"
+VERSION="1.26.3"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2492,7 +2492,7 @@ function check_install_eza() {
   alias lt="eza --group-directories-first -T"
   alias llt="eza --group-directories-first --smart-group --total-size -hlT"
   alias lsd="eza --group-directories-first -D"
-  alias lf="eza --group-directories-first -f"
+  alias lsf="eza --group-directories-first -f"
 }
 
 ###################################################################################################################################################################
