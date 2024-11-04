@@ -20,7 +20,7 @@
 
 #### OLD METHOD
 
-* Set up `.bashrc` in the home directory (with hidden files) with the `source ~/.custom_bash_commands.sh` appended to the end.
+* Set up `.bashrc` in the home directory (with hidden files) with the `source ~/.custom_bash_commands.sh` appended to the end
   * To open the `.bashrc` file, use this command in the Terminal: `open .bashrc`
 * Ensure the most up-to-date version of the github repository is added to the user file (with hidden files).
 * Open a new terminal as this will not work without the `.bashrc` file being reloaded.
