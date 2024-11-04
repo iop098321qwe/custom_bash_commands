@@ -1086,7 +1086,7 @@ function cc() {
   fi
 
   # Combine all arguments into a single commit message.
-  message="$@"
+  message="$*"
 
   # If a message is provided, proceed with git operations
   currentBranch=$(git symbolic-ref --short -q HEAD) # Getting the current branch
@@ -1099,10 +1099,6 @@ function cc() {
   echo " "
   echo "available branches:"
   git branch
-  echo " "
-  echo "#####################################################"
-  echo "## DID YOU SET THE .VERSION FILE NUMBER CORRECTLY? ##"
-  echo "#####################################################"
   echo " "
   read -p "Do you want to continue pushing to the current branch? (y/n): " choice
 
