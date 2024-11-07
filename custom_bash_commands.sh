@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.26.4"
+VERSION="1.26.5"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -678,6 +678,9 @@ cbcs() {
     echo "  lsf"
     echo "         Description: List only files using eza"
     echo "         Usage: lsf"
+    echo "  lsr"
+    echo "         Description: List files using eza in reverse order"
+    echo "         Usage: lsr"
     echo "  lt"
     echo "         Description: List files with tree view using eza"
     echo "         Usage: lt"
@@ -798,6 +801,7 @@ cbcs() {
     echo "  ls"
     echo "  lsd"
     echo "  lsf"
+    echo "  lsr"
     echo "  lt"
     echo "  mv"
     echo "  ods"
@@ -2489,6 +2493,7 @@ function check_install_eza() {
   alias llt="eza --group-directories-first --smart-group --total-size -hlT"
   alias lsd="eza --group-directories-first -D"
   alias lsf="eza --group-directories-first -f"
+  alias lsr="eza --group-directories-first -r"
 }
 
 ###################################################################################################################################################################
