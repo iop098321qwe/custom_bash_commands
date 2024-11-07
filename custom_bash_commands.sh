@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.26.5"
+VERSION="1.26.6"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -660,6 +660,9 @@ cbcs() {
     echo "  la"
     echo "         Description: List all files including hidden files using eza"
     echo "         Usage: la"
+    echo "  lar"
+    echo "         Description: List all files including hidden files in reverse order using eza"
+    echo "         Usage: lar"
     echo "  le"
     echo "         Description: List all files including hidden files sorting by extension using eza"
     echo "         Usage: le"
@@ -793,6 +796,7 @@ cbcs() {
     echo "  i"
     echo "  incon"
     echo "  la"
+    echo "  lar"
     echo "  le"
     echo "  lg"
     echo "  ll"
@@ -2485,15 +2489,16 @@ function check_install_eza() {
   fi
 
   # Set ls aliases for eza
-  alias ls="eza --group-directories-first"
-  alias ll="eza --group-directories-first --smart-group --total-size -hl"
   alias la="eza --group-directories-first -a"
+  alias lar= "eza --group-directories-first -ar"
   alias le="eza --group-directories-first -s extension"
-  alias lt="eza --group-directories-first -T"
+  alias ll="eza --group-directories-first --smart-group --total-size -hl"
   alias llt="eza --group-directories-first --smart-group --total-size -hlT"
   alias lsd="eza --group-directories-first -D"
+  alias ls="eza --group-directories-first"
   alias lsf="eza --group-directories-first -f"
   alias lsr="eza --group-directories-first -r"
+  alias lt="eza --group-directories-first -T"
 }
 
 ###################################################################################################################################################################
