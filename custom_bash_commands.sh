@@ -2490,7 +2490,7 @@ function check_install_eza() {
 
   # Set ls aliases for eza
   alias la="eza --group-directories-first -a"
-  alias lar= "eza --group-directories-first -ar"
+  alias lar= "eza --group-directories-first -a -r"
   alias le="eza --group-directories-first -s extension"
   alias ll="eza --group-directories-first --smart-group --total-size -hl"
   alias llt="eza --group-directories-first --smart-group --total-size -hlT"
