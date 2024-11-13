@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.26.6"
+VERSION="1.26.7"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2293,7 +2293,7 @@ alias rdvc='remove_display_version_config'
 alias refresh='source ~/.bashrc && clear && di'
 alias rfc='remove_figlet_config'
 alias rh='regex_help'
-alias rm='rm -I'
+alias rm='rm -i'
 alias rma='rm -rfI'
 alias rnc='remove_neofetch_config'
 alias rsc='remove_session_id_config'
