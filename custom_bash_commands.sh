@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.26.8"
+VERSION="1.27.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2301,6 +2301,7 @@ alias temp='cd ~/Documents/Temporary && ls'
 alias ucbc='updatecbc'
 alias vim='nvim'
 alias v='nvim'
+alias vault='cd ~/Documents/grymms_grimoires && ls'
 alias x='chmod +x'
 alias z='zellij'
 alias ':wq'='exit'
