@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.27.0"
+VERSION="1.27.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -718,7 +718,7 @@ cbcs() {
     echo "         Description: Alias for 'lazygit'"
     echo "         Usage: lg"
     echo "  s"
-    echo "         Description: Alias for 's'"
+    echo "         Description: Alias for 'sudo'"
     echo "         Usage : s <command>"
   else
     # Display a list of all available custom commands and functions in this script
@@ -2296,7 +2296,7 @@ alias rm='rm -I'
 alias rnc='remove_neofetch_config'
 alias rsc='remove_session_id_config'
 alias seebash='batcat ~/.bashrc'
-alias s='sudo'
+a/lias s='sudo'
 alias temp='cd ~/Documents/Temporary && ls'
 alias ucbc='updatecbc'
 alias vim='nvim'
