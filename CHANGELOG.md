@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.28.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.10...v1.28.0) (2024-11-25)
+
+
+### Features
+
+* **alias:** add `ver` and `gpfom` aliases ([a02fa00](https://github.com/iop098321qwe/custom_bash_commands/commit/a02fa00b84bab24ea07686d2d2690145d731f1da))
+
 ### [1.27.10](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.9...v1.27.10) (2024-11-25)
 
 
