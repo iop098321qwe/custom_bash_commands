@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.28.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.28.1...v1.28.2) (2024-11-25)
+
+
+### Bug Fixes
+
+* **aliases:** update aliases ([1770d33](https://github.com/iop098321qwe/custom_bash_commands/commit/1770d33399d8599c91dd4d828b39dac210a2e725))
+* correcting the displayed version number ([2056fa1](https://github.com/iop098321qwe/custom_bash_commands/commit/2056fa15f7963b40335e8b1bb1861aa7c045f5e2))
+
 ### [1.28.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.28.0...v1.28.1) (2024-11-25)
 
 ## [1.28.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.10...v1.28.0) (2024-11-25)
