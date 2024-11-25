@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.27.10"
+VERSION="1.27.11"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2300,6 +2300,8 @@ alias s='sudo'
 alias temp='cd ~/Documents/Temporary && ls'
 alias ucbc='updatecbc'
 alias vim='nvim'
+alias ver='npx standard-version'
+alias gpfom='git push --follow-tags origin main'
 alias v='nvim'
 alias vault='cd ~/Documents/grymms_grimoires && ls'
 alias x='chmod +x'
