@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.27.7](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.6...v1.27.7) (2024-11-25)
+
+
+### Bug Fixes
+
+* increment the version number that displays terminal ([6c2bd9b](https://github.com/iop098321qwe/custom_bash_commands/commit/6c2bd9b8b495bb17b359ce7e831fd0f6ae47ae0d))
+
 ### [1.27.6](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.5...v1.27.6) (2024-11-25)
 
 ### [1.27.4](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.1.1...v1.27.4) (2024-11-25)
