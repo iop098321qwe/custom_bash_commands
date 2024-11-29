@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.1.6"
+VERSION="2.2.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -178,7 +178,7 @@ function append_to_bashrc() {
 append_to_bashrc
 
 ################################################################################
-# Create function to open the wiki using the default browser
+# wiki
 ################################################################################
 
 # wiki
@@ -229,6 +229,45 @@ function wiki() {
   else
     # Open the CBC wiki in the default browser
     xdg-open "$wiki_url"
+  fi
+}
+
+################################################################################
+# changes
+################################################################################
+
+# changes
+# Description: Function to open the CBC changelog in the default browser
+# Usage: changes
+# Options:
+#   -h    Display this help message
+#   -c    Copy the changelog URL to the clipboard
+
+# Example: changes  ---Opens the CBC changelog in the default browser.
+
+##########
+
+# Function to open the CBC wiki in the default browser
+function changes() {
+  if [ "$1" = "-h" ]; then
+    echo "Description: Function to open the CBC changelog in the default browser"
+    echo "Usage: changes"
+    echo "Options:"
+    echo "  -h    Display this help message"
+    echo "  -c    Copy the changelog URL to the clipboard"
+    return
+  fi
+
+  # Define the CBC wiki URL
+  changelog_url="https://github.com/iop098321qwe/custom_bash_commands/blob/main/CHANGELOG.md"
+
+  # Check for options
+  if [ "$1" = "-c" ]; then
+    # Copy the changelog URL to the clipboard
+    echo "$changelog_url" | xclip -selection clipboard
+    echo "Changelog URL copied to clipboard."
+    # Open the CBC wiki in the default browser
+    xdg-open "$changelog_url"
   fi
 }
 
@@ -390,15 +429,21 @@ cbcs() {
     echo " "
     echo "  backup"
     echo "         Description: Create a backup file of a file"
-    echo "         Usage: backup [file]"
+    echo "         Usage: backup <file>"
     echo "  cbcs"
     echo "         Description: Display a list of all available custom commands in this script"
     echo "         Usage: cbcs [-h]"
     echo "         Flags:"
     echo "             -h    Display this help message"
+    echo "  changes"
+    echo "         Description: Function to open the CBC changelog in the default browser"
+    echo "         Usage: changes [-h | -c]"
+    echo "         Flags:"
+    echo "             -h    Display this help message"
+    echo "             -c    Copy the changelog URL to the clipboard"
     echo "  cht.sh"
     echo "         Description: Open the Cheat.sh client in the terminal"
-    echo "         Usage: cht.sh [query]"
+    echo "         Usage: cht.sh <query>"
     echo "  cls"
     echo "         Description: Clear the terminal screen and print the contents of the current directory"
     echo "         Usage: cls"
@@ -411,7 +456,7 @@ cbcs() {
     echo "         Aliases: dv"
     echo "  rma"
     echo "         Description: Remove the directory and all files it contains"
-    echo "         Usage: rma [directory]"
+    echo "         Usage: rma <directory>"
     echo "  editbash"
     echo "         Description: Open the .bashrc file in the default terminal text editor"
     echo "         Usage: editbash"
@@ -729,6 +774,7 @@ cbcs() {
     echo "  backup"
     echo "  c"
     echo "  cbcs"
+    echo "  changes"
     echo "  cht.sh"
     echo "  cla"
     echo "  cls"
