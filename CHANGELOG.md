@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.30.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.30.2...v1.30.3) (2024-11-29)
+
+
+### Bug Fixes
+
+* change .version file to .versionrc ([6cf568b](https://github.com/iop098321qwe/custom_bash_commands/commit/6cf568b7e1a7b54019a38d1dd95ba26bd85bfee1))
+
 ## [1.30.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.30.1...v1.30.2) (2024-11-29)
 
 ## [1.30.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.30.0...v1.30.1) (2024-11-29)
@@ -53,7 +60,7 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [1.28.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.28.2...v1.28.3) (2024-11-25)
 
-### [1.28.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.28.1...v1.28.2) (2024-11-25)
+## [1.28.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.28.1...v1.28.2) (2024-11-25)
 
 
 ### Bug Fixes
@@ -61,7 +68,7 @@ All notable changes to this project will be documented in this file. See [commit
 * **aliases:** update aliases ([1770d33](https://github.com/iop098321qwe/custom_bash_commands/commit/1770d33399d8599c91dd4d828b39dac210a2e725))
 * correcting the displayed version number ([2056fa1](https://github.com/iop098321qwe/custom_bash_commands/commit/2056fa15f7963b40335e8b1bb1861aa7c045f5e2))
 
-### [1.28.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.28.0...v1.28.1) (2024-11-25)
+## [1.28.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.28.0...v1.28.1) (2024-11-25)
 
 ## [1.28.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.10...v1.28.0) (2024-11-25)
 
@@ -70,7 +77,7 @@ All notable changes to this project will be documented in this file. See [commit
 
 * **alias:** add `ver` and `gpfom` aliases ([a02fa00](https://github.com/iop098321qwe/custom_bash_commands/commit/a02fa00b84bab24ea07686d2d2690145d731f1da))
 
-### [1.27.10](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.9...v1.27.10) (2024-11-25)
+## [1.27.10](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.9...v1.27.10) (2024-11-25)
 
 
 ### Bug Fixes
@@ -78,29 +85,29 @@ All notable changes to this project will be documented in this file. See [commit
 * test again ([0d96483](https://github.com/iop098321qwe/custom_bash_commands/commit/0d964831dd8a087c053f7efa7762601dfd128ebd))
 * testing again ([ec3e208](https://github.com/iop098321qwe/custom_bash_commands/commit/ec3e208c7b06e1c6f3cef5cd945a0c9fd42cd28d))
 
-### [1.27.9](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.8...v1.27.9) (2024-11-25)
+## [1.27.9](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.8...v1.27.9) (2024-11-25)
 
-### [1.27.8](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.7...v1.27.8) (2024-11-25)
+## [1.27.8](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.7...v1.27.8) (2024-11-25)
 
-### [1.27.7](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.6...v1.27.7) (2024-11-25)
+## [1.27.7](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.6...v1.27.7) (2024-11-25)
 
 
 ### Bug Fixes
 
 * increment the version number that displays terminal ([6c2bd9b](https://github.com/iop098321qwe/custom_bash_commands/commit/6c2bd9b8b495bb17b359ce7e831fd0f6ae47ae0d))
 
-### [1.27.6](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.5...v1.27.6) (2024-11-25)
+## [1.27.6](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.5...v1.27.6) (2024-11-25)
 
-### [1.27.4](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.1.1...v1.27.4) (2024-11-25)
+## [1.27.5](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.4...v1.27.5) (2024-11-25)
 
-### [1.1.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.1.0...v1.1.1) (2024-11-25)
+## [1.1.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.1.0...v1.1.1) (2024-11-25)
 
 
 ### Bug Fixes
 
 * correct tag versioning number ([74a8178](https://github.com/iop098321qwe/custom_bash_commands/commit/74a817823cbdce2f4301629360c65c3379eb2814))
 
-## 1.1.0 (2024-11-25)
+## [1.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/ff32c154872751254dc5ddca91009d3a6d35ca16...v1.1.0) (2024-11-25)
 
 
 ### Features
