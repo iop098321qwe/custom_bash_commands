@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.30.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.29.5...v1.30.0) (2024-11-29)
+
+
+### Features
+
+* update `cc` command to be more interactive ([1612421](https://github.com/iop098321qwe/custom_bash_commands/commit/16124210f8b30dba81d5a25e73ec35a0ef7648ac))
+
 ## [1.29.5](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.29.4...v1.29.5) (2024-11-25)
 
 
