@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.1.2"
+VERSION="2.1.3"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -310,12 +310,10 @@ display_version() {
   # alias dv="display_version"
   # Read the contents of the .version file and display it in the terminal
   version_number=$VERSION
-  echo -e "Now using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$version_number\e[0m"
-  echo -e "You can show commands included with \e[36mcbcs [-h]\e[0m or typing \e[36mcommands\e[0m (\e[36mcomm\e[0m for shortcut)."
+  echo -e "Using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$version_number\e[0m. To see the changes in this version, use \e[36mchanges\e[0m command."
+  echo -e "Show commands included with \e[36mcbcs [-h]\e[0m or typing \e[36mcommands\e[0m (\e[36mcomm\e[0m for shortcut)."
   echo -e "If you wish to stop using \e[32mCBC\e[0m, \e[31mremove\e[0m \e[33m.custom_bash_commands.sh\e[0m from your \e[33m.bashrc\e[0m file using \e[36meditbash\e[0m (\e[32mCBC\e[0m)."
   echo -e "Check out the Wiki for more information (or use \e[36mwiki\e[0m): \e[34m[link](https://github.com/iop098321qwe/custom_bash_commands/wiki)\e[0m"
-  # echo statement for using the command `changes` to see the changelog in your default browser
-  echo -e "To see the changes in this version, use \e[36mchanges\e[0m command."
 }
 
 # Create a file to store the display_version configuration
