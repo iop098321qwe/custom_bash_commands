@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.1.5](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.1.4...v2.1.5) (2024-11-29)
+
+
+### Bug Fixes
+
+* update colors again in config message ([f30584f](https://github.com/iop098321qwe/custom_bash_commands/commit/f30584f7b9b415db1c289bc02ab7ceef49a9ad93))
+
 ## [2.1.4](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.1.3...v2.1.4) (2024-11-29)
 
 
