@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.2.0"
+VERSION="2.2.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -266,6 +266,7 @@ function changes() {
     # Copy the changelog URL to the clipboard
     echo "$changelog_url" | xclip -selection clipboard
     echo "Changelog URL copied to clipboard."
+  else
     # Open the CBC wiki in the default browser
     xdg-open "$changelog_url"
   fi
