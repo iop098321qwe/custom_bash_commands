@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.3.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.2.2...v2.3.0) (2024-11-29)
+
+
+### Features
+
+* add `test` command to test changes made in CBC on other branch ([231ec2e](https://github.com/iop098321qwe/custom_bash_commands/commit/231ec2e33f481eb3fe96a4e4db90f10a07af6325))
+
+
+### Bug Fixes
+
+* fixed error in readme ([614a214](https://github.com/iop098321qwe/custom_bash_commands/commit/614a214fb16bacd62b5873c6984671df52c98d82))
+
 ## [2.2.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.2.1...v2.2.2) (2024-11-29)
 
 
