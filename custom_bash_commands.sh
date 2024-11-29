@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.1.4"
+VERSION="2.1.6"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -137,7 +137,7 @@ function first_time_setup() {
     echo " "
     echo "Setup complete! Please restart your terminal to apply the changes."
   else
-    echo -e "Configuration can be edited in $CONFIG_FILE or by using \e[36mconf\e[0m command."
+    echo -e "Configuration can be edited in \e[33m$CONFIG_FILE\e[0m or by using \e[36mconf\e[0m command."
     alias conf="nvim $CONFIG_FILE"
   fi
 }
