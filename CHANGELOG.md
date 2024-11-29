@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.3.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.3.0...v2.3.1) (2024-11-29)
+
+
+### Bug Fixes
+
+* update README.md ([fb29059](https://github.com/iop098321qwe/custom_bash_commands/commit/fb290593ffdba515106844c94edaae86e2780e57))
+
 ## [2.3.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.2.2...v2.3.0) (2024-11-29)
 
 
