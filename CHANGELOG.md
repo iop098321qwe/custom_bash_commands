@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.31.0...v2.0.0) (2024-11-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* update version in cbc file
+
+### Bug Fixes
+
+* update version in cbc file ([9d7cffd](https://github.com/iop098321qwe/custom_bash_commands/commit/9d7cffd27fe27a0fd526c4432c9947abbeebf5a4))
+
 ## [1.31.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.30.3...v1.31.0) (2024-11-29)
 
 
