@@ -85,6 +85,7 @@ A full list of aliases will be added here for reference of what the script offer
 * [ ] Create a list of commands (Useful Commands to Remember) that can be displayed using a command, potentially in the help command for CBC.
   * [ ] The idea is to have additional tools not created with the script to install additionally and display information about.
 * [ ] Set up `readme` command to open the default browser directly to the README.md page for CBC
+* [x] Create command to test commands
 * [x] Create a command to toggle between the `master` and `test` branches for easy testing.
 * [x] Build a SOP for creating new functions/aliases.
 * [x] Set up zoxide and fzf automatic installation with setup.

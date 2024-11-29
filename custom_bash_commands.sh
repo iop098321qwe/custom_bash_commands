@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.2.2"
+VERSION="2.3.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -350,7 +350,7 @@ display_version() {
   # alias dv="display_version"
   # Read the contents of the .version file and display it in the terminal
   version_number=$VERSION
-  echo -e "TEST Using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$version_number\e[0m. To see the changes in this version, use \e[36mchanges\e[0m command."
+  echo -e "Using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$version_number\e[0m. To see the changes in this version, use \e[36mchanges\e[0m command."
   echo -e "Show commands included with \e[36mcbcs [-h]\e[0m or typing \e[36mcommands\e[0m (\e[36mcomm\e[0m for shortcut)."
   echo -e "If you wish to stop using \e[32mCBC\e[0m, \e[31mremove\e[0m \e[33m.custom_bash_commands.sh\e[0m from your \e[33m.bashrc\e[0m file using \e[36meditbash\e[0m (\e[32mCBC\e[0m)."
   echo -e "Check out the Wiki for more information (or use \e[36mwiki\e[0m): \e[34m[link](https://github.com/iop098321qwe/custom_bash_commands/wiki)\e[0m"
@@ -586,6 +586,9 @@ cbcs() {
     echo " temp,   (alias: cd ~/Documents/Temporary && ls)"
     echo "         Description: Change to the Temporary directory and list its contents"
     echo "         Usage: temp,   (alias: cd ~/Documents/Temporary && ls)"
+    echo " test,   (alias: source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh"
+    echo "         Description: Source the custom_bash_commands script for testing"
+    echo "         Usage: test,   (alias: source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh"
     echo " cbc,   (alias: cdgh && cd custom_bash_commands && ls)"
     echo "         Description: Change to the custom_bash_commands directory and list its contents"
     echo "         Usage: cbc,   (alias: cdgh && cd custom_bash_commands && ls)"
@@ -868,6 +871,7 @@ cbcs() {
     echo "  rm"
     echo "  s"
     echo "  temp,   (alias: cd ~/Documents/Temporary && ls)"
+    echo "  test,   (alias: source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh"
     echo "  update"
     echo "  updatecbc,   (alias: ucbc)"
     echo "  vim"
@@ -2346,6 +2350,7 @@ alias rsc='remove_session_id_config'
 alias seebash='batcat ~/.bashrc'
 alias s='sudo'
 alias temp='cd ~/Documents/Temporary && ls'
+alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh'
 alias ucbc='updatecbc'
 alias vault='cd ~/Documents/grymms_grimoires && ls'
 alias ver='npx commit-and-tag-version'
