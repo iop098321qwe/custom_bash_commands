@@ -56,6 +56,7 @@ A full list of aliases will be added here for reference of what the script offer
 
 ## Additional Plans
 
+* [ ] Change `test` to a command rather than an alias for more testing options
 * [ ] Consolidate the config files for optional items.
 * [ ] Edit `odt` command to create a .odt file and open it in the directory specified and prompt to name it
 * [ ] Edit `ods` command to create a .ods file and open it in the directory specified and prompt to name it
