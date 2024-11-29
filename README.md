@@ -56,7 +56,7 @@ A full list of aliases will be added here for reference of what the script offer
 
 ## Visit the TODO.md file for additional plans
 
-[TODO](TODO)
+[TODO](docs/TODO.md)
 
 # Adjusting settings on Linux
 
