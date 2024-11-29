@@ -137,7 +137,7 @@ function first_time_setup() {
     echo " "
     echo "Setup complete! Please restart your terminal to apply the changes."
   else
-    echo "Configuration can be edited in $CONFIG_FILE or by using \e[36mconf\e[0m command."
+    echo -e "Configuration can be edited in $CONFIG_FILE or by using \e[36mconf\e[0m command."
     alias conf="nvim $CONFIG_FILE"
   fi
 }
