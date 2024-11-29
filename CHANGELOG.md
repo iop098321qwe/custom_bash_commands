@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.1.6](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.1.5...v2.1.6) (2024-11-29)
+
+
+### Bug Fixes
+
+* change color for .cbc.config file in dv message ([8dbedfc](https://github.com/iop098321qwe/custom_bash_commands/commit/8dbedfca043cce43f55aecacb0a8f5e27de5926c))
+
 ## [2.1.5](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.1.4...v2.1.5) (2024-11-29)
 
 
