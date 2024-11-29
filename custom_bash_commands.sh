@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="1.29.4"
+VERSION="1.30.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1088,20 +1088,20 @@ function remove_all_cbc_configs() {
 # Function to combine the git add/commit process
 function cc() {
   # Check if a message was provided
-  if [ $# -eq 0 ]; then
-    echo "Commit message is not provided"
-    return 1
-  fi
+  # if [ $# -eq 0 ]; then
+  # echo "Commit message is not provided"
+  # return 1
+  # fi
 
   # Combine all arguments into a single commit message.
-  message="$*"
+  # message="$*"
 
   # If a message is provided, proceed with git operations
   currentBranch=$(git symbolic-ref --short -q HEAD) # Getting the current branch
 
   echo " "
   echo "Current branch: $currentBranch"
-  echo "Commit message: $message"
+  # echo "Commit message: $message"
   echo " "
   echo "Current Time: $(date)"
   echo " "
@@ -1112,7 +1112,7 @@ function cc() {
 
   if [ "$choice" == "y" ]; then
     git add .
-    git commit -m "$message"
+    git commit
     git push origin "$currentBranch"
   else
     echo "Push to the current branch canceled."
