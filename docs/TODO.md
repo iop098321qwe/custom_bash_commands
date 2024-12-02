@@ -2,6 +2,7 @@
 
 ## Not Complete
 
+* [ ] Update `up` command to work properly.
 * [ ] Change `test` to a command rather than an alias for more testing options
 * [ ] Consolidate the config files for optional items.
 * [ ] Edit `odt` command to create a .odt file and open it in the directory specified and prompt to name it
