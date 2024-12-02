@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.3.3"
+VERSION="2.4.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1137,34 +1137,50 @@ function remove_all_cbc_configs() {
 ##########
 
 # Function to combine the git add/commit process
-function cc() {
-  # Check if a message was provided
-  # if [ $# -eq 0 ]; then
-  # echo "Commit message is not provided"
-  # return 1
-  # fi
-
-  # Combine all arguments into a single commit message.
-  # message="$*"
-
-  # If a message is provided, proceed with git operations
-  currentBranch=$(git symbolic-ref --short -q HEAD) # Getting the current branch
+cc() {
+  # Get the current branch name with error handling
+  currentBranch=$(git symbolic-ref --short -q HEAD 2>/dev/null)
+  if [ -z "$currentBranch" ]; then
+    echo "Error: Not a git repository or no branch detected. Please navigate to a valid git repository."
+    return 1
+  fi
 
   echo " "
   echo "Current branch: $currentBranch"
-  # echo "Commit message: $message"
   echo " "
-  echo "Current Time: $(date)"
-  echo " "
-  echo "available branches:"
-  git branch
+  echo "Available Branches:"
+  git branch --color=always | grep -e '^*' -e ''
   echo " "
   read -p "Do you want to continue pushing to the current branch? (y/n): " choice
 
-  if [ "$choice" == "y" ]; then
-    git add .
-    git commit
-    git push origin "$currentBranch"
+  if [ "$choice" = "y" ]; then
+    read -p "Do you want to stage all changes? (y/n): " stage_all
+    if [ "$stage_all" = "y" ]; then
+      git add .
+    else
+      read -p "Please specify the files you want to stage: " files
+      if [ -n "$files" ]; then
+        git add $files
+      else
+        echo "No files specified. Staging canceled."
+        return 1
+      fi
+    fi
+
+    git commit || {
+      echo "Commit failed. Aborting push."
+      return 1
+    }
+    read -p "Do you want to push the changes to the branch '$currentBranch'? (y/n): " push_choice
+    if [ "$push_choice" = "y" ]; then
+      echo "Pushing to branch: $currentBranch"
+      git push origin "$currentBranch" || {
+        echo "Push failed."
+        return 1
+      }
+    else
+      echo "Push canceled."
+    fi
   else
     echo "Push to the current branch canceled."
   fi
