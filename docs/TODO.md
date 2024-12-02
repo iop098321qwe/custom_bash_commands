@@ -3,10 +3,14 @@
 ## Not Complete
 
 * [ ] Update `up` command to work properly.
-* [ ] Change `test` to a command rather than an alias for more testing options
+  * [ ] Allow multiple levels of moving up with the command.
+  * [ ] Ensure that flags are working properly.
+* [ ] Update `cc` command to be more interactive and optionally automatically push.
+* [ ] Change the update process to be a single command rather than a separate script that runs using `updatecbc` or `ucbc` natively.
+* [ ] Change `test` to a command rather than an alias for more testing options.
 * [ ] Consolidate the config files for optional items.
-* [ ] Edit `odt` command to create a .odt file and open it in the directory specified and prompt to name it
-* [ ] Edit `ods` command to create a .ods file and open it in the directory specified and prompt to name it
+* [ ] Edit `odt` command to create a .odt file and open it in the directory specified and prompt to name it.
+* [ ] Edit `ods` command to create a .ods file and open it in the directory specified and prompt to name it.
 * [ ] Ensure that all custom commands have the "-h" help flag functionality.
 * [ ] Create a command to display information from "Shortcut-Terminal_Documentation" in the terminal for easy referencing.
 * [ ] Update cbcc commands and definition for calling aliases.
@@ -24,23 +28,23 @@
   * [ ] (some type of better terminal history manager)
   * [ ] GNU Stow (dotfile farm manager)
   * [ ] eza (better ls command)
-    * [ ] Set up to optionally display info on terminal start, or by using command only
-    * [ ] Set up to configure the display info command settings
+    * [ ] Set up to optionally display info on terminal start, or by using command only.
+    * [ ] Set up to configure the display info command settings.
   * [ ] Ranger (terminal file manager)
   * [ ] Modularize the code better.
 * [ ] Build a wiki to keep information organized.
 * [ ] Build an SOP for documenting changes.
 * [ ] Create a list of commands (Useful Commands to Remember) that can be displayed using a command, potentially in the help command for CBC.
   * [ ] The idea is to have additional tools not created with the script to install additionally and display information about.
-* [ ] Set up `readme` command to open the default browser directly to the README.md page for CBC
+* [ ] Set up `readme` command to open the default browser directly to the README.md page for CBC.
 
 ## Complete
 
-* [x] Create command to test commands
+* [x] Create command to test commands.
 * [x] Create a command to toggle between the `master` and `test` branches for easy testing.
 * [x] Build a SOP for creating new functions/aliases.
 * [x] Set up zoxide and fzf automatic installation with setup.
-* [x] Set up `wiki` command to open default browser directly to the wiki page for CBC
+* [x] Set up `wiki` command to open default browser directly to the wiki page for CBC.
 * [x] Add the alias functions above into the .custom_bash_commands.sh file for simple one file upload.
 * [x] Add a command to automatically update/copy the most recent version of the file into the <user> directory.
 * [x] Add a smart function to automatically check if there were any updates before performing the automatic update of the .custom_bash_commands.sh script in the ~/ directory.
