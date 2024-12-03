@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.5.0"
+VERSION="2.5.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2361,7 +2361,7 @@ alias man='sudo man'
 alias mv='mv -i'
 alias myip='curl http://ipecho.net/plain; echo'
 alias pron='yt-dlp --config-locations _configs.txt --batch-file _batch.txt --download-archive _downloaded.txt'
-alias pronfile='cd /media/$USER/T7 Shield/yt-dlp/'
+alias pronfile='cd /media/$USER/T7 Shield/yt-dlp'
 alias py='python3'
 alias python='python3'
 alias racc='remove_all_cbc_configs'
