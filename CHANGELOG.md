@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.7.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.6.1...v2.7.0) (2024-12-03)
+
+
+### Features
+
+* **alias:** add several new git aliases ([d36693d](https://github.com/iop098321qwe/custom_bash_commands/commit/d36693d295820421bdc510aff9ce76b598c8530c))
+
 ## [2.6.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.6.0...v2.6.1) (2024-12-03)
 
 
