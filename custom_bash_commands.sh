@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.4.0"
+VERSION="2.5.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -482,6 +482,12 @@ cbcs() {
     echo "  mvfiles"
     echo "         Description: Move all files in a directory to subdirectories based on file type"
     echo "         Usage: mvfiles"
+    echo " pron"
+    echo "         Description: Activate yt-dlp using normal settings"
+    echo "         Usage: pron"
+    echo " pronfile"
+    echo "         Description: Navigate to specific folder in T7 Shield"
+    echo "         Usage: pronfile"
     echo "  up"
     echo "         Description: Move up one directory level"
     echo "         Usage: up [number of levels>=0 | -a | -h | -r | -q | -c | -p | -l]"
@@ -862,6 +868,8 @@ cbcs() {
     echo "  odt"
     echo "  py"
     echo "  python"
+    echo "  pron"
+    echo "  pronfile"
     echo "  regex_help"
     echo "  remove_all_cbc_configs,   (alias: racc)"
     echo "  remove_display_version_config,   (alias: rdvc)"
@@ -2352,6 +2360,8 @@ alias ln='ln -i'
 alias man='sudo man'
 alias mv='mv -i'
 alias myip='curl http://ipecho.net/plain; echo'
+alias pron='yt-dlp --config-locations _configs.txt --batch-file _batch.txt --download-archive _downloaded.txt'
+alias pronfile='cd /media/$USER/T7 Shield/yt-dlp/'
 alias py='python3'
 alias python='python3'
 alias racc='remove_all_cbc_configs'
