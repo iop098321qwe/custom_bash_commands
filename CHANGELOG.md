@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.5.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.4.0...v2.5.0) (2024-12-03)
+
+
+### Features
+
+* **alias:** add `pron` and `pronfile` aliases ([2adbabb](https://github.com/iop098321qwe/custom_bash_commands/commit/2adbabbdd30d2ed043ee85a5cb886b3e63e41fd3))
+
 ## [2.4.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.3.3...v2.4.0) (2024-12-02)
 
 
