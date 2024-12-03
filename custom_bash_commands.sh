@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.6.0"
+VERSION="2.6.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2370,7 +2370,7 @@ alias mv='mv -i'
 alias myip='curl http://ipecho.net/plain; echo'
 alias pron='yt-dlp --config-locations _configs.txt --batch-file _batch.txt --download-archive _downloaded.txt'
 alias pronfile='cd /media/$USER/T7 Shield/yt-dlp'
-alias pronupdate='pronfile && pron'
+alias pronupdate='pronfile && pron || pron'
 alias pu='pronupdate'
 alias py='python3'
 alias python='python3'
