@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.6.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.5.1...v2.6.0) (2024-12-03)
+
+
+### Features
+
+* **alias:** add `pronupdate` and `pu` aliases ([eb9b77a](https://github.com/iop098321qwe/custom_bash_commands/commit/eb9b77a1e71585b856585d62b59820ce8c425612))
+
 ## [2.5.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.5.0...v2.5.1) (2024-12-03)
 
 
