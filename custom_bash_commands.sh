@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.5.1"
+VERSION="2.6.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -488,6 +488,12 @@ cbcs() {
     echo " pronfile"
     echo "         Description: Navigate to specific folder in T7 Shield"
     echo "         Usage: pronfile"
+    echo " pronupdate"
+    echo "         Description: Alias for $(pronfile && pron)"
+    echo "         Usage: pronupdate"
+    echo " pu"
+    echo "         Description: Alias for $(pronupdate)"
+    echo "         Usage: pu"
     echo "  up"
     echo "         Description: Move up one directory level"
     echo "         Usage: up [number of levels>=0 | -a | -h | -r | -q | -c | -p | -l]"
@@ -870,6 +876,8 @@ cbcs() {
     echo "  python"
     echo "  pron"
     echo "  pronfile"
+    echo "  pronupdate"
+    echo "  pu"
     echo "  regex_help"
     echo "  remove_all_cbc_configs,   (alias: racc)"
     echo "  remove_display_version_config,   (alias: rdvc)"
@@ -2362,6 +2370,8 @@ alias mv='mv -i'
 alias myip='curl http://ipecho.net/plain; echo'
 alias pron='yt-dlp --config-locations _configs.txt --batch-file _batch.txt --download-archive _downloaded.txt'
 alias pronfile='cd /media/$USER/T7 Shield/yt-dlp'
+alias pronupdate='pronfile && pron'
+alias pu='pronupdate'
 alias py='python3'
 alias python='python3'
 alias racc='remove_all_cbc_configs'
