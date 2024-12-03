@@ -2,10 +2,10 @@
 
 ## Not Complete
 
+* [ ] Remove Session ID from CBC - it is not important or useful
 * [ ] Update `up` command to work properly.
   * [ ] Allow multiple levels of moving up with the command.
   * [ ] Ensure that flags are working properly.
-* [ ] Update `cc` command to be more interactive and optionally automatically push.
 * [ ] Change the update process to be a single command rather than a separate script that runs using `updatecbc` or `ucbc` natively.
 * [ ] Change `test` to a command rather than an alias for more testing options.
 * [ ] Consolidate the config files for optional items.
@@ -18,7 +18,6 @@
   * [ ] zoxide
   * [ ] fzf
   * [ ] neofetch
-  * [ ] session ID
   * [ ] display info command
   * [ ] figlet
   * [ ] neovim
@@ -53,3 +52,4 @@
 * [x] Create a test workflow for testing the custom commands.
 * [x] Change the figlet command to prompt the user for a username on first run, then run the command when the custom_bash_commands.sh script is loaded.
 * [x] Create a function to change the figlet configuration.
+* [x] Update `cc` command to be more interactive and optionally automatically push.
