@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.9.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.8.0...v2.9.0) (2024-12-04)
+
+
+### Features
+
+* **alias:** add `verg` alias ([72d2418](https://github.com/iop098321qwe/custom_bash_commands/commit/72d2418dacbbb9f8bef6020935d0312cc8a75f4f))
+
+
+### Bug Fixes
+
+* **alias:** fix missing `:q` and `:wq` aliases in cbcs command output ([3916b46](https://github.com/iop098321qwe/custom_bash_commands/commit/3916b46a841b6a376240c97050ba538ba5712af9))
+* **function:** remove `mkcd` function in favor of `mkdirs` ([af116e7](https://github.com/iop098321qwe/custom_bash_commands/commit/af116e73760e63000f74186ede90be6d55222c40))
+* **style:** alphatbetically organize cbcs command output ([667361f](https://github.com/iop098321qwe/custom_bash_commands/commit/667361f56a3b5be63c8f261bf398de9f2b2ac190))
+* **style:** fix alphabetical output of cbcs command output ([285638b](https://github.com/iop098321qwe/custom_bash_commands/commit/285638b69c286c8f9b5e68786ffb643acad9dae8))
+* **style:** fix formatting of cbcs command output ([614ce37](https://github.com/iop098321qwe/custom_bash_commands/commit/614ce37ee476c8c6e906ac3ee6d9f2ded3c0a8b2))
+* **style:** organize cbcs command output ([83e56e8](https://github.com/iop098321qwe/custom_bash_commands/commit/83e56e84ca8d951258a7589ca9c9c134497df582))
+
 ## [2.8.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.7.0...v2.8.0) (2024-12-04)
 
 
