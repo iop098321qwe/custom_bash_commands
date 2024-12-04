@@ -809,10 +809,6 @@ cbcs() {
     echo "         Description: Alias for 'historysearch'"
     echo "         Usage: hsearch"
     echo " "
-    echo "  codecbc"
-    echo "         Description: Open the custom_bash_commands directory in Visual Studio Code"
-    echo "         Usage: codecbc"
-    echo " "
     echo "  i"
     echo "         Description: Alias for 'sudo apt install'"
     echo "         Usage: i [package]"
@@ -992,7 +988,6 @@ cbcs() {
     echo "chup"
     echo "cla"
     echo "cls"
-    echo "codecbc"
     echo "comm"
     echo "commands"
     echo "cp"
@@ -2480,7 +2475,6 @@ alias ch='chezmoi'
 alias chup='chezmoi update'
 alias cla='clear && di && la'
 alias cls='clear && di && ls'
-alias codecbc='code ~/Documents/github_repositories/custom_bash_commands/'
 alias commands='cbcs -h | batcat'
 alias comm='commands'
 alias cp='cp -i'
