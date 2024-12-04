@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.10.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.10...v2.10.0) (2024-12-04)
+
+
+### Features
+
+* **alias:** add `gpsh` and `gpll` aliases ([559848d](https://github.com/iop098321qwe/custom_bash_commands/commit/559848daa076579f41ff661936d6cd15332100c8))
+
 ## [2.9.10](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.9...v2.9.10) (2024-12-04)
 
 ## [2.9.9](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.8...v2.9.9) (2024-12-04)
