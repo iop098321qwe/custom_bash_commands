@@ -420,7 +420,7 @@ function remove_display_version_config() {
 
 ##########
 
-# Create a function to display a list of all available custom commands in this script
+function to display a list of all available custom commands in this script
 cbcs() {
   if [[ $1 == "-h" ]]; then
     # Display a list of all available custom commands and functions in this script with descriptions
@@ -468,10 +468,6 @@ cbcs() {
     echo "doftiles"
     echo "         Description: Open the doftiles repository in the default browser"
     echo "         Usage: doftiles"
-    echo " "
-    echo "editbash"
-    echo "         Description: Open the .bashrc file in the default terminal text editor"
-    echo "         Usage: editbash"
     echo " "
     echo "extract"
     echo "         Description: Extract compressed files"
@@ -665,6 +661,11 @@ cbcs() {
     echo "          Description: Shortcut for 'display_version'"
     echo "          Usage: dv"
     echo "          Alias For: 'display_version'"
+    echo " "
+    echo "editbash"
+    echo "          Description: Open the .bashrc file in the default terminal text editor"
+    echo "          Usage: editbash"
+    echo "          Alias For: '\$EDITOR ~/.bashrc'"
     echo " "
     echo "home"
     echo "         Description: Change to the home directory and list its contents"
@@ -977,7 +978,6 @@ cbcs() {
     echo "display_info"
     echo "display_version,"
     echo "doftiles"
-    echo "editbash"
     echo "extract"
     echo "makeman"
     echo "mkdirs"
@@ -1014,6 +1014,7 @@ cbcs() {
     echo "docs"
     echo "downloads"
     echo "dv"
+    echo "editbash"
     echo "ext"
     echo "fcom"
     echo "fcome"
