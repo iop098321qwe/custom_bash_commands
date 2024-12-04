@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.9.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.2...v2.9.3) (2024-12-04)
+
+
+### Bug Fixes
+
+* **alias:** fix `verg` to also output next step on CLI ([bb8c10f](https://github.com/iop098321qwe/custom_bash_commands/commit/bb8c10fd37cfbb199e2c3a7d838a9f67cff09a72))
+
 ## [2.9.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.1...v2.9.2) (2024-12-04)
 
 
