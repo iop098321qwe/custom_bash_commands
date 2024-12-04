@@ -946,7 +946,6 @@ cbcs() {
     echo "editbash"
     echo "extract"
     echo "makeman"
-    echo "mkcd"
     echo "mkdirs"
     echo "mvfiles"
     echo "myip"
@@ -1056,34 +1055,6 @@ cbcs() {
     echo "v"
     echo "z"
   fi
-}
-
-################################################################################
-# MKCD
-################################################################################
-
-# Describe the mkcd function and its options and usage
-
-# mkcd
-# Description: This function allows you to create a directory and switch into it.
-# Usage: mkcd [directory]
-# Options:
-#   -h    Display this help message
-
-# Example: mkcd test  ---Creates a directory called test and switches into it.
-
-##########
-
-# Custom function to make directories and switch into it, and move into the deepest directory created.
-function mkcd() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: This function allows you to create a directory and switch into it."
-    echo "Usage: mkcd [directory]"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
-  mkdir -p "$1" && cd "$1"
 }
 
 ################################################################################
