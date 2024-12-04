@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.9.2"
+VERSION="2.9.3"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -944,12 +944,14 @@ cbcs() {
     echo "          Usage : s <command>"
     echo " "
     echo "ver"
-    echo "          Description: Alias for npx commit-and-tag-version"
+    echo "          Description: Shortcut for 'npx commit-and-tag-version'"
     echo "          Usage: ver"
+    echo "          Alias For: 'npx commit-and-tag-version'"
     echo " "
     echo "verg"
     echo "          Description: Combine 'ver' and 'gpfom' commands"
     echo "          Usage: verg"
+    echo "          Alias For: 'ver && gpfom && echo \"Run 'gh cr' to create a new release\"'"
     echo " "
     echo ":q"
     echo "          Description: Alias to exit terminal"
@@ -2565,7 +2567,7 @@ alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_b
 alias ucbc='updatecbc'
 alias vault='cd ~/Documents/grymms_grimoires && ls'
 alias ver='npx commit-and-tag-version'
-alias verg='ver && gpfom'
+alias verg='ver && gpfom && echo \"Run 'gh cr' to create a release\"'
 alias vim='nvim'
 alias v='nvim'
 alias x='chmod +x'
