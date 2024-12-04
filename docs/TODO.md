@@ -2,6 +2,7 @@
 
 ## Not Complete
 
+* [ ] Update `incon` to also create a directory and move into it before initializing the git/Github repo
 * [ ] Change display_info messages to show more updated commands
 * [ ] Finish organizing cbcs command output
 * [ ] Standardize formatting of commands
