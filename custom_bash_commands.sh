@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.9.10"
+VERSION="2.10.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2527,7 +2527,8 @@ alias gcom='git checkout main'
 alias gcomm='git commit'
 alias ga='git add'
 alias gaa='git add .'
-alias gp='git push'
+alias gpsh='git push'
+alias gpll='git pull'
 alias gpfom='git push --follow-tags origin main'
 alias gs='git status'
 alias gsw='git switch'
