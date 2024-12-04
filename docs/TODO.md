@@ -2,6 +2,7 @@
 
 ## Not Complete
 
+* [ ] Change display_info messages to show more updated commands
 * [ ] Finish organizing cbcs command output
 * [ ] Standardize formatting of commands
 * [ ] Change `echo` to `printf` where more applicable throughout code
