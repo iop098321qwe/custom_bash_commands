@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.9.6"
+VERSION="2.9.8"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2567,7 +2567,7 @@ alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_b
 alias ucbc='updatecbc'
 alias vault='cd ~/Documents/grymms_grimoires && ls'
 alias ver='npx commit-and-tag-version'
-alias verg='ver && gpfom && echo "\n Run gh cr to create a release"'
+alias verg='ver && gpfom && printf "\n Run gh cr to create a release\n"'
 alias vim='nvim'
 alias v='nvim'
 alias x='chmod +x'
