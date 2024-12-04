@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.9.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.0...v2.9.1) (2024-12-04)
+
+
+### Bug Fixes
+
+* **alias:** fix `editbash` command to use default editor ([f73eb70](https://github.com/iop098321qwe/custom_bash_commands/commit/f73eb709e212da4b532001658ba2c9bc86298496))
+* **alias:** remove `codecbc` as VSCode is no longer used by me ([0f32e17](https://github.com/iop098321qwe/custom_bash_commands/commit/0f32e176135da315f58d475e670ff7e9e3b045e1))
+* **alias:** remove `dispatch` alias as doc is now in Obsidian ([b0785a8](https://github.com/iop098321qwe/custom_bash_commands/commit/b0785a83950738add218d2490e9fdc32e85243b5))
+* **alias:** remove `dt` and `dtr` aliases as the docs are now in Obsidian ([4036e75](https://github.com/iop098321qwe/custom_bash_commands/commit/4036e75853c9c035d1919845ebd7ee81da3e9f50))
+* **style:** fix descriptions and organize cbcs command output ([f3db2c9](https://github.com/iop098321qwe/custom_bash_commands/commit/f3db2c9a68d84eb572c4b1dfb4c57c7ce3afb473))
+* **style:** fix more cbcs command output ([8140b4c](https://github.com/iop098321qwe/custom_bash_commands/commit/8140b4cefe57c60068349d42eac673559644f3f8))
+* **style:** more alphabetical organization ([8513213](https://github.com/iop098321qwe/custom_bash_commands/commit/8513213a0829b7c55d07bf0f775431fd078bf294))
+
 ## [2.9.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.8.0...v2.9.0) (2024-12-04)
 
 
