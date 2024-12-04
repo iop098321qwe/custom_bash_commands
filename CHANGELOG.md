@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.9.6](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.5...v2.9.6) (2024-12-04)
+
+
+### Bug Fixes
+
+* **alias:** test `verg` update ([e388a46](https://github.com/iop098321qwe/custom_bash_commands/commit/e388a4622a65af55f9122ff244fb6f1681f1d60e))
+
 ## [2.9.5](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.4...v2.9.5) (2024-12-04)
 
 
