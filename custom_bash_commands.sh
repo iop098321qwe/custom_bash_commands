@@ -463,7 +463,7 @@ cbcs() {
     echo "display_version"
     echo "          Description: Display the version number from the .version file"
     echo "          Usage: display_version"
-    echo "          Aliases: dv"
+    echo "          Aliases: 'dv'"
     echo " "
     echo "doftiles"
     echo "         Description: Open the doftiles repository in the default browser"
@@ -660,6 +660,11 @@ cbcs() {
     echo "          Description: Change to the Downloads directory and list its contents"
     echo "          Usage: downloads"
     echo "          Alias For: 'cd ~/Downloads && ls'"
+    echo " "
+    echo "dv"
+    echo "          Description: Shortcut for 'display_version'"
+    echo "          Usage: dv"
+    echo "          Alias For: 'display_version'"
     echo " "
     echo "home"
     echo "         Description: Change to the home directory and list its contents"
@@ -990,21 +995,25 @@ cbcs() {
     echo "########################################################################################################"
     echo " "
     echo "back"
-    echo "c"
-    echo "cbc"
+    echo "bat"
     echo "cbcc"
+    echo "cbc"
+    echo "c"
     echo "cdgh"
     echo "ch"
     echo "chup"
     echo "cla"
     echo "cls"
-    echo "comm"
     echo "commands"
+    echo "commandsmore"
+    echo "comm"
+    echo "commm"
     echo "cp"
     echo "di"
     echo "dl"
-    echo "docs,"
+    echo "docs"
     echo "downloads"
+    echo "dv"
     echo "ext"
     echo "fcom"
     echo "fcome"
@@ -2492,7 +2501,7 @@ alias dl='downloads'
 alias docs='cd ~/Documents && ls'
 alias downloads='cd ~/Downloads && ls'
 alias dv='display_version'
-alias editbash='nvim ~/.bashrc'
+alias editbash='$EDITOR ~/.bashrc'
 alias ext='extract'
 alias fcome='fcomexact'
 alias fcom='eval "$(compgen -c | fzf)"'
