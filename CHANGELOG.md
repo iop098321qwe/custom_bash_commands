@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.8.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.7.0...v2.8.0) (2024-12-04)
+
+
+### Features
+
+* **alias:** add `gcomm` alias ([1f728e9](https://github.com/iop098321qwe/custom_bash_commands/commit/1f728e9c0ec5e2b4d19795eed4188c4aced87b56))
+
+
+### Bug Fixes
+
+* **format:** adjust format of cbcs function output ([8a03882](https://github.com/iop098321qwe/custom_bash_commands/commit/8a038828717e47ebae2fb7775e412aed99ee3a43))
+
 ## [2.7.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.6.1...v2.7.0) (2024-12-03)
 
 
