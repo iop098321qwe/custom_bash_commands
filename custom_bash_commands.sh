@@ -927,6 +927,16 @@ cbcs() {
     echo "          Description: Combine 'ver' and 'gpfom' commands"
     echo "          Usage: verg"
     echo " "
+    echo ":q"
+    echo "          Description: Alias to exit terminal"
+    echo "          Usage: :q"
+    echo "          Alias For: 'exit'"
+    echo " "
+    echo ":wq"
+    echo "          Description: Alias to exit terminal"
+    echo "          Usage: :wq"
+    echo "          Alias For: 'exit'"
+    echo " "
   else
     # Display a list of all available custom commands and functions in this script
     echo " "
@@ -1054,6 +1064,8 @@ cbcs() {
     echo "vim"
     echo "v"
     echo "z"
+    echo ":q"
+    echo ":wq"
   fi
 }
 
