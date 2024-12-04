@@ -2,6 +2,9 @@
 
 ## Not Complete
 
+* [ ] Finish organizing cbcs command output
+* [ ] Standardize formatting of commands
+* [ ] Change `echo` to `printf` where more applicable throughout code
 * [ ] Remove Session ID from CBC - it is not important or useful
 * [ ] Update `up` command to work properly.
   * [ ] Allow multiple levels of moving up with the command.
