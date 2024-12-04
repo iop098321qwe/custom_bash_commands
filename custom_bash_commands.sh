@@ -776,10 +776,6 @@ cbcs() {
     echo "         Description: Switch to the Deeptree Reference Material directory and list its contents"
     echo "         Usage: dtr"
     echo " "
-    echo "dispatch"
-    echo "         Description: Change to the Dispatch directory and list its contents"
-    echo "         Usage: dispatch"
-    echo " "
     echo "updatecbc, (alias: ucbc)"
     echo "         Description: Update the custom bash commands script"
     echo "         Usage: updatecbc"
@@ -1011,7 +1007,6 @@ cbcs() {
     echo "commands"
     echo "cp"
     echo "di"
-    echo "dispatch"
     echo "display_info"
     echo "dl"
     echo "docs,"
@@ -2501,7 +2496,6 @@ alias comm='commands'
 alias commm='commandsmore'
 alias cp='cp -i'
 alias di='display_info'
-alias dispatch='cd ~/Documents/Deeptree/reference_material/dispatch && ls'
 alias dl='downloads'
 alias docs='cd ~/Documents && ls'
 alias downloads='cd ~/Downloads && la'
