@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.9.1"
+VERSION="2.9.2"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -420,7 +420,7 @@ function remove_display_version_config() {
 
 ##########
 
-function to display a list of all available custom commands in this script
+# Create a function to display a list of all available custom commands in this script
 cbcs() {
   if [[ $1 == "-h" ]]; then
     # Display a list of all available custom commands and functions in this script with descriptions
