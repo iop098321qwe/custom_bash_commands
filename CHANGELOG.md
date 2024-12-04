@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.10.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.10.0...v2.10.1) (2024-12-04)
+
+
+### Bug Fixes
+
+* **function:** fix `incon` to exclude .version file ([d6daf81](https://github.com/iop098321qwe/custom_bash_commands/commit/d6daf81dc477b202b22125cfa6b0b7753aa65c8f))
+
 ## [2.10.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.10...v2.10.0) (2024-12-04)
 
 
