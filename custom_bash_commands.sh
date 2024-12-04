@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.9.0"
+VERSION="2.9.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -455,10 +455,15 @@ cbcs() {
     echo "         Description: Open the Cheat.sh client in the terminal"
     echo "         Usage: cht.sh <query>"
     echo " "
+    echo "display_info"
+    echo "          Description: Display CBC information"
+    echo "          Usage: display_info"
+    echo "          Aliases: 'di'"
+    echo " "
     echo "display_version"
-    echo "         Description: Display the version number from the .version file"
-    echo "         Usage: display_version"
-    echo "         Aliases: dv"
+    echo "          Description: Display the version number from the .version file"
+    echo "          Usage: display_version"
+    echo "          Aliases: dv"
     echo " "
     echo "doftiles"
     echo "         Description: Open the doftiles repository in the default browser"
@@ -612,12 +617,34 @@ cbcs() {
     echo "          Alias For: 'clear && di && ls'"
     echo " "
     echo "commands"
-    echo "         Description: Display a list of all available custom commands in this script"
-    echo "         Usage: commands"
+    echo "          Description: Display a list of all available custom commands in CBC using batcat"
+    echo "          Usage: commands"
+    echo "          Alias For: 'cbcs | batcat'"
+    echo " "
+    echo "commandsmore"
+    echo "          Description: Display a list of all available custom commands in CBC and additional information using batcat"
+    echo "          Usage: commandsmore"
+    echo "          Alias For: 'cbcs -h | batcat'"
     echo " "
     echo "comm"
-    echo "         Description: Alias for 'commands'"
-    echo "         Usage: comm"
+    echo "          Description: Shortcut for 'commands'"
+    echo "          Usage: comm"
+    echo "          Alias For: 'commands'"
+    echo " "
+    echo "commm"
+    echo "          Description: Shortcut for 'commandsmore'"
+    echo "          Usage: commm"
+    echo "          Alias For: 'commandsmore'"
+    echo " "
+    echo "cp"
+    echo "          Description: Alias for 'cp' with the '-i' option"
+    echo "          Usage: cp [source] [destination]"
+    echo "          Alias For: 'cp -i'"
+    echo " "
+    echo "di"
+    echo "          Description: Shortcut for 'display_info'"
+    echo "          Usage: di"
+    echo "          Alias For: 'display_info'"
     echo " "
     echo "docs"
     echo "         Description: Change to the Documents directory and list its contents"
@@ -711,10 +738,6 @@ cbcs() {
     echo "filehash, (alias: fh)"
     echo "         Description: Display the hash of a file"
     echo "         Usage: filehash [file] [hash_type]"
-    echo " "
-    echo "display_info, (alias: di)"
-    echo "         Description: Display CBC information"
-    echo "         Usage: display_info"
     echo " "
     echo "python"
     echo "         Description: Alias for 'python3'"
@@ -836,10 +859,6 @@ cbcs() {
     echo "  mv"
     echo "         Description: Alias for 'mv' with the '-i' option"
     echo "         Usage: mv [source] [destination]"
-    echo " "
-    echo "  cp"
-    echo "         Description: Alias for 'cp' with the '-i' option"
-    echo "         Usage: cp [source] [destination]"
     echo " "
     echo "  rm"
     echo "         Description: Alias for 'rm' with the '-i' option"
@@ -991,6 +1010,7 @@ cbcs() {
     echo "comm"
     echo "commands"
     echo "cp"
+    echo "di"
     echo "dispatch"
     echo "display_info"
     echo "dl"
@@ -2475,8 +2495,10 @@ alias ch='chezmoi'
 alias chup='chezmoi update'
 alias cla='clear && di && la'
 alias cls='clear && di && ls'
-alias commands='cbcs -h | batcat'
+alias commands='cbcs | batcat'
+alias commandsmore='cbcs -h | batcat'
 alias comm='commands'
+alias commm='commandsmore'
 alias cp='cp -i'
 alias di='display_info'
 alias dispatch='cd ~/Documents/Deeptree/reference_material/dispatch && ls'
