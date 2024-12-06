@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.11.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.10.2...v2.11.0) (2024-12-06)
+
+
+### Features
+
+* **function:** add random command ([99b775a](https://github.com/iop098321qwe/custom_bash_commands/commit/99b775a3b0e8698cb3071332e7ed3eef7a011e14))
+
 ## [2.10.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.10.1...v2.10.2) (2024-12-04)
 
 
