@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.10.2"
+VERSION="2.11.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -176,6 +176,54 @@ function append_to_bashrc() {
 
 # Call the append_to_bashrc function
 append_to_bashrc
+
+################################################################################
+# random
+################################################################################
+
+# random
+# Description: Function to open a random .mp4 file in the current directory
+# Usage: random
+# Options:
+#   -h    Display this help message
+
+# Example: random  ---Opens a random .mp4 file in the current directory.
+
+##########
+
+# Function to open a random .mp4 file in the current directory
+random() {
+  if [ "$1" = "-h" ]; then
+    echo "Description: Function to open a random .mp4 file in the current directory"
+    echo "Usage: random"
+    echo "Options:"
+    echo "  -h    Display this help message"
+    return
+  fi
+
+  # Gather all .mp4 files in the current directory
+  mp4_files=(./*.mp4)
+
+  # Check if there are any mp4 files
+  if [ ${#mp4_files[@]} -eq 0 ] || [ ! -e "${mp4_files[0]}" ]; then
+    echo "No mp4 files found in the current directory."
+    return 1
+  fi
+
+  # Select a random file from the list
+  random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
+
+  # Open the random file using the default application
+  xdg-open "$random_file" 2>/dev/null
+
+  # Check if the file was opened successfully
+  if [ $? -ne 0 ]; then
+    echo "Failed to open the file: $random_file"
+    return 1
+  fi
+
+  echo "Opened: $random_file"
+}
 
 ################################################################################
 # wiki
@@ -497,6 +545,10 @@ cbcs() {
     echo "mvfiles"
     echo "         Description: Move all files in a directory to subdirectories based on file type"
     echo "         Usage: mvfiles"
+    echo " "
+    echo "random"
+    echo "         Description: Open a random .mp4 file in the current directory"
+    echo "         Usage: random"
     echo " "
     echo "refresh"
     echo "         Description: Refresh the terminal session"
@@ -985,6 +1037,7 @@ cbcs() {
     echo "mkdirs"
     echo "mvfiles"
     echo "myip"
+    echo "random"
     echo "refresh"
     echo "rmconf"
     echo "seebash"
