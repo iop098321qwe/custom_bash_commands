@@ -253,6 +253,11 @@ EOF
     fi
 
     echo "Opened: $random_file"
+
+    # Add 4-second delay between calls
+    if [ $i -lt $((num_times - 1)) ]; then
+      sleep 4
+    fi
   done
 }
 
