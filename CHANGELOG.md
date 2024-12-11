@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.15.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.14.0...v2.15.0) (2024-12-11)
+
+
+### Features
+
+* **alias:** add `vopen`, `vopenexact`, `iopen`, `iopenexact`, and shortcuts ([a04438b](https://github.com/iop098321qwe/custom_bash_commands/commit/a04438b0fdd2e8ddd47007fb99306ee1de7fdfb6))
+
 ## [2.14.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.13.0...v2.14.0) (2024-12-11)
 
 
