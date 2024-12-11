@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.13.1"
+VERSION="2.14.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -908,9 +908,17 @@ cbcs() {
     echo "          Description: Alias for 'fopen' for media files."
     echo "          Usage: mopen"
     echo " "
+    echo "mopenexact"
+    echo "          Description: Alias for 'fopenexact' for media files."
+    echo "          Usage: mopenexact"
+    echo " "
     echo "mo"
     echo "          Description: Alias for 'mopen'"
     echo "          Usage: mo"
+    echo " "
+    echo "moe"
+    echo "          Description: Alias for 'mopenexact'"
+    echo "          Usage: moe"
     echo " "
     echo "mv"
     echo "          Description: Alias for 'mv' with the '-i' option"
@@ -1126,7 +1134,9 @@ cbcs() {
     echo "lsr"
     echo "lt"
     echo "mopen"
+    echo "mopenexact"
     echo "mo"
+    echo "moe"
     echo "mv"
     echo "ods"
     echo "odt"
@@ -2667,7 +2677,9 @@ alias lg='lazygit'
 alias ln='ln -i'
 alias man='sudo man'
 alias mopen='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
+alias mopen='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
 alias mo='mopen'
+alias moe='mopenexact'
 alias mv='mv -i'
 alias myip='curl http://ipecho.net/plain; echo'
 alias pron='yt-dlp --config-locations _configs.txt --batch-file _batch.txt --download-archive _downloaded.txt'
