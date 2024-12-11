@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.13.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.12.1...v2.13.0) (2024-12-11)
+
+
+### Features
+
+* **alias:** add `mopen` alias for opening media files with fopen ([1cc573f](https://github.com/iop098321qwe/custom_bash_commands/commit/1cc573f417a8e2e95aa00df0bc4ed04c37e0f834))
+
+
+### Bug Fixes
+
+* **alias:** fix `mo` alias for `mopen` alias ([cc7d584](https://github.com/iop098321qwe/custom_bash_commands/commit/cc7d5843a5a51f0229888069da19fa879a94732e))
+* **alias:** fix not adding mopen alias to declared section ([8a907b4](https://github.com/iop098321qwe/custom_bash_commands/commit/8a907b416c56a06806d5f431e15c2d94e0f78e26))
+
 ## [2.12.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.12.0...v2.12.1) (2024-12-11)
 
 
