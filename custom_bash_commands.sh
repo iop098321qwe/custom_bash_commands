@@ -196,7 +196,7 @@ random() {
   # Function to display help message
   show_help() {
     cat <<EOF
-Description: Function to open a random .mp4 file in the current directory
+Description: Function to open random .mp4 files in the current directory
 Usage: random [-h] [-m NUMBER]
 Options:
   -h    Display this help message
@@ -218,7 +218,7 @@ EOF
       if [[ "$OPTARG" =~ ^[0-9]+$ && "$OPTARG" -gt 0 ]]; then
         num_times=$OPTARG
       else
-        echo "Error: -m requires a positive integer argument." >&2
+        echo "Error: -m requires a positive whole number argument." >&2
         show_help
         return 1
       fi
@@ -239,26 +239,21 @@ EOF
   # Shift off parsed options
   shift $((OPTIND - 1))
 
-  # Gather all .mp4 files in the current directory
-  IFS=$'\n' read -d '' -r -a mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4" -print0)
+  # Main logic repeated num_times
+  for ((count = 1; count <= num_times; count++)); do
+    # Gather all .mp4 files in the current directory
+    IFS=$'\n' read -d '' -r -a mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4" -print0)
 
-  # Check if there are any mp4 files
-  if [ ${#mp4_files[@]} -eq 0 ]; then
-    echo "No mp4 files found in the current directory."
-    return 1
-  fi
+    # Check if there are any mp4 files
+    if [ ${#mp4_files[@]} -eq 0 ]; then
+      echo "No mp4 files found in the current directory."
+      return 1
+    fi
 
-  # Validate num_times does not exceed the number of available files
-  if [ $num_times -gt ${#mp4_files[@]} ]; then
-    echo "Only ${#mp4_files[@]} files are available. Opening all of them."
-    num_times=${#mp4_files[@]}
-  fi
+    # Select a random file from the list
+    random_file=$(printf '%s\n' "${mp4_files[@]}" | shuf -n 1)
 
-  # Use shuf to select the required number of random files
-  selected_files=($(printf '%s\n' "${mp4_files[@]}" | shuf -n $num_times))
-
-  # Open each selected file
-  for random_file in "${selected_files[@]}"; do
+    # Open the random file using the default application
     nohup xdg-open "$random_file" >/dev/null 2>&1 &
 
     # Check if the file was opened successfully
