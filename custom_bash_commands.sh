@@ -1294,9 +1294,9 @@ phopen() {
       url="${URL_PREFIX}${content}"
 
       if command -v xdg-open >/dev/null 2>&1; then
-        xdg-open "$url"
+        nohup xdg-open "$url"
       elif command -v open >/dev/null 2>&1; then
-        open "$url"
+        nohup open "$url"
       else
         echo "No recognized browser open command found. Please open this URL manually:"
         echo "$url"
