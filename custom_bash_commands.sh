@@ -240,7 +240,7 @@ EOF
   shift $((OPTIND - 1))
 
   # Gather all .mp4 files in the current directory
-  mapfile -t mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4")
+  IFS=$'\n' read -d '' -r -a mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4" -print0)
 
   # Check if there are any mp4 files
   if [ ${#mp4_files[@]} -eq 0 ]; then
@@ -255,7 +255,7 @@ EOF
   fi
 
   # Use shuf to select the required number of random files
-  selected_files=($(printf "%s\n" "${mp4_files[@]}" | shuf -n $num_times))
+  selected_files=($(printf '%s\n' "${mp4_files[@]}" | shuf -n $num_times))
 
   # Open each selected file
   for random_file in "${selected_files[@]}"; do
