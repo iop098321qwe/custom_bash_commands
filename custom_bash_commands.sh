@@ -197,29 +197,18 @@ random() {
   show_help() {
     cat <<EOF
 Description: Function to open a random .mp4 file in the current directory
-Usage: random [-h] [-m NUMBER]
+Usage: random [-h]
 Options:
   -h    Display this help message
-  -m    Call random function NUMBER times
 EOF
   }
 
-  num_times=1 # Default to calling once
-
   # Parse options using getopts
-  while getopts ":hm:" opt; do
+  while getopts ":h" opt; do
     case $opt in
     h)
       show_help
       return 0
-      ;;
-    m)
-      if [[ "$OPTARG" =~ ^[0-9]+$ && "$OPTARG" -gt 0 ]]; then
-        num_times=$OPTARG
-      else
-        echo "Error: -m requires a positive whole number argument." >&2
-        return 1
-      fi
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -229,36 +218,28 @@ EOF
     esac
   done
 
-  # Repeat the function num_times
-  for ((i = 0; i < num_times; i++)); do
-    # Gather all .mp4 files in the current directory
-    mp4_files=(./*.mp4)
+  # Gather all .mp4 files in the current directory
+  mp4_files=(./*.mp4)
 
-    # Check if there are any mp4 files
-    if [ ${#mp4_files[@]} -eq 0 ] || [ ! -e "${mp4_files[0]}" ]; then
-      echo "No mp4 files found in the current directory."
-      return 1
-    fi
+  # Check if there are any mp4 files
+  if [ ${#mp4_files[@]} -eq 0 ] || [ ! -e "${mp4_files[0]}" ]; then
+    echo "No mp4 files found in the current directory."
+    return 1
+  fi
 
-    # Select a random file from the list
-    random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
+  # Select a random file from the list
+  random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
 
-    # Open the random file using the default application
-    nohup xdg-open "$random_file" >/dev/null 2>&1
+  # Open the random file using the default application
+  nohup xdg-open "$random_file" 2>/dev/null
 
-    # Check if the file was opened successfully
-    if [ $? -ne 0 ]; then
-      echo "Failed to open the file: $random_file"
-      return 1
-    fi
+  # Check if the file was opened successfully
+  if [ $? -ne 0 ]; then
+    echo "Failed to open the file: $random_file"
+    return 1
+  fi
 
-    echo "Opened: $random_file"
-
-    # Add 4-second delay between calls
-    if [ $i -lt $((num_times - 1)) ]; then
-      sleep 4
-    fi
-  done
+  echo "Opened: $random_file"
 }
 
 ################################################################################
