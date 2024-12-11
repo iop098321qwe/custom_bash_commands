@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.14.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.13.0...v2.14.0) (2024-12-11)
+
+
+### Features
+
+* **alias:** add `mopenexact` and `moe` aliases ([ac38efb](https://github.com/iop098321qwe/custom_bash_commands/commit/ac38efb214b79d6df6a52aa06deeced69fc28a41))
+
+
+### Bug Fixes
+
+* **alias:** fix issue with `mopenexact` being `mopen` ([1b31b22](https://github.com/iop098321qwe/custom_bash_commands/commit/1b31b220eb1a18128acb8cab4cc1d92dc10978d2))
+
 ## [2.13.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.12.1...v2.13.0) (2024-12-11)
 
 
