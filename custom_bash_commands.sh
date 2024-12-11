@@ -226,8 +226,6 @@ EOF
     esac
   done
 
-  shift $((OPTIND - 1))
-
   IFS=$'\n' read -d '' -r -a mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4" -print0)
 
   if [ ${#mp4_files[@]} -eq 0 ]; then
@@ -236,7 +234,12 @@ EOF
   fi
 
   for ((i = 0; i < num_times; i++)); do
-    random_file=$(printf '%s\n' "${mp4_files[@]}" | shuf -n 1)
+    random_file=$(printf '%s\0' "${mp4_files[@]}" | shuf -z -n 1 | tr -d '\0')
+
+    if [ -z "$random_file" ]; then
+      echo "Error: Could not select a random file."
+      return 1
+    fi
 
     if ! nohup xdg-open "$random_file" >/dev/null 2>&1; then
       echo "Failed to open: $random_file"
