@@ -236,6 +236,9 @@ EOF
     esac
   done
 
+  # Shift off parsed options
+  shift $((OPTIND - 1))
+
   # Gather all .mp4 files in the current directory
   mapfile -t mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4")
 
@@ -245,22 +248,17 @@ EOF
     return 1
   fi
 
-  # Ensure repeatability: Re-initialize mp4_files list each call
-  for ((i = 0; i < num_times; i++)); do
-    # Gather fresh mp4 list each iteration to ensure randomness remains
-    mapfile -t mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4")
+  # Validate num_times does not exceed the number of available files
+  if [ $num_times -gt ${#mp4_files[@]} ]; then
+    echo "Only ${#mp4_files[@]} files are available. Opening all of them."
+    num_times=${#mp4_files[@]}
+  fi
 
-    # Check if mp4_files is empty after previous deletions
-    if [ ${#mp4_files[@]} -eq 0 ]; then
-      echo "No more files to open."
-      return 0
-    fi
+  # Use shuf to select the required number of random files
+  selected_files=($(printf "%s\n" "${mp4_files[@]}" | shuf -n $num_times))
 
-    # Select a random index from the list
-    random_index=$(shuf -i 0-$((${#mp4_files[@]} - 1)) -n 1)
-    random_file="${mp4_files[$random_index]}"
-
-    # Open the random file using the default application
+  # Open each selected file
+  for random_file in "${selected_files[@]}"; do
     nohup xdg-open "$random_file" >/dev/null 2>&1 &
 
     # Check if the file was opened successfully
