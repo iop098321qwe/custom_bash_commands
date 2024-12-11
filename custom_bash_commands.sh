@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.11.2"
+VERSION="2.11.3"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1586,7 +1586,7 @@ update() {
   # Run update commands with sudo, tee to output to terminal and append to log file
   # Define an array of commands to run
   commands=(
-    "sudo apt update -y"
+    "sudo apt update"
     "sudo apt autoremove -y"
     "sudo flatpak update -y"
     "sudo snap refresh"
