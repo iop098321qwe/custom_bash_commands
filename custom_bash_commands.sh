@@ -236,11 +236,14 @@ EOF
     esac
   done
 
+  # Shift off parsed options to clean up positional arguments
+  shift $((OPTIND - 1))
+
   # Gather all .mp4 files in the current directory
-  mp4_files=(./*.mp4)
+  mapfile -t mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4")
 
   # Check if there are any mp4 files
-  if [ ${#mp4_files[@]} -eq 0 ] || [ ! -e "${mp4_files[0]}" ]; then
+  if [ ${#mp4_files[@]} -eq 0 ]; then
     echo "No mp4 files found in the current directory."
     return 1
   fi
@@ -248,12 +251,12 @@ EOF
   # Open random files the specified number of times
   for ((i = 0; i < num_times; i++)); do
     # Select a random file from the list
-    random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
+    random_file="${mp4_files[$(shuf -i 0-$((${#mp4_files[@]} - 1)) -n 1)]}"
 
     # Open the random file using the default application
-    xdg-open "$random_file" 2>/dev/null &
+    nohup xdg-open "$random_file" >/dev/null 2>&1 &
 
-    # Check if the file was opened successfully
+    # Check if the nohup command was executed successfully
     if [ $? -ne 0 ]; then
       echo "Failed to open the file: $random_file"
       return 1
