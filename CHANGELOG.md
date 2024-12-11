@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.11.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.11.1...v2.11.2) (2024-12-11)
+
+
+### Bug Fixes
+
+* fix version number ([58aa071](https://github.com/iop098321qwe/custom_bash_commands/commit/58aa0715d3d20a6b3f184502db97fc6d17788c66))
+* **function:** ensure that update() is using -y flag for commands ([8b57f80](https://github.com/iop098321qwe/custom_bash_commands/commit/8b57f805a5456e756481258483f11c05e2fd1883))
+
 ## [2.11.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.11.0...v2.11.1) (2024-12-11)
 
 
