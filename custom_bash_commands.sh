@@ -1203,7 +1203,7 @@ function backup() {
 
 # phopen function: Extracts parameter from filenames and opens them in default browser
 phopen() {
-  URL_PREFIX="https://www.something.com/view_video.php?viewkey="
+  URL_PREFIX="https://www.pornhub.com/view_video.php?viewkey="
 
   while getopts "h" opt; do
     case "$opt" in
