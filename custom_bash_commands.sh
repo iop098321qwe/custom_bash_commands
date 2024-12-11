@@ -215,7 +215,7 @@ EOF
       return 0
       ;;
     m)
-      if [[ "$OPTARG" =~ ^[0-9]+$ ]]; then
+      if [[ "$OPTARG" =~ ^[0-9]+$ && $OPTARG -gt 0 ]]; then
         num_times=$OPTARG
       else
         echo "Error: -m requires a positive integer argument." >&2
@@ -250,8 +250,19 @@ EOF
 
   # Open random files the specified number of times
   for ((i = 0; i < num_times; i++)); do
-    # Select a random file from the list
-    random_file="${mp4_files[$(shuf -i 0-$((${#mp4_files[@]} - 1)) -n 1)]}"
+    # Check if there are still files to pick
+    if [ ${#mp4_files[@]} -eq 0 ]; then
+      echo "No more unique files to open."
+      break
+    fi
+
+    # Select a random index from the list
+    random_index=$(shuf -i 0-$((${#mp4_files[@]} - 1)) -n 1)
+    random_file="${mp4_files[$random_index]}"
+
+    # Remove the selected file from the list to prevent repeats
+    unset mp4_files[$random_index]
+    mp4_files=("${mp4_files[@]}")
 
     # Open the random file using the default application
     nohup xdg-open "$random_file" >/dev/null 2>&1 &
