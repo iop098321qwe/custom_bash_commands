@@ -193,10 +193,9 @@ append_to_bashrc
 
 # Function to open a random .mp4 file in the current directory
 random() {
-  # Function to display help message
   show_help() {
     cat <<EOF
-Description: Function to open a random .mp4 file in the current directory
+Description: Function to open random .mp4 files in the current directory
 Usage: random [-h] [-m NUMBER]
 Options:
   -h    Display this help message
@@ -204,10 +203,8 @@ Options:
 EOF
   }
 
-  # Initialize variables
-  num_times=1 # Default to opening 1 file
+  num_times=1
 
-  # Parse options using getopts
   while getopts ":hm:" opt; do
     case $opt in
     h)
@@ -219,46 +216,30 @@ EOF
         num_times=$OPTARG
       else
         echo "Error: -m requires a positive whole number argument." >&2
-        show_help
         return 1
       fi
       ;;
-    \?)
+    *)
       echo "Invalid option: -$OPTARG" >&2
-      show_help
-      return 1
-      ;;
-    :)
-      echo "Option -$OPTARG requires an argument." >&2
-      show_help
       return 1
       ;;
     esac
   done
 
-  # Shift off parsed options
   shift $((OPTIND - 1))
 
-  # Repeat the process num_times
-  for ((i = 1; i <= num_times; i++)); do
-    # Gather all .mp4 files in the current directory
-    mp4_files=(./*.mp4)
+  IFS=$'\n' read -d '' -r -a mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4" -print0)
 
-    # Check if there are any mp4 files
-    if [ ${#mp4_files[@]} -eq 0 ] || [ ! -e "${mp4_files[0]}" ]; then
-      echo "No mp4 files found in the current directory."
-      return 1
-    fi
+  if [ ${#mp4_files[@]} -eq 0 ]; then
+    echo "No mp4 files found in the current directory."
+    return 1
+  fi
 
-    # Select a random file from the list
-    random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
+  for ((i = 0; i < num_times; i++)); do
+    random_file=$(printf '%s\n' "${mp4_files[@]}" | shuf -n 1)
 
-    # Open the random file using the default application
-    nohup xdg-open "$random_file" >/dev/null 2>&1 &
-
-    # Check if the file was opened successfully
-    if [ $? -ne 0 ]; then
-      echo "Failed to open the file: $random_file"
+    if ! nohup xdg-open "$random_file" >/dev/null 2>&1; then
+      echo "Failed to open: $random_file"
       return 1
     fi
 
