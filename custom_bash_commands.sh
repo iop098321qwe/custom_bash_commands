@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.14.0"
+VERSION="2.15.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -724,6 +724,24 @@ cbcs() {
     echo "         Usage: home"
     echo "         Alias: cd ~ && ls"
     echo " "
+    echo "iopen"
+    echo "          Description: Alias for 'fopen' to open image files"
+    echo "          Usage: iopen"
+    echo "          Aliases: 'io'"
+    echo " "
+    echo "iopenexact"
+    echo "          Description: Alias for 'fopenexact' to open image files"
+    echo "          Usage: iopenexact"
+    echo "          Aliases: 'ioe'"
+    echo " "
+    echo "io"
+    echo "          Description: Shortcut for 'iopen'"
+    echo "          Usage: io"
+    echo " "
+    echo "ioe"
+    echo "          Description: Shortcut for 'iopenexact'"
+    echo "          Usage: ioe"
+    echo " "
     echo "rma"
     echo "          Description: Remove the directory and all files it contains"
     echo "          Usage: rma <directory>"
@@ -903,6 +921,24 @@ cbcs() {
     echo "  v"
     echo "         Description: Alias for 'nvim'"
     echo "         Usage: v [file]"
+    echo " "
+    echo "vopen"
+    echo "          Description: Alias for 'fopen' to open video files"
+    echo "          Usage: vopen"
+    echo "          Aliases: 'vo'"
+    echo " "
+    echo "vopenexact"
+    echo "          Description: Alias for 'fopenexact' to open video files"
+    echo "          Usage: vopenexact"
+    echo "          Aliases: 'voe'"
+    echo " "
+    echo "vo"
+    echo "          Description: Shortcut for 'vopen'"
+    echo "          Usage: vo"
+    echo " "
+    echo "voe"
+    echo "          Description: Shortcut for 'vopenexact'"
+    echo "          Usage: voe"
     echo " "
     echo "mopen"
     echo "          Description: Alias for 'fopen' for media files."
@@ -1121,6 +1157,10 @@ cbcs() {
     echo "hsearch"
     echo "i"
     echo "incon"
+    echo "iopen"
+    echo "iopenexact"
+    echo "io"
+    echo "ioe"
     echo "la"
     echo "lar"
     echo "le"
@@ -1163,6 +1203,10 @@ cbcs() {
     echo "verg"
     echo "vim"
     echo "v"
+    echo "vopen"
+    echo "vopenexact"
+    echo "vo"
+    echo "voe"
     echo "z"
     echo ":q"
     echo ":wq"
@@ -2673,6 +2717,10 @@ alias hsearch='historysearch'
 alias hse='historysearchexact'
 alias hs='historysearch'
 alias i='sudo apt install'
+alias iopen='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" \) | fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
+alias iopenexact='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" \) | fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
+alias io='iopen'
+alias ioe='iopenexact'
 alias lg='lazygit'
 alias ln='ln -i'
 alias man='sudo man'
@@ -2707,6 +2755,10 @@ alias ver='npx commit-and-tag-version'
 alias verg='ver && gpfom && printf "\n Run gh cr to create a release\n"'
 alias vim='nvim'
 alias v='nvim'
+alias vopen='find . -type f \( -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
+alias vopenexact='find . -type f \( -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
+alias vo='vopen'
+alias voe='vopenexact'
 alias x='chmod +x'
 alias z='zellij'
 alias ':wq'='exit'
