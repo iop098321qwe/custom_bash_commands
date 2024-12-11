@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.15.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.15.0...v2.15.1) (2024-12-11)
+
+
+### Bug Fixes
+
+* **function:** fix issue with `phopen` continuing to run after opening ([3c03f5a](https://github.com/iop098321qwe/custom_bash_commands/commit/3c03f5aeba7ab016467258cfd9530103037544b6))
+* update versioning number ([e280b67](https://github.com/iop098321qwe/custom_bash_commands/commit/e280b6790d29dad3cfecdbb8c30e149f26b9dabf))
+
 ## [2.15.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.14.0...v2.15.0) (2024-12-11)
 
 
