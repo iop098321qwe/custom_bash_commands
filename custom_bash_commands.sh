@@ -251,7 +251,7 @@ EOF
     random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
 
     # Open the random file using the default application
-    nohup xdg-open "$random_file" 2>/dev/null &
+    xdg-open "$random_file" 2>/dev/null &
 
     # Check if the file was opened successfully
     if [ $? -ne 0 ]; then
