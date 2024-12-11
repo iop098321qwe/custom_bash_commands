@@ -196,11 +196,11 @@ random() {
   # Function to display help message
   show_help() {
     cat <<EOF
-Description: Function to open random .mp4 files in the current directory
+Description: Function to open a random .mp4 file in the current directory
 Usage: random [-h] [-m NUMBER]
 Options:
   -h    Display this help message
-  -m    Open multiple random .mp4 files (NUMBER specifies how many)
+  -m    Repeat the process NUMBER times to open multiple random .mp4 files
 EOF
   }
 
@@ -239,19 +239,19 @@ EOF
   # Shift off parsed options
   shift $((OPTIND - 1))
 
-  # Main logic repeated num_times
-  for ((count = 1; count <= num_times; count++)); do
+  # Repeat the process num_times
+  for ((i = 1; i <= num_times; i++)); do
     # Gather all .mp4 files in the current directory
-    IFS=$'\n' read -d '' -r -a mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4" -print0)
+    mp4_files=(./*.mp4)
 
     # Check if there are any mp4 files
-    if [ ${#mp4_files[@]} -eq 0 ]; then
+    if [ ${#mp4_files[@]} -eq 0 ] || [ ! -e "${mp4_files[0]}" ]; then
       echo "No mp4 files found in the current directory."
       return 1
     fi
 
     # Select a random file from the list
-    random_file=$(printf '%s\n' "${mp4_files[@]}" | shuf -n 1)
+    random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
 
     # Open the random file using the default application
     nohup xdg-open "$random_file" >/dev/null 2>&1 &
