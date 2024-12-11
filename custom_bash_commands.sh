@@ -1586,9 +1586,9 @@ update() {
   # Run update commands with sudo, tee to output to terminal and append to log file
   # Define an array of commands to run
   commands=(
-    "sudo apt update"
-    "sudo apt autoremove"
-    "sudo flatpak update"
+    "sudo apt update -y"
+    "sudo apt autoremove -y"
+    "sudo flatpak update -y"
     "sudo snap refresh"
     "check_install_mscorefonts"
     "chezmoi re-add"
