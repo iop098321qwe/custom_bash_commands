@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.12.0"
+VERSION="2.12.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2630,8 +2630,8 @@ alias fobs='fobsidian'
 alias fobsidian='find ~/Documents/grymms_grimoires -type f | fzf | xargs -I {} obsidian "obsidian://open?vault=$(basename ~/Documents/grymms_grimoires)&file={}"'
 alias foe='fopenexact'
 alias fo='fopen'
-alias fopenexact='fzf --multi -e | xargs -r -d "\n" -I {} open "{}"'
-alias fopen='fzf --multi | xargs -r -d "\n" -I {} open "{}"'
+alias fopenexact='fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
+alias fopen='fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
 alias fzf='fzf -m'
 alias gb='git branch'
 alias gco='git checkout'
