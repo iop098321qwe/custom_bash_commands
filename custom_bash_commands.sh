@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.12.1"
+VERSION="2.13.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -904,9 +904,13 @@ cbcs() {
     echo "         Description: Alias for 'nvim'"
     echo "         Usage: v [file]"
     echo " "
-    echo "  mv"
-    echo "         Description: Alias for 'mv' with the '-i' option"
-    echo "         Usage: mv [source] [destination]"
+    echo "mopen"
+    echo "          Description: Alias for fopen for media files."
+    echo "          Usage: mopen"
+    echo " "
+    echo "mv"
+    echo "          Description: Alias for 'mv' with the '-i' option"
+    echo "          Usage: mv [source] [destination]"
     echo " "
     echo "  rm"
     echo "         Description: Alias for 'rm' with the '-i' option"
@@ -1117,6 +1121,7 @@ cbcs() {
     echo "lsf"
     echo "lsr"
     echo "lt"
+    echo "mopen"
     echo "mv"
     echo "ods"
     echo "odt"
