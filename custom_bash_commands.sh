@@ -192,6 +192,15 @@ append_to_bashrc
 ##########
 
 # Function to open a random .mp4 file in the current directory
+
+repeat() {
+  local count=$1
+  shift
+  for ((i = 0; i < count; i++)); do
+    "$@"
+  done
+}
+
 random() {
   # Function to display help message
   show_help() {
