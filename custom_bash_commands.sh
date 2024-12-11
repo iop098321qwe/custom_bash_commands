@@ -196,30 +196,19 @@ random() {
   # Function to display help message
   show_help() {
     cat <<EOF
-Description: Function to open random .mp4 files in the current directory
-Usage: random [-h] [-m NUMBER]
+Description: Function to open a random .mp4 file in the current directory
+Usage: random [-h]
 Options:
   -h    Display this help message
-  -m    Open multiple random .mp4 files (NUMBER specifies how many)
 EOF
   }
 
-  num_times=1 # Default to opening 1 file
-
   # Parse options using getopts
-  while getopts ":hm:" opt; do
+  while getopts ":h" opt; do
     case $opt in
     h)
       show_help
       return 0
-      ;;
-    m)
-      if [[ "$OPTARG" =~ ^[0-9]+$ && "$OPTARG" -gt 0 ]]; then
-        num_times=$OPTARG
-      else
-        echo "Error: -m requires a positive whole number argument." >&2
-        return 1
-      fi
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -230,30 +219,27 @@ EOF
   done
 
   # Gather all .mp4 files in the current directory
-  mapfile -t mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4")
+  mp4_files=(./*.mp4)
 
   # Check if there are any mp4 files
-  if [ ${#mp4_files[@]} -eq 0 ]; then
+  if [ ${#mp4_files[@]} -eq 0 ] || [ ! -e "${mp4_files[0]}" ]; then
     echo "No mp4 files found in the current directory."
     return 1
   fi
 
-  # Repeat the logic num_times
-  for ((i = 0; i < num_times; i++)); do
-    # Select a random file from the pre-gathered list
-    random_file=${mp4_files[RANDOM % ${#mp4_files[@]}]}
+  # Select a random file from the list
+  random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
 
-    # Open the random file using the default application
-    nohup xdg-open "$random_file" >/dev/null 2>&1 &
+  # Open the random file using the default application
+  nohup xdg-open "$random_file" 2>/dev/null
 
-    # Check if the file was opened successfully
-    if [ $? -ne 0 ]; then
-      echo "Failed to open the file: $random_file"
-      return 1
-    fi
+  # Check if the file was opened successfully
+  if [ $? -ne 0 ]; then
+    echo "Failed to open the file: $random_file"
+    return 1
+  fi
 
-    echo "Opened: $random_file"
-  done
+  echo "Opened: $random_file"
 }
 
 ################################################################################
