@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.11.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.11.0...v2.11.1) (2024-12-11)
+
+
+### Bug Fixes
+
+* **alias:** fix `fopen` and `fopenexact` ([9ce8cce](https://github.com/iop098321qwe/custom_bash_commands/commit/9ce8cceef8e3c3aa581bdef7385b80f6175ce340))
+
 ## [2.11.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.10.2...v2.11.0) (2024-12-06)
 
 
