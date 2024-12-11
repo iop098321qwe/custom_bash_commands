@@ -193,18 +193,20 @@ append_to_bashrc
 
 # Function to open a random .mp4 file in the current directory
 random() {
+  # Function to display help message
   show_help() {
     cat <<EOF
 Description: Function to open random .mp4 files in the current directory
 Usage: random [-h] [-m NUMBER]
 Options:
   -h    Display this help message
-  -m    Repeat the process NUMBER times to open multiple random .mp4 files
+  -m    Open multiple random .mp4 files (NUMBER specifies how many)
 EOF
   }
 
-  num_times=1
+  num_times=1 # Default to opening 1 file
 
+  # Parse options using getopts
   while getopts ":hm:" opt; do
     case $opt in
     h)
@@ -219,30 +221,34 @@ EOF
         return 1
       fi
       ;;
-    *)
+    \?)
       echo "Invalid option: -$OPTARG" >&2
+      show_help
       return 1
       ;;
     esac
   done
 
-  IFS=$'\n' read -d '' -r -a mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4" -print0)
+  # Gather all .mp4 files in the current directory
+  mapfile -t mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4")
 
+  # Check if there are any mp4 files
   if [ ${#mp4_files[@]} -eq 0 ]; then
     echo "No mp4 files found in the current directory."
     return 1
   fi
 
+  # Repeat the logic num_times
   for ((i = 0; i < num_times; i++)); do
-    random_file=$(printf '%s\0' "${mp4_files[@]}" | shuf -z -n 1 | tr -d '\0')
+    # Select a random file from the pre-gathered list
+    random_file=${mp4_files[RANDOM % ${#mp4_files[@]}]}
 
-    if [ -z "$random_file" ]; then
-      echo "Error: Could not select a random file."
-      return 1
-    fi
+    # Open the random file using the default application
+    nohup xdg-open "$random_file" >/dev/null 2>&1 &
 
-    if ! nohup xdg-open "$random_file" >/dev/null 2>&1; then
-      echo "Failed to open: $random_file"
+    # Check if the file was opened successfully
+    if [ $? -ne 0 ]; then
+      echo "Failed to open the file: $random_file"
       return 1
     fi
 
