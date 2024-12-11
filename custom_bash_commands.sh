@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.15.1"
+VERSION="2.16.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -193,13 +193,48 @@ append_to_bashrc
 
 # Function to open a random .mp4 file in the current directory
 random() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: Function to open a random .mp4 file in the current directory"
-    echo "Usage: random"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
+  # Function to display help message
+  show_help() {
+    cat <<EOF
+Description: Function to open a random .mp4 file in the current directory
+Usage: random [-h] [-m NUMBER]
+Options:
+  -h    Display this help message
+  -m    Open multiple random .mp4 files (NUMBER specifies how many)
+EOF
+  }
+
+  # Initialize variables
+  num_times=1 # Default to opening 1 file
+
+  # Parse options using getopts
+  while getopts ":hm:" opt; do
+    case $opt in
+    h)
+      show_help
+      return 0
+      ;;
+    m)
+      if [[ "$OPTARG" =~ ^[0-9]+$ ]]; then
+        num_times=$OPTARG
+      else
+        echo "Error: -m requires a positive integer argument." >&2
+        show_help
+        return 1
+      fi
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      show_help
+      return 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      show_help
+      return 1
+      ;;
+    esac
+  done
 
   # Gather all .mp4 files in the current directory
   mp4_files=(./*.mp4)
@@ -210,19 +245,22 @@ random() {
     return 1
   fi
 
-  # Select a random file from the list
-  random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
+  # Open random files the specified number of times
+  for ((i = 0; i < num_times; i++)); do
+    # Select a random file from the list
+    random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
 
-  # Open the random file using the default application
-  xdg-open "$random_file" 2>/dev/null
+    # Open the random file using the default application
+    nohup xdg-open "$random_file" 2>/dev/null &
 
-  # Check if the file was opened successfully
-  if [ $? -ne 0 ]; then
-    echo "Failed to open the file: $random_file"
-    return 1
-  fi
+    # Check if the file was opened successfully
+    if [ $? -ne 0 ]; then
+      echo "Failed to open the file: $random_file"
+      return 1
+    fi
 
-  echo "Opened: $random_file"
+    echo "Opened: $random_file"
+  done
 }
 
 ################################################################################
