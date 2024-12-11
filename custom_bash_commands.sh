@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.11.3"
+VERSION="2.12.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1179,6 +1179,66 @@ function backup() {
   local backup_filename="${filename}_backup_${timestamp}.bak" # Create the backup file name
 
   cp "$1" "$backup_filename"
+}
+
+################################################################################
+# PHOPEN
+################################################################################
+
+# Describe the phopen function and its options and usage
+
+# phopen
+# Description: This function lists .mp4 files in the current directory using fzf
+#              with exact-match (-e) and multi-select (-m) modes, then opens
+#              associated URLs in the default browser by extracting the text
+#              within square brackets [ ] in the filenames and appending it to
+#              a predefined URL prefix.
+# Usage: phopen [-h]
+# Options:
+#   -h    Display this help message
+#
+# Example: phopen
+
+#########
+
+# phopen function: Extracts parameter from filenames and opens them in default browser
+phopen() {
+  URL_PREFIX="https://www.pornhub.com/view_video.php?viewkey="
+
+  while getopts "h" opt; do
+    case "$opt" in
+    h)
+      echo "Usage: phopen [-h]"
+      echo "Open video URLs based on the keys in the filenames of .mp4 files in the current directory."
+      echo "  -h  Display this help message"
+      return 0
+      ;;
+    *)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  selected="$(find . -maxdepth 1 -type f -name "*.mp4" | fzf -e -m --prompt='Select your .mp4 file(s): ')"
+  [ -z "$selected" ] && return 0
+
+  while IFS= read -r file; do
+    filename="${file%.*}"
+    if [[ "$filename" =~ \[(.*)\] ]]; then
+      content="${BASH_REMATCH[1]}"
+      url="${URL_PREFIX}${content}"
+
+      if command -v xdg-open >/dev/null 2>&1; then
+        xdg-open "$url"
+      elif command -v open >/dev/null 2>&1; then
+        open "$url"
+      else
+        echo "No recognized browser open command found. Please open this URL manually:"
+        echo "$url"
+      fi
+    fi
+  done <<<"$selected"
 }
 
 ################################################################################
