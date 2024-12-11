@@ -215,7 +215,7 @@ EOF
       return 0
       ;;
     m)
-      if [[ "$OPTARG" =~ ^[0-9]+$ && $OPTARG -gt 0 ]]; then
+      if [[ "$OPTARG" =~ ^[0-9]+$ && "$OPTARG" -gt 0 ]]; then
         num_times=$OPTARG
       else
         echo "Error: -m requires a positive integer argument." >&2
@@ -236,9 +236,6 @@ EOF
     esac
   done
 
-  # Shift off parsed options to clean up positional arguments
-  shift $((OPTIND - 1))
-
   # Gather all .mp4 files in the current directory
   mapfile -t mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4")
 
@@ -248,26 +245,25 @@ EOF
     return 1
   fi
 
-  # Open random files the specified number of times
+  # Ensure repeatability: Re-initialize mp4_files list each call
   for ((i = 0; i < num_times; i++)); do
-    # Check if there are still files to pick
+    # Gather fresh mp4 list each iteration to ensure randomness remains
+    mapfile -t mp4_files < <(find . -maxdepth 1 -type f -name "*.mp4")
+
+    # Check if mp4_files is empty after previous deletions
     if [ ${#mp4_files[@]} -eq 0 ]; then
-      echo "No more unique files to open."
-      break
+      echo "No more files to open."
+      return 0
     fi
 
     # Select a random index from the list
     random_index=$(shuf -i 0-$((${#mp4_files[@]} - 1)) -n 1)
     random_file="${mp4_files[$random_index]}"
 
-    # Remove the selected file from the list to prevent repeats
-    unset mp4_files[$random_index]
-    mp4_files=("${mp4_files[@]}")
-
     # Open the random file using the default application
     nohup xdg-open "$random_file" >/dev/null 2>&1 &
 
-    # Check if the nohup command was executed successfully
+    # Check if the file was opened successfully
     if [ $? -ne 0 ]; then
       echo "Failed to open the file: $random_file"
       return 1
