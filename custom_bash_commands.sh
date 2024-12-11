@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.12.1"
+VERSION="2.13.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -904,9 +904,17 @@ cbcs() {
     echo "         Description: Alias for 'nvim'"
     echo "         Usage: v [file]"
     echo " "
-    echo "  mv"
-    echo "         Description: Alias for 'mv' with the '-i' option"
-    echo "         Usage: mv [source] [destination]"
+    echo "mopen"
+    echo "          Description: Alias for 'fopen' for media files."
+    echo "          Usage: mopen"
+    echo " "
+    echo "mo"
+    echo "          Description: Alias for 'mopen'"
+    echo "          Usage: mo"
+    echo " "
+    echo "mv"
+    echo "          Description: Alias for 'mv' with the '-i' option"
+    echo "          Usage: mv [source] [destination]"
     echo " "
     echo "  rm"
     echo "         Description: Alias for 'rm' with the '-i' option"
@@ -1117,6 +1125,8 @@ cbcs() {
     echo "lsf"
     echo "lsr"
     echo "lt"
+    echo "mopen"
+    echo "mo"
     echo "mv"
     echo "ods"
     echo "odt"
@@ -2656,6 +2666,8 @@ alias i='sudo apt install'
 alias lg='lazygit'
 alias ln='ln -i'
 alias man='sudo man'
+alias mopen='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
+alias mo='mopen'
 alias mv='mv -i'
 alias myip='curl http://ipecho.net/plain; echo'
 alias pron='yt-dlp --config-locations _configs.txt --batch-file _batch.txt --download-archive _downloaded.txt'
