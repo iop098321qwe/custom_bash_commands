@@ -193,41 +193,13 @@ append_to_bashrc
 
 # Function to open a random .mp4 file in the current directory
 random() {
-  # Function to display help message
-  show_help() {
-    cat <<EOF
-Description: Function to open random .mp4 files in the current directory
-Usage: random [-h] [-m NUMBER]
-Options:
-  -h    Display this help message
-  -m    Open multiple random .mp4 files (NUMBER specifies how many)
-EOF
-  }
-
-  num_times=1 # Default to opening 1 file
-
-  # Parse options using getopts
-  while getopts ":hm:" opt; do
-    case $opt in
-    h)
-      show_help
-      return 0
-      ;;
-    m)
-      if [[ "$OPTARG" =~ ^[0-9]+$ && "$OPTARG" -gt 0 ]]; then
-        num_times=$OPTARG
-      else
-        echo "Error: -m requires a positive whole number argument." >&2
-        return 1
-      fi
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      show_help
-      return 1
-      ;;
-    esac
-  done
+  if [ "$1" = "-h" ]; then
+    echo "Description: Function to open a random .mp4 file in the current directory"
+    echo "Usage: random"
+    echo "Options:"
+    echo "  -h    Display this help message"
+    return
+  fi
 
   # Gather all .mp4 files in the current directory
   mp4_files=(./*.mp4)
@@ -238,22 +210,19 @@ EOF
     return 1
   fi
 
-  # Repeat the logic num_times
-  for ((i = 0; i < num_times; i++)); do
-    # Select a random file from the list
-    random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
+  # Select a random file from the list
+  random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
 
-    # Open the random file using the default application
-    nohup xdg-open "$random_file" >/dev/null 2>&1
+  # Open the random file using the default application
+  xdg-open "$random_file" 2>/dev/null
 
-    # Check if the file was opened successfully
-    if [ $? -ne 0 ]; then
-      echo "Failed to open the file: $random_file"
-      return 1
-    fi
+  # Check if the file was opened successfully
+  if [ $? -ne 0 ]; then
+    echo "Failed to open the file: $random_file"
+    return 1
+  fi
 
-    echo "Opened: $random_file"
-  done
+  echo "Opened: $random_file"
 }
 
 ################################################################################
