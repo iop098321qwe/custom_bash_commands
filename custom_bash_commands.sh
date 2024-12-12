@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.15.1"
+VERSION="2.17.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -178,6 +178,48 @@ function append_to_bashrc() {
 append_to_bashrc
 
 ################################################################################
+# REPEAT
+################################################################################
+
+# repeat
+# Description: Function to repeat any given command a set number of times
+# Usage: repeat <number>
+# Options:
+#   -h    Display this help message
+
+# Example: repeat 4 echo "hello"
+
+################################################################################
+# Function to repeat a command any given number of times
+repeat() {
+  # Function to display help message
+  show_help() {
+    cat <<EOF
+Description: Function to repeat any given command a set number of times
+Usage: repeat <number>
+Options:
+  -h    Display this help message
+EOF
+  }
+
+  # Parse options using getopts
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help
+      return 0
+      ;;
+    esac
+  done
+
+  local count=$1
+  shift
+  for ((i = 0; i < count; i++)); do
+    "$@"
+  done
+}
+
+################################################################################
 # random
 ################################################################################
 
@@ -189,17 +231,34 @@ append_to_bashrc
 
 # Example: random  ---Opens a random .mp4 file in the current directory.
 
-##########
+################################################################################
 
 # Function to open a random .mp4 file in the current directory
 random() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: Function to open a random .mp4 file in the current directory"
-    echo "Usage: random"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
+  # Function to display help message
+  show_help() {
+    cat <<EOF
+Description: Function to open a random .mp4 file in the current directory
+Usage: random [-h]
+Options:
+  -h    Display this help message
+EOF
+  }
+
+  # Parse options using getopts
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help
+      return 0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      show_help
+      return 1
+      ;;
+    esac
+  done
 
   # Gather all .mp4 files in the current directory
   mp4_files=(./*.mp4)
@@ -214,7 +273,7 @@ random() {
   random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
 
   # Open the random file using the default application
-  xdg-open "$random_file" 2>/dev/null
+  nohup xdg-open "$random_file" 2>/dev/null
 
   # Check if the file was opened successfully
   if [ $? -ne 0 ]; then
