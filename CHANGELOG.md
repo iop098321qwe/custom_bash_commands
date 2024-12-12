@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.17.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.16.1...v2.17.0) (2024-12-12)
+
+
+### Features
+
+* **function:** add `pip install --upgrade yt-dlp` to update command ([c80112e](https://github.com/iop098321qwe/custom_bash_commands/commit/c80112e68c0604deff73f43a51417ed559a43a6d))
+
 ## [2.16.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.16.0...v2.16.1) (2024-12-12)
 
 
