@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.17.0"
+VERSION="2.18.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -192,30 +192,80 @@ append_to_bashrc
 ################################################################################
 # Function to repeat a command any given number of times
 repeat() {
-  # Function to display help message
-  show_help() {
+  local count=$1
+  shift
+  local delay=0 # Default delay is 0 seconds
+
+  # Function to display help
+  usage() {
     cat <<EOF
-Description: Function to repeat any given command a set number of times
-Usage: repeat <number>
+Usage: repeat [-h] count [-d delay] command [arguments...]
+
 Options:
-  -h    Display this help message
+  -h            Display this help message and exit
+  -d delay      Delay in seconds between each repetition
+
+Arguments:
+  count         The number of times to repeat the command
+  command       The command to be executed
+  [arguments]   Optional arguments passed to the command
+
+Examples:
+  repeat 5 echo "Hello"
+    Runs the 'echo' command 5 times with "Hello" as an argument.
+  repeat 5 -d 2 echo "Hello"
+    Runs the 'echo' command 5 times with a 2-second delay between each run.
 EOF
   }
 
-  # Parse options using getopts
-  while getopts ":h" opt; do
-    case $opt in
+  # Parse options after count
+  while getopts "hd:" opt; do
+    case "$opt" in
     h)
-      show_help
-      return 0
+      usage
+      exit 0
+      ;;
+    d)
+      delay="$OPTARG"
+      ;;
+    *)
+      usage
+      exit 1
       ;;
     esac
   done
+  shift $((OPTIND - 1)) # Remove parsed options from arguments
+
+  # Ensure count and command are provided
+  if [ "$#" -lt 2 ]; then
+    echo "Error: Missing required arguments."
+    usage
+    exit 1
+  fi
 
   local count=$1
   shift
+
+  # Ensure count is a valid positive integer
+  if ! [ "$count" -ge 1 ] 2>/dev/null; then
+    echo "Error: COUNT must be a positive integer."
+    usage
+    exit 1
+  fi
+
+  # Ensure delay is a valid non-negative number
+  if ! echo "$delay" | grep -Eq '^[0-9]+$'; then
+    echo "Error: DELAY must be a non-negative integer."
+    usage
+    exit 1
+  fi
+
+  # Repeat the command COUNT times with optional delay
   for ((i = 0; i < count; i++)); do
     "$@"
+    if [ "$delay" -gt 0 ] && [ "$i" -lt $((count - 1)) ]; then
+      sleep "$delay"
+    fi
   done
 }
 
