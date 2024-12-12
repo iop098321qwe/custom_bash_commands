@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.16.1"
+VERSION="2.17.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1773,6 +1773,7 @@ update() {
     "sudo apt autoremove -y"
     "sudo flatpak update -y"
     "sudo snap refresh"
+    "pip install --upgrade yt-dlp"
     "check_install_mscorefonts"
     "chezmoi re-add"
   )
