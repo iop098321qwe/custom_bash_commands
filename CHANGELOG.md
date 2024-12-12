@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.16.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.15.1...v2.16.0) (2024-12-12)
+
+
+### Features
+
+* **function:** add -m flag to random command for multiple random files to be opened ([1aa1a38](https://github.com/iop098321qwe/custom_bash_commands/commit/1aa1a3886c46a0e1b1ea982733c305b116ffeb80))
+* **function:** add repeat command ([d15e6da](https://github.com/iop098321qwe/custom_bash_commands/commit/d15e6da86c4217bd5d0168da231737ebd5170b98))
+
+
+### Bug Fixes
+
+* **function:** fix issue where random -m flag would fail on consecutive runs ([f0e73ce](https://github.com/iop098321qwe/custom_bash_commands/commit/f0e73ce47272028f094c0a6523847598e4940909))
+* **function:** fix issue with -m flag for random command ([e3c3db1](https://github.com/iop098321qwe/custom_bash_commands/commit/e3c3db19b4f91f2d4a5dc970040669c52bcd2385))
+* **function:** fix usage of nohup in random command ([d21a6e8](https://github.com/iop098321qwe/custom_bash_commands/commit/d21a6e8092cffd67b3f239cffb368ed646a9fd73))
+* **function:** restore original functionality without multiple file capability ([15f85e7](https://github.com/iop098321qwe/custom_bash_commands/commit/15f85e748dc6432338a02142771c070c0e7115e1))
+* **function:** test 10x ([4f84e88](https://github.com/iop098321qwe/custom_bash_commands/commit/4f84e880bf7d3faa78a03801a6b369d10fbad561))
+* **function:** test 11x ([ff433dd](https://github.com/iop098321qwe/custom_bash_commands/commit/ff433dd5f4e799d890f561e69b499532d0323a4c))
+* **function:** test 4x ([67a511b](https://github.com/iop098321qwe/custom_bash_commands/commit/67a511bfe5612799b6d393f5b36e50b7ba0bc8f0))
+* **function:** test 5x ([966a823](https://github.com/iop098321qwe/custom_bash_commands/commit/966a823b215aa127d5e42ed56f3cfc627a464eb4))
+* **function:** test 6x ([042903c](https://github.com/iop098321qwe/custom_bash_commands/commit/042903ca2c339bfc03bd9953e5de9aa2f7c51e39))
+* **function:** test 7x ([8ea3641](https://github.com/iop098321qwe/custom_bash_commands/commit/8ea3641d4e60af8ea8a5a51d9ea6e314c0573c1e))
+* **function:** test 8x ([ba75636](https://github.com/iop098321qwe/custom_bash_commands/commit/ba7563648034d91414b696925cc2082252070c74))
+* **function:** test 9x ([f30bf24](https://github.com/iop098321qwe/custom_bash_commands/commit/f30bf24e1bc35a4bf14a5330d6e478679feb8a6f))
+* **function:** test again ([13059a8](https://github.com/iop098321qwe/custom_bash_commands/commit/13059a8ebd0aa159fd50a3b128cd5e582591c8d6))
+* **function:** test again again ([78f03a4](https://github.com/iop098321qwe/custom_bash_commands/commit/78f03a4a5100d44a08f599088ee97107e996e319))
+* **function:** test again again again ([d013ff7](https://github.com/iop098321qwe/custom_bash_commands/commit/d013ff7f1ce8fdf78655833cd42f8fd520bb74a2))
+* **function:** test repeat function ([a1544a6](https://github.com/iop098321qwe/custom_bash_commands/commit/a1544a61767338b95afa4206b4bd1ab4a64c8a6f))
+* **function:** testing yet again ([ee4d2ea](https://github.com/iop098321qwe/custom_bash_commands/commit/ee4d2ea2b7bd0411b7d2fc369deb6c4d740f3322))
+
 ## [2.15.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.15.0...v2.15.1) (2024-12-11)
 
 
