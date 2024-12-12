@@ -195,6 +195,7 @@ repeat() {
   OPTIND=1        # Reset getopts index to handle multiple runs
   local delay=0   # Default delay is 0 seconds
   local verbose=0 # Default verbose mode is off
+  local count     # Declare count as a local variable to limit its scope
 
   # Function to display help
   usage() {
@@ -202,7 +203,7 @@ repeat() {
 Usage: repeat [-h] count [-d delay] [-v] command [arguments...]
 
 Options:
-  -h            Display this help message and exit
+  -h            Display this help message and return
   -d delay      Delay in seconds between each repetition
   -v            Enable verbose mode for debugging and tracking runs
 
@@ -213,36 +214,20 @@ Arguments:
 EOF
   }
 
-  # Parse the count argument first
-  if [ "$#" -lt 2 ]; then
-    echo "Error: Missing count and command arguments."
-    usage
-    return 1
-  fi
-
-  local count=$1
-  shift
-
-  # Ensure count is a valid positive integer
-  if ! echo "$count" | grep -Eq '^[0-9]+$'; then
-    echo "Error: COUNT must be a positive integer."
-    usage
-    return 1
-  fi
-
-  # Parse options after count
+  # Parse options first
   while getopts "hd:v" opt; do
     case "$opt" in
     h)
       usage
-      exit 0
+      return 0
       ;;
     d)
       delay="$OPTARG"
       if ! echo "$delay" | grep -Eq '^[0-9]+$'; then
+        echo " "
         echo "Error: DELAY must be a non-negative integer."
-        usage
-        exit 1
+        echo " "
+        return 1
       fi
       ;;
     v)
@@ -250,17 +235,45 @@ EOF
       ;;
     *)
       usage
-      exit 1
+      return 1
       ;;
     esac
   done
   shift $((OPTIND - 1)) # Remove parsed options from arguments
 
+  # Check if help flag was invoked alone
+  if [ "$OPTIND" -eq 2 ] && [ "$#" -eq 0 ]; then
+    return 0
+  fi
+
+  # Ensure count argument exists
+  if [ "$#" -lt 2 ]; then
+    echo " "
+    echo "Error: Missing count and command arguments."
+    echo " "
+    usage
+    return 1
+  fi
+
+  count=$1 # Assign count within local scope
+  shift
+
+  # Ensure count is a valid positive integer
+  if ! echo "$count" | grep -Eq '^[0-9]+$'; then
+    echo " "
+    echo "Error: COUNT must be a positive integer."
+    echo " "
+    usage
+    return 1
+  fi
+
   # Ensure a command is provided
   if [ "$#" -lt 1 ]; then
+    echo " "
     echo "Error: No command provided."
+    echo " "
     usage
-    exit 1
+    return 1
   fi
 
   # Combine remaining arguments as a single command string
@@ -273,7 +286,7 @@ EOF
       echo "Running iteration $i of $count: $cmd"
       echo " "
     fi
-    eval "$cmd"
+    sh -c "$cmd"
     if [ "$delay" -gt 0 ] && [ "$i" -lt "$count" ]; then
       if [ "$verbose" -eq 1 ]; then
         echo " "
