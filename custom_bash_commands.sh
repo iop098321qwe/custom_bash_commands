@@ -217,7 +217,7 @@ EOF
   if [ "$#" -lt 2 ]; then
     echo "Error: Missing count and command arguments."
     usage
-    exit 1
+    return 1
   fi
 
   local count=$1
@@ -227,7 +227,7 @@ EOF
   if ! echo "$count" | grep -Eq '^[0-9]+$'; then
     echo "Error: COUNT must be a positive integer."
     usage
-    exit 1
+    return 1
   fi
 
   # Parse options after count
@@ -273,7 +273,7 @@ EOF
       echo "Running iteration $i of $count: $cmd"
       echo " "
     fi
-    sh -c "$cmd"
+    eval "$cmd"
     if [ "$delay" -gt 0 ] && [ "$i" -lt "$count" ]; then
       if [ "$verbose" -eq 1 ]; then
         echo " "
