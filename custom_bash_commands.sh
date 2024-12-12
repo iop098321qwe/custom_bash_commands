@@ -266,12 +266,16 @@ EOF
   # Repeat the command COUNT times with optional delay
   for i in $(seq 1 "$count"); do
     if [ "$verbose" -eq 1 ]; then
-      echo "Running iteration $i of $count: $*"
+      echo " "
+      echo "Running iteration $i of $count:"
+      echo " "
     fi
     "$@"
     if [ "$delay" -gt 0 ] && [ "$i" -lt "$count" ]; then
       if [ "$verbose" -eq 1 ]; then
+        echo " "
         echo "Sleeping for $delay seconds..."
+        echo " "
       fi
       sleep "$delay"
     fi
