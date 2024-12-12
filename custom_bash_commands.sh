@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.16.0"
+VERSION="2.17.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -178,6 +178,48 @@ function append_to_bashrc() {
 append_to_bashrc
 
 ################################################################################
+# REPEAT
+################################################################################
+
+# repeat
+# Description: Function to repeat any given command a set number of times
+# Usage: repeat <number>
+# Options:
+#   -h    Display this help message
+
+# Example: repeat 4 echo "hello"
+
+################################################################################
+# Function to repeat a command any given number of times
+repeat() {
+  # Function to display help message
+  show_help() {
+    cat <<EOF
+Description: Function to repeat any given command a set number of times
+Usage: repeat <number>
+Options:
+  -h    Display this help message
+EOF
+  }
+
+  # Parse options using getopts
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help
+      return 0
+      ;;
+    esac
+  done
+
+  local count=$1
+  shift
+  for ((i = 0; i < count; i++)); do
+    "$@"
+  done
+}
+
+################################################################################
 # random
 ################################################################################
 
@@ -189,18 +231,9 @@ append_to_bashrc
 
 # Example: random  ---Opens a random .mp4 file in the current directory.
 
-##########
+################################################################################
 
 # Function to open a random .mp4 file in the current directory
-
-repeat() {
-  local count=$1
-  shift
-  for ((i = 0; i < count; i++)); do
-    "$@"
-  done
-}
-
 random() {
   # Function to display help message
   show_help() {
