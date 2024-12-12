@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.18.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.17.0...v2.18.0) (2024-12-12)
+
+
+### Features
+
+* **function:** add `-v` flag for verbose mode for repeat function ([5316c9a](https://github.com/iop098321qwe/custom_bash_commands/commit/5316c9accba5119725143723878a8a6108d4e2b9))
+* **function:** add delay option for repeat function ([f2ce093](https://github.com/iop098321qwe/custom_bash_commands/commit/f2ce09351b8dbe3c4c1ffb8d2944347c84725985))
+
+
+### Bug Fixes
+
+* **function:** add spacers for verbose mode for repeat function ([7baa649](https://github.com/iop098321qwe/custom_bash_commands/commit/7baa6499d8b1cc3bbd322133d78bda2b93375817))
+* **function:** fix exiting issue and changed to return for function ([77572bb](https://github.com/iop098321qwe/custom_bash_commands/commit/77572bb3b666dbe20fa717501293bad12698fc4f))
+* **function:** fix the repeat function to now handle pipes and multiple commands at once ([29779c0](https://github.com/iop098321qwe/custom_bash_commands/commit/29779c053d118e8b25cc74765d6233f265f817fb))
+* **function:** iterate 2x of testing repeat function ([268f284](https://github.com/iop098321qwe/custom_bash_commands/commit/268f284ba7b588c031947e07c30a332bfd108c94))
+* **function:** iterate a test of changes for repeat function ([a1eb615](https://github.com/iop098321qwe/custom_bash_commands/commit/a1eb615c6ec07de28cb5854788b5abe90d656048))
+* **function:** make repeat function more efficient ([812702c](https://github.com/iop098321qwe/custom_bash_commands/commit/812702c2424be6101c544e347d017450c9726ba4))
+
 ## [2.17.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.16.1...v2.17.0) (2024-12-12)
 
 
