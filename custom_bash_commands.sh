@@ -192,17 +192,19 @@ append_to_bashrc
 ################################################################################
 # Function to repeat a command any given number of times
 repeat() {
-  OPTIND=1      # Reset getopts index to handle multiple runs
-  local delay=0 # Default delay is 0 seconds
+  OPTIND=1        # Reset getopts index to handle multiple runs
+  local delay=0   # Default delay is 0 seconds
+  local verbose=0 # Default verbose mode is off
 
   # Function to display help
   usage() {
     cat <<EOF
-Usage: repeat [-h] count [-d delay] command [arguments...]
+Usage: repeat [-h] count [-d delay] [-v] command [arguments...]
 
 Options:
   -h            Display this help message and exit
   -d delay      Delay in seconds between each repetition
+  -v            Enable verbose mode for debugging and tracking runs
 
 Arguments:
   count         The number of times to repeat the command
@@ -229,7 +231,7 @@ EOF
   fi
 
   # Parse options after count
-  while getopts "hd:" opt; do
+  while getopts "hd:v" opt; do
     case "$opt" in
     h)
       usage
@@ -242,6 +244,9 @@ EOF
         usage
         exit 1
       fi
+      ;;
+    v)
+      verbose=1
       ;;
     *)
       usage
@@ -260,8 +265,14 @@ EOF
 
   # Repeat the command COUNT times with optional delay
   for i in $(seq 1 "$count"); do
+    if [ "$verbose" -eq 1 ]; then
+      echo "Running iteration $i of $count: $*"
+    fi
     "$@"
     if [ "$delay" -gt 0 ] && [ "$i" -lt "$count" ]; then
+      if [ "$verbose" -eq 1 ]; then
+        echo "Sleeping for $delay seconds..."
+      fi
       sleep "$delay"
     fi
   done
