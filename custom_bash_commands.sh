@@ -192,6 +192,7 @@ append_to_bashrc
 ################################################################################
 # Function to repeat a command any given number of times
 repeat() {
+  OPTIND=1      # Reset getopts index to handle multiple runs
   local delay=0 # Default delay is 0 seconds
 
   # Function to display help
