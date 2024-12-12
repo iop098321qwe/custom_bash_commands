@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.17.0"
+VERSION="2.18.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -192,30 +192,109 @@ append_to_bashrc
 ################################################################################
 # Function to repeat a command any given number of times
 repeat() {
-  # Function to display help message
-  show_help() {
+  OPTIND=1        # Reset getopts index to handle multiple runs
+  local delay=0   # Default delay is 0 seconds
+  local verbose=0 # Default verbose mode is off
+  local count     # Declare count as a local variable to limit its scope
+
+  # Function to display help
+  usage() {
     cat <<EOF
-Description: Function to repeat any given command a set number of times
-Usage: repeat <number>
+Usage: repeat [-h] count [-d delay] [-v] command [arguments...]
+
 Options:
-  -h    Display this help message
+  -h            Display this help message and return
+  -d delay      Delay in seconds between each repetition
+  -v            Enable verbose mode for debugging and tracking runs
+
+Arguments:
+  count         The number of times to repeat the command
+  command       The command(s) to be executed (use ';' to separate multiple commands)
+  [arguments]   Optional arguments passed to the command(s)
 EOF
   }
 
-  # Parse options using getopts
-  while getopts ":h" opt; do
-    case $opt in
+  # Parse options first
+  while getopts "hd:v" opt; do
+    case "$opt" in
     h)
-      show_help
+      usage
       return 0
+      ;;
+    d)
+      delay="$OPTARG"
+      if ! echo "$delay" | grep -Eq '^[0-9]+$'; then
+        echo " "
+        echo "Error: DELAY must be a non-negative integer."
+        echo " "
+        return 1
+      fi
+      ;;
+    v)
+      verbose=1
+      ;;
+    *)
+      usage
+      return 1
       ;;
     esac
   done
+  shift $((OPTIND - 1)) # Remove parsed options from arguments
 
-  local count=$1
+  # Check if help flag was invoked alone
+  if [ "$OPTIND" -eq 2 ] && [ "$#" -eq 0 ]; then
+    return 0
+  fi
+
+  # Ensure count argument exists
+  if [ "$#" -lt 2 ]; then
+    echo " "
+    echo "Error: Missing count and command arguments."
+    echo " "
+    usage
+    return 1
+  fi
+
+  count=$1 # Assign count within local scope
   shift
-  for ((i = 0; i < count; i++)); do
-    "$@"
+
+  # Ensure count is a valid positive integer
+  if ! echo "$count" | grep -Eq '^[0-9]+$'; then
+    echo " "
+    echo "Error: COUNT must be a positive integer."
+    echo " "
+    usage
+    return 1
+  fi
+
+  # Ensure a command is provided
+  if [ "$#" -lt 1 ]; then
+    echo " "
+    echo "Error: No command provided."
+    echo " "
+    usage
+    return 1
+  fi
+
+  # Combine remaining arguments as a single command string
+  local cmd="$*"
+
+  # Repeat the command COUNT times with optional delay
+  for i in $(seq 1 "$count"); do
+    if [ "$verbose" -eq 1 ]; then
+      echo " "
+      echo "Running iteration $i of $count: $cmd"
+      echo " "
+    fi
+    sh -c "$cmd"
+    if [ "$delay" -gt 0 ] && [ "$i" -lt "$count" ]; then
+      if [ "$verbose" -eq 1 ]; then
+        echo " "
+        echo "Sleeping for $delay seconds..."
+        echo " "
+      fi
+      sleep "$delay"
+    fi
   done
 }
 
