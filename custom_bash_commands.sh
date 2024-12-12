@@ -208,8 +208,8 @@ Options:
 
 Arguments:
   count         The number of times to repeat the command
-  command       The command to be executed
-  [arguments]   Optional arguments passed to the command
+  command       The command(s) to be executed (use ';' to separate multiple commands)
+  [arguments]   Optional arguments passed to the command(s)
 EOF
   }
 
@@ -263,14 +263,17 @@ EOF
     exit 1
   fi
 
+  # Combine remaining arguments as a single command string
+  local cmd="$*"
+
   # Repeat the command COUNT times with optional delay
   for i in $(seq 1 "$count"); do
     if [ "$verbose" -eq 1 ]; then
       echo " "
-      echo "Running iteration $i of $count:"
+      echo "Running iteration $i of $count: $cmd"
       echo " "
     fi
-    "$@"
+    sh -c "$cmd"
     if [ "$delay" -gt 0 ] && [ "$i" -lt "$count" ]; then
       if [ "$verbose" -eq 1 ]; then
         echo " "
