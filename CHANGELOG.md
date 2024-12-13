@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.18.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.18.0...v2.18.1) (2024-12-13)
+
+
+### Bug Fixes
+
+* fix versioning number ([1a77319](https://github.com/iop098321qwe/custom_bash_commands/commit/1a77319bd054d6f5789565c8e72001f7a86c72d5))
+* **style:** remove 'function' declaration in front of functions ([74b9782](https://github.com/iop098321qwe/custom_bash_commands/commit/74b97829d49a7ca76e5b808aed19aad396541494))
+
 ## [2.18.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.17.0...v2.18.0) (2024-12-12)
 
 
