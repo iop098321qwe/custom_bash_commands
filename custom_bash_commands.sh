@@ -403,7 +403,7 @@ EOF
   line_number=""
 
   # Parse options using getopts
-  while getopts ":hl:" opt; do
+  while getopts "hl:" opt; do
     case "$opt" in
     h)
       usage
