@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.18.4"
+VERSION="2.19.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -286,7 +286,7 @@ EOF
       echo "Running iteration $i of $count: $cmd"
       echo " "
     fi
-    sh -c "$cmd"
+    eval "$cmd"
     if [ "$delay" -gt 0 ] && [ "$i" -lt "$count" ]; then
       if [ "$verbose" -eq 1 ]; then
         echo " "
@@ -361,6 +361,129 @@ EOF
   fi
 
   echo "Opened: $random_file"
+}
+
+################################################################################
+# PRONLIST
+################################################################################
+
+# pronlist
+# Description: Function to process URLs listed in _batch.txt and download files
+#              using yt-dlp with a specified configuration file. The titles of
+#              the downloaded files are saved to individual output files.
+# Usage: pronlist [-h] [-l line_number]
+# Options:
+#   -h    Show this help message and exit
+#   -l    Process a specific line number from _batch.txt
+#
+# Example: pronlist
+#          pronlist -l 3
+#
+# Requires:
+#   - _batch.txt: File containing URLs (one per line)
+#   - _configs.txt: yt-dlp configuration file
+################################################################################
+
+# Function to generate a list of what each url downloads using yt-dlp
+pronlist() {
+  usage() {
+    cat <<EOF
+Usage: pronlist [-h] [-l line_number]
+
+Options:
+  -h    Show this help message and exit
+  -l    Process a specific line number from _batch.txt
+
+Description:
+  Processes each URL in the _batch.txt file and uses yt-dlp with the _configs.txt
+  configuration file to generate a sanitized output file listing the downloaded titles.
+EOF
+  }
+
+  check_files() {
+    if [ ! -f "_batch.txt" ]; then
+      echo "Error: _batch.txt not found in the current directory."
+      return 1
+    fi
+
+    if [ ! -f "_configs.txt" ]; then
+      echo "Error: _configs.txt not found in the current directory."
+      return 1
+    fi
+  }
+
+  line_number=""
+
+  # Parse options using getopts
+  while getopts "hl:" opt; do
+    case "$opt" in
+    h)
+      usage
+      return 0
+      ;;
+    l)
+      line_number="$OPTARG"
+      ;;
+    ?)
+      echo "Invalid option: -$OPTARG" >&2
+      usage
+      return 1
+      ;;
+    esac
+  done
+
+  # Process specific line if -l flag is provided
+  if [ -n "$line_number" ]; then
+    line=$(sed -n "${line_number}p" _batch.txt)
+    if [ -z "$line" ]; then
+      echo "Error: No URL found at line $line_number."
+      return 1
+    fi
+
+    # Verify necessary files before running yt-dlp
+    check_files || return 1
+
+    # Generate a sanitized filename for the URL output
+    output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
+
+    echo " "
+    echo "################################################################################"
+    echo "Processing URL from line $line_number: $line"
+    echo "################################################################################"
+    echo " "
+
+    yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
+
+    echo " "
+    echo "Processing complete."
+
+    return 0
+  fi
+
+  # Default: Loop through each line in _batch.txt
+  while IFS= read -r line || [ -n "$line" ]; do
+    # Skip empty lines
+    if [ -z "$line" ]; then
+      continue
+    fi
+
+    # Verify necessary files before running yt-dlp
+    check_files || return 1
+
+    # Generate a sanitized filename for the URL output
+    output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
+
+    echo " "
+    echo "################################################################################"
+    echo "Processing URL: $line"
+    echo "################################################################################"
+    echo " "
+
+    yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
+  done <"_batch.txt"
+
+  echo " "
+  echo "Processing complete."
 }
 
 ################################################################################
