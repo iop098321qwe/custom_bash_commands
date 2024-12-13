@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.18.4"
+VERSION="2.19.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -361,6 +361,89 @@ EOF
   fi
 
   echo "Opened: $random_file"
+}
+
+################################################################################
+# PRONLIST
+################################################################################
+
+# pronlist
+# Description: Function to process URLs listed in _batch.txt and download files
+#              using yt-dlp with a specified configuration file. The titles of
+#              the downloaded files are saved to individual output files.
+# Usage: pronlist [-h]
+# Options:
+#   -h    Show this help message and exit
+#
+# Example: pronlist
+#
+# Requires:
+#   - _batch.txt: File containing URLs (one per line)
+#   - _configs.txt: yt-dlp configuration file
+################################################################################
+
+# Function to generate a list of what each url downloads using yt-dlp
+pronlist() {
+  usage() {
+    cat <<EOF
+Usage: pronlist [-h]
+
+Options:
+  -h    Show this help message and exit
+
+Description:
+  Processes each URL in the _batch.txt file and uses yt-dlp with the _configs.txt
+  configuration file to generate a sanitized output file listing the downloaded titles.
+EOF
+  }
+
+  # Parse options using getopts
+  while getopts ":h" opt; do
+    case "$opt" in
+    h)
+      usage
+      return 0
+      ;;
+    ?)
+      echo "Invalid option: -$OPTARG" >&2
+      usage
+      return 1
+      ;;
+    esac
+  done
+
+  # Ensure required files exist
+  if [ ! -f "_batch.txt" ]; then
+    echo "Error: _batch.txt not found in the current directory."
+    return 1
+  fi
+
+  if [ ! -f "_configs.txt" ]; then
+    echo "Error: _configs.txt not found in the current directory."
+    return 1
+  fi
+
+  # Loop through each line in _batch.txt
+  while IFS= read -r line || [ -n "$line" ]; do
+    # Skip empty lines
+    if [ -z "$line" ]; then
+      continue
+    fi
+
+    # Generate a sanitized filename for the URL output
+    output_file="$(echo "$line" | sed 's/[^a-zA-Z0-9]/_/g').txt"
+
+    echo "Processing URL: $line"
+
+    # Execute yt-dlp with the provided configurations and URL
+    # --config-locations specifies the yt-dlp configuration file
+    # --print "%title" retrieves the title of downloaded files
+    # tee writes output to the file named after the sanitized URL
+    yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
+
+  done <"_batch.txt"
+
+  echo "Processing complete. Titles saved to individual .txt files."
 }
 
 ################################################################################
