@@ -398,6 +398,7 @@ Description:
   Processes each URL in the _batch.txt file and uses yt-dlp with the _configs.txt
   configuration file to generate a sanitized output file listing the downloaded titles.
 EOF
+    return 0
   }
 
   line_number=""
@@ -407,7 +408,6 @@ EOF
     case "$opt" in
     h)
       usage
-      return 0
       ;;
     l)
       line_number="$OPTARG"
@@ -415,7 +415,6 @@ EOF
     ?)
       echo "Invalid option: -$OPTARG" >&2
       usage
-      return 1
       ;;
     esac
   done
@@ -477,6 +476,7 @@ EOF
 
   echo " "
   echo "Processing complete."
+  return 0
 }
 
 ################################################################################
