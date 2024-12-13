@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.19.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.18.4...v2.19.0) (2024-12-13)
+
+
+### Features
+
+* **function:** add `pronlist` function ([57208cf](https://github.com/iop098321qwe/custom_bash_commands/commit/57208cf0c04a658fbd688eab01b16ae0ada3db22))
+
+
+### Bug Fixes
+
+* **function:** change file name generation to be everything after first slash after the .com in the url ([f19c89c](https://github.com/iop098321qwe/custom_bash_commands/commit/f19c89c9b0d62811e2a1964939fd65ba686df446))
+* **function:** fix calling commands in repeat function ([fe7902a](https://github.com/iop098321qwe/custom_bash_commands/commit/fe7902aa4fe85f1876a8f4ce4134086cca1b8aef))
+* **function:** fix file name generation for pronlist function ([b607fad](https://github.com/iop098321qwe/custom_bash_commands/commit/b607fad5e13da2f3232110a956be40c9d2d69a54))
+* **function:** fix issue processing options for pronlist ([98998ce](https://github.com/iop098321qwe/custom_bash_commands/commit/98998ce802e1397bae4d35c408d88f4b91f0af9b))
+* **function:** fix issue with file name generation not sanitizing correctly ([7e60ac6](https://github.com/iop098321qwe/custom_bash_commands/commit/7e60ac69d7740720e259c6af2b219a9847218c09))
+* **function:** fix issue with file name generation not working correctly ([650c3ee](https://github.com/iop098321qwe/custom_bash_commands/commit/650c3ee3bf1749496ab5af607af1129b9978e00e))
+* **function:** fix output for pronlist using the -l flag ([9a5dbcb](https://github.com/iop098321qwe/custom_bash_commands/commit/9a5dbcb4b045a87bef6f5f8d7d36b9a66d4da6ce))
+* **function:** fix output to be more formatted for pronlist function ([3fd7fe7](https://github.com/iop098321qwe/custom_bash_commands/commit/3fd7fe7797cae80b1da08aa854e891a8bbb27a2c))
+* **function:** fix sanitization issues again ([1809670](https://github.com/iop098321qwe/custom_bash_commands/commit/18096704f08d4fb9a30e13a156db874d911fb52d))
+* **function:** prettify output of pronlist function ([4462d80](https://github.com/iop098321qwe/custom_bash_commands/commit/4462d80a87d68db6a189b08c53dc1268fe622965))
+* **function:** revert functionality to usable state ([b9f4335](https://github.com/iop098321qwe/custom_bash_commands/commit/b9f4335625cfd6fe59dac10ec551e7b59d1f0dd2))
+
 ## [2.18.4](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.18.3...v2.18.4) (2024-12-13)
 
 
