@@ -433,7 +433,10 @@ EOF
     # Generate a sanitized filename for the URL output
     output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
 
+    echo " "
+    echo "################################################################################"
     echo "Processing URL: $line"
+    echo "################################################################################"
     echo " "
 
     # Execute yt-dlp with the provided configurations and URL
