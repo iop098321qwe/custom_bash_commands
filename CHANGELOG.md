@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.19.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.19.0...v2.19.1) (2024-12-13)
+
+
+### Bug Fixes
+
+* fix issue where pronlist was not shown in cbcs ([b35d458](https://github.com/iop098321qwe/custom_bash_commands/commit/b35d45821c08cae86c55dc0de6a54170510c235f))
+
 ## [2.19.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.18.4...v2.19.0) (2024-12-13)
 
 
