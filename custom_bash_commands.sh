@@ -412,78 +412,81 @@ EOF
     fi
   }
 
-  line_number=""
+  while :; do
+    line_number=""
 
-  # Parse options using getopts
-  while getopts "hl:" opt; do
-    case "$opt" in
-    h)
-      usage
+    # Parse options using getopts
+    while getopts "hl:" opt; do
+      case "$opt" in
+      h)
+        usage
+        return 0
+        ;;
+      l)
+        line_number="$OPTARG"
+        ;;
+      ?)
+        echo "Invalid option: -$OPTARG" >&2
+        usage
+        return 1
+        ;;
+      esac
+    done
+
+    shift $((OPTIND - 1))
+    OPTIND=1 # Reset OPTIND to allow reuse of getopts
+
+    # Process specific line if -l flag is provided
+    if [ -n "$line_number" ]; then
+      check_files || return 1
+
+      line=$(sed -n "${line_number}p" _batch.txt)
+      if [ -z "$line" ]; then
+        echo "Error: No URL found at line $line_number."
+        return 1
+      fi
+
+      # Generate a sanitized filename for the URL output
+      output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
+
+      echo " "
+      echo "################################################################################"
+      echo "Processing URL from line $line_number: $line"
+      echo "################################################################################"
+      echo " "
+
+      yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
+
+      echo " "
+      echo "Processing complete."
       return 0
-      ;;
-    l)
-      line_number="$OPTARG"
-      ;;
-    ?)
-      echo "Invalid option: -$OPTARG" >&2
-      usage
-      return 1
-      ;;
-    esac
-  done
-
-  # Process specific line if -l flag is provided
-  if [ -n "$line_number" ]; then
-    line=$(sed -n "${line_number}p" _batch.txt)
-    if [ -z "$line" ]; then
-      echo "Error: No URL found at line $line_number."
-      return 1
     fi
 
-    # Verify necessary files before running yt-dlp
+    # Default: Loop through each line in _batch.txt
     check_files || return 1
 
-    # Generate a sanitized filename for the URL output
-    output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
+    while IFS= read -r line || [ -n "$line" ]; do
+      # Skip empty lines
+      if [ -z "$line" ]; then
+        continue
+      fi
 
-    echo " "
-    echo "################################################################################"
-    echo "Processing URL from line $line_number: $line"
-    echo "################################################################################"
-    echo " "
+      # Generate a sanitized filename for the URL output
+      output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
 
-    yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
+      echo " "
+      echo "################################################################################"
+      echo "Processing URL: $line"
+      echo "################################################################################"
+      echo " "
+
+      yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
+    done <"_batch.txt"
 
     echo " "
     echo "Processing complete."
-
     return 0
-  fi
-
-  # Default: Loop through each line in _batch.txt
-  while IFS= read -r line || [ -n "$line" ]; do
-    # Skip empty lines
-    if [ -z "$line" ]; then
-      continue
-    fi
-
-    # Verify necessary files before running yt-dlp
-    check_files || return 1
-
-    # Generate a sanitized filename for the URL output
-    output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
-
-    echo " "
-    echo "################################################################################"
-    echo "Processing URL: $line"
-    echo "################################################################################"
-    echo " "
-
-    yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
-  done <"_batch.txt"
-
-  echo " "
-  echo "Processing complete."
+  done
 }
 
 ################################################################################
