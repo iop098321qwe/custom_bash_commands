@@ -449,6 +449,10 @@ EOF
     echo " "
 
     yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
+
+    echo " "
+    echo "Processing complete."
+
     return 0
   fi
 
@@ -472,7 +476,7 @@ EOF
   done <"_batch.txt"
 
   echo " "
-  echo "Processing complete. Titles saved to individual .txt files."
+  echo "Processing complete."
 }
 
 ################################################################################
