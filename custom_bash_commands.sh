@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.19.0"
+VERSION="2.19.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -807,6 +807,10 @@ cbcs() {
     echo "         Description: Move all files in a directory to subdirectories based on file type"
     echo "         Usage: mvfiles"
     echo " "
+    echo "pronlist"
+    echo "          Description: List files downloaded from _batch.txt per URL"
+    echo "          Usage: pronlist"
+    echo " "
     echo "random"
     echo "         Description: Open a random .mp4 file in the current directory"
     echo "         Usage: random"
@@ -1350,6 +1354,7 @@ cbcs() {
     echo "mkdirs"
     echo "mvfiles"
     echo "myip"
+    echo "pronlist"
     echo "random"
     echo "refresh"
     echo "rmconf"
