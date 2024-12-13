@@ -13,7 +13,7 @@ CONFIG_FILE="$HOME/.cbc.config"
 ################################################################################
 
 # Function to create the config file with default values if it does not exist
-function create_config_file() {
+create_config_file() {
   echo "# Configuration file for Custom Bash Commands (CBC) by iop098321qwe" >>"$CONFIG_FILE"
   echo " " >>"$CONFIG_FILE"
   echo "# First-time setup?" >>"$CONFIG_FILE"
@@ -46,7 +46,7 @@ fi
 ################################################################################
 
 # Function to run the first-time setup for Custom Bash Commands
-function first_time_setup() {
+first_time_setup() {
 
   # Read the FIRST_TIME variable from the config file
   source "$CONFIG_FILE"
@@ -147,7 +147,7 @@ function first_time_setup() {
 ################################################################################
 
 # Function to remove configuration file for CBC
-function rmconf() {
+rmconf() {
   if [ -f "$CONFIG_FILE" ]; then
     rm "$CONFIG_FILE"
     echo "Config file removed."
@@ -161,7 +161,7 @@ function rmconf() {
 ################################################################################
 
 # Function to append the CBC script to the end of the .bashrc file
-function append_to_bashrc() {
+append_to_bashrc() {
   # Check if the CBC script is already sourced in the .bashrc file
   if ! grep -q ".custom_bash_commands.sh" "$HOME/.bashrc"; then
     # Append the CBC script to the end of the .bashrc file
@@ -382,7 +382,7 @@ EOF
 ##########
 
 # Function to open the CBC wiki in the default browser
-function wiki() {
+wiki() {
   if [ "$1" = "-h" ]; then
     echo "Description: Function to open the CBC wiki in the default browser"
     echo "Usage: wiki"
@@ -434,7 +434,7 @@ function wiki() {
 ##########
 
 # Function to open the CBC wiki in the default browser
-function changes() {
+changes() {
   if [ "$1" = "-h" ]; then
     echo "Description: Function to open the CBC changelog in the default browser"
     echo "Usage: changes"
@@ -473,7 +473,7 @@ function changes() {
 ##########
 
 # Function to open the doftiles repository in the default browser
-function dotfiles() {
+dotfiles() {
   if [ "$1" = "-h" ]; then
     echo "Description: Function to open the dotfiles repository in the default browser"
     echo "Usage: dotfiles"
@@ -494,7 +494,7 @@ function dotfiles() {
 ################################################################################
 
 # Function to set up directories (Temporary, GitHub Repositories)
-function setup_directories() {
+setup_directories() {
   # Create the Temporary directory if it does not exist
   mkdir -p ~/Documents/Temporary
 
@@ -573,7 +573,7 @@ if [ ! -f $display_version_config_file ]; then
 fi
 
 # Create a function to remove the configuration file and refresh the terminal
-function remove_display_version_config() {
+remove_display_version_config() {
   # Alias for the remove_display_version_config function
   # alias rdvc="remove_display_version_config"
   # Prompt the user to confirm the removal of the display_version configuration file
@@ -1368,7 +1368,7 @@ cbcs() {
 ##########
 
 # Function to create a backup file of a file.
-function backup() {
+backup() {
   if [ "$1" = "-h" ]; then
     echo "Description: This function allows you to create a backup file of a file."
     echo "Usage: backup [file]"
@@ -1460,7 +1460,7 @@ phopen() {
 ##########
 
 # Function to move up in the directory hierarchy by a specified number of levels.
-function up() {
+up() {
   # Initialize flags with default values
   local clear_terminal=false
   local print_directory=false
@@ -1605,7 +1605,7 @@ function up() {
 # Example: remove_all_cbc_configs  ---Removes all configuration files associated with CBC.
 
 # Create a function to call rfc, rnc, rsc, and rdvc
-function remove_all_cbc_configs() {
+remove_all_cbc_configs() {
   if [ "$1" = "-h" ]; then
     echo "Description: A function to remove all configuration files associated with CBC"
     echo "Alias: racc"
@@ -1941,7 +1941,7 @@ update() {
 ##########
 
 # Function to generate a PDF file from a man page or a list of commands
-function makeman() {
+makeman() {
   local file=""
   local output_dir="$HOME/Documents/grymms_grimoires/command_manuals"
   local command=""
@@ -2172,7 +2172,7 @@ regex_help() {
 ##########
 
 # Function to extract compressed files
-function extract() {
+extract() {
   if [ "$1" = "-h" ]; then
     echo "Description: A function to extract compressed files"
     echo "Usage: extract [file]"
@@ -2285,7 +2285,7 @@ if [ ! -f $figlet_config_file ]; then
 fi
 
 # Create a function to remove the configuration file and refresh the terminal
-function remove_figlet_config() {
+remove_figlet_config() {
   if [ "$1" = "-h" ]; then
     echo "Description: A function to remove the figlet configuration file and refresh the terminal"
     echo "Alias: rfc"
@@ -2343,7 +2343,7 @@ if [ ! -f ~/.session_id_config ]; then
 fi
 
 # Create a function to remove the configuration file
-function remove_session_id_config() {
+remove_session_id_config() {
   if [ "$1" = "-h" ]; then
     echo "Description: A function to remove the session ID configuration file"
     echo "Alias: rsc"
@@ -2397,7 +2397,7 @@ if [ ! -f ~/.neofetch_config ]; then
 fi
 
 # Create a function to remove the configuration file and refresh the terminal
-function remove_neofetch_config() {
+remove_neofetch_config() {
   if [ "$1" = "-h" ]; then
     echo "Description: A function to remove the neofetch configuration file and refresh the terminal"
     echo "Alias: rnc"
@@ -2438,7 +2438,7 @@ function remove_neofetch_config() {
 # Example: odt test  ---Creates a .odt file called test and opens it in the current directory.
 
 # Create odt command to create a .odt file in the current directory and open it
-function odt() {
+odt() {
   if [ "$1" = "-h" ]; then
     echo "Description: A function to create a .odt file in the current directory and open it"
     echo "Usage: odt [filename]"
@@ -2465,7 +2465,7 @@ function odt() {
 # Example: ods test  ---Creates a .ods file called test and opens it in the current directory.
 
 # Create ods command to create a .ods file in the current directory and open it
-function ods() {
+ods() {
   if [ "$1" = "-h" ]; then
     echo "Description: A function to create a .ods file in the current directory and open it"
     echo "Usage: ods [filename]"
@@ -2498,7 +2498,7 @@ function ods() {
 # Example: filehash -da  ---Runs all hash methods on all files in the current directory.
 
 # Define the filehash function to generate a hash of a file
-function filehash() {
+filehash() {
   if [ "$1" = "-h" ]; then
     # Display help message if -h option is provided
     echo "Description: A function to generate a hash of a file"
@@ -2648,7 +2648,7 @@ function filehash() {
 # Example: display_info  ---Displays information.
 
 # Function to display information
-function display_info() {
+display_info() {
   if [ "$1" = "-h" ]; then
     echo "Description: A function to display CBC information"
     echo "Usage: display_info"
@@ -2700,7 +2700,7 @@ function display_info() {
 #   -h    Display this help message
 
 # Create a function to update the custom bash commands script and display the version number
-function updatecbc() {
+updatecbc() {
   if [ "$1" = "-h" ]; then
     echo "Description: A function to update the custom bash commands"
     echo "Usage: updatecbc"
@@ -2770,7 +2770,7 @@ function updatecbc() {
 
 # Create a function to move files to a directory based on file type suffix and named with the suffix without a '.' prefix
 
-function mvfiles() {
+mvfiles() {
   if [ "$1" = "-h" ]; then
     echo "Description: A function to move all files in a directory to a subdirectory based on file type"
     echo "Usage: mvfiles"
@@ -2944,7 +2944,7 @@ fi
 ###################################################################################################################################################################
 
 # Function to check if zoxide is installed and install it if necessary
-function check_install_zoxide() {
+check_install_zoxide() {
   # Check if zoxide is installed, and if it is, source the zoxide init script
   if command -v zoxide &>/dev/null; then
     eval "$(zoxide init --cmd cd bash)"
@@ -2964,7 +2964,7 @@ function check_install_zoxide() {
 ###################################################################################################################################################################
 
 # Function to check if ranger is installed and install it if necessary
-function check_install_ranger() {
+check_install_ranger() {
   if ! command -v ranger &>/dev/null; then
     echo "ranger not found. Installing..."
     sleep 3
@@ -2978,7 +2978,7 @@ function check_install_ranger() {
 ###################################################################################################################################################################
 
 # Function to check if thefuck is installed and install it if necessary
-function check_install_thefuck() {
+check_install_thefuck() {
   if ! command -v thefuck &>/dev/null; then
     echo "thefuck not found. Installing..."
     sleep 3
@@ -2993,7 +2993,7 @@ function check_install_thefuck() {
 ###################################################################################################################################################################
 
 # Function to check if obsidian is installed and install it if necessary
-function check_install_obsidian() {
+check_install_obsidian() {
   if ! command -v obsidian &>/dev/null; then
     echo "obsidian not found. Installing..."
     sleep 3
@@ -3011,7 +3011,7 @@ function check_install_obsidian() {
 ###################################################################################################################################################################
 
 # Function to check if fzf is installed and install it if necessary
-function check_install_fzf() {
+check_install_fzf() {
   if ! command -v fzf &>/dev/null; then
     echo "fzf not found. Installing..."
     sleep 3
@@ -3036,7 +3036,7 @@ function check_install_fzf() {
 ###################################################################################################################################################################
 
 # Function to check and install bat if not already installed
-function check_install_bat() {
+check_install_bat() {
   if ! command -v batcat &>/dev/null; then
     echo "bat not found. Installing..."
     sudo apt install bat
@@ -3049,7 +3049,7 @@ function check_install_bat() {
 ###################################################################################################################################################################
 
 # Function to check if neovim is installed and add it to PATH
-function check_install_neovim() {
+check_install_neovim() {
   if command -v nvim &>/dev/null; then
     export PATH="$PATH:/opt/nvim-linux64/bin"
     # If neovim is not installed, install it using "sudo apt install neovim"
@@ -3074,7 +3074,7 @@ function check_install_neovim() {
 
 # Check if eza is installed, and if not display a message to install it, if installed, set aliases for eza
 # Function to check and install eza if not already installed
-function check_install_eza() {
+check_install_eza() {
   if ! command -v eza &>/dev/null; then
     echo -e "Eza is not installed. Installing now..."
     sudo mkdir -p /etc/apt/keyrings
@@ -3104,7 +3104,7 @@ function check_install_eza() {
 ###################################################################################################################################################################
 
 # Function to check if starship is installed and install it if not
-function check_install_starship() {
+check_install_starship() {
   if ! command -v starship &>/dev/null; then
     echo "Starship not found. Installing..."
     curl -sS https://starship.rs/install.sh | sh
@@ -3120,7 +3120,7 @@ check_install_starship
 ###################################################################################################################################################################
 
 # Function to check if zellij is installed and install it if not
-function check_install_zellij() {
+check_install_zellij() {
   if ! command -v zellij &>/dev/null; then
     echo "Zellij not found. Installing..."
     sudo snap install zellij --classic
@@ -3133,7 +3133,7 @@ function check_install_zellij() {
 ###################################################################################################################################################################
 
 # Function to check if vscode is installed and install it if not
-function check_install_vscode() {
+check_install_vscode() {
   if ! command -v code &>/dev/null; then
     echo "VSCode not found. Installing..."
     sudo snap install code --classic
@@ -3146,7 +3146,7 @@ function check_install_vscode() {
 ###################################################################################################################################################################
 
 # Function to check if btop is installed and install it if not
-function check_install_btop() {
+check_install_btop() {
   if ! command -v btop &>/dev/null; then
     echo "Btop not found. Installing..."
     sudo apt install btop
@@ -3159,7 +3159,7 @@ function check_install_btop() {
 ###################################################################################################################################################################
 
 # Function to check if hstr is installed and install it if not
-function check_install_hstr() {
+check_install_hstr() {
   if ! command -v hstr &>/dev/null; then
     echo "Hstr not found. Installing..."
     sudo apt install hstr
@@ -3196,7 +3196,7 @@ fi
 ###################################################################################################################################################################
 
 # Function to check if cht.sh is installed and install it if not
-function check_install_cht() {
+check_install_cht() {
   if ! command -v cht.sh &>/dev/null; then
     echo "cht.sh not found. Installing..."
     sudo apt install rlwrap
