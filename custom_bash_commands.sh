@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.18.1"
+VERSION="2.18.2"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -405,16 +405,16 @@ wiki() {
     echo "Wiki URL copied to clipboard."
   elif [ "$1" = "-C" ]; then
     # Open the wiki to the CBC commands section
-    xdg-open "$wiki_url#cbc-commands"
+    nohup xdg-open "$wiki_url#cbc-commands"
   elif [ "$1" = "-A" ]; then
     # Open the wiki to the CBC aliases section
-    xdg-open "$wiki_url#cbc-aliases"
+    nohup xdg-open "$wiki_url#cbc-aliases"
   elif [ "$1" = "-F" ]; then
     # Open the wiki to the CBC functions section
-    xdg-open "$wiki_url#cbc-functions"
+    nohup xdg-open "$wiki_url#cbc-functions"
   else
     # Open the CBC wiki in the default browser
-    xdg-open "$wiki_url"
+    hohup xdg-open "$wiki_url"
   fi
 }
 
@@ -454,7 +454,7 @@ changes() {
     echo "Changelog URL copied to clipboard."
   else
     # Open the CBC wiki in the default browser
-    xdg-open "$changelog_url"
+    nohup xdg-open "$changelog_url"
   fi
 }
 
