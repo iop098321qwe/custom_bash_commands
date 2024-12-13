@@ -454,7 +454,7 @@ changes() {
     echo "Changelog URL copied to clipboard."
   else
     # Open the CBC wiki in the default browser
-    xdg-open "$changelog_url"
+    nohup xdg-open "$changelog_url"
   fi
 }
 
