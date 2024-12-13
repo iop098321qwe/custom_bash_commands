@@ -431,7 +431,7 @@ EOF
     fi
 
     # Generate a sanitized filename for the URL output
-    output_file="$(echo "$line" | sed 's/[^a-zA-Z0-9]/_/g').txt"
+    output_file=="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
 
     echo "Processing URL: $line"
 
