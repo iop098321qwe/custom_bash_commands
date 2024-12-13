@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.18.3"
+VERSION="2.18.4"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1854,7 +1854,6 @@ update() {
     "sudo snap refresh"
     "pip install --upgrade yt-dlp"
     "check_install_mscorefonts"
-    "chezmoi re-add"
   )
 
   # Function to run a command and log the output
