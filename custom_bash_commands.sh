@@ -440,7 +440,7 @@ EOF
     # --config-locations specifies the yt-dlp configuration file
     # --print "%title" retrieves the title of downloaded files
     # tee writes output to the file named after the sanitized URL
-    yt-dlp --config-locations _configs.txt --download-archive _downloaded.txt --print "%(title)s" --skip-download "$line" | tee "$output_file"
+    yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
 
   done <"_batch.txt"
 
