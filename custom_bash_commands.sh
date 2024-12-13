@@ -286,7 +286,7 @@ EOF
       echo "Running iteration $i of $count: $cmd"
       echo " "
     fi
-    sh -c "$cmd"
+    eval "$cmd"
     if [ "$delay" -gt 0 ] && [ "$i" -lt "$count" ]; then
       if [ "$verbose" -eq 1 ]; then
         echo " "
@@ -398,7 +398,18 @@ Description:
   Processes each URL in the _batch.txt file and uses yt-dlp with the _configs.txt
   configuration file to generate a sanitized output file listing the downloaded titles.
 EOF
-    return 0
+  }
+
+  check_files() {
+    if [ ! -f "_batch.txt" ]; then
+      echo "Error: _batch.txt not found in the current directory."
+      return 1
+    fi
+
+    if [ ! -f "_configs.txt" ]; then
+      echo "Error: _configs.txt not found in the current directory."
+      return 1
+    fi
   }
 
   line_number=""
@@ -408,6 +419,7 @@ EOF
     case "$opt" in
     h)
       usage
+      return 0
       ;;
     l)
       line_number="$OPTARG"
@@ -415,20 +427,10 @@ EOF
     ?)
       echo "Invalid option: -$OPTARG" >&2
       usage
+      return 1
       ;;
     esac
   done
-
-  # Ensure required files exist
-  if [ ! -f "_batch.txt" ]; then
-    echo "Error: _batch.txt not found in the current directory."
-    return 1
-  fi
-
-  if [ ! -f "_configs.txt" ]; then
-    echo "Error: _configs.txt not found in the current directory."
-    return 1
-  fi
 
   # Process specific line if -l flag is provided
   if [ -n "$line_number" ]; then
@@ -437,6 +439,9 @@ EOF
       echo "Error: No URL found at line $line_number."
       return 1
     fi
+
+    # Verify necessary files before running yt-dlp
+    check_files || return 1
 
     # Generate a sanitized filename for the URL output
     output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
@@ -462,6 +467,9 @@ EOF
       continue
     fi
 
+    # Verify necessary files before running yt-dlp
+    check_files || return 1
+
     # Generate a sanitized filename for the URL output
     output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
 
@@ -476,7 +484,6 @@ EOF
 
   echo " "
   echo "Processing complete."
-  return 0
 }
 
 ################################################################################
