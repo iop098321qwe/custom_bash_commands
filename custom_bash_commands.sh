@@ -434,6 +434,7 @@ EOF
     output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
 
     echo "Processing URL: $line"
+    echo " "
 
     # Execute yt-dlp with the provided configurations and URL
     # --config-locations specifies the yt-dlp configuration file
@@ -443,6 +444,7 @@ EOF
 
   done <"_batch.txt"
 
+  echo " "
   echo "Processing complete. Titles saved to individual .txt files."
 }
 
