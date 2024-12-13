@@ -18,7 +18,6 @@
 * [ ] Edit `ods` command to create a .ods file and open it in the directory specified and prompt to name it.
 * [ ] Ensure that all custom commands have the "-h" help flag functionality.
 * [ ] Create a command to display information from "Shortcut-Terminal_Documentation" in the terminal for easy referencing.
-* [ ] Update cbcc commands and definition for calling aliases.
 * [ ] Create a script to install all the necessary files and assist with setting up for the first time, including optional add-ons.
   * [ ] zoxide
   * [ ] fzf
@@ -58,3 +57,4 @@
 * [x] Change the figlet command to prompt the user for a username on first run, then run the command when the custom_bash_commands.sh script is loaded.
 * [x] Create a function to change the figlet configuration.
 * [x] Update `cc` command to be more interactive and optionally automatically push.
+* [x] Update cbcc commands and definition for calling aliases.
