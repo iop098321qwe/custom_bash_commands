@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.18.4](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.18.3...v2.18.4) (2024-12-13)
+
+
+### Bug Fixes
+
+* fix versioning number ([9788066](https://github.com/iop098321qwe/custom_bash_commands/commit/978806617fb3cb66c2a0823f1c82150dcc01f553))
+* **function:** remove chezmoi re-add from update command ([5df7e7e](https://github.com/iop098321qwe/custom_bash_commands/commit/5df7e7ecd21e39738e891f4b323c72e1f0a66caa))
+
+## [2.18.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.18.2...v2.18.3) (2024-12-13)
+
 ## [2.18.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.18.1...v2.18.2) (2024-12-13)
 
 
