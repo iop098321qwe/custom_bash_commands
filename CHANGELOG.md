@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.18.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.18.1...v2.18.2) (2024-12-13)
+
+
+### Bug Fixes
+
+* fix versioning number ([098f8d2](https://github.com/iop098321qwe/custom_bash_commands/commit/098f8d227ae7e2871bdd70b81078103b61afe2fd))
+* **function:** fix changes command remaining running after calling ([75420c2](https://github.com/iop098321qwe/custom_bash_commands/commit/75420c2ff210a3dc7fc87e4c266b82f35138d8fc))
+* **function:** fix wiki command remaining open after calling ([66e62ad](https://github.com/iop098321qwe/custom_bash_commands/commit/66e62ad68c0650e6b80d1443154c4475e55f6366))
+
 ## [2.18.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.18.0...v2.18.1) (2024-12-13)
 
 
