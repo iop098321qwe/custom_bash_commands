@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.19.2"
+VERSION="2.20.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -24,13 +24,11 @@ create_config_file() {
   echo "NEOVIM=true" >>"$CONFIG_FILE"
   echo "BAT=false" >>"$CONFIG_FILE"
   echo "EZA=false" >>"$CONFIG_FILE"
-  echo "BTOP=false" >>"$CONFIG_FILE"
   echo "ZOXIDE=false" >>"$CONFIG_FILE"
   echo "FZF=false" >>"$CONFIG_FILE"
   echo "ZELLI=false" >>"$CONFIG_FILE"
   echo "THEFUCK=false" >>"$CONFIG_FILE"
   echo "OBSIDIAN=false" >>"$CONFIG_FILE"
-  echo "VSCODE=false" >>"$CONFIG_FILE"
   echo "RANGER=true" >>"$CONFIG_FILE"
   echo "HSTR=true" >>"$CONFIG_FILE"
   echo "Config file created at $CONFIG_FILE"
@@ -67,15 +65,13 @@ first_time_setup() {
     echo "1. Neovim"
     echo "2. Bat"
     echo "3. exa"
-    echo "4. btop"
-    echo "5. Zoxide"
-    echo "6. fzf"
-    echo "7. Zellij"
-    echo "8. thefuck"
-    echo "9. Obsidian"
-    echo "10. VSCode"
-    echo "11. Ranger"
-    echo "12. hstr"
+    echo "4. Zoxide"
+    echo "5. fzf"
+    echo "6. Zellij"
+    echo "7. thefuck"
+    echo "8. Obsidian"
+    echo "9. Ranger"
+    echo "10. hstr"
     echo " "
     echo "Enter the corresponding numbers separated by spaces (e.g., '1 2 3'), or enter 'a' to install all: "
     read -p "Your choice: " software_choices
@@ -85,13 +81,11 @@ first_time_setup() {
       sed -i 's/NEOVIM=false/NEOVIM=true/' "$CONFIG_FILE"
       sed -i 's/BAT=false/BAT=true/' "$CONFIG_FILE"
       sed -i 's/EZA=false/EZA=true/' "$CONFIG_FILE"
-      sed -i 's/BTOP=false/BTOP=true/' "$CONFIG_FILE"
       sed -i 's/ZOXIDE=false/ZOXIDE=true/' "$CONFIG_FILE"
       sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
       sed -i 's/ZELLI=false/ZELLI=true/' "$CONFIG_FILE"
       sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
       sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
-      sed -i 's/VSCODE=false/VSCODE=true/' "$CONFIG_FILE"
       sed -i 's/RANGER=false/RANGER=true/' "CONFIG_FILE"
     else
       if [[ $software_choices == *"1"* ]]; then
@@ -104,30 +98,24 @@ first_time_setup() {
         sed -i 's/EZA=false/EZA=true/' "$CONFIG_FILE"
       fi
       if [[ $software_choices == *"4"* ]]; then
-        sed -i 's/BTOP=false/BTOP=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"5"* ]]; then
         sed -i 's/ZOXIDE=false/ZOXIDE=true/' "$CONFIG_FILE"
       fi
-      if [[ $software_choices == *"6"* ]]; then
+      if [[ $software_choices == *"5"* ]]; then
         sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
       fi
-      if [[ $software_choices == *"7"* ]]; then
+      if [[ $software_choices == *"6"* ]]; then
         sed -i 's/ZELLI=false/ZELLI=true/' "$CONFIG_FILE"
       fi
-      if [[ $software_choices == *"8"* ]]; then
+      if [[ $software_choices == *"7"* ]]; then
         sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
       fi
-      if [[ $software_choices == *"9"* ]]; then
+      if [[ $software_choices == *"8"* ]]; then
         sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
       fi
-      if [[ $software_choices == *"10"* ]]; then
-        sed -i 's/VSCODE=false/VSCODE=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"11"* ]]; then
+      if [[ $software_choices == *"9"* ]]; then
         sed -i 's/RANGER=false/RANGER=true/' "CONFIG_FILE"
       fi
-      if [[ $software_choices == *"12"* ]]; then
+      if [[ $software_choices == *"10"* ]]; then
         sed -i 's/HSTR=false/HSTR=true/' "CONFIG_FILE"
       fi
     fi
@@ -2990,6 +2978,16 @@ alias iopen='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.pn
 alias iopenexact='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" \) | fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
 alias io='iopen'
 alias ioe='iopenexact'
+alias la="eza --group-directories-first -a"
+alias lar="eza -r --group-directories-first -a"
+alias le="eza --group-directories-first -s extension"
+alias ll="eza --group-directories-first --smart-group --total-size -hl"
+alias llt="eza --group-directories-first --smart-group --total-size -hlT"
+alias lsd="eza --group-directories-first -D"
+alias ls="eza --group-directories-first"
+alias lsf="eza --group-directories-first -f"
+alias lsr="eza --group-directories-first -r"
+alias lt="eza --group-directories-first -T"
 alias lg='lazygit'
 alias ln='ln -i'
 alias man='sudo man'
@@ -3080,12 +3078,7 @@ check_install_zoxide() {
     eval "$(zoxide init --cmd cd bash)"
   # If zoxide is not installed, install it
   else
-    echo "zoxide not found. Installing..."
-    sleep 3
-    curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
-    sudo apt install zoxide
-    eval "$(zoxide init --cmd cd bash)"
-    echo "Please use 'refresh' to refresh the terminal"
+    echo "zoxide not found. Install with chezmoi"
   fi
 }
 
@@ -3096,10 +3089,7 @@ check_install_zoxide() {
 # Function to check if ranger is installed and install it if necessary
 check_install_ranger() {
   if ! command -v ranger &>/dev/null; then
-    echo "ranger not found. Installing..."
-    sleep 3
-    sudo apt install ranger
-    echo "Please use 'refresh' to refresh the terminal"
+    echo "ranger not found. Install with chezmoi"
   fi
 }
 
@@ -3110,11 +3100,7 @@ check_install_ranger() {
 # Function to check if thefuck is installed and install it if necessary
 check_install_thefuck() {
   if ! command -v thefuck &>/dev/null; then
-    echo "thefuck not found. Installing..."
-    sleep 3
-    sudo apt update
-    sudo apt install python3-dev python3-pip python3-setuptools
-    pip3 install thefuck --user
+    echo "thefuck not found. Install using thefuck documentation as it is currently not updated"
   fi
 }
 
@@ -3125,14 +3111,7 @@ check_install_thefuck() {
 # Function to check if obsidian is installed and install it if necessary
 check_install_obsidian() {
   if ! command -v obsidian &>/dev/null; then
-    echo "obsidian not found. Installing..."
-    sleep 3
-    sudo snap install obsidian --classic
-    sudo apt install ripgrep
-    sudo apt install xclip
-    git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
-    echo "Obsidian installed. Please use 'refresh' to refresh the terminal."
-    git clone https://github.com/iop098321qwe/grymms_grimoires.git ~/Documents/
+    echo "obsidian not found. Install with chezmoi."
   fi
 }
 
@@ -3143,10 +3122,7 @@ check_install_obsidian() {
 # Function to check if fzf is installed and install it if necessary
 check_install_fzf() {
   if ! command -v fzf &>/dev/null; then
-    echo "fzf not found. Installing..."
-    sleep 3
-    sudo apt install fzf
-    echo "Please use 'refresh' to refresh the terminal"
+    echo "fzf not found. Install with chezmoi."
   fi
 }
 
@@ -3168,9 +3144,7 @@ check_install_fzf() {
 # Function to check and install bat if not already installed
 check_install_bat() {
   if ! command -v batcat &>/dev/null; then
-    echo "bat not found. Installing..."
-    sudo apt install bat
-    echo "Please use 'refresh' to refresh the terminal"
+    echo "bat not found. Install with chezmoi."
   fi
 }
 
@@ -3195,92 +3169,6 @@ check_install_neovim() {
 
     # Move the appimage file to /bin/nvim
     sudo mv nvim.appimage /bin/nvim
-  fi
-}
-
-###################################################################################################################################################################
-# Check if eza is installed, and if not display a message to install it.
-###################################################################################################################################################################
-
-# Check if eza is installed, and if not display a message to install it, if installed, set aliases for eza
-# Function to check and install eza if not already installed
-check_install_eza() {
-  if ! command -v eza &>/dev/null; then
-    echo -e "Eza is not installed. Installing now..."
-    sudo mkdir -p /etc/apt/keyrings
-    wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
-    echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
-    sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
-    sudo apt update
-    sudo apt install eza
-    echo "Eza has been installed."
-  fi
-
-  # Set ls aliases for eza
-  alias la="eza --group-directories-first -a"
-  alias lar="eza -r --group-directories-first -a"
-  alias le="eza --group-directories-first -s extension"
-  alias ll="eza --group-directories-first --smart-group --total-size -hl"
-  alias llt="eza --group-directories-first --smart-group --total-size -hlT"
-  alias lsd="eza --group-directories-first -D"
-  alias ls="eza --group-directories-first"
-  alias lsf="eza --group-directories-first -f"
-  alias lsr="eza --group-directories-first -r"
-  alias lt="eza --group-directories-first -T"
-}
-
-###################################################################################################################################################################
-# Check if starship is installed, and if not, install it.
-###################################################################################################################################################################
-
-# Function to check if starship is installed and install it if not
-check_install_starship() {
-  if ! command -v starship &>/dev/null; then
-    echo "Starship not found. Installing..."
-    curl -sS https://starship.rs/install.sh | sh
-    echo "Starship has been installed."
-  fi
-}
-
-# Call the function to check if starship is installed and install it if necessary
-check_install_starship
-
-###################################################################################################################################################################
-# Check if zellij is installed, and if not, install it.
-###################################################################################################################################################################
-
-# Function to check if zellij is installed and install it if not
-check_install_zellij() {
-  if ! command -v zellij &>/dev/null; then
-    echo "Zellij not found. Installing..."
-    sudo snap install zellij --classic
-    echo "Zellij has been installed."
-  fi
-}
-
-###################################################################################################################################################################
-# Check if vscode is installed, and if not, install it.
-###################################################################################################################################################################
-
-# Function to check if vscode is installed and install it if not
-check_install_vscode() {
-  if ! command -v code &>/dev/null; then
-    echo "VSCode not found. Installing..."
-    sudo snap install code --classic
-    echo "VSCode has been installed."
-  fi
-}
-
-###################################################################################################################################################################
-# Check if btop is installed, and if not, install it.
-###################################################################################################################################################################
-
-# Function to check if btop is installed and install it if not
-check_install_btop() {
-  if ! command -v btop &>/dev/null; then
-    echo "Btop not found. Installing..."
-    sudo apt install btop
-    echo "Btop has been installed."
   fi
 }
 
@@ -3320,20 +3208,6 @@ if command -v hstr &>/dev/null; then
   # Bind Vim keys
   bind '"\C-r": "\e^ihstr -- \n"'
 fi
-
-###################################################################################################################################################################
-# Check if cht.sh is installed, and if not, install it.
-###################################################################################################################################################################
-
-# Function to check if cht.sh is installed and install it if not
-check_install_cht() {
-  if ! command -v cht.sh &>/dev/null; then
-    echo "cht.sh not found. Installing..."
-    sudo apt install rlwrap
-    curl -s https://cht.sh/:cht.sh | sudo tee /usr/local/bin/cht.sh && sudo chmod +x /usr/local/bin/cht.sh
-    echo "cht.sh has been installed."
-  fi
-}
 
 ###################################################################################################################################################################
 # Create a config file for installing additional software that may not already be installed where commented out software is not installed.
@@ -3400,24 +3274,6 @@ if [[ -f "$CONFIG_FILE" ]]; then
   fi
 fi
 
-# Read the configuration file and check if EZA=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${EZA:=false}" == "true" ]]; then
-    # Call the function to check eza installation and install eza
-    check_install_eza
-  fi
-fi
-
-# Read the configuration file and check if BTOP=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${BTOP:=false}" == "true" ]]; then
-    # Call the function to check btop installation and install btop
-    check_install_btop
-  fi
-fi
-
 # Read the configuration file and check if ZOXIDE=true
 if [[ -f "$CONFIG_FILE" ]]; then
   source "$CONFIG_FILE"
@@ -3433,24 +3289,6 @@ if [[ -f "$CONFIG_FILE" ]]; then
   if [[ "${FZF:=false}" == "true" ]]; then
     # Call the function to check fzf installation and install fzf
     check_install_fzf
-  fi
-fi
-
-# Read the configuration file and check if VSCODE=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${VSCODE:=false}" == "true" ]]; then
-    # Call the function to check vscdoe installation and install vscode
-    check_install_vscode
-  fi
-fi
-
-# Read the configuration file and check if ZELLI=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${ZELLI:=false}" == "true" ]]; then
-    # Call the function to check zellij installation and install zellij
-    check_install_zellij
   fi
 fi
 
@@ -3476,9 +3314,6 @@ if [[ -f "$CONFIG_FILE" ]]; then
     check_install_hstr
   fi
 fi
-
-# Install cht.sh using check_install_cht
-check_install_cht
 
 ###################################################################################################################################################################
 ###################################################################################################################################################################
