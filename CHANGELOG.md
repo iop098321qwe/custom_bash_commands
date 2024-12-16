@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.20.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.19.2...v2.20.0) (2024-12-16)
+
+
+### Features
+
+* **function:** remove auto installs of applications in favor of chezmoi ([9690787](https://github.com/iop098321qwe/custom_bash_commands/commit/96907870fb18d8eda971a4a3af08e9227b96d0e4))
+
 ## [2.19.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.19.1...v2.19.2) (2024-12-14)
 
 
