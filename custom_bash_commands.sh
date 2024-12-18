@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.20.0"
+VERSION="2.21.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -349,6 +349,64 @@ EOF
   fi
 
   echo "Opened: $random_file"
+}
+
+################################################################################
+# PHSEARCH
+################################################################################
+
+# phsearch
+# Description: Prompts the user for a search term, constructs a search URL, and opens it
+# Usage: phsearch
+# Options:
+#   -h    Display this help message
+
+# Example: phsearch
+# Enter search term: funny cats
+# Opens: https://www.example.com/video/search?search=funny+cats
+
+################################################################################
+# Function to prompt for a search term, construct a URL, and open it in the default browser
+phsearch() {
+  OPTIND=1 # Reset getopts index to handle multiple runs
+
+  # Function to display help
+  usage() {
+    cat <<EOF
+Usage: phsearch [-h]
+Options:
+  -h    Display this help message
+Description:
+  Prompts the user for a search term, constructs a search URL, and opens it.
+EOF
+  }
+
+  # Parse options
+  while getopts "h" opt; do
+    case "$opt" in
+    h)
+      usage
+      return 0
+      ;;
+    *)
+      usage
+      return 1
+      ;;
+    esac
+  done
+  shift $((OPTIND - 1))
+
+  # Prompt user for a search term
+  read -p "Enter search term: " search_term
+
+  # Replace spaces in the search term with '+' using parameter expansion
+  formatted_term=${search_term// /+}
+
+  # Construct the search URL
+  search_url="https://www.pornhub.com/video/search?search=${formatted_term}"
+
+  # Open the URL in the default browser using nohup and xdg-open
+  nohup xdg-open "$search_url" >/dev/null 2>&1 &
 }
 
 ################################################################################
