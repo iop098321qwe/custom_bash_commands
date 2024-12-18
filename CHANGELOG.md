@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.21.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.20.0...v2.21.0) (2024-12-18)
+
+
+### Features
+
+* **function:** add `phsearch` function ([e512297](https://github.com/iop098321qwe/custom_bash_commands/commit/e512297f991efc1b5298cd149c1118009bffd4f3))
+
 ## [2.20.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.19.2...v2.20.0) (2024-12-16)
 
 
