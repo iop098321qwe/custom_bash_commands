@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.22.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.21.0...v2.22.0) (2024-12-20)
+
+
+### Features
+
+* **function:** add `sopen` and `sopenexact` functions ([b8db266](https://github.com/iop098321qwe/custom_bash_commands/commit/b8db266442b4c50aa701212f8a9d6d8d0508f081))
+
+
+### Bug Fixes
+
+* **function:** fix pronlist -l flag to work as intended ([0dc345c](https://github.com/iop098321qwe/custom_bash_commands/commit/0dc345ccbc0f47875f84520071ae33956d2bfc4a))
+* **function:** updated pronlist to reset variables correctly ([154e857](https://github.com/iop098321qwe/custom_bash_commands/commit/154e85721704889127f5520291717c068f326aae))
+
 ## [2.21.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.20.0...v2.21.0) (2024-12-18)
 
 
