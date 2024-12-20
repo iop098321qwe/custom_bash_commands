@@ -582,9 +582,9 @@ sopen() {
 
     # If matching .mp4 files are found, open them
     if [[ -n "$mp4_files" ]]; then
-      echo "Opening .mp4 files matching exactly: '$line'"
+      #echo "Opening .mp4 files matching exactly: '$line'"
       while IFS= read -r mp4; do
-        echo "Opening: $mp4"
+        #echo "Opening: $mp4"
         xdg-open "./$mp4" &
       done <<<"$mp4_files"
     else
