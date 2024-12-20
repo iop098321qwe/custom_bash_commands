@@ -572,17 +572,19 @@ sopen() {
   [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
 
   # Function to create a regex pattern from a line by:
-  # 1) Removing all non-alphanumeric and non-space characters
-  # 2) Converting spaces to '.*'
-  # 3) Adding a wildcard at the beginning and end of the pattern
+  # 1) Converting all non-alphanumeric characters to spaces
+  # 2) Replacing spaces with '.*'
+  # 3) Adding '.*' at the start and end of the pattern
   generate_pattern() {
     local input="$1"
-    # Remove non-alphanumeric and non-space characters
-    local cleaned_line
-    cleaned_line=$(echo "$input" | tr -cd '[:alnum:] [:space:]')
 
-    # Replace one or more spaces with '.*'
-    # If the cleaned_line is "foo bar baz", this becomes "foo.*bar.*baz"
+    # Convert all non-alphanumeric characters to spaces and normalize spaces
+    # Example: "foo/bar'baz" -> "foo bar baz"
+    local cleaned_line
+    cleaned_line=$(echo "$input" | sed 's/[^[:alnum:]]/ /g' | sed 's/[[:space:]]\+/ /g' | sed 's/^ *//;s/ *$//')
+
+    # Replace spaces with '.*'
+    # "foo bar baz" -> "foo.*bar.*baz"
     local base_pattern
     base_pattern=$(echo "$cleaned_line" | sed 's/[[:space:]]\+/.*/g')
 
