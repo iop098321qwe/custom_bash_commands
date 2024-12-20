@@ -432,6 +432,7 @@ EOF
 
 # Function to generate a list of what each url downloads using yt-dlp
 pronlist() {
+  # Function to display usage information
   usage() {
     cat <<EOF
 Usage: pronlist [-h] [-l line_number]
@@ -446,6 +447,7 @@ Description:
 EOF
   }
 
+  # Function to check the presence of required files
   check_files() {
     if [ ! -f "_batch.txt" ]; then
       echo "Error: _batch.txt not found in the current directory."
@@ -458,7 +460,13 @@ EOF
     fi
   }
 
+  # Ensure OPTIND is reset for correct option parsing
+  OPTIND=1
+
+  # Reset variables
   line_number=""
+  line=""
+  output_file=""
 
   # Parse options using getopts
   while getopts "hl:" opt; do
@@ -478,13 +486,14 @@ EOF
     esac
   done
 
-  shift $((OPTIND - 1))
+  shift $((OPTIND - 1)) # Shift processed options
+
+  # Check for required files
+  check_files || return 1
 
   # Process specific line if -l flag is provided
   if [ -n "$line_number" ]; then
-    check_files || return 1
-
-    line=$(sed -n "${line_number}p" _batch.txt)
+    line=$(sed -n "${line_number}p" _batch.txt) # Fetch the specified line
     if [ -z "$line" ]; then
       echo "Error: No URL found at line $line_number."
       return 1
@@ -507,30 +516,26 @@ EOF
   fi
 
   # Default: Loop through each line in _batch.txt only if -l is not specified
-  if [ -z "$line_number" ]; then
-    check_files || return 1
+  while IFS= read -r line || [ -n "$line" ]; do
+    # Skip empty lines
+    if [ -z "$line" ]; then
+      continue
+    fi
 
-    while IFS= read -r line || [ -n "$line" ]; do
-      # Skip empty lines
-      if [ -z "$line" ]; then
-        continue
-      fi
-
-      # Generate a sanitized filename for the URL output
-      output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
-
-      echo " "
-      echo "################################################################################"
-      echo "Processing URL: $line"
-      echo "################################################################################"
-      echo " "
-
-      yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
-    done <"_batch.txt"
+    # Generate a sanitized filename for the URL output
+    output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
 
     echo " "
-    echo "Processing complete."
-  fi
+    echo "################################################################################"
+    echo "Processing URL: $line"
+    echo "################################################################################"
+    echo " "
+
+    yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
+  done <"_batch.txt"
+
+  echo " "
+  echo "Processing complete."
 }
 
 ################################################################################
