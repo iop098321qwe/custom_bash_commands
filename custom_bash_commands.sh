@@ -564,9 +564,9 @@ EOF
 }
 
 sopen() {
-  # Use fzf to select a .txt file in the current directory and subdirectories
+  # Use fzf to select a .txt file in the current directory
   local file
-  file=$(find . -type f -name "*.txt" | fzf --prompt="Select a .txt file: ")
+  file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf --prompt="Select a .txt file: ")
 
   # If no file is selected, exit the function
   [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
@@ -576,16 +576,16 @@ sopen() {
     # Skip empty lines
     [[ -z "$line" ]] && continue
 
-    # Search for .mp4 files containing EXACTLY the line in the filename
+    # Search for .mp4 files in the current directory containing EXACTLY the line
     local mp4_files
-    mp4_files=$(find . -type f -name "*.mp4" -printf "%f\n" | grep -F -- "$line")
+    mp4_files=$(find . -maxdepth 1 -type f -name "*.mp4" -printf "%f\n" | grep -F -- "$line")
 
     # If matching .mp4 files are found, open them
     if [[ -n "$mp4_files" ]]; then
       #echo "Opening .mp4 files matching exactly: '$line'"
       while IFS= read -r mp4; do
         #echo "Opening: $mp4"
-        xdg-open "./$mp4" &
+        xdg-open "$mp4" &
       done <<<"$mp4_files"
     else
       echo "No .mp4 files found matching exactly: '$line'"
