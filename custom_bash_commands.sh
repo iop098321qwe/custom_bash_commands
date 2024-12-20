@@ -571,24 +571,41 @@ sopen() {
   # If no file is selected, exit the function
   [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
 
+  # Function to create a regex pattern from a line by:
+  # 1) Removing all non-alphanumeric and non-space characters
+  # 2) Converting spaces to '.*' to allow flexible matching between words
+  generate_pattern() {
+    local input="$1"
+    # Remove non-alphanumeric and non-space characters
+    local cleaned_line
+    cleaned_line=$(echo "$input" | tr -cd '[:alnum:] [:space:]')
+    # Replace one or more spaces with '.*'
+    # This will create a pattern that matches any sequence of characters between words
+    echo "$cleaned_line" | sed 's/[[:space:]]\+/.*/g'
+  }
+
   # Read each line in the selected file
   while IFS= read -r line; do
     # Skip empty lines
     [[ -z "$line" ]] && continue
 
-    # Search for .mp4 files in the current directory containing EXACTLY the line
+    # Generate a regex pattern from the cleaned line
+    local pattern
+    pattern=$(generate_pattern "$line")
+
+    # Search for .mp4 files in the current directory that match the pattern
     local mp4_files
-    mp4_files=$(find . -maxdepth 1 -type f -name "*.mp4" -printf "%f\n" | grep -F -- "$line")
+    mp4_files=$(find . -maxdepth 1 -type f -name "*.mp4" -printf "%f\n" | grep -E -i "$pattern")
 
     # If matching .mp4 files are found, open them
     if [[ -n "$mp4_files" ]]; then
-      #echo "Opening .mp4 files matching exactly: '$line'"
+      echo "Opening .mp4 files matching: '$line' (Pattern: $pattern)"
       while IFS= read -r mp4; do
-        #echo "Opening: $mp4"
-        xdg-open "$mp4" &
+        echo "Opening: $mp4"
+        xdg-open "./$mp4" &
       done <<<"$mp4_files"
     else
-      echo "No .mp4 files found matching exactly: '$line'"
+      echo "No .mp4 files found matching: '$line'"
     fi
   done <"$file"
 }
