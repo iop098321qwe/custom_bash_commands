@@ -571,12 +571,25 @@ sopen() {
   # If no file is selected, exit the function
   [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
 
-  # Read each line in the selected file and open it using xdg-open
+  # Read each line in the selected file
   while IFS= read -r line; do
     # Skip empty lines
     [[ -z "$line" ]] && continue
-    echo "Opening: $line"
-    xdg-open "$line" &
+
+    # Search for .mp4 files containing the line as part of the filename
+    local mp4_files
+    mp4_files=$(find . -type f -name "*${line}*.mp4")
+
+    # If matching .mp4 files are found, open them
+    if [[ -n "$mp4_files" ]]; then
+      echo "Opening .mp4 files containing: '$line'"
+      while IFS= read -r mp4; do
+        echo "Opening: $mp4"
+        xdg-open "$mp4" &
+      done <<<"$mp4_files"
+    else
+      echo "No .mp4 files found containing: '$line'"
+    fi
   done <"$file"
 }
 
