@@ -563,6 +563,23 @@ EOF
   echo "Processing complete."
 }
 
+sopen() {
+  # Use fzf to select a .txt file in the current directory and subdirectories
+  local file
+  file=$(find . -type f -name "*.txt" | fzf --prompt="Select a .txt file: ")
+
+  # If no file is selected, exit the function
+  [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
+
+  # Read each line in the selected file and open it using xdg-open
+  while IFS= read -r line; do
+    # Skip empty lines
+    [[ -z "$line" ]] && continue
+    echo "Opening: $line"
+    xdg-open "$line" &
+  done <"$file"
+}
+
 ################################################################################
 # wiki
 ################################################################################
