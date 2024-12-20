@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.21.1"
+VERSION="2.22.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -563,10 +563,96 @@ EOF
   echo "Processing complete."
 }
 
+################################################################################
+# sopen
+################################################################################
+
+# sopen
+# Description: Function to open .mp4 files in the current directory that match
+#              patterns generated from lines in a selected .txt file.
+# Usage: sopen
+# Options:
+
+# Example: sopen  --- Prompts for a .txt file and opens matching .mp4 files.
+
+##########
+
+# Function to open .mp4 files matching patterns from a .txt file
 sopen() {
   # Use fzf to select a .txt file in the current directory
   local file
   file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf --prompt="Select a .txt file: ")
+
+  # If no file is selected, exit the function
+  [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
+
+  # Function to create a regex pattern from a line by:
+  # 1) Converting all non-alphanumeric characters to spaces
+  # 2) Replacing spaces with '.*'
+  # 3) Adding '.*' at the start and end of the pattern
+  generate_pattern() {
+    local input="$1"
+
+    # Convert all non-alphanumeric characters to spaces and normalize spaces
+    # Example: "foo/bar'baz" -> "foo bar baz"
+    local cleaned_line
+    cleaned_line=$(echo "$input" | sed 's/[^[:alnum:]]/ /g' | sed 's/[[:space:]]\+/ /g' | sed 's/^ *//;s/ *$//')
+
+    # Replace spaces with '.*'
+    # "foo bar baz" -> "foo.*bar.*baz"
+    local base_pattern
+    base_pattern=$(echo "$cleaned_line" | sed 's/[[:space:]]\+/.*/g')
+
+    # Add '.*' at the start and end of the pattern
+    # "foo.*bar.*baz" -> ".*foo.*bar.*baz.*"
+    echo ".*${base_pattern}.*"
+  }
+
+  # Read each line in the selected file
+  while IFS= read -r line; do
+    # Skip empty lines
+    [[ -z "$line" ]] && continue
+
+    # Generate a regex pattern from the cleaned line
+    local pattern
+    pattern=$(generate_pattern "$line")
+
+    # Search for .mp4 files in the current directory that match the pattern
+    local mp4_files
+    mp4_files=$(find . -maxdepth 1 -type f -name "*.mp4" -printf "%f\n" | grep -E -i "$pattern")
+
+    # If matching .mp4 files are found, open them
+    if [[ -n "$mp4_files" ]]; then
+      #echo "Opening .mp4 files matching: '$line' (Pattern: $pattern)"
+      while IFS= read -r mp4; do
+        #echo "Opening: $mp4"
+        xdg-open "./$mp4" &
+      done <<<"$mp4_files"
+    else
+      echo "No .mp4 files found matching: '$line'"
+    fi
+  done <"$file"
+}
+
+################################################################################
+# sopenexact
+################################################################################
+
+# sopenexact
+# Description: Function to open .mp4 files in the current directory that match
+#              patterns generated from lines in a selected .txt file.
+# Usage: sopenexact
+# Options:
+
+# Example: sopenexact  --- Prompts for a .txt file and opens matching .mp4 files.
+
+##########
+
+# Function to open .mp4 files matching patterns from a .txt file
+sopenexact() {
+  # Use fzf to select a .txt file in the current directory
+  local file
+  file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf -e --prompt="Select a .txt file: ")
 
   # If no file is selected, exit the function
   [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
@@ -995,6 +1081,14 @@ cbcs() {
     echo "rmconf"
     echo "         Description: Remove the configuration file for CBC"
     echo "         Usage: rmconf"
+    echo " "
+    echo "sopen"
+    echo "          Description: Open .mp4 files in the current directory that match patterns generated from lines in a selected .txt file"
+    echo "          Usage: sopen"
+    echo " "
+    echo "sopenexact"
+    echo "          Description: Open .mp4 files in the current directory that match patterns generated from lines in a selected .txt file using exact mode"
+    echo "          Usage: sopenexact"
     echo " "
     echo "update"
     echo "          Description: "
@@ -1445,6 +1539,14 @@ cbcs() {
     echo "          Description: Alias for 'sudo'"
     echo "          Usage : s <command>"
     echo " "
+    echo "so"
+    echo "          Description: Alias for 'sopen'"
+    echo "          Usage: so"
+    echo " "
+    echo "soe"
+    echo "          Description: Alias for 'sopenexact'"
+    echo "          Usage: soe"
+    echo " "
     echo "ver"
     echo "          Description: Shortcut for 'npx commit-and-tag-version'"
     echo "          Usage: ver"
@@ -1492,6 +1594,8 @@ cbcs() {
     echo "refresh"
     echo "rmconf"
     echo "seebash"
+    echo "sopen"
+    echo "sopenexact"
     echo "up"
     echo "wiki"
     echo "x"
@@ -1594,6 +1698,8 @@ cbcs() {
     echo "rm"
     echo "rma"
     echo "s"
+    echo "so"
+    echo "soe"
     echo "temp"
     echo "test"
     echo "update"
@@ -3156,6 +3262,8 @@ alias rnc='remove_neofetch_config'
 alias rsc='remove_session_id_config'
 alias seebash='batcat ~/.bashrc'
 alias s='sudo'
+alias so='sopen'
+alias soe='sopenexact'
 alias temp='cd ~/Documents/Temporary && ls'
 alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh'
 alias ucbc='updatecbc'
