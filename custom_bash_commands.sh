@@ -564,11 +564,6 @@ EOF
 }
 
 sopen() {
-  # Inline sanitization function to remove special characters
-  sanitize_line() {
-    echo "$1" | tr -cd '[:alnum:][:space:]' | sed 's/[[:space:]]\+/ /g' | xargs
-  }
-
   # Use fzf to select a .txt file in the current directory and subdirectories
   local file
   file=$(find . -type f -name "*.txt" | fzf --prompt="Select a .txt file: ")
@@ -581,26 +576,19 @@ sopen() {
     # Skip empty lines
     [[ -z "$line" ]] && continue
 
-    # Sanitize the line to remove special characters
-    local sanitized_line
-    sanitized_line=$(sanitize_line "$line")
-
-    # Skip if sanitization results in an empty line
-    [[ -z "$sanitized_line" ]] && continue
-
-    # Search for .mp4 files containing the sanitized line in the filename
+    # Search for .mp4 files containing EXACTLY the line in the filename
     local mp4_files
-    mp4_files=$(find . -type f -name "*${sanitized_line}*.mp4")
+    mp4_files=$(find . -type f -name "*.mp4" -printf "%f\n" | grep -F -- "$line")
 
     # If matching .mp4 files are found, open them
     if [[ -n "$mp4_files" ]]; then
-      echo "Opening .mp4 files containing: '$sanitized_line'"
+      echo "Opening .mp4 files matching exactly: '$line'"
       while IFS= read -r mp4; do
         echo "Opening: $mp4"
-        xdg-open "$mp4" &
+        xdg-open "./$mp4" &
       done <<<"$mp4_files"
     else
-      echo "No .mp4 files found containing: '$sanitized_line'"
+      echo "No .mp4 files found matching exactly: '$line'"
     fi
   done <"$file"
 }
