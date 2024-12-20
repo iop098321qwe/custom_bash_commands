@@ -468,6 +468,21 @@ EOF
   line=""
   output_file=""
 
+  # Prompt to overwrite file
+  prompt_overwrite() {
+    local file="$1"
+    read -p "File '$file' already exists. Overwrite? (y/N): " choice
+    case "$choice" in
+    [Yy]*)
+      return 0 # User confirmed overwrite
+      ;;
+    *)
+      echo "Skipping existing file: $file"
+      return 1 # User declined overwrite
+      ;;
+    esac
+  }
+
   # Parse options using getopts
   while getopts "hl:" opt; do
     case "$opt" in
@@ -502,6 +517,11 @@ EOF
     # Generate a sanitized filename for the URL output
     output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
 
+    # Check if output file exists and prompt for overwrite
+    if [ -f "$output_file" ]; then
+      prompt_overwrite "$output_file" || return 0
+    fi
+
     echo " "
     echo "################################################################################"
     echo "Processing URL from line $line_number: $line"
@@ -524,6 +544,11 @@ EOF
 
     # Generate a sanitized filename for the URL output
     output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
+
+    # Check if output file exists and prompt for overwrite
+    if [ -f "$output_file" ]; then
+      prompt_overwrite "$output_file" || continue
+    fi
 
     echo " "
     echo "################################################################################"
