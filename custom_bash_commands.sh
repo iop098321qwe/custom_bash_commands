@@ -3167,7 +3167,7 @@ mvfiles() {
 # Direct alias declarations
 alias back='cd .. && ls'
 alias bat='batcat'
-alias batch_open='file=$(find . -type f -name "*.txt" | fzf --prompt="Select a .txt file: "); while IFS= read -r line; do xdg-open "$line"; done < "$file"'
+alias batch_open='file=$(cat _master_batch.txt | fzf --prompt="Select a file: "); while IFS= read -r line; do xdg-open "$line"; done < "$file"'
 alias bo='batch_open'
 alias cbcc='cdgh && cd custom_bash_commands && ls && dv && cc'
 alias cbc='cdgh && cd custom_bash_commands && ls'
