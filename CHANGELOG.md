@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.23.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.22.0...v2.23.0) (2024-12-30)
+
+
+### Features
+
+* **alias:** add `update_master_list` and `uml` aliases ([e457f72](https://github.com/iop098321qwe/custom_bash_commands/commit/e457f720ebbaa4c59db4f884fc67d94e880f2dad))
+* **alias:** add fzf selection for multiple batch files for `pron` ([101f127](https://github.com/iop098321qwe/custom_bash_commands/commit/101f1275d42e3b8581fb4ca515099cbf861ce04c))
+
+
+### Bug Fixes
+
+* **alias:** actually fix the `pron` alias ([8eeec51](https://github.com/iop098321qwe/custom_bash_commands/commit/8eeec51f3bc5a324fb63ebc5e7c4cfa49a21b1f6))
+* **alias:** add opening the _master_list.txt file using batcat after updating it ([187ca30](https://github.com/iop098321qwe/custom_bash_commands/commit/187ca306cfaeb824acbfa0988ab4bd13c0077ae6))
+* **alias:** fix `pron` alias not working as intended ([5473295](https://github.com/iop098321qwe/custom_bash_commands/commit/54732958ad247e95af463105e46cdfca4edf2450))
+* **alias:** fix `update_master_list` alias ([35e5fbd](https://github.com/iop098321qwe/custom_bash_commands/commit/35e5fbdd95891ee9b1916b879a6377f6b5ae770e))
+* **alias:** fix `update_master_list` not updating properly ([99e8198](https://github.com/iop098321qwe/custom_bash_commands/commit/99e819859896468006788ce3917b975e6252b59d))
+* **alias:** fix logic issue in `update_master_list` alias ([82f8dc3](https://github.com/iop098321qwe/custom_bash_commands/commit/82f8dc37990211dd753a73a2d65b9cd41f6c9e06))
+* **alias:** fix the way that archive was handled for `pron` alias ([5b83f85](https://github.com/iop098321qwe/custom_bash_commands/commit/5b83f85888b444eb150791921f3025d9545a7a3f))
+
 ## [2.22.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.21.0...v2.22.0) (2024-12-20)
 
 
