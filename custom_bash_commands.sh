@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.23.0"
+VERSION="2.24.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -3167,6 +3167,8 @@ mvfiles() {
 # Direct alias declarations
 alias back='cd .. && ls'
 alias bat='batcat'
+alias batch_open='find . -type f -name "*.txt" | fzf --multi | xargs -I {} nohup xdg-open {} > /dev/null 2>&1 &'
+alias bo='batch_open'
 alias cbcc='cdgh && cd custom_bash_commands && ls && dv && cc'
 alias cbc='cdgh && cd custom_bash_commands && ls'
 alias c='clear && di'
