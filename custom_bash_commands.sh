@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.24.0"
+VERSION="2.23.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -3267,7 +3267,7 @@ alias soe='sopenexact'
 alias temp='cd ~/Documents/Temporary && ls'
 alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh'
 alias ucbc='updatecbc'
-alias update_master_list='xargs -a _master_batch.txt -I {} awk "!seen[\$0]++" {} _master_list.txt >> _master_list.txt'
+alias update_master_list='xargs -a _master_batch.txt -I {} awk "!seen[\$0]++" {} _master_list.txt > _master_list.tmp && mv _master_list.tmp _master_list.txt'
 alias uml='update_master_list'
 alias vault='cd ~/Documents/grymms_grimoires && ls'
 alias ver='npx commit-and-tag-version'
