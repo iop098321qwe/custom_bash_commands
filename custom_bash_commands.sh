@@ -3167,7 +3167,7 @@ mvfiles() {
 # Direct alias declarations
 alias back='cd .. && ls'
 alias bat='batcat'
-alias batch_open='find . -type f -name "*.txt" | fzf --multi | xargs -I {} nohup xdg-open {} > /dev/null 2>&1 &'
+alias batch_open='find . -type f -iname "*.txt" | fzf -m | xargs -r -d "\n" -I {}  nohup xdg-open "{}"'
 alias bo='batch_open'
 alias cbcc='cdgh && cd custom_bash_commands && ls && dv && cc'
 alias cbc='cdgh && cd custom_bash_commands && ls'
