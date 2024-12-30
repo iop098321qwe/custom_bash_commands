@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.24.0"
+VERSION="2.24.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -3168,11 +3168,7 @@ mvfiles() {
 # Direct alias declarations
 alias back='cd .. && ls'
 alias bat='batcat'
-<<<<<<< HEAD
 alias batch_open='file=$(cat _master_batch.txt | fzf --prompt="Select a file: "); while IFS= read -r line; do xdg-open "$line"; done < "$file"'
-=======
-alias batch_open='find . -type f -name "*.txt" | fzf --multi | xargs -I {} nohup xdg-open {} > /dev/null 2>&1 &'
->>>>>>> origin/main
 alias bo='batch_open'
 alias cbcc='cdgh && cd custom_bash_commands && ls && dv && cc'
 alias cbc='cdgh && cd custom_bash_commands && ls'
