@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.23.0"
+VERSION="2.24.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -3245,7 +3245,6 @@ alias mo='mopen'
 alias moe='mopenexact'
 alias mv='mv -i'
 alias myip='curl http://ipecho.net/plain; echo'
-# alias pron='yt-dlp --config-locations _configs.txt --batch-file _batch.txt'
 alias pron='fzf --multi=1 < _master_batch.txt | xargs -I {} yt-dlp --config-locations _configs.txt --batch-file {}'
 alias pronfile='cd /media/$USER/T7 Shield/yt-dlp'
 alias pronupdate='pronfile && pron || pron'
@@ -3268,6 +3267,8 @@ alias soe='sopenexact'
 alias temp='cd ~/Documents/Temporary && ls'
 alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh'
 alias ucbc='updatecbc'
+alias update_master_list='xargs -a _master_batch.txt -I {} awk "!seen[\$0]++" {} >> _master_list.txt'
+alias uml='update_master_list'
 alias vault='cd ~/Documents/grymms_grimoires && ls'
 alias ver='npx commit-and-tag-version'
 alias verg='ver && gpfom && printf "\n Run gh cr to create a release\n"'
