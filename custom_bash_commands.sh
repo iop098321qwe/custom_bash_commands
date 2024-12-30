@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.22.0"
+VERSION="2.22.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1328,7 +1328,7 @@ cbcs() {
     echo "pron"
     echo "         Description: Activate yt-dlp using preset settings"
     echo "         Usage: pron"
-    echo "          Alias For: 'yt-dlp --config-locations _configs.txt --batch-file _batch.txt --download-archive _downloaded.txt'"
+    echo "          Alias For: 'yt-dlp --config-locations _configs.txt --batch-file _batch.txt'"
     echo " "
     echo "pronfile"
     echo "         Description: Navigate to specific folder in T7 Shield"
