@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.24.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.23.0...v2.24.0) (2024-12-30)
+
+
+### Features
+
+* **alias:** add `batch_open` and `bo` aliases ([cda7723](https://github.com/iop098321qwe/custom_bash_commands/commit/cda772346a2f1f633de66660c050e2160a513b7f))
+
+
+### Bug Fixes
+
+* **alias:** fix `batch_open` alias ([89258b9](https://github.com/iop098321qwe/custom_bash_commands/commit/89258b9caa11e837724e25a427976f98fba23e01))
+
 ## [2.23.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.22.0...v2.23.0) (2024-12-30)
 
 
