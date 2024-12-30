@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.22.1"
+VERSION="2.23.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -3245,7 +3245,8 @@ alias mo='mopen'
 alias moe='mopenexact'
 alias mv='mv -i'
 alias myip='curl http://ipecho.net/plain; echo'
-alias pron='yt-dlp --config-locations _configs.txt --batch-file _batch.txt'
+# alias pron='yt-dlp --config-locations _configs.txt --batch-file _batch.txt'
+alias pron='yt-dlp --config-locations _configs.txt --batch-file <(fzf < _master_batch.txt)'
 alias pronfile='cd /media/$USER/T7 Shield/yt-dlp'
 alias pronupdate='pronfile && pron || pron'
 alias pu='pronupdate'
