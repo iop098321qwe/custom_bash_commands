@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.24.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.24.0...v2.24.1) (2024-12-31)
+
+
+### Bug Fixes
+
+* fix versioning number ([30db5cf](https://github.com/iop098321qwe/custom_bash_commands/commit/30db5cf617b7ae1bde962d974319d91fb6d5f8ee))
+* **function:** fix `incon` function to be more compatible and not rely on an old version of `cc` ([fc2b71f](https://github.com/iop098321qwe/custom_bash_commands/commit/fc2b71f9ca9f1130e180098c4c29369334772f7b))
+
 ## [2.24.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.23.0...v2.24.0) (2024-12-30)
 
 
