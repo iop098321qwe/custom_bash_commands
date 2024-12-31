@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.24.1"
+VERSION="2.24.2"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2113,16 +2113,15 @@ incon() {
   git remote add origin "https://github.com/$(gh api user | jq -r '.login')/$repo_name.git"
 
   # 4. Add all files, commit, and push
-  cc "Initial commit"
+  git add README.md
+  git commit -m "Initial commit"
   git push -u origin main || {
     echo "Push to main failed. Exiting."
     return
   }
 
-  # 5. Create a test branch, switch to it, and then switch back to main
-  git checkout -b test
-  cc "Initial test commit"
-  git checkout main
+  echo "Local and remote repositories have successfully initialized."
+  echo "Note: Only the README.md file has been added. Please add and commit additional files as needed."
 }
 
 ################################################################################
