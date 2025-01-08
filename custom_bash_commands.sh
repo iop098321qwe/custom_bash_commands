@@ -565,7 +565,7 @@ EOF
     echo "DEBUG: URL line read: $line" # Debug statement
 
     # Generate a sanitized filename based on the URL
-    output_file="$(echo "$line" | sed -E 's|.*\\.com||; s|[^a-zA-Z0-9]|_|g').txt"
+    output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
     echo "DEBUG: Generated output filename: $output_file" # Debug statement
 
     # Check if the output file exists and prompt for overwrite
