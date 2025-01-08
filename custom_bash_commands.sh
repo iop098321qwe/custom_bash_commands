@@ -544,7 +544,7 @@ EOF
     echo " "
 
     # Execute yt-dlp and save the output to the file
-    yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
+    yt-dlp --cookies-from-browser brave -f b "$line" --print "%(title)s" | tee "$output_file"
 
     echo " "
     echo "Processing complete."
@@ -585,7 +585,7 @@ EOF
 
     echo "DEBUG: Starting yt-dlp download command." # Debug statement
     # Execute yt-dlp and save the output to the file
-    yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
+    yt-dlp --cookies-from-browser brave -f b "$line" --print "%(title)s" | tee "$output_file"
     echo "DEBUG: Finished yt-dlp command for $line." # Debug statement
 
   done <"$batch_file"
