@@ -470,10 +470,11 @@ EOF
 
   # Function to reset variables for clean execution
   reset_variables() {
-    OPTIND=1       # Reset option index for getopts parsing
-    line=""        # Reset the line content
-    output_file="" # Reset the output file name
-    batch_file=""  # Reset the batch file name
+    OPTIND=1                 # Reset option index for getopts parsing
+    line=""                  # Reset the line content
+    output_file=""           # Reset the output file name
+    batch_file=""            # Reset the batch file name
+    use_line_selection=false # Reset the line selection flag
   }
 
   # Function to prompt user whether to overwrite an existing file
