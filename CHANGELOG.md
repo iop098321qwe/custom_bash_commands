@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.25.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.24.1...v2.25.0) (2025-01-09)
+
+
+### Features
+
+* **function:** add batch file selection for `pronlist` ([7229d94](https://github.com/iop098321qwe/custom_bash_commands/commit/7229d9479d940a9c8dbd5b2a578ea85c53fcf3fb))
+
+
+### Bug Fixes
+
+* **function:** fix error with _configs.txt not working for pronlist ([52e4376](https://github.com/iop098321qwe/custom_bash_commands/commit/52e43763e6ef5ec59cba76484279a0a0bfaa217b))
+* **function:** fix pronlist variable resetting ([9e80656](https://github.com/iop098321qwe/custom_bash_commands/commit/9e80656f68209d015eb1b10d700a5f94cff2046d))
+* **function:** remove debugging echo statements and update version number ([8abb9d0](https://github.com/iop098321qwe/custom_bash_commands/commit/8abb9d0a6f18546427ec726b8db1dd58ab61333a))
+
 ## [2.24.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.24.0...v2.24.1) (2024-12-31)
 
 
