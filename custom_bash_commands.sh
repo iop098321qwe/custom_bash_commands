@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.24.2"
+VERSION="2.25.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -432,49 +432,58 @@ EOF
 
 # Function to generate a list of what each url downloads using yt-dlp
 pronlist() {
-  # Function to display usage information
+  # Function to display usage information for the script
   usage() {
     cat <<EOF
-Usage: pronlist [-h] [-l line_number]
+Usage: pronlist [-h] [-l]
 
 Options:
   -h    Show this help message and exit
-  -l    Process a specific line number from _batch.txt
+  -l    Select and process a specific line from the selected .txt file
 
 Description:
-  Processes each URL in the _batch.txt file and uses yt-dlp with the _configs.txt
+  Processes each URL in the selected .txt file and uses yt-dlp with the _configs.txt
   configuration file to generate a sanitized output file listing the downloaded titles.
 EOF
   }
 
-  # Function to check the presence of required files
-  check_files() {
-    if [ ! -f "_batch.txt" ]; then
-      echo "Error: _batch.txt not found in the current directory."
-      return 1
-    fi
-
+  # Function to check the presence of the configuration file
+  check_config_file() {
     if [ ! -f "_configs.txt" ]; then
       echo "Error: _configs.txt not found in the current directory."
       return 1
     fi
   }
 
-  # Ensure OPTIND is reset for correct option parsing
-  OPTIND=1
+  # Function to display a selection menu for batch files using fzf
+  select_batch_file() {
+    local selected_file
+    selected_file=$(find . -maxdepth 1 -name "*.txt" 2>/dev/null | fzf --prompt="Select a batch file: ")
 
-  # Reset variables
-  line_number=""
-  line=""
-  output_file=""
+    if [ -z "$selected_file" ]; then
+      echo "Error: No file selected."
+      return 1
+    fi
 
-  # Prompt to overwrite file
+    echo "${selected_file#./}"
+  }
+
+  # Function to reset variables for clean execution
+  reset_variables() {
+    OPTIND=1                 # Reset option index for getopts parsing
+    line=""                  # Reset the line content
+    output_file=""           # Reset the output file name
+    batch_file=""            # Reset the batch file name
+    use_line_selection=false # Reset the line selection flag
+  }
+
+  # Function to prompt user whether to overwrite an existing file
   prompt_overwrite() {
     local file="$1"
     read -p "File '$file' already exists. Overwrite? (y/N): " choice
     case "$choice" in
     [Yy]*)
-      return 0 # User confirmed overwrite
+      return 0 # User chose to overwrite
       ;;
     *)
       echo "Skipping existing file: $file"
@@ -483,15 +492,18 @@ EOF
     esac
   }
 
-  # Parse options using getopts
-  while getopts "hl:" opt; do
+  # Reset variables at the start
+  reset_variables
+
+  # Parse command-line options using getopts
+  while getopts "hl" opt; do
     case "$opt" in
     h)
-      usage
+      usage # Display usage information
       return 0
       ;;
     l)
-      line_number="$OPTARG"
+      use_line_selection=true # Indicate that fzf should be used to select a line
       ;;
     ?)
       echo "Invalid option: -$OPTARG" >&2
@@ -501,51 +513,56 @@ EOF
     esac
   done
 
-  shift $((OPTIND - 1)) # Shift processed options
+  shift $((OPTIND - 1)) # Shift parsed options to access remaining arguments
 
-  # Check for required files
-  check_files || return 1
+  # Prompt the user to select a batch file
+  batch_file=$(select_batch_file) || return 1
 
-  # Process specific line if -l flag is provided
-  if [ -n "$line_number" ]; then
-    line=$(sed -n "${line_number}p" _batch.txt) # Fetch the specified line
+  # Check if the configuration file exists
+  check_config_file || return 1
+
+  # If the -l flag is provided, select a specific line using fzf
+  if [ "$use_line_selection" = true ]; then
+    line=$(cat "$batch_file" | fzf --prompt="Select a URL line: ")
     if [ -z "$line" ]; then
-      echo "Error: No URL found at line $line_number."
+      echo "Error: No URL selected."
       return 1
     fi
 
-    # Generate a sanitized filename for the URL output
+    # Generate a sanitized filename based on the URL
     output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
 
-    # Check if output file exists and prompt for overwrite
+    # Check if the output file exists and prompt for overwrite
     if [ -f "$output_file" ]; then
       prompt_overwrite "$output_file" || return 0
     fi
 
     echo " "
     echo "################################################################################"
-    echo "Processing URL from line $line_number: $line"
+    echo "Processing selected URL: $line"
     echo "################################################################################"
     echo " "
 
-    yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
+    # Execute yt-dlp and save the output to the file
+    yt-dlp --cookies-from-browser brave -f b "$line" --print "%(title)s" | tee "$output_file"
 
     echo " "
     echo "Processing complete."
+    reset_variables # Reset variables after processing
     return 0
   fi
 
-  # Default: Loop through each line in _batch.txt only if -l is not specified
+  # Default behavior: Process each line in the selected batch file
   while IFS= read -r line || [ -n "$line" ]; do
     # Skip empty lines
     if [ -z "$line" ]; then
       continue
     fi
 
-    # Generate a sanitized filename for the URL output
+    # Generate a sanitized filename based on the URL
     output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
 
-    # Check if output file exists and prompt for overwrite
+    # Check if the output file exists and prompt for overwrite
     if [ -f "$output_file" ]; then
       prompt_overwrite "$output_file" || continue
     fi
@@ -556,13 +573,14 @@ EOF
     echo "################################################################################"
     echo " "
 
-    yt-dlp --config-locations _configs.txt "$line" --print "%(title)s" | tee "$output_file"
-  done <"_batch.txt"
+    # Execute yt-dlp and save the output to the file
+    yt-dlp --cookies-from-browser brave -f b "$line" --print "%(title)s" | tee "$output_file"
+  done <"$batch_file"
 
   echo " "
   echo "Processing complete."
+  reset_variables # Reset variables after all lines are processed
 }
-alias batch_open='find . -type f -name "*.txt" | fzf --multi | xargs -I {} nohup xdg-open {} > /dev/null 2>&1 &'
 
 ################################################################################
 # sopen
