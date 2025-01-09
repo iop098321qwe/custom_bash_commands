@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.25.0-xxxtest"
+VERSION="2.25.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -554,27 +554,17 @@ EOF
 
   # Default behavior: Process each line in the selected batch file
   while IFS= read -r line || [ -n "$line" ]; do
-    echo "DEBUG: Reading a new line from the batch file." # Debug statement
-
     # Skip empty lines
     if [ -z "$line" ]; then
-      echo "DEBUG: Skipping an empty line." # Debug statement
       continue
     fi
 
-    echo "DEBUG: URL line read: $line" # Debug statement
-
     # Generate a sanitized filename based on the URL
     output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
-    echo "DEBUG: Generated output filename: $output_file" # Debug statement
 
     # Check if the output file exists and prompt for overwrite
     if [ -f "$output_file" ]; then
-      echo "DEBUG: Output file $output_file already exists." # Debug statement
-      prompt_overwrite "$output_file" || {
-        echo "DEBUG: User chose not to overwrite $output_file." # Debug statement
-        continue
-      }
+      prompt_overwrite "$output_file" || continue
     fi
 
     echo " "
@@ -583,11 +573,8 @@ EOF
     echo "################################################################################"
     echo " "
 
-    echo "DEBUG: Starting yt-dlp download command." # Debug statement
     # Execute yt-dlp and save the output to the file
     yt-dlp --cookies-from-browser brave -f b "$line" --print "%(title)s" | tee "$output_file"
-    echo "DEBUG: Finished yt-dlp command for $line." # Debug statement
-
   done <"$batch_file"
 
   echo " "
