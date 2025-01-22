@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.25.0"
+VERSION="2.26.0-testing"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -349,6 +349,143 @@ EOF
   fi
 
   echo "Opened: $random_file"
+}
+
+# Place this entire function in your .bashrc or other shell configuration file.
+# Then, reload your shell or source .bashrc to use it.
+
+################################################################################
+# SORTFILESALPHA
+################################################################################
+
+function sortfilesalpha() {
+
+  #######################################################
+  # Helper Function: Check if 'fzf' is installed
+  #######################################################
+  function check_fzf_installed() {
+    # We use command -v to see if fzf is in the PATH
+    if ! command -v fzf >/dev/null 2>&1; then
+      echo "fzf is not installed. Please install fzf and try again."
+      return 1
+    fi
+  }
+
+  #######################################################
+  # Helper Function: Gather unique file extensions
+  # (excludes directories)
+  #######################################################
+  function get_filetypes() {
+    # We use 'ls -p' to list entries, grep -v / to exclude directories,
+    # and awk -F. to extract the extension (last field after '.').
+    # Then we sort them uniquely.
+    filetypes=$(ls -p 2>/dev/null |
+      grep -v / |
+      awk -F '.' '{ if (NF > 1) print $NF }' |
+      sort -u)
+
+    echo "$filetypes"
+  }
+
+  #######################################################
+  # Helper Function: Let the user select file extension
+  # using fzf
+  #######################################################
+  function select_filetype() {
+    local filetypes_list="$1"
+
+    # Pipe the list of filetypes into fzf for the user to pick one
+    # If the user exits fzf without making a selection, we'll capture an empty string
+    selected_ext=$(echo "$filetypes_list" | fzf --prompt="Select the file extension: " --height=10 --border)
+
+    echo "$selected_ext"
+  }
+
+  #######################################################
+  # Helper Function: Create subdirectory if missing
+  #######################################################
+  function create_subdir_if_missing() {
+    local letter="$1"
+
+    # mkdir -p will create the directory only if it doesn't exist
+    mkdir -p "$letter"
+  }
+
+  #######################################################
+  # Helper Function: Move all files starting with the
+  # specified letter for the chosen extension
+  #######################################################
+  function move_files_for_letter() {
+    local letter="$1"
+    local extension="$2"
+
+    # We use mv with a glob that matches the letter, then
+    # zero or more characters, followed by the .extension.
+    # We send errors to /dev/null to suppress "No such file" messages
+    mv "${letter}"*."${extension}" "${letter}/" 2>/dev/null
+  }
+
+  #######################################################
+  # Helper Function: Main logic to iterate and move files
+  #######################################################
+  function sort_files_by_letter() {
+    local extension="$1"
+
+    # Loop until there are no more files with the chosen extension in the current directory
+    while true; do
+      # Capture the first file with the chosen extension (ignores directories)
+      # 'head -n 1' picks the first line (file).
+      next_file=$(ls -p 2>/dev/null |
+        grep -v / |
+        grep "\.${extension}$" |
+        head -n 1)
+
+      # If no file is found, break the loop
+      if [[ -z "$next_file" ]]; then
+        break
+      fi
+
+      # Extract the first letter from the filename
+      first_letter="${next_file:0:1}"
+
+      # Create subdirectory if it doesn't exist
+      create_subdir_if_missing "$first_letter"
+
+      # Move all files that start with the same letter and have the selected extension
+      move_files_for_letter "$first_letter" "$extension"
+    done
+  }
+
+  #######################################################
+  # Primary Execution Flow
+  #######################################################
+
+  # 1. Check if fzf is installed
+  check_fzf_installed || return 1
+
+  # 2. Gather all file extensions in the current directory
+  all_filetypes=$(get_filetypes)
+
+  # If no filetypes were found, we exit
+  if [[ -z "$all_filetypes" ]]; then
+    echo "No files with extensions found in this directory."
+    return 0
+  fi
+
+  # 3. Prompt user to select one extension using fzf
+  chosen_type=$(select_filetype "$all_filetypes")
+
+  # If user didn't select anything in fzf, exit
+  if [[ -z "$chosen_type" ]]; then
+    echo "No filetype selected. Exiting."
+    return 0
+  fi
+
+  # 4. Sort files by their first letter
+  sort_files_by_letter "$chosen_type"
+
+  # 5. Print a final message
+  echo "Done sorting *.$chosen_type files into subdirectories by their first letter."
 }
 
 ################################################################################
