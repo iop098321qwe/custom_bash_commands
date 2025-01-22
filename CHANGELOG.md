@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.26.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.26.0...v2.26.1) (2025-01-22)
+
+
+### Bug Fixes
+
+* **function:** change `sortfilesalpha` to `sortalpha` ([379c241](https://github.com/iop098321qwe/custom_bash_commands/commit/379c24166b44f74d3332436167ae500a347baa08))
+* **function:** fix cbcs to include the `sortfilesalpha` help ([36634e1](https://github.com/iop098321qwe/custom_bash_commands/commit/36634e136a5b35615437fce2f44f0cbfea0c0ac7))
+
 ## [2.26.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.25.0...v2.26.0) (2025-01-22)
 
 
