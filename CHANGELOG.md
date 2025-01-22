@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.26.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.25.0...v2.26.0) (2025-01-22)
+
+
+### Features
+
+* **function:** add `sortfilesalpha` function to sort files with ([0d096bd](https://github.com/iop098321qwe/custom_bash_commands/commit/0d096bd65f7677b5409081e96fda2c4c0f8e571d))
+
+
+### Bug Fixes
+
+* **function:** clean up code for integration into `main` branch ([77d8db0](https://github.com/iop098321qwe/custom_bash_commands/commit/77d8db003f50f6566d05a4ae2e5cb6245801fd4c))
+* **function:** fix the `sortfilesalpha` function to not use fzf ([7e9c9f2](https://github.com/iop098321qwe/custom_bash_commands/commit/7e9c9f2e870c4b400a2d8d5becd8766ca7f34e7c))
+* **function:** rewrite `sortfilesalpha` to work more efficiently and modularly ([71debbd](https://github.com/iop098321qwe/custom_bash_commands/commit/71debbdb3ef47c651ed2afa44d5c24139fb0b843))
+* **version number:** fix the version number ([3352554](https://github.com/iop098321qwe/custom_bash_commands/commit/3352554926ac52c1fa1ae83d02ef72bfcae57d44))
+
 ## [2.25.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.24.1...v2.25.0) (2025-01-09)
 
 
