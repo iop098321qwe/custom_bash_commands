@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.26.1"
+VERSION="2.26.2"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -415,7 +415,7 @@ sortalpha() {
 
   # move files to new directories based on the first letter of the file
   move_files
-  printf "\nNo way to undo what you have just done... Maybe use ranger and manually move back? :)"
+  printf "\nNo way to undo what you have just done... Maybe use ranger and manually move back? :)\n"
 }
 
 ################################################################################
