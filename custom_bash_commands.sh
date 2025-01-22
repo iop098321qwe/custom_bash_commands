@@ -372,36 +372,6 @@ function sortfilesalpha() {
   }
 
   #######################################################
-  # Helper Function: Gather unique file extensions
-  # (excludes directories)
-  #######################################################
-  function get_filetypes() {
-    # We use 'ls -p' to list entries, grep -v / to exclude directories,
-    # and awk -F. to extract the extension (last field after '.').
-    # Then we sort them uniquely.
-    filetypes=$(ls -p 2>/dev/null |
-      grep -v / |
-      awk -F '.' '{ if (NF > 1) print $NF }' |
-      sort -u)
-
-    echo "$filetypes"
-  }
-
-  #######################################################
-  # Helper Function: Let the user select file extension
-  # using fzf
-  #######################################################
-  function select_filetype() {
-    local filetypes_list="$1"
-
-    # Pipe the list of filetypes into fzf for the user to pick one
-    # If the user exits fzf without making a selection, we'll capture an empty string
-    selected_ext=$(echo "$filetypes_list" | fzf --prompt="Select the file extension: " --height=10 --border)
-
-    echo "$selected_ext"
-  }
-
-  #######################################################
   # Helper Function: Create subdirectory if missing
   #######################################################
   function create_subdir_if_missing() {
@@ -463,28 +433,19 @@ function sortfilesalpha() {
   # 1. Check if fzf is installed
   check_fzf_installed || return 1
 
-  # 2. Gather all file extensions in the current directory
-  all_filetypes=$(get_filetypes)
+  # 2. Prompt the user to input the filetype
+  read -p "Enter the file extension to sort: " chosen_type
 
-  # If no filetypes were found, we exit
-  if [[ -z "$all_filetypes" ]]; then
-    echo "No files with extensions found in this directory."
-    return 0
-  fi
-
-  # 3. Prompt user to select one extension using fzf
-  chosen_type=$(select_filetype "$all_filetypes")
-
-  # If user didn't select anything in fzf, exit
+  # If user didn't type anything, exit
   if [[ -z "$chosen_type" ]]; then
-    echo "No filetype selected. Exiting."
+    echo "No filetype entered. Exiting."
     return 0
   fi
 
-  # 4. Sort files by their first letter
+  # 3. Sort files by their first letter
   sort_files_by_letter "$chosen_type"
 
-  # 5. Print a final message
+  # 4. Print a final message
   echo "Done sorting *.$chosen_type files into subdirectories by their first letter."
 }
 
