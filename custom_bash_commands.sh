@@ -358,95 +358,64 @@ EOF
 # SORTFILESALPHA
 ################################################################################
 
-function sortfilesalpha() {
+sortfilesalpha() {
+  # initialize local variables
+  local extension=""
+  local first_letter=""
 
-  #######################################################
-  # Helper Function: Check if 'fzf' is installed
-  #######################################################
-  function check_fzf_installed() {
-    # We use command -v to see if fzf is in the PATH
+  # HELPER: check if fzf is installed
+  check_fzf_install() {
     if ! command -v fzf >/dev/null 2>&1; then
-      echo "fzf is not installed. Please install fzf and try again."
+      echo "fzf is not installed. Please install fzf first."
       return 1
     fi
   }
 
-  #######################################################
-  # Helper Function: Create subdirectory if missing
-  #######################################################
-  function create_subdir_if_missing() {
-    local letter="$1"
-
-    # mkdir -p will create the directory only if it doesn't exist
-    mkdir -p "$letter"
+  # HELPER: check if the extension variable is empty
+  check_ext() {
+    if [ -z "$extension" ]; then
+      echo "No extension selected. Exiting..."
+      return 1
+    fi
   }
 
-  #######################################################
-  # Helper Function: Move all files starting with the
-  # specified letter for the chosen extension
-  #######################################################
-  function move_files_for_letter() {
-    local letter="$1"
-    local extension="$2"
+  # HELPER: choose extension to sort files by
+  select_extension() {
+    # prompt the user to select an extension to sort files by and assign to "extension" variable
+    extension=$(find . -maxdepth 1 -type f | sed 's/.*\.//' | sort -u | fzf --prompt="Select an extension to sort files by: ")
 
-    # We use mv with a glob that matches the letter, then
-    # zero or more characters, followed by the .extension.
-    # We send errors to /dev/null to suppress "No such file" messages
-    mv "${letter}"*."${extension}" "${letter}/" 2>/dev/null
+    # check if the extension variable is empty
+    check_ext || return 1
+
+    # display a message to the user for the extension to sort files by
+    echo "Sorting files by extension: $extension"
   }
 
-  #######################################################
-  # Helper Function: Main logic to iterate and move files
-  #######################################################
-  function sort_files_by_letter() {
-    local extension="$1"
-
-    # Loop until there are no more files with the chosen extension in the current directory
-    while true; do
-      # Capture the first file with the chosen extension (ignores directories)
-      # 'head -n 1' picks the first line (file).
-      next_file=$(ls -p 2>/dev/null |
-        grep -v / |
-        grep "\.${extension}$" |
-        head -n 1)
-
-      # If no file is found, break the loop
-      if [[ -z "$next_file" ]]; then
-        break
+  # HELPER: iterate through each file in the current directory and move to a new directory based on the first letter of the file
+  move_files() {
+    check_ext || return 1
+    for file in *."$extension"; do
+      if [ -f "$file" ]; then
+        first_letter=$(echo "$file" | cut -c1 | tr '[:upper:]' '[:lower:]')
+        mkdir -p "$first_letter"
+        mv "$first_letter"*."$extension" "$first_letter"/
       fi
-
-      # Extract the first letter from the filename
-      first_letter="${next_file:0:1}"
-
-      # Create subdirectory if it doesn't exist
-      create_subdir_if_missing "$first_letter"
-
-      # Move all files that start with the same letter and have the selected extension
-      move_files_for_letter "$first_letter" "$extension"
     done
+    echo "File sorting alphabetically completed successfully."
   }
 
-  #######################################################
-  # Primary Execution Flow
-  #######################################################
+  # MAIN LOGIC
 
-  # 1. Check if fzf is installed
-  check_fzf_installed || return 1
+  # Check if fzf is installed
+  check_fzf_install || return 1
 
-  # 2. Prompt the user to input the filetype
-  read -p "Enter the file extension to sort: " chosen_type
+  # select extension to sort files by
+  select_extension || return 1
 
-  # If user didn't type anything, exit
-  if [[ -z "$chosen_type" ]]; then
-    echo "No filetype entered. Exiting."
-    return 0
-  fi
-
-  # 3. Sort files by their first letter
-  sort_files_by_letter "$chosen_type"
-
-  # 4. Print a final message
-  echo "Done sorting *.$chosen_type files into subdirectories by their first letter."
+  # move files to new directories based on the first letter of the file
+  move_files
+  printf "\nNo way to undo what you have just done... Maybe use ranger and manually move back? :)"
+  echo -e "\nNo way to undo what you have just done... maybe use ranger and manually move back? :)"
 }
 
 ################################################################################
