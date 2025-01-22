@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.26.0"
+VERSION="2.26.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -355,11 +355,11 @@ EOF
 # Then, reload your shell or source .bashrc to use it.
 
 ################################################################################
-# SORTFILESALPHA
+# SORTALPHA
 ################################################################################
 
 # TODO: Add comments and -h flag for clarity in the function
-sortfilesalpha() {
+sortalpha() {
   # initialize local variables
   local extension=""
   local first_letter=""
@@ -1149,10 +1149,10 @@ cbcs() {
     echo "          Usage: remove_all_cbc_configs"
     echo "          Aliases: racc"
     echo " "
-    echo "sortfilesalpha"
+    echo "sortalpha"
     echo "         Description: Sort files alphabetically into subdirectories by type and first letter"
-    echo "         Usage: sortfilesalpha"
-    echo "         Aliases: sfa"
+    echo "         Usage: sortalpha"
+    echo "         Aliases: sa"
     echo " "
     echo "seebash"
     echo "          Description: Display the contents of the .bashrc file"
@@ -1626,9 +1626,9 @@ cbcs() {
     echo "          Description: Alias for 'lazygit'"
     echo "          Usage: lg"
     echo " "
-    echo "sfa"
-    echo "          Description: Alias for 'sortfilesalpha'"
-    echo "          Usage: sfa"
+    echo "sa"
+    echo "          Description: Alias for 'sortalpha'"
+    echo "          Usage: sa"
     echo " "
     echo "s"
     echo "          Description: Alias for 'sudo'"
@@ -1688,7 +1688,7 @@ cbcs() {
     echo "random"
     echo "refresh"
     echo "rmconf"
-    echo "sortfilesalpha"
+    echo "sortalpha"
     echo "seebash"
     echo "sopen"
     echo "sopenexact"
@@ -1794,7 +1794,7 @@ cbcs() {
     echo "rm"
     echo "rma"
     echo "s"
-    echo "sfa"
+    echo "sa"
     echo "so"
     echo "soe"
     echo "temp"
@@ -3359,7 +3359,7 @@ alias rm='rm -I'
 alias rnc='remove_neofetch_config'
 alias rsc='remove_session_id_config'
 alias seebash='batcat ~/.bashrc'
-alias sfa='sortfilesalpha'
+alias sa='sortalpha'
 alias s='sudo'
 alias so='sopen'
 alias soe='sopenexact'
