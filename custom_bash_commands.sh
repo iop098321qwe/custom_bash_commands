@@ -388,7 +388,7 @@ sortfilesalpha() {
     check_ext || return 1
 
     # display a message to the user for the extension to sort files by
-    echo "Sorting files by extension: $extension"
+    echo -e "\nSorting files by extension: $extension"
   }
 
   # HELPER: iterate through each file in the current directory and move to a new directory based on the first letter of the file
@@ -401,7 +401,7 @@ sortfilesalpha() {
         mv "$first_letter"*."$extension" "$first_letter"/
       fi
     done
-    echo "File sorting alphabetically completed successfully."
+    printf "\nFile sorting alphabetically completed successfully."
   }
 
   # MAIN LOGIC
@@ -415,7 +415,6 @@ sortfilesalpha() {
   # move files to new directories based on the first letter of the file
   move_files
   printf "\nNo way to undo what you have just done... Maybe use ranger and manually move back? :)"
-  echo -e "\nNo way to undo what you have just done... maybe use ranger and manually move back? :)"
 }
 
 ################################################################################
