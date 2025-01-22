@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.25.0"
+VERSION="2.26.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -349,6 +349,72 @@ EOF
   fi
 
   echo "Opened: $random_file"
+}
+
+# Place this entire function in your .bashrc or other shell configuration file.
+# Then, reload your shell or source .bashrc to use it.
+
+################################################################################
+# SORTFILESALPHA
+################################################################################
+
+sortfilesalpha() {
+  # initialize local variables
+  local extension=""
+  local first_letter=""
+
+  # HELPER: check if fzf is installed
+  check_fzf_install() {
+    if ! command -v fzf >/dev/null 2>&1; then
+      echo "fzf is not installed. Please install fzf first."
+      return 1
+    fi
+  }
+
+  # HELPER: check if the extension variable is empty
+  check_ext() {
+    if [ -z "$extension" ]; then
+      echo "No extension selected. Exiting..."
+      return 1
+    fi
+  }
+
+  # HELPER: choose extension to sort files by
+  select_extension() {
+    # prompt the user to select an extension to sort files by and assign to "extension" variable
+    extension=$(find . -maxdepth 1 -type f | sed 's/.*\.//' | sort -u | fzf --prompt="Select an extension to sort files by: ")
+
+    # check if the extension variable is empty
+    check_ext || return 1
+
+    # display a message to the user for the extension to sort files by
+    echo -e "\nSorting files by extension: $extension"
+  }
+
+  # HELPER: iterate through each file in the current directory and move to a new directory based on the first letter of the file
+  move_files() {
+    check_ext || return 1
+    for file in *."$extension"; do
+      if [ -f "$file" ]; then
+        first_letter=$(echo "$file" | cut -c1 | tr '[:upper:]' '[:lower:]')
+        mkdir -p "$first_letter"
+        mv "$first_letter"*."$extension" "$first_letter"/
+      fi
+    done
+    printf "\nFile sorting alphabetically completed successfully."
+  }
+
+  # MAIN LOGIC
+
+  # Check if fzf is installed
+  check_fzf_install || return 1
+
+  # select extension to sort files by
+  select_extension || return 1
+
+  # move files to new directories based on the first letter of the file
+  move_files
+  printf "\nNo way to undo what you have just done... Maybe use ranger and manually move back? :)"
 }
 
 ################################################################################
