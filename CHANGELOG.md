@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. See [commit
 ### Bug Fixes
 
 * **function:** fix `sortalpha` to display better formatted messages ([fcd5a67](https://github.com/iop098321qwe/custom_bash_commands/commit/fcd5a6790dd2849a243cd9ef53c154acf7919bff))
+* **test:** test the `verg` command ([b6d9fbe](https://github.com/iop098321qwe/custom_bash_commands/commit/b6d9fbedfe1ac6ad5ebddd890bd25530bca8ba36))
 
 ## [2.26.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.26.0...v2.26.1) (2025-01-22)
 
