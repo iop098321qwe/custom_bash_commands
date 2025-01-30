@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.26.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.26.1...v2.26.2) (2025-01-30)
+
+
+### Bug Fixes
+
+* **function:** fix `sortalpha` to display better formatted messages ([fcd5a67](https://github.com/iop098321qwe/custom_bash_commands/commit/fcd5a6790dd2849a243cd9ef53c154acf7919bff))
+
 ## [2.26.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.26.0...v2.26.1) (2025-01-22)
 
 
