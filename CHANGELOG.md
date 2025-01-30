@@ -2,16 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
-## [2.26.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.26.1...v2.26.2) (2025-01-30)
-
-
-### Bug Fixes
-
-* **function:** fix `sortalpha` to display better formatted messages ([fcd5a67](https://github.com/iop098321qwe/custom_bash_commands/commit/fcd5a6790dd2849a243cd9ef53c154acf7919bff))
-* **test:** test the `verg` command ([b6d9fbe](https://github.com/iop098321qwe/custom_bash_commands/commit/b6d9fbedfe1ac6ad5ebddd890bd25530bca8ba36))
-
 ## [2.26.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.26.0...v2.26.1) (2025-01-22)
-
 
 ### Bug Fixes
 
@@ -20,11 +11,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.26.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.25.0...v2.26.0) (2025-01-22)
 
-
 ### Features
 
 * **function:** add `sortfilesalpha` function to sort files with ([0d096bd](https://github.com/iop098321qwe/custom_bash_commands/commit/0d096bd65f7677b5409081e96fda2c4c0f8e571d))
-
 
 ### Bug Fixes
 
@@ -35,11 +24,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.25.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.24.1...v2.25.0) (2025-01-09)
 
-
 ### Features
 
 * **function:** add batch file selection for `pronlist` ([7229d94](https://github.com/iop098321qwe/custom_bash_commands/commit/7229d9479d940a9c8dbd5b2a578ea85c53fcf3fb))
-
 
 ### Bug Fixes
 
@@ -49,7 +36,6 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.24.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.24.0...v2.24.1) (2024-12-31)
 
-
 ### Bug Fixes
 
 * fix versioning number ([30db5cf](https://github.com/iop098321qwe/custom_bash_commands/commit/30db5cf617b7ae1bde962d974319d91fb6d5f8ee))
@@ -57,11 +43,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.24.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.23.0...v2.24.0) (2024-12-30)
 
-
 ### Features
 
 * **alias:** add `batch_open` and `bo` aliases ([cda7723](https://github.com/iop098321qwe/custom_bash_commands/commit/cda772346a2f1f633de66660c050e2160a513b7f))
-
 
 ### Bug Fixes
 
@@ -69,12 +53,10 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.23.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.22.0...v2.23.0) (2024-12-30)
 
-
 ### Features
 
 * **alias:** add `update_master_list` and `uml` aliases ([e457f72](https://github.com/iop098321qwe/custom_bash_commands/commit/e457f720ebbaa4c59db4f884fc67d94e880f2dad))
 * **alias:** add fzf selection for multiple batch files for `pron` ([101f127](https://github.com/iop098321qwe/custom_bash_commands/commit/101f1275d42e3b8581fb4ca515099cbf861ce04c))
-
 
 ### Bug Fixes
 
@@ -88,11 +70,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.22.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.21.0...v2.22.0) (2024-12-20)
 
-
 ### Features
 
 * **function:** add `sopen` and `sopenexact` functions ([b8db266](https://github.com/iop098321qwe/custom_bash_commands/commit/b8db266442b4c50aa701212f8a9d6d8d0508f081))
-
 
 ### Bug Fixes
 
@@ -101,13 +81,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.21.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.20.0...v2.21.0) (2024-12-18)
 
-
 ### Features
 
 * **function:** add `phsearch` function ([e512297](https://github.com/iop098321qwe/custom_bash_commands/commit/e512297f991efc1b5298cd149c1118009bffd4f3))
 
 ## [2.20.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.19.2...v2.20.0) (2024-12-16)
-
 
 ### Features
 
@@ -115,13 +93,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.19.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.19.1...v2.19.2) (2024-12-14)
 
-
 ### Bug Fixes
 
 * fix versioning number again ([afb5249](https://github.com/iop098321qwe/custom_bash_commands/commit/afb5249f9073e215991bc90273c6cb43e7c056e1))
 
 ## [2.19.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.19.0...v2.19.1) (2024-12-13)
-
 
 ### Bug Fixes
 
@@ -129,11 +105,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.19.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.18.4...v2.19.0) (2024-12-13)
 
-
 ### Features
 
 * **function:** add `pronlist` function ([57208cf](https://github.com/iop098321qwe/custom_bash_commands/commit/57208cf0c04a658fbd688eab01b16ae0ada3db22))
-
 
 ### Bug Fixes
 
@@ -151,7 +125,6 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.18.4](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.18.3...v2.18.4) (2024-12-13)
 
-
 ### Bug Fixes
 
 * fix versioning number ([9788066](https://github.com/iop098321qwe/custom_bash_commands/commit/978806617fb3cb66c2a0823f1c82150dcc01f553))
@@ -161,7 +134,6 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.18.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.18.1...v2.18.2) (2024-12-13)
 
-
 ### Bug Fixes
 
 * fix versioning number ([098f8d2](https://github.com/iop098321qwe/custom_bash_commands/commit/098f8d227ae7e2871bdd70b81078103b61afe2fd))
@@ -170,7 +142,6 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.18.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.18.0...v2.18.1) (2024-12-13)
 
-
 ### Bug Fixes
 
 * fix versioning number ([1a77319](https://github.com/iop098321qwe/custom_bash_commands/commit/1a77319bd054d6f5789565c8e72001f7a86c72d5))
@@ -178,12 +149,10 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.18.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.17.0...v2.18.0) (2024-12-12)
 
-
 ### Features
 
 * **function:** add `-v` flag for verbose mode for repeat function ([5316c9a](https://github.com/iop098321qwe/custom_bash_commands/commit/5316c9accba5119725143723878a8a6108d4e2b9))
 * **function:** add delay option for repeat function ([f2ce093](https://github.com/iop098321qwe/custom_bash_commands/commit/f2ce09351b8dbe3c4c1ffb8d2944347c84725985))
-
 
 ### Bug Fixes
 
@@ -196,13 +165,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.17.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.16.1...v2.17.0) (2024-12-12)
 
-
 ### Features
 
 * **function:** add `pip install --upgrade yt-dlp` to update command ([c80112e](https://github.com/iop098321qwe/custom_bash_commands/commit/c80112e68c0604deff73f43a51417ed559a43a6d))
 
 ## [2.16.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.16.0...v2.16.1) (2024-12-12)
-
 
 ### Bug Fixes
 
@@ -210,12 +177,10 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.16.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.15.1...v2.16.0) (2024-12-12)
 
-
 ### Features
 
 * **function:** add -m flag to random command for multiple random files to be opened ([1aa1a38](https://github.com/iop098321qwe/custom_bash_commands/commit/1aa1a3886c46a0e1b1ea982733c305b116ffeb80))
 * **function:** add repeat command ([d15e6da](https://github.com/iop098321qwe/custom_bash_commands/commit/d15e6da86c4217bd5d0168da231737ebd5170b98))
-
 
 ### Bug Fixes
 
@@ -239,7 +204,6 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.15.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.15.0...v2.15.1) (2024-12-11)
 
-
 ### Bug Fixes
 
 * **function:** fix issue with `phopen` continuing to run after opening ([3c03f5a](https://github.com/iop098321qwe/custom_bash_commands/commit/3c03f5aeba7ab016467258cfd9530103037544b6))
@@ -247,18 +211,15 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.15.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.14.0...v2.15.0) (2024-12-11)
 
-
 ### Features
 
 * **alias:** add `vopen`, `vopenexact`, `iopen`, `iopenexact`, and shortcuts ([a04438b](https://github.com/iop098321qwe/custom_bash_commands/commit/a04438b0fdd2e8ddd47007fb99306ee1de7fdfb6))
 
 ## [2.14.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.13.0...v2.14.0) (2024-12-11)
 
-
 ### Features
 
 * **alias:** add `mopenexact` and `moe` aliases ([ac38efb](https://github.com/iop098321qwe/custom_bash_commands/commit/ac38efb214b79d6df6a52aa06deeced69fc28a41))
-
 
 ### Bug Fixes
 
@@ -266,11 +227,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.13.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.12.1...v2.13.0) (2024-12-11)
 
-
 ### Features
 
 * **alias:** add `mopen` alias for opening media files with fopen ([1cc573f](https://github.com/iop098321qwe/custom_bash_commands/commit/1cc573f417a8e2e95aa00df0bc4ed04c37e0f834))
-
 
 ### Bug Fixes
 
@@ -279,18 +238,15 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.12.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.12.0...v2.12.1) (2024-12-11)
 
-
 ### Bug Fixes
 
 * **alias:** fix `fopen` and `fopenexact` aliases for better usage ([e98ba9e](https://github.com/iop098321qwe/custom_bash_commands/commit/e98ba9e4c8777f9e2ed37624d71d5be4109f16dc))
 
 ## [2.12.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.11.3...v2.12.0) (2024-12-11)
 
-
 ### Features
 
 * **function:** add `phopen` command ([246aee5](https://github.com/iop098321qwe/custom_bash_commands/commit/246aee559a8091e6f6796709db6f13e6052177b7))
-
 
 ### Bug Fixes
 
@@ -298,13 +254,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.11.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.11.2...v2.11.3) (2024-12-11)
 
-
 ### Bug Fixes
 
 * **function:** fix accidental extra '-y' flag in update() ([737b100](https://github.com/iop098321qwe/custom_bash_commands/commit/737b100a6d40fd42e59974281a41fc2dea0cb053))
 
 ## [2.11.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.11.1...v2.11.2) (2024-12-11)
-
 
 ### Bug Fixes
 
@@ -313,13 +267,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.11.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.11.0...v2.11.1) (2024-12-11)
 
-
 ### Bug Fixes
 
 * **alias:** fix `fopen` and `fopenexact` ([9ce8cce](https://github.com/iop098321qwe/custom_bash_commands/commit/9ce8cceef8e3c3aa581bdef7385b80f6175ce340))
 
 ## [2.11.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.10.2...v2.11.0) (2024-12-06)
-
 
 ### Features
 
@@ -327,20 +279,17 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.10.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.10.1...v2.10.2) (2024-12-04)
 
-
 ### Bug Fixes
 
 * fix version number and update docs ([7f51219](https://github.com/iop098321qwe/custom_bash_commands/commit/7f5121912eaa2958319430c2118e7b65c36e6070))
 
 ## [2.10.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.10.0...v2.10.1) (2024-12-04)
 
-
 ### Bug Fixes
 
 * **function:** fix `incon` to exclude .version file ([d6daf81](https://github.com/iop098321qwe/custom_bash_commands/commit/d6daf81dc477b202b22125cfa6b0b7753aa65c8f))
 
 ## [2.10.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.10...v2.10.0) (2024-12-04)
-
 
 ### Features
 
@@ -352,7 +301,6 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.9.8](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.7...v2.9.8) (2024-12-04)
 
-
 ### Bug Fixes
 
 * **alias:** make `verg` use printf instead of echo ([81b7817](https://github.com/iop098321qwe/custom_bash_commands/commit/81b7817da052a969217cc14efb2c03bedb3df007))
@@ -361,13 +309,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.9.6](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.5...v2.9.6) (2024-12-04)
 
-
 ### Bug Fixes
 
 * **alias:** test `verg` update ([e388a46](https://github.com/iop098321qwe/custom_bash_commands/commit/e388a4622a65af55f9122ff244fb6f1681f1d60e))
 
 ## [2.9.5](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.4...v2.9.5) (2024-12-04)
-
 
 ### Bug Fixes
 
@@ -375,13 +321,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.9.4](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.3...v2.9.4) (2024-12-04)
 
-
 ### Bug Fixes
 
 * **alias:** fix `verg` alias to display message properly ([1fc1222](https://github.com/iop098321qwe/custom_bash_commands/commit/1fc1222379df17daf9087df5ca3cdaf0436347f0))
 
 ## [2.9.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.2...v2.9.3) (2024-12-04)
-
 
 ### Bug Fixes
 
@@ -389,13 +333,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.9.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.1...v2.9.2) (2024-12-04)
 
-
 ### Bug Fixes
 
 * **syntax:** fixed a syntax error on line 423 ([d477b1f](https://github.com/iop098321qwe/custom_bash_commands/commit/d477b1f2c66fe4b2dbaf3327f1d5220473df713f))
 
 ## [2.9.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.9.0...v2.9.1) (2024-12-04)
-
 
 ### Bug Fixes
 
@@ -409,11 +351,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.9.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.8.0...v2.9.0) (2024-12-04)
 
-
 ### Features
 
 * **alias:** add `verg` alias ([72d2418](https://github.com/iop098321qwe/custom_bash_commands/commit/72d2418dacbbb9f8bef6020935d0312cc8a75f4f))
-
 
 ### Bug Fixes
 
@@ -426,11 +366,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.8.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.7.0...v2.8.0) (2024-12-04)
 
-
 ### Features
 
 * **alias:** add `gcomm` alias ([1f728e9](https://github.com/iop098321qwe/custom_bash_commands/commit/1f728e9c0ec5e2b4d19795eed4188c4aced87b56))
-
 
 ### Bug Fixes
 
@@ -438,13 +376,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.7.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.6.1...v2.7.0) (2024-12-03)
 
-
 ### Features
 
 * **alias:** add several new git aliases ([d36693d](https://github.com/iop098321qwe/custom_bash_commands/commit/d36693d295820421bdc510aff9ce76b598c8530c))
 
 ## [2.6.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.6.0...v2.6.1) (2024-12-03)
-
 
 ### Bug Fixes
 
@@ -452,13 +388,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.6.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.5.1...v2.6.0) (2024-12-03)
 
-
 ### Features
 
 * **alias:** add `pronupdate` and `pu` aliases ([eb9b77a](https://github.com/iop098321qwe/custom_bash_commands/commit/eb9b77a1e71585b856585d62b59820ce8c425612))
 
 ## [2.5.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.5.0...v2.5.1) (2024-12-03)
-
 
 ### Bug Fixes
 
@@ -466,20 +400,17 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.5.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.4.0...v2.5.0) (2024-12-03)
 
-
 ### Features
 
 * **alias:** add `pron` and `pronfile` aliases ([2adbabb](https://github.com/iop098321qwe/custom_bash_commands/commit/2adbabbdd30d2ed043ee85a5cb886b3e63e41fd3))
 
 ## [2.4.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.3.3...v2.4.0) (2024-12-02)
 
-
 ### Features
 
 * **functions:** update `cc` command ([b9be850](https://github.com/iop098321qwe/custom_bash_commands/commit/b9be8507ade6d1a39d2ff3c7b687cab5fb23be60))
 
 ## [2.3.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.3.2...v2.3.3) (2024-11-29)
-
 
 ### Bug Fixes
 
@@ -489,18 +420,15 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.3.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.3.0...v2.3.1) (2024-11-29)
 
-
 ### Bug Fixes
 
 * update README.md ([fb29059](https://github.com/iop098321qwe/custom_bash_commands/commit/fb290593ffdba515106844c94edaae86e2780e57))
 
 ## [2.3.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.2.2...v2.3.0) (2024-11-29)
 
-
 ### Features
 
 * add `test` command to test changes made in CBC on other branch ([231ec2e](https://github.com/iop098321qwe/custom_bash_commands/commit/231ec2e33f481eb3fe96a4e4db90f10a07af6325))
-
 
 ### Bug Fixes
 
@@ -508,13 +436,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.2.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.2.1...v2.2.2) (2024-11-29)
 
-
 ### Bug Fixes
 
 * testing versioning across branches ([9cba8cf](https://github.com/iop098321qwe/custom_bash_commands/commit/9cba8cf3d4afa95f27e2eff9e43645bbed6db8bf))
 
 ## [2.2.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.2.0...v2.2.1) (2024-11-29)
-
 
 ### Bug Fixes
 
@@ -522,13 +448,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.1.6...v2.2.0) (2024-11-29)
 
-
 ### Features
 
 * create `changes` command ([5a38097](https://github.com/iop098321qwe/custom_bash_commands/commit/5a38097b31ac56c2f98d4bd0d529bfdfa75b59cc))
 
 ## [2.1.6](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.1.5...v2.1.6) (2024-11-29)
-
 
 ### Bug Fixes
 
@@ -536,13 +460,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.1.5](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.1.4...v2.1.5) (2024-11-29)
 
-
 ### Bug Fixes
 
 * update colors again in config message ([f30584f](https://github.com/iop098321qwe/custom_bash_commands/commit/f30584f7b9b415db1c289bc02ab7ceef49a9ad93))
 
 ## [2.1.4](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.1.3...v2.1.4) (2024-11-29)
-
 
 ### Bug Fixes
 
@@ -550,13 +472,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.1.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.1.2...v2.1.3) (2024-11-29)
 
-
 ### Bug Fixes
 
 * update `display_verison` command ([824cae3](https://github.com/iop098321qwe/custom_bash_commands/commit/824cae3285f1366e593ea3c851c9b494591bfdfe))
 
 ## [2.1.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.1.1...v2.1.2) (2024-11-29)
-
 
 ### Bug Fixes
 
@@ -564,20 +484,17 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [2.1.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.1.0...v2.1.1) (2024-11-29)
 
-
 ### Bug Fixes
 
 * fix numbering error in versioning ([d94751c](https://github.com/iop098321qwe/custom_bash_commands/commit/d94751c2674a70b3cd9d28961dfa9c5cea4e9e2a))
 
 ## [2.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.0.0...v2.1.0) (2024-11-29)
 
-
 ### Features
 
 * create better versioning ([3691402](https://github.com/iop098321qwe/custom_bash_commands/commit/36914029ac6dccd12285882b2554a12d2c251555))
 
 ## [2.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.31.0...v2.0.0) (2024-11-29)
-
 
 ### ⚠ BREAKING CHANGES
 
@@ -589,13 +506,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [1.31.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.30.3...v1.31.0) (2024-11-29)
 
-
 ### Features
 
 * change versioning in file ([3c165de](https://github.com/iop098321qwe/custom_bash_commands/commit/3c165deb74f2077e02aa960459d96ccc626c888f))
 
 ## [1.30.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.30.2...v1.30.3) (2024-11-29)
-
 
 ### Bug Fixes
 
@@ -607,13 +522,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [1.30.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.29.5...v1.30.0) (2024-11-29)
 
-
 ### Features
 
 * update `cc` command to be more interactive ([1612421](https://github.com/iop098321qwe/custom_bash_commands/commit/16124210f8b30dba81d5a25e73ec35a0ef7648ac))
 
 ## [1.29.5](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.29.4...v1.29.5) (2024-11-25)
-
 
 ### Bug Fixes
 
@@ -624,13 +537,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [1.29.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.29.2...v1.29.3) (2024-11-25)
 
-
 ### Bug Fixes
 
 * test release workflow ([dc8bf8a](https://github.com/iop098321qwe/custom_bash_commands/commit/dc8bf8a7aa082035c0e37251255be8c511bf0c25))
 
 ## [1.29.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.29.1...v1.29.2) (2024-11-25)
-
 
 ### Bug Fixes
 
@@ -638,13 +549,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [1.29.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.29.0...v1.29.1) (2024-11-25)
 
-
 ### Bug Fixes
 
 * **versioning:** fix version number displayed ([2f5a336](https://github.com/iop098321qwe/custom_bash_commands/commit/2f5a3361292d48f19dafd08fab869b855795a54e))
 
 ## [1.29.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.28.3...v1.29.0) (2024-11-25)
-
 
 ### Features
 
@@ -653,7 +562,6 @@ All notable changes to this project will be documented in this file. See [commit
 ## [1.28.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.28.2...v1.28.3) (2024-11-25)
 
 ## [1.28.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.28.1...v1.28.2) (2024-11-25)
-
 
 ### Bug Fixes
 
@@ -664,13 +572,11 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [1.28.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.10...v1.28.0) (2024-11-25)
 
-
 ### Features
 
 * **alias:** add `ver` and `gpfom` aliases ([a02fa00](https://github.com/iop098321qwe/custom_bash_commands/commit/a02fa00b84bab24ea07686d2d2690145d731f1da))
 
 ## [1.27.10](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.9...v1.27.10) (2024-11-25)
-
 
 ### Bug Fixes
 
@@ -683,7 +589,6 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [1.27.7](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.27.6...v1.27.7) (2024-11-25)
 
-
 ### Bug Fixes
 
 * increment the version number that displays terminal ([6c2bd9b](https://github.com/iop098321qwe/custom_bash_commands/commit/6c2bd9b8b495bb17b359ce7e831fd0f6ae47ae0d))
@@ -694,20 +599,17 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [1.1.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v1.1.0...v1.1.1) (2024-11-25)
 
-
 ### Bug Fixes
 
 * correct tag versioning number ([74a8178](https://github.com/iop098321qwe/custom_bash_commands/commit/74a817823cbdce2f4301629360c65c3379eb2814))
 
 ## [1.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/ff32c154872751254dc5ddca91009d3a6d35ca16...v1.1.0) (2024-11-25)
 
-
 ### Features
 
 * add `lar` alias ([4f21cbc](https://github.com/iop098321qwe/custom_bash_commands/commit/4f21cbc3afd0f027e9b16afb48da8b360c76d1f6))
 * add `lsr` alias ([9b6d202](https://github.com/iop098321qwe/custom_bash_commands/commit/9b6d202db1c46971109cb2f20e7ec49d7bd76896))
 * add `vault` alias ([370d683](https://github.com/iop098321qwe/custom_bash_commands/commit/370d68317802b31014138a5c07b07a2887ffea7a))
-
 
 ### Bug Fixes
 
