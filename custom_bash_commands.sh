@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.26.3"
+VERSION="2.26.4"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -363,6 +363,28 @@ sortalpha() {
   # initialize local variables
   local extension=""
   local first_letter=""
+
+  # Reset getopts index to handle multiple runs
+  OPTIND=1
+
+  # parse options using getopts
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      echo "Description: Function to sort files in the current directory alphabetically by extension"
+      echo "Usage: sortalpha [-h]"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      return 0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
 
   # HELPER: check if fzf is installed
   check_fzf_install() {
