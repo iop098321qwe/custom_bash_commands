@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.27.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.26.3...v2.27.0) (2025-01-31)
+
+
+### Features
+
+* **function:** add `-h` flag to `sortalpha` function ([13e88f8](https://github.com/iop098321qwe/custom_bash_commands/commit/13e88f80b682606fc383f264cb3ffde8705a60fa))
+
 ## [2.26.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.26.2...v2.26.3) (2025-01-30)
 
 
