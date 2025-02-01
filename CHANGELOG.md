@@ -2,7 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
-## [2.29.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.29.0...v2.29.1) (2025-02-01)
+## [2.30.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.30.0...v2.30.1) (2025-02-01)
+
+
+### Bug Fixes
+
+* **versioning:** fix versioning again ([cb94816](https://github.com/iop098321qwe/custom_bash_commands/commit/cb94816cb9136f5f46c474b9be3891c0d96c2845))
+
+## [2.30.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.29.0...v2.30.0) (2025-02-01)
+
+
+### Features
+
+* **function:** add `testfunc` function ([4884b04](https://github.com/iop098321qwe/custom_bash_commands/commit/4884b04929960e496409194f419e9416df8ebd02))
+
+
+### Bug Fixes
+
+* **versioning:** version number bump ([9832138](https://github.com/iop098321qwe/custom_bash_commands/commit/9832138fad4f7e58dfb29f34d84f55fa3c0bfffa))
 
 ## [2.29.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.28.3...v2.29.0) (2025-02-01)
 
