@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.28.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.27.1...v2.28.0) (2025-02-01)
+
+
+### Features
+
+* **function:** update the wording of messages in `sortalpha` ([2bfee97](https://github.com/iop098321qwe/custom_bash_commands/commit/2bfee972c9fc0046ccd1ff34bb09e0cce4ce5431))
+
+
+### Bug Fixes
+
+* **versioning:** fix version number again ([e13c157](https://github.com/iop098321qwe/custom_bash_commands/commit/e13c1579d4b614c47b1cb5167abb29d5a9b74a16))
+
 ## [2.27.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.27.0...v2.27.1) (2025-01-31)
 
 
