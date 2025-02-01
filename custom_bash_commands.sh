@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.29.1"
+VERSION="2.30.0"
 
 testfunc() {
   echo "This is a test function."
