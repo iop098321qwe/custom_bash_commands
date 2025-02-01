@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.29.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.29.0...v2.29.1) (2025-02-01)
+
+## [2.29.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.28.3...v2.29.0) (2025-02-01)
+
+
+### Features
+
+* **function:** add better help flags to functions using getopts ([4b4ef5a](https://github.com/iop098321qwe/custom_bash_commands/commit/4b4ef5aed489641d29575d0eb1aae99afdf0b0c4))
+
 ## [2.28.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.28.2...v2.28.3) (2025-02-01)
 
 
