@@ -411,7 +411,7 @@ sortalpha() {
     check_ext || return 1
 
     # display a message to the user for the extension to sort files by
-    echo -e "\nSorting files by extension: $extension"
+    echo -e "\nSorting files by the following extension: $extension"
   }
 
   # HELPER: iterate through each file in the current directory and move to a new directory based on the first letter of the file
