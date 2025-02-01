@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.28.3"
+VERSION="2.29.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2923,13 +2923,26 @@ remove_neofetch_config() {
 
 # Create odt command to create a .odt file in the current directory and open it
 odt() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: A function to create a .odt file in the current directory and open it"
-    echo "Usage: odt [filename]"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
+  # Use getopts to handle Options
+  OPTIND=1
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      echo "Description: A function to create a .odt file in the current directory and open it"
+      echo "Usage: odt [filename]"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
   touch "$1.odt"
   libreoffice "$1.odt"
 }
@@ -2950,13 +2963,26 @@ odt() {
 
 # Create ods command to create a .ods file in the current directory and open it
 ods() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: A function to create a .ods file in the current directory and open it"
-    echo "Usage: ods [filename]"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
+  # Use getopts to handle Options
+  OPTIND=1
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      echo "Description: A function to create a .ods file in the current directory and open it"
+      echo "Usage: ods [filename]"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
   touch "$1.ods"
   libreoffice "$1.ods"
 }
