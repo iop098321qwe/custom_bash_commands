@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.30.0"
+VERSION="2.31.0"
 
 testfunc() {
   echo "This is a test function."
@@ -3202,7 +3202,7 @@ display_info() {
 }
 
 ################################################################################
-# UPDATE CBC COMMANDS COMMAND
+# UPDATECBC
 ################################################################################
 
 # Create a function to update the custom bash commands script and display the version number
@@ -3215,13 +3215,27 @@ display_info() {
 
 # Create a function to update the custom bash commands script and display the version number
 updatecbc() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: A function to update the custom bash commands"
-    echo "Usage: updatecbc"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
+  # Initialize OPTIND to 1 since it is a global variable within the script
+  OPTIND=1
+
+  # Parse options using getopts
+  while getopts ":h" opt; do
+    case ${opt} in
+    h)
+      echo "Description: A function to update the custom bash commands"
+      echo "Usage: updatecbc"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
   # Temporary directory for sparse checkout
   SPARSE_DIR=$(mktemp -d)
 
@@ -3232,6 +3246,7 @@ updatecbc() {
   FILE_PATHS=(
     custom_bash_commands.sh
     .version
+    cbc_aliases.sh
   )
 
   # Initialize an empty git repository and configure for sparse checkout
@@ -3242,7 +3257,7 @@ updatecbc() {
 
   # Add each file path to the sparse checkout configuration
   for path in "${FILE_PATHS[@]}"; do
-    echo $path >>.git/info/sparse-checkout
+    echo "$path" >>.git/info/sparse-checkout
   done
 
   # Fetch only the desired files from the main branch
@@ -3251,19 +3266,19 @@ updatecbc() {
   # Move the fetched files to the target directory
   for path in "${FILE_PATHS[@]}"; do
     # Determine the new filename with '.' prefix (if not already prefixed)
-    new_filename="$(basename $path)"
+    new_filename="$(basename "$path")"
     if [[ $new_filename != .* ]]; then
       new_filename=".$new_filename"
     fi
 
     # Copy the file to the home directory with the new filename
-    cp $SPARSE_DIR/$path ~/$new_filename
+    cp "$SPARSE_DIR"/"$path" ~/"$new_filename"
     echo "Copied $path to $new_filename"
   done
 
   # Clean up
-  rm -rf $SPARSE_DIR
-  cd ~
+  rm -rf "$SPARSE_DIR"
+  cd ~ || return
   clear
 
   # Source the updated commands
@@ -3309,130 +3324,10 @@ mvfiles() {
 }
 
 ###################################################################################################################################################################
-# DECLARED ALIASES
+# SOURCE ALIAS FILE
 ###################################################################################################################################################################
 
-# Direct alias declarations
-alias back='cd .. && ls'
-alias bat='batcat'
-alias batch_open='file=$(cat _master_batch.txt | fzf --prompt="Select a file: "); while IFS= read -r line; do xdg-open "$line"; done < "$file"'
-alias bo='batch_open'
-alias cbcc='cdgh && cd custom_bash_commands && ls && dv && cc'
-alias cbc='cdgh && cd custom_bash_commands && ls'
-alias c='clear && di'
-alias cdgh='cd ~/Documents/github_repositories && ls'
-alias ch='chezmoi'
-alias chup='chezmoi update'
-alias cla='clear && di && la'
-alias cls='clear && di && ls'
-alias commands='cbcs | batcat'
-alias commandsmore='cbcs -h | batcat'
-alias comm='commands'
-alias commm='commandsmore'
-alias cp='cp -i'
-alias di='display_info'
-alias dl='downloads'
-alias docs='cd ~/Documents && ls'
-alias downloads='cd ~/Downloads && ls'
-alias dv='display_version'
-alias editbash='$EDITOR ~/.bashrc'
-alias ext='extract'
-alias fcome='fcomexact'
-alias fcom='eval "$(compgen -c | fzf)"'
-alias fcomexact='eval "$(compgen -c | fzf -e)"'
-alias fhelpe='fhelpexact'
-alias fhelp='eval "$(compgen -c | fzf)" -h'
-alias fhelpexact='eval "$(compgen -c | fzf -e)" -h'
-alias fh='filehash'
-alias fman='compgen -c | fzf | xargs man'
-alias fobs='fobsidian'
-alias fobsidian='find ~/Documents/grymms_grimoires -type f | fzf | xargs -I {} obsidian "obsidian://open?vault=$(basename ~/Documents/grymms_grimoires)&file={}"'
-alias foe='fopenexact'
-alias fo='fopen'
-alias fopenexact='fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
-alias fopen='fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
-alias fzf='fzf -m'
-alias gb='git branch'
-alias gco='git checkout'
-alias gcom='git checkout main'
-alias gcomm='git commit'
-alias ga='git add'
-alias gaa='git add .'
-alias gpsh='git push'
-alias gpll='git pull'
-alias gpfom='git push --follow-tags origin main'
-alias gs='git status'
-alias gsw='git switch'
-alias gswm='git switch main'
-alias gswt='git switch test'
-alias historysearchexact='history | sort -nr | fzf -m -e --query="$1" --no-sort --preview="echo {}" --preview-window=down:20%:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
-alias historysearch='history | sort -nr | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=down:20%:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
-alias home='cd ~ && ls'
-alias hsearch='historysearch'
-alias hse='historysearchexact'
-alias hs='historysearch'
-alias i='sudo apt install'
-alias iopen='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" \) | fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
-alias iopenexact='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" \) | fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
-alias io='iopen'
-alias ioe='iopenexact'
-alias la="eza --group-directories-first -a"
-alias lar="eza -r --group-directories-first -a"
-alias le="eza --group-directories-first -s extension"
-alias ll="eza --group-directories-first --smart-group --total-size -hl"
-alias llt="eza --group-directories-first --smart-group --total-size -hlT"
-alias lsd="eza --group-directories-first -D"
-alias ls="eza --group-directories-first"
-alias lsf="eza --group-directories-first -f"
-alias lsr="eza --group-directories-first -r"
-alias lt="eza --group-directories-first -T"
-alias lg='lazygit'
-alias ln='ln -i'
-alias man='sudo man'
-alias mopen='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
-alias mopenexact='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
-alias mo='mopen'
-alias moe='mopenexact'
-alias mv='mv -i'
-alias myip='curl http://ipecho.net/plain; echo'
-alias pron='fzf --multi=1 < _master_batch.txt | xargs -I {} yt-dlp --config-locations _configs.txt --batch-file {}'
-alias pronfile='cd /media/$USER/T7 Shield/yt-dlp'
-alias pronupdate='pronfile && pron || pron'
-alias pu='pronupdate'
-alias py='python3'
-alias python='python3'
-alias racc='remove_all_cbc_configs'
-alias rdvc='remove_display_version_config'
-alias refresh='source ~/.bashrc && clear && di'
-alias rfc='remove_figlet_config'
-alias rh='regex_help'
-alias rma='rm -rfI'
-alias rm='rm -I'
-alias rnc='remove_neofetch_config'
-alias rsc='remove_session_id_config'
-alias seebash='batcat ~/.bashrc'
-alias sa='sortalpha'
-alias s='sudo'
-alias so='sopen'
-alias soe='sopenexact'
-alias temp='cd ~/Documents/Temporary && ls'
-alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh'
-alias ucbc='updatecbc'
-alias update_master_list='cat _master_batch.txt | xargs -I {} cat {} | sort -u > _temp_master_list.txt && mv _temp_master_list.txt _master_list.txt && batcat _master_list.txt'
-alias uml='update_master_list'
-alias vault='cd ~/Documents/grymms_grimoires && ls'
-alias ver='npx commit-and-tag-version'
-alias verg='ver && gpfom && printf "\n Run gh cr to create a release\n"'
-alias vim='nvim'
-alias v='nvim'
-alias vopen='find . -type f \( -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
-alias vopenexact='find . -type f \( -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
-alias vo='vopen'
-alias voe='vopenexact'
-alias x='chmod +x'
-alias z='zellij'
-alias ':wq'='exit'
-alias ':q'='exit'
+source ./cbc_aliases.sh
 
 ###################################################################################################################################################################
 
