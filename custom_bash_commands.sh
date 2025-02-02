@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="2.31.0-testing"
+VERSION="2.31.0"
 
 testfunc() {
   echo "This is a test function."
@@ -3257,7 +3257,7 @@ updatecbc() {
 
   # Add each file path to the sparse checkout configuration
   for path in "${FILE_PATHS[@]}"; do
-    echo $path >>.git/info/sparse-checkout
+    echo "$path" >>.git/info/sparse-checkout
   done
 
   # Fetch only the desired files from the main branch
@@ -3266,19 +3266,19 @@ updatecbc() {
   # Move the fetched files to the target directory
   for path in "${FILE_PATHS[@]}"; do
     # Determine the new filename with '.' prefix (if not already prefixed)
-    new_filename="$(basename $path)"
+    new_filename="$(basename "$path")"
     if [[ $new_filename != .* ]]; then
       new_filename=".$new_filename"
     fi
 
     # Copy the file to the home directory with the new filename
-    cp $SPARSE_DIR/$path ~/$new_filename
+    cp "$SPARSE_DIR"/"$path" ~/"$new_filename"
     echo "Copied $path to $new_filename"
   done
 
   # Clean up
-  rm -rf $SPARSE_DIR
-  cd ~
+  rm -rf "$SPARSE_DIR"
+  cd ~ || return
   clear
 
   # Source the updated commands
