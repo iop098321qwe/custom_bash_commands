@@ -3246,6 +3246,7 @@ updatecbc() {
   FILE_PATHS=(
     custom_bash_commands.sh
     .version
+    cbc_aliases.sh
   )
 
   # Initialize an empty git repository and configure for sparse checkout
