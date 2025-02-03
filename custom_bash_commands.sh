@@ -1,6 +1,385 @@
 #!/usr/bin/env bash
 VERSION="2.31.1"
 
+################################################################################################################################################################
+# PRON MODULE
+################################################################################################################################################################
+
+################################################################################
+# PHSEARCH
+################################################################################
+
+# phsearch
+# Description: Prompts the user for a search term, constructs a search URL, and opens it
+# Usage: phsearch
+# Options:
+#   -h    Display this help message
+
+# Example: phsearch
+# Enter search term: funny cats
+# Opens: https://www.example.com/video/search?search=funny+cats
+
+################################################################################
+# Function to prompt for a search term, construct a URL, and open it in the default browser
+phsearch() {
+  OPTIND=1 # Reset getopts index to handle multiple runs
+
+  # Function to display help
+  usage() {
+    cat <<EOF
+Usage: phsearch [-h]
+Options:
+  -h    Display this help message
+Description:
+  Prompts the user for a search term, constructs a search URL, and opens it.
+EOF
+  }
+
+  # Parse options
+  while getopts "h" opt; do
+    case "$opt" in
+    h)
+      usage
+      return 0
+      ;;
+    *)
+      usage
+      return 1
+      ;;
+    esac
+  done
+  shift $((OPTIND - 1))
+
+  # Prompt user for a search term
+  read -p "Enter search term: " search_term
+
+  # Replace spaces in the search term with '+' using parameter expansion
+  formatted_term=${search_term// /+}
+
+  # Construct the search URL
+  search_url="https://www.pornhub.com/video/search?search=${formatted_term}"
+
+  # Open the URL in the default browser using nohup and xdg-open
+  nohup xdg-open "$search_url" >/dev/null 2>&1 &
+}
+
+################################################################################
+# PRONLIST
+################################################################################
+
+# pronlist
+# Description: Function to process URLs listed in _batch.txt and download files
+#              using yt-dlp with a specified configuration file. The titles of
+#              the downloaded files are saved to individual output files.
+# Usage: pronlist [-h] [-l line_number]
+# Options:
+#   -h    Show this help message and exit
+#   -l    Process a specific line number from _batch.txt
+#
+# Example: pronlist
+#          pronlist -l 3
+#
+# Requires:
+#   - _batch.txt: File containing URLs (one per line)
+#   - _configs.txt: yt-dlp configuration file
+################################################################################
+
+# Function to generate a list of what each url downloads using yt-dlp
+pronlist() {
+  # Function to display usage information for the script
+  usage() {
+    cat <<EOF
+Usage: pronlist [-h] [-l]
+
+Options:
+  -h    Show this help message and exit
+  -l    Select and process a specific line from the selected .txt file
+
+Description:
+  Processes each URL in the selected .txt file and uses yt-dlp with the _configs.txt
+  configuration file to generate a sanitized output file listing the downloaded titles.
+EOF
+  }
+
+  # Function to check the presence of the configuration file
+  check_config_file() {
+    if [ ! -f "_configs.txt" ]; then
+      echo "Error: _configs.txt not found in the current directory."
+      return 1
+    fi
+  }
+
+  # Function to display a selection menu for batch files using fzf
+  select_batch_file() {
+    local selected_file
+    selected_file=$(find . -maxdepth 1 -name "*.txt" 2>/dev/null | fzf --prompt="Select a batch file: ")
+
+    if [ -z "$selected_file" ]; then
+      echo "Error: No file selected."
+      return 1
+    fi
+
+    echo "${selected_file#./}"
+  }
+
+  # Function to reset variables for clean execution
+  reset_variables() {
+    OPTIND=1                 # Reset option index for getopts parsing
+    line=""                  # Reset the line content
+    output_file=""           # Reset the output file name
+    batch_file=""            # Reset the batch file name
+    use_line_selection=false # Reset the line selection flag
+  }
+
+  # Function to prompt user whether to overwrite an existing file
+  prompt_overwrite() {
+    local file="$1"
+    read -p "File '$file' already exists. Overwrite? (y/N): " choice
+    case "$choice" in
+    [Yy]*)
+      return 0 # User chose to overwrite
+      ;;
+    *)
+      echo "Skipping existing file: $file"
+      return 1 # User declined overwrite
+      ;;
+    esac
+  }
+
+  # Reset variables at the start
+  reset_variables
+
+  # Parse command-line options using getopts
+  while getopts "hl" opt; do
+    case "$opt" in
+    h)
+      usage # Display usage information
+      return 0
+      ;;
+    l)
+      use_line_selection=true # Indicate that fzf should be used to select a line
+      ;;
+    ?)
+      echo "Invalid option: -$OPTARG" >&2
+      usage
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1)) # Shift parsed options to access remaining arguments
+
+  # Prompt the user to select a batch file
+  batch_file=$(select_batch_file) || return 1
+
+  # Check if the configuration file exists
+  check_config_file || return 1
+
+  # If the -l flag is provided, select a specific line using fzf
+  if [ "$use_line_selection" = true ]; then
+    line=$(cat "$batch_file" | fzf --prompt="Select a URL line: ")
+    if [ -z "$line" ]; then
+      echo "Error: No URL selected."
+      return 1
+    fi
+
+    # Generate a sanitized filename based on the URL
+    output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
+
+    # Check if the output file exists and prompt for overwrite
+    if [ -f "$output_file" ]; then
+      prompt_overwrite "$output_file" || return 0
+    fi
+
+    echo " "
+    echo "################################################################################"
+    echo "Processing selected URL: $line"
+    echo "################################################################################"
+    echo " "
+
+    # Execute yt-dlp and save the output to the file
+    yt-dlp --cookies-from-browser brave -f b "$line" --print "%(title)s" | tee "$output_file"
+
+    echo " "
+    echo "Processing complete."
+    reset_variables # Reset variables after processing
+    return 0
+  fi
+
+  # Default behavior: Process each line in the selected batch file
+  while IFS= read -r line || [ -n "$line" ]; do
+    # Skip empty lines
+    if [ -z "$line" ]; then
+      continue
+    fi
+
+    # Generate a sanitized filename based on the URL
+    output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
+
+    # Check if the output file exists and prompt for overwrite
+    if [ -f "$output_file" ]; then
+      prompt_overwrite "$output_file" || continue
+    fi
+
+    echo " "
+    echo "################################################################################"
+    echo "Processing URL: $line"
+    echo "################################################################################"
+    echo " "
+
+    # Execute yt-dlp and save the output to the file
+    yt-dlp --cookies-from-browser brave -f b "$line" --print "%(title)s" | tee "$output_file"
+  done <"$batch_file"
+
+  echo " "
+  echo "Processing complete."
+  reset_variables # Reset variables after all lines are processed
+}
+
+################################################################################
+# sopen
+################################################################################
+
+# sopen
+# Description: Function to open .mp4 files in the current directory that match
+#              patterns generated from lines in a selected .txt file.
+# Usage: sopen
+# Options:
+
+# Example: sopen  --- Prompts for a .txt file and opens matching .mp4 files.
+
+##########
+
+# Function to open .mp4 files matching patterns from a .txt file
+sopen() {
+  # Use fzf to select a .txt file in the current directory
+  local file
+  file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf --prompt="Select a .txt file: ")
+
+  # If no file is selected, exit the function
+  [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
+
+  # Function to create a regex pattern from a line by:
+  # 1) Converting all non-alphanumeric characters to spaces
+  # 2) Replacing spaces with '.*'
+  # 3) Adding '.*' at the start and end of the pattern
+  generate_pattern() {
+    local input="$1"
+
+    # Convert all non-alphanumeric characters to spaces and normalize spaces
+    # Example: "foo/bar'baz" -> "foo bar baz"
+    local cleaned_line
+    cleaned_line=$(echo "$input" | sed 's/[^[:alnum:]]/ /g' | sed 's/[[:space:]]\+/ /g' | sed 's/^ *//;s/ *$//')
+
+    # Replace spaces with '.*'
+    # "foo bar baz" -> "foo.*bar.*baz"
+    local base_pattern
+    base_pattern=$(echo "$cleaned_line" | sed 's/[[:space:]]\+/.*/g')
+
+    # Add '.*' at the start and end of the pattern
+    # "foo.*bar.*baz" -> ".*foo.*bar.*baz.*"
+    echo ".*${base_pattern}.*"
+  }
+
+  # Read each line in the selected file
+  while IFS= read -r line; do
+    # Skip empty lines
+    [[ -z "$line" ]] && continue
+
+    # Generate a regex pattern from the cleaned line
+    local pattern
+    pattern=$(generate_pattern "$line")
+
+    # Search for .mp4 files in the current directory that match the pattern
+    local mp4_files
+    mp4_files=$(find . -maxdepth 1 -type f -name "*.mp4" -printf "%f\n" | grep -E -i "$pattern")
+
+    # If matching .mp4 files are found, open them
+    if [[ -n "$mp4_files" ]]; then
+      #echo "Opening .mp4 files matching: '$line' (Pattern: $pattern)"
+      while IFS= read -r mp4; do
+        #echo "Opening: $mp4"
+        xdg-open "./$mp4" &
+      done <<<"$mp4_files"
+    else
+      echo "No .mp4 files found matching: '$line'"
+    fi
+  done <"$file"
+}
+
+################################################################################
+# sopenexact
+################################################################################
+
+# sopenexact
+# Description: Function to open .mp4 files in the current directory that match
+#              patterns generated from lines in a selected .txt file.
+# Usage: sopenexact
+# Options:
+
+# Example: sopenexact  --- Prompts for a .txt file and opens matching .mp4 files.
+
+##########
+
+# Function to open .mp4 files matching patterns from a .txt file
+sopenexact() {
+  # Use fzf to select a .txt file in the current directory
+  local file
+  file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf -e --prompt="Select a .txt file: ")
+
+  # If no file is selected, exit the function
+  [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
+
+  # Function to create a regex pattern from a line by:
+  # 1) Converting all non-alphanumeric characters to spaces
+  # 2) Replacing spaces with '.*'
+  # 3) Adding '.*' at the start and end of the pattern
+  generate_pattern() {
+    local input="$1"
+
+    # Convert all non-alphanumeric characters to spaces and normalize spaces
+    # Example: "foo/bar'baz" -> "foo bar baz"
+    local cleaned_line
+    cleaned_line=$(echo "$input" | sed 's/[^[:alnum:]]/ /g' | sed 's/[[:space:]]\+/ /g' | sed 's/^ *//;s/ *$//')
+
+    # Replace spaces with '.*'
+    # "foo bar baz" -> "foo.*bar.*baz"
+    local base_pattern
+    base_pattern=$(echo "$cleaned_line" | sed 's/[[:space:]]\+/.*/g')
+
+    # Add '.*' at the start and end of the pattern
+    # "foo.*bar.*baz" -> ".*foo.*bar.*baz.*"
+    echo ".*${base_pattern}.*"
+  }
+
+  # Read each line in the selected file
+  while IFS= read -r line; do
+    # Skip empty lines
+    [[ -z "$line" ]] && continue
+
+    # Generate a regex pattern from the cleaned line
+    local pattern
+    pattern=$(generate_pattern "$line")
+
+    # Search for .mp4 files in the current directory that match the pattern
+    local mp4_files
+    mp4_files=$(find . -maxdepth 1 -type f -name "*.mp4" -printf "%f\n" | grep -E -i "$pattern")
+
+    # If matching .mp4 files are found, open them
+    if [[ -n "$mp4_files" ]]; then
+      #echo "Opening .mp4 files matching: '$line' (Pattern: $pattern)"
+      while IFS= read -r mp4; do
+        #echo "Opening: $mp4"
+        xdg-open "./$mp4" &
+      done <<<"$mp4_files"
+    else
+      echo "No .mp4 files found matching: '$line'"
+    fi
+  done <"$file"
+}
+
+################################################################################################################################################################
+
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
 ###################################################################################################################################################################
@@ -444,379 +823,6 @@ sortalpha() {
   # move files to new directories based on the first letter of the file
   move_files
   printf "\nNo way to undo what you have just done... Maybe use ranger and manually move back? :)\n"
-}
-
-################################################################################
-# PHSEARCH
-################################################################################
-
-# phsearch
-# Description: Prompts the user for a search term, constructs a search URL, and opens it
-# Usage: phsearch
-# Options:
-#   -h    Display this help message
-
-# Example: phsearch
-# Enter search term: funny cats
-# Opens: https://www.example.com/video/search?search=funny+cats
-
-################################################################################
-# Function to prompt for a search term, construct a URL, and open it in the default browser
-phsearch() {
-  OPTIND=1 # Reset getopts index to handle multiple runs
-
-  # Function to display help
-  usage() {
-    cat <<EOF
-Usage: phsearch [-h]
-Options:
-  -h    Display this help message
-Description:
-  Prompts the user for a search term, constructs a search URL, and opens it.
-EOF
-  }
-
-  # Parse options
-  while getopts "h" opt; do
-    case "$opt" in
-    h)
-      usage
-      return 0
-      ;;
-    *)
-      usage
-      return 1
-      ;;
-    esac
-  done
-  shift $((OPTIND - 1))
-
-  # Prompt user for a search term
-  read -p "Enter search term: " search_term
-
-  # Replace spaces in the search term with '+' using parameter expansion
-  formatted_term=${search_term// /+}
-
-  # Construct the search URL
-  search_url="https://www.pornhub.com/video/search?search=${formatted_term}"
-
-  # Open the URL in the default browser using nohup and xdg-open
-  nohup xdg-open "$search_url" >/dev/null 2>&1 &
-}
-
-################################################################################
-# PRONLIST
-################################################################################
-
-# pronlist
-# Description: Function to process URLs listed in _batch.txt and download files
-#              using yt-dlp with a specified configuration file. The titles of
-#              the downloaded files are saved to individual output files.
-# Usage: pronlist [-h] [-l line_number]
-# Options:
-#   -h    Show this help message and exit
-#   -l    Process a specific line number from _batch.txt
-#
-# Example: pronlist
-#          pronlist -l 3
-#
-# Requires:
-#   - _batch.txt: File containing URLs (one per line)
-#   - _configs.txt: yt-dlp configuration file
-################################################################################
-
-# Function to generate a list of what each url downloads using yt-dlp
-pronlist() {
-  # Function to display usage information for the script
-  usage() {
-    cat <<EOF
-Usage: pronlist [-h] [-l]
-
-Options:
-  -h    Show this help message and exit
-  -l    Select and process a specific line from the selected .txt file
-
-Description:
-  Processes each URL in the selected .txt file and uses yt-dlp with the _configs.txt
-  configuration file to generate a sanitized output file listing the downloaded titles.
-EOF
-  }
-
-  # Function to check the presence of the configuration file
-  check_config_file() {
-    if [ ! -f "_configs.txt" ]; then
-      echo "Error: _configs.txt not found in the current directory."
-      return 1
-    fi
-  }
-
-  # Function to display a selection menu for batch files using fzf
-  select_batch_file() {
-    local selected_file
-    selected_file=$(find . -maxdepth 1 -name "*.txt" 2>/dev/null | fzf --prompt="Select a batch file: ")
-
-    if [ -z "$selected_file" ]; then
-      echo "Error: No file selected."
-      return 1
-    fi
-
-    echo "${selected_file#./}"
-  }
-
-  # Function to reset variables for clean execution
-  reset_variables() {
-    OPTIND=1                 # Reset option index for getopts parsing
-    line=""                  # Reset the line content
-    output_file=""           # Reset the output file name
-    batch_file=""            # Reset the batch file name
-    use_line_selection=false # Reset the line selection flag
-  }
-
-  # Function to prompt user whether to overwrite an existing file
-  prompt_overwrite() {
-    local file="$1"
-    read -p "File '$file' already exists. Overwrite? (y/N): " choice
-    case "$choice" in
-    [Yy]*)
-      return 0 # User chose to overwrite
-      ;;
-    *)
-      echo "Skipping existing file: $file"
-      return 1 # User declined overwrite
-      ;;
-    esac
-  }
-
-  # Reset variables at the start
-  reset_variables
-
-  # Parse command-line options using getopts
-  while getopts "hl" opt; do
-    case "$opt" in
-    h)
-      usage # Display usage information
-      return 0
-      ;;
-    l)
-      use_line_selection=true # Indicate that fzf should be used to select a line
-      ;;
-    ?)
-      echo "Invalid option: -$OPTARG" >&2
-      usage
-      return 1
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1)) # Shift parsed options to access remaining arguments
-
-  # Prompt the user to select a batch file
-  batch_file=$(select_batch_file) || return 1
-
-  # Check if the configuration file exists
-  check_config_file || return 1
-
-  # If the -l flag is provided, select a specific line using fzf
-  if [ "$use_line_selection" = true ]; then
-    line=$(cat "$batch_file" | fzf --prompt="Select a URL line: ")
-    if [ -z "$line" ]; then
-      echo "Error: No URL selected."
-      return 1
-    fi
-
-    # Generate a sanitized filename based on the URL
-    output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
-
-    # Check if the output file exists and prompt for overwrite
-    if [ -f "$output_file" ]; then
-      prompt_overwrite "$output_file" || return 0
-    fi
-
-    echo " "
-    echo "################################################################################"
-    echo "Processing selected URL: $line"
-    echo "################################################################################"
-    echo " "
-
-    # Execute yt-dlp and save the output to the file
-    yt-dlp --cookies-from-browser brave -f b "$line" --print "%(title)s" | tee "$output_file"
-
-    echo " "
-    echo "Processing complete."
-    reset_variables # Reset variables after processing
-    return 0
-  fi
-
-  # Default behavior: Process each line in the selected batch file
-  while IFS= read -r line || [ -n "$line" ]; do
-    # Skip empty lines
-    if [ -z "$line" ]; then
-      continue
-    fi
-
-    # Generate a sanitized filename based on the URL
-    output_file="$(echo "$line" | sed -E 's|.*\.com||; s|[^a-zA-Z0-9]|_|g').txt"
-
-    # Check if the output file exists and prompt for overwrite
-    if [ -f "$output_file" ]; then
-      prompt_overwrite "$output_file" || continue
-    fi
-
-    echo " "
-    echo "################################################################################"
-    echo "Processing URL: $line"
-    echo "################################################################################"
-    echo " "
-
-    # Execute yt-dlp and save the output to the file
-    yt-dlp --cookies-from-browser brave -f b "$line" --print "%(title)s" | tee "$output_file"
-  done <"$batch_file"
-
-  echo " "
-  echo "Processing complete."
-  reset_variables # Reset variables after all lines are processed
-}
-
-################################################################################
-# sopen
-################################################################################
-
-# sopen
-# Description: Function to open .mp4 files in the current directory that match
-#              patterns generated from lines in a selected .txt file.
-# Usage: sopen
-# Options:
-
-# Example: sopen  --- Prompts for a .txt file and opens matching .mp4 files.
-
-##########
-
-# Function to open .mp4 files matching patterns from a .txt file
-sopen() {
-  # Use fzf to select a .txt file in the current directory
-  local file
-  file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf --prompt="Select a .txt file: ")
-
-  # If no file is selected, exit the function
-  [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
-
-  # Function to create a regex pattern from a line by:
-  # 1) Converting all non-alphanumeric characters to spaces
-  # 2) Replacing spaces with '.*'
-  # 3) Adding '.*' at the start and end of the pattern
-  generate_pattern() {
-    local input="$1"
-
-    # Convert all non-alphanumeric characters to spaces and normalize spaces
-    # Example: "foo/bar'baz" -> "foo bar baz"
-    local cleaned_line
-    cleaned_line=$(echo "$input" | sed 's/[^[:alnum:]]/ /g' | sed 's/[[:space:]]\+/ /g' | sed 's/^ *//;s/ *$//')
-
-    # Replace spaces with '.*'
-    # "foo bar baz" -> "foo.*bar.*baz"
-    local base_pattern
-    base_pattern=$(echo "$cleaned_line" | sed 's/[[:space:]]\+/.*/g')
-
-    # Add '.*' at the start and end of the pattern
-    # "foo.*bar.*baz" -> ".*foo.*bar.*baz.*"
-    echo ".*${base_pattern}.*"
-  }
-
-  # Read each line in the selected file
-  while IFS= read -r line; do
-    # Skip empty lines
-    [[ -z "$line" ]] && continue
-
-    # Generate a regex pattern from the cleaned line
-    local pattern
-    pattern=$(generate_pattern "$line")
-
-    # Search for .mp4 files in the current directory that match the pattern
-    local mp4_files
-    mp4_files=$(find . -maxdepth 1 -type f -name "*.mp4" -printf "%f\n" | grep -E -i "$pattern")
-
-    # If matching .mp4 files are found, open them
-    if [[ -n "$mp4_files" ]]; then
-      #echo "Opening .mp4 files matching: '$line' (Pattern: $pattern)"
-      while IFS= read -r mp4; do
-        #echo "Opening: $mp4"
-        xdg-open "./$mp4" &
-      done <<<"$mp4_files"
-    else
-      echo "No .mp4 files found matching: '$line'"
-    fi
-  done <"$file"
-}
-
-################################################################################
-# sopenexact
-################################################################################
-
-# sopenexact
-# Description: Function to open .mp4 files in the current directory that match
-#              patterns generated from lines in a selected .txt file.
-# Usage: sopenexact
-# Options:
-
-# Example: sopenexact  --- Prompts for a .txt file and opens matching .mp4 files.
-
-##########
-
-# Function to open .mp4 files matching patterns from a .txt file
-sopenexact() {
-  # Use fzf to select a .txt file in the current directory
-  local file
-  file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf -e --prompt="Select a .txt file: ")
-
-  # If no file is selected, exit the function
-  [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
-
-  # Function to create a regex pattern from a line by:
-  # 1) Converting all non-alphanumeric characters to spaces
-  # 2) Replacing spaces with '.*'
-  # 3) Adding '.*' at the start and end of the pattern
-  generate_pattern() {
-    local input="$1"
-
-    # Convert all non-alphanumeric characters to spaces and normalize spaces
-    # Example: "foo/bar'baz" -> "foo bar baz"
-    local cleaned_line
-    cleaned_line=$(echo "$input" | sed 's/[^[:alnum:]]/ /g' | sed 's/[[:space:]]\+/ /g' | sed 's/^ *//;s/ *$//')
-
-    # Replace spaces with '.*'
-    # "foo bar baz" -> "foo.*bar.*baz"
-    local base_pattern
-    base_pattern=$(echo "$cleaned_line" | sed 's/[[:space:]]\+/.*/g')
-
-    # Add '.*' at the start and end of the pattern
-    # "foo.*bar.*baz" -> ".*foo.*bar.*baz.*"
-    echo ".*${base_pattern}.*"
-  }
-
-  # Read each line in the selected file
-  while IFS= read -r line; do
-    # Skip empty lines
-    [[ -z "$line" ]] && continue
-
-    # Generate a regex pattern from the cleaned line
-    local pattern
-    pattern=$(generate_pattern "$line")
-
-    # Search for .mp4 files in the current directory that match the pattern
-    local mp4_files
-    mp4_files=$(find . -maxdepth 1 -type f -name "*.mp4" -printf "%f\n" | grep -E -i "$pattern")
-
-    # If matching .mp4 files are found, open them
-    if [[ -n "$mp4_files" ]]; then
-      #echo "Opening .mp4 files matching: '$line' (Pattern: $pattern)"
-      while IFS= read -r mp4; do
-        #echo "Opening: $mp4"
-        xdg-open "./$mp4" &
-      done <<<"$mp4_files"
-    else
-      echo "No .mp4 files found matching: '$line'"
-    fi
-  done <"$file"
 }
 
 ################################################################################
