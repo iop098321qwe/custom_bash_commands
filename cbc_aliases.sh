@@ -8,8 +8,6 @@
 # DECLARED ALIASES
 ###################################################################################################################################################################
 
-echo "THE ALIAS SCRIPT IS BEING SOURCED"
-
 # Direct alias declarations
 alias back='cd .. && ls'
 alias bat='batcat'
