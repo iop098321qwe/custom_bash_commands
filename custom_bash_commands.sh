@@ -743,23 +743,25 @@ EOF
 #     - alpha : Sort by the first letter of the filename.
 #     - time  : Sort by modification time (grouped by YYYY-MM).
 #     - size  : Sort by file size into categories (small, medium, large).
-#
+
 # Usage:
 #   smart_sort [-h] [-i] [-m mode]
-#
+
 # Options:
 #   -h        Display this help message.
-#   -i        Enable interactive mode using fzf for selections.
+#   -i        Enable interactive mode for selection of sorting options.
+#             When used alone, interactive mode will prompt for all options via fzf.
+#             When combined with other flags, interactive mode is disabled.
 #   -m mode   Specify sorting mode directly. Available modes:
 #               ext   - Sort by file extension.
 #               alpha - Sort by the first letter of the filename.
 #               time  - Sort by modification time (YYYY-MM).
 #               size  - Sort by file size (small, medium, large).
-#
+
 # Examples:
-#   smart_sort -m ext         # Non-interactive sort by extension (all files grouped by extension)
-#   smart_sort -i             # Interactive mode; choose sorting method from a menu
-#   smart_sort -i -m alpha    # Interactive mode with forced alpha sort (useful for confirmation prompts)
+#   smart_sort -i             # Launch interactive mode to choose sorting method.
+#   smart_sort -m ext         # Sort files by extension non-interactively.
+#   smart_sort -i -m size     # Note: Interactive mode is disabled when combined with -m flag; runs non-interactively.
 
 smart_sort() {
   # Local variables initialization
@@ -769,7 +771,7 @@ smart_sort() {
   local first_letter=""    # Holds the first letter of filenames during sorting
   local file=""            # Temporary variable for file iteration
 
-  # Reset getopts index in case the function is called multiple times
+  # Reset getopts index for multiple calls
   OPTIND=1
 
   # Parse command-line options using getopts
@@ -782,24 +784,26 @@ Description: Multifunctional interactive file sorting tool for the current direc
 Usage: smart_sort [-h] [-i] [-m mode]
 Options:
   -h        Display this help message.
-  -i        Enable interactive mode using fzf for selections.
+  -i        Enable interactive mode for selection of sorting options.
+            When used alone, interactive mode will prompt for all options via fzf.
+            When combined with other flags, interactive mode is disabled.
   -m mode   Specify sorting mode directly. Available modes:
               ext   - Sort by file extension.
               alpha - Sort by the first letter of the filename.
               time  - Sort by modification time (YYYY-MM).
               size  - Sort by file size (small, medium, large).
 Examples:
-  smart_sort -m ext         # Sort files by extension.
   smart_sort -i             # Launch interactive mode to choose sorting method.
-  smart_sort -i -m alpha    # Interactive mode with forced alphabetical sorting.
+  smart_sort -m ext         # Sort files by extension non-interactively.
+  smart_sort -i -m size     # Note: Interactive mode is disabled when combined with -m flag; runs non-interactively.
 EOF
       return 0
       ;;
     i)
-      interactive_mode=1 # Set interactive mode flag if -i is provided
+      interactive_mode=1 # Set interactive mode flag
       ;;
     m)
-      mode="$OPTARG" # Set the sorting mode based on -m argument
+      mode="$OPTARG" # Set the sorting mode
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -812,27 +816,31 @@ EOF
   shift $((OPTIND - 1))
 
   #####################################
-  # Helper Function: fzf Check
+  # Process Interactive Mode Logic
   #####################################
-  check_fzf_install() {
-    if [ "$interactive_mode" -eq 1 ]; then
+  if [ "$interactive_mode" -eq 1 ]; then
+    if [ -z "$mode" ]; then
+      # If only -i flag is provided, enforce interactive selection.
+      # Check if fzf is installed.
       if ! command -v fzf >/dev/null 2>&1; then
         echo "fzf is not installed. Please install fzf to use interactive mode."
         return 1
       fi
+      # Interactive selection for sorting mode via fzf.
+      mode=$(printf "ext\nalpha\ntime\nsize" | fzf --prompt="Select sorting mode: ")
+      # If fzf returns an empty result, exit.
+      if [ -z "$mode" ]; then
+        echo "No sorting mode selected. Exiting..."
+        return 1
+      fi
+    else
+      # If -i flag is used along with -m flag, interactive mode is disabled.
+      echo "Note: Interactive mode (-i) is ignored when combined with other flags. Running non-interactively with mode: $mode"
+      interactive_mode=0
     fi
-  }
-
-  # Verify fzf installation if interactive mode is enabled
-  check_fzf_install || return 1
-
-  #####################################
-  # Interactive Mode: Select Sorting Mode
-  #####################################
-  if [ -z "$mode" ] && [ "$interactive_mode" -eq 1 ]; then
-    mode=$(printf "ext\nalpha\ntime\nsize" | fzf --prompt="Select sorting mode: ")
   fi
 
+  # If mode is still empty in non-interactive mode, display error and exit.
   if [ -z "$mode" ]; then
     echo "No sorting mode provided. Use -m flag or -i for interactive selection."
     return 1
@@ -845,11 +853,11 @@ EOF
   # Function to sort by file extension.
   sort_by_extension() {
     if [ "$interactive_mode" -eq 1 ]; then
-      # Offer user a choice: sort a specific extension or sort all files by extension.
+      # Interactive selection: choose to sort a specific extension or all extensions.
       local choice
       choice=$(printf "Select specific extension\nSort all by extension" | fzf --prompt="Choose option for extension sorting: ")
       if [[ "$choice" == "Select specific extension" ]]; then
-        # List available file extensions in the current directory.
+        # List available file extensions interactively.
         extension=$(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u | fzf --prompt="Select an extension: ")
         if [ -z "$extension" ]; then
           echo "No extension selected. Exiting..."
@@ -862,7 +870,6 @@ EOF
         done
         echo "Files with extension .$extension have been moved to directory: $extension"
       elif [[ "$choice" == "Sort all by extension" ]]; then
-        # Process each unique extension in the current directory.
         local ext
         for ext in $(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u); do
           mkdir -p "$ext"
@@ -876,8 +883,7 @@ EOF
         return 1
       fi
     else
-      # Non-interactive mode: if an extension is pre-specified (via external variable), sort that;
-      # otherwise, sort all files grouped by extension.
+      # Non-interactive mode: sort based on provided extension if set, or sort all by extension.
       if [ -n "$extension" ]; then
         mkdir -p "$extension"
         for file in *."$extension"; do
@@ -977,7 +983,6 @@ EOF
   echo "Sorting operation completed successfully."
 }
 
-# End of smart_sort function.
 ################################################################################
 # RANDOM
 ################################################################################
