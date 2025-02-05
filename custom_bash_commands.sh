@@ -775,7 +775,7 @@ smart_sort() {
   OPTIND=1
 
   # Parse command-line options using getopts
-  while getopts ":hmi:" opt; do
+  while getopts ":hmi" opt; do
     case $opt in
     h)
       # Display help message
