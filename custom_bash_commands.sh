@@ -775,7 +775,7 @@ smart_sort() {
   OPTIND=1
 
   # Parse command-line options using getopts
-  while getopts ":hmi" opt; do
+  while getopts ":hm:i" opt; do
     case $opt in
     h)
       # Display help message
@@ -795,7 +795,7 @@ Options:
 Examples:
   smart_sort -i             # Launch interactive mode to choose sorting method.
   smart_sort -m ext         # Sort files by extension non-interactively.
-  smart_sort -i -m size     # Note: Interactive mode is disabled when combined with -m flag; runs non-interactively.
+  smart_sort -i -m size     # NOTE: Interactive mode is disabled when combined with -m flag; runs non-interactively.
 EOF
       return 0
       ;;
@@ -809,11 +809,23 @@ EOF
       echo "Invalid option: -$OPTARG" >&2
       return 1
       ;;
+    :)
+      echo -e "Option -$OPTARG requires an argument you" "\033[031mSTUPID FUCK!\033[0m" >&2
+      return 1
+      ;;
     esac
   done
 
   # Remove processed options from the positional parameters
   shift $((OPTIND - 1))
+
+  #####################################
+  # Default Behavior: Sort by Extension
+  #####################################
+
+  if [ -z "$mode" ] && [ "$interactive_mode" -eq 0 ]; then
+    mode="ext"
+  fi
 
   #####################################
   # Process Interactive Mode Logic
@@ -852,54 +864,35 @@ EOF
 
   # Function to sort by file extension.
   sort_by_extension() {
-    if [ "$interactive_mode" -eq 1 ]; then
-      # Interactive selection: choose to sort a specific extension or all extensions.
-      local choice
-      choice=$(printf "Select specific extension\nSort all by extension" | fzf --prompt="Choose option for extension sorting: ")
-      if [[ "$choice" == "Select specific extension" ]]; then
-        # List available file extensions interactively.
-        extension=$(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u | fzf --prompt="Select an extension: ")
-        if [ -z "$extension" ]; then
-          echo "No extension selected. Exiting..."
-          return 1
-        fi
-        echo -e "\nSorting files with extension: .$extension"
-        mkdir -p "$extension"
-        for file in *."$extension"; do
-          [ -f "$file" ] && mv "$file" "$extension"/ # Move each matching file
-        done
-        echo "Files with extension .$extension have been moved to directory: $extension"
-      elif [[ "$choice" == "Sort all by extension" ]]; then
-        local ext
-        for ext in $(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u); do
-          mkdir -p "$ext"
-          for file in *."$ext"; do
-            [ -f "$file" ] && mv "$file" "$ext"/
-          done
-          echo "Files with extension .$ext have been moved to directory: $ext"
-        done
-      else
-        echo "Invalid selection."
+    # Interactive selection: choose to sort a specific extension or all extensions.
+    local choice
+    choice=$(printf "Select specific extension\nSort all by extension" | fzf --prompt="Choose option for extension sorting: ")
+    if [[ "$choice" == "Select specific extension" ]]; then
+      # List available file extensions interactively.
+      # TODO: Set up multi select for extensions to allow selective sorting
+      extension=$(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u | fzf --no-multi --prompt="Select an extension: ")
+      if [ -z "$extension" ]; then
+        echo "No extension selected. Exiting..."
         return 1
       fi
+      echo -e "\nSorting files with extension: .$extension"
+      mkdir -p "$extension"
+      for file in *."$extension"; do
+        [ -f "$file" ] && mv "$file" "$extension"/ # Move each matching file
+      done
+      echo "Files with extension .$extension have been moved to directory: $extension"
+    elif [[ "$choice" == "Sort all by extension" ]]; then
+      local ext
+      for ext in $(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u); do
+        mkdir -p "$ext"
+        for file in *."$ext"; do
+          [ -f "$file" ] && mv "$file" "$ext"/
+        done
+        echo "Files with extension .$ext have been moved to directory: $ext"
+      done
     else
-      # Non-interactive mode: sort based on provided extension if set, or sort all by extension.
-      if [ -n "$extension" ]; then
-        mkdir -p "$extension"
-        for file in *."$extension"; do
-          [ -f "$file" ] && mv "$file" "$extension"/
-        done
-        echo "Files with extension .$extension have been moved to directory: $extension"
-      else
-        local ext
-        for ext in $(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u); do
-          mkdir -p "$ext"
-          for file in *."$ext"; do
-            [ -f "$file" ] && mv "$file" "$ext"/
-          done
-          echo "Files with extension .$ext have been moved to directory: $ext"
-        done
-      fi
+      echo "Invalid selection."
+      return 1
     fi
   }
 
@@ -1055,7 +1048,6 @@ EOF
 # SORTALPHA
 ################################################################################
 
-# TODO: Add comments and -h flag for clarity in the function
 sortalpha() {
   # initialize local variables
   local extension=""
