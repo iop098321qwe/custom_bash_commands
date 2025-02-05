@@ -803,7 +803,6 @@ EOF
 # SORTALPHA
 ################################################################################
 
-# TODO: Add comments and -h flag for clarity in the function
 sortalpha() {
   # initialize local variables
   local extension=""
@@ -816,10 +815,11 @@ sortalpha() {
   while getopts ":h" opt; do
     case $opt in
     h)
-      echo "Description: Function to sort files in the current directory alphabetically by extension"
+      echo "Description: Interactive function to sort files in the current directory alphabetically by extension"
       echo "Usage: sortalpha [-h]"
       echo "Options:"
       echo "  -h    Display this help message"
+      echo "Example: sortalpha"
       return 0
       ;;
     \?)
