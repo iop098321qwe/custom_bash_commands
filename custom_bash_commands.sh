@@ -622,7 +622,6 @@ append_to_bashrc
 
 # Example: repeat 4 echo "hello"
 
-################################################################################
 # Function to repeat a command any given number of times
 repeat() {
   OPTIND=1        # Reset getopts index to handle multiple runs
@@ -731,6 +730,254 @@ EOF
   done
 }
 
+################################################################################
+# SMART_SORT
+################################################################################
+
+# smart_sort: A multifunctional interactive file sorting tool for the current directory.
+
+# Description:
+#   This function sorts files in the current directory based on different criteria.
+#   Available sorting modes are:
+#     - ext   : Sort by file extension.
+#     - alpha : Sort by the first letter of the filename.
+#     - time  : Sort by modification time (grouped by YYYY-MM).
+#     - size  : Sort by file size into categories (small, medium, large).
+#
+# Usage:
+#   smart_sort [-h] [-i] [-m mode]
+#
+# Options:
+#   -h        Display this help message.
+#   -i        Enable interactive mode using fzf for selections.
+#   -m mode   Specify sorting mode directly. Available modes:
+#               ext   - Sort by file extension.
+#               alpha - Sort by the first letter of the filename.
+#               time  - Sort by modification time (YYYY-MM).
+#               size  - Sort by file size (small, medium, large).
+#
+# Examples:
+#   smart_sort -m ext         # Non-interactive sort by extension (all files grouped by extension)
+#   smart_sort -i             # Interactive mode; choose sorting method from a menu
+#   smart_sort -i -m alpha    # Interactive mode with forced alpha sort (useful for confirmation prompts)
+
+smart_sort() {
+  # Local variables initialization
+  local mode=""            # Sorting mode (ext, alpha, time, size)
+  local interactive_mode=0 # Flag for interactive mode (0: off, 1: on)
+  local extension=""       # Holds a specific extension if selected
+  local first_letter=""    # Holds the first letter of filenames during sorting
+  local file=""            # Temporary variable for file iteration
+
+  # Reset getopts index in case the function is called multiple times
+  OPTIND=1
+
+  # Parse command-line options using getopts
+  while getopts ":hmi:" opt; do
+    case $opt in
+    h)
+      # Display help message
+      cat <<'EOF'
+Description: Multifunctional interactive file sorting tool for the current directory.
+Usage: smart_sort [-h] [-i] [-m mode]
+Options:
+  -h        Display this help message.
+  -i        Enable interactive mode using fzf for selections.
+  -m mode   Specify sorting mode directly. Available modes:
+              ext   - Sort by file extension.
+              alpha - Sort by the first letter of the filename.
+              time  - Sort by modification time (YYYY-MM).
+              size  - Sort by file size (small, medium, large).
+Examples:
+  smart_sort -m ext         # Sort files by extension.
+  smart_sort -i             # Launch interactive mode to choose sorting method.
+  smart_sort -i -m alpha    # Interactive mode with forced alphabetical sorting.
+EOF
+      return 0
+      ;;
+    i)
+      interactive_mode=1 # Set interactive mode flag if -i is provided
+      ;;
+    m)
+      mode="$OPTARG" # Set the sorting mode based on -m argument
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  # Remove processed options from the positional parameters
+  shift $((OPTIND - 1))
+
+  #####################################
+  # Helper Function: fzf Check
+  #####################################
+  check_fzf_install() {
+    if [ "$interactive_mode" -eq 1 ]; then
+      if ! command -v fzf >/dev/null 2>&1; then
+        echo "fzf is not installed. Please install fzf to use interactive mode."
+        return 1
+      fi
+    fi
+  }
+
+  # Verify fzf installation if interactive mode is enabled
+  check_fzf_install || return 1
+
+  #####################################
+  # Interactive Mode: Select Sorting Mode
+  #####################################
+  if [ -z "$mode" ] && [ "$interactive_mode" -eq 1 ]; then
+    mode=$(printf "ext\nalpha\ntime\nsize" | fzf --prompt="Select sorting mode: ")
+  fi
+
+  if [ -z "$mode" ]; then
+    echo "No sorting mode provided. Use -m flag or -i for interactive selection."
+    return 1
+  fi
+
+  #####################################
+  # Sorting Mode Functions
+  #####################################
+
+  # Function to sort by file extension.
+  sort_by_extension() {
+    if [ "$interactive_mode" -eq 1 ]; then
+      # Offer user a choice: sort a specific extension or sort all files by extension.
+      local choice
+      choice=$(printf "Select specific extension\nSort all by extension" | fzf --prompt="Choose option for extension sorting: ")
+      if [[ "$choice" == "Select specific extension" ]]; then
+        # List available file extensions in the current directory.
+        extension=$(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u | fzf --prompt="Select an extension: ")
+        if [ -z "$extension" ]; then
+          echo "No extension selected. Exiting..."
+          return 1
+        fi
+        echo -e "\nSorting files with extension: .$extension"
+        mkdir -p "$extension"
+        for file in *."$extension"; do
+          [ -f "$file" ] && mv "$file" "$extension"/ # Move each matching file
+        done
+        echo "Files with extension .$extension have been moved to directory: $extension"
+      elif [[ "$choice" == "Sort all by extension" ]]; then
+        # Process each unique extension in the current directory.
+        local ext
+        for ext in $(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u); do
+          mkdir -p "$ext"
+          for file in *."$ext"; do
+            [ -f "$file" ] && mv "$file" "$ext"/
+          done
+          echo "Files with extension .$ext have been moved to directory: $ext"
+        done
+      else
+        echo "Invalid selection."
+        return 1
+      fi
+    else
+      # Non-interactive mode: if an extension is pre-specified (via external variable), sort that;
+      # otherwise, sort all files grouped by extension.
+      if [ -n "$extension" ]; then
+        mkdir -p "$extension"
+        for file in *."$extension"; do
+          [ -f "$file" ] && mv "$file" "$extension"/
+        done
+        echo "Files with extension .$extension have been moved to directory: $extension"
+      else
+        local ext
+        for ext in $(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u); do
+          mkdir -p "$ext"
+          for file in *."$ext"; do
+            [ -f "$file" ] && mv "$file" "$ext"/
+          done
+          echo "Files with extension .$ext have been moved to directory: $ext"
+        done
+      fi
+    fi
+  }
+
+  # Function to sort files alphabetically by the first letter of the filename.
+  sort_by_alpha() {
+    echo "Sorting files alphabetically by the first letter..."
+    for file in *; do
+      if [ -f "$file" ]; then
+        # Extract the first letter and convert it to lowercase.
+        first_letter=$(echo "$file" | cut -c1 | tr '[:upper:]' '[:lower:]')
+        mkdir -p "$first_letter"
+        mv "$file" "$first_letter"/
+      fi
+    done
+    echo "Files have been sorted into directories based on the first letter."
+  }
+
+  # Function to sort files by modification time (grouped by year-month).
+  sort_by_time() {
+    echo "Sorting files by modification time (grouped as YYYY-MM)..."
+    for file in *; do
+      if [ -f "$file" ]; then
+        # Retrieve the file's modification date in YYYY-MM format.
+        local mod_date
+        mod_date=$(date -r "$file" +"%Y-%m")
+        mkdir -p "$mod_date"
+        mv "$file" "$mod_date"/
+      fi
+    done
+    echo "Files have been sorted into directories based on modification date."
+  }
+
+  # Function to sort files by file size into categories:
+  #   - small:  < 1MB
+  #   - medium: 1MB to 10MB
+  #   - large:  > 10MB
+  sort_by_size() {
+    echo "Sorting files by size into categories: small (<1MB), medium (1MB-10MB), large (>10MB)..."
+    for file in *; do
+      if [ -f "$file" ]; then
+        # Get the file size in bytes.
+        local size
+        size=$(stat -c%s "$file")
+        local category=""
+        if [ "$size" -lt 1048576 ]; then
+          category="small"
+        elif [ "$size" -lt 10485760 ]; then
+          category="medium"
+        else
+          category="large"
+        fi
+        mkdir -p "$category"
+        mv "$file" "$category"/
+      fi
+    done
+    echo "Files have been sorted into size categories: small, medium, and large."
+  }
+
+  #####################################
+  # Main Logic: Execute Selected Sorting Mode
+  #####################################
+  case "$mode" in
+  ext)
+    sort_by_extension || return 1
+    ;;
+  alpha)
+    sort_by_alpha || return 1
+    ;;
+  time)
+    sort_by_time || return 1
+    ;;
+  size)
+    sort_by_size || return 1
+    ;;
+  *)
+    echo "Invalid sorting mode: $mode"
+    return 1
+    ;;
+  esac
+
+  echo "Sorting operation completed successfully."
+}
+
+# End of smart_sort function.
 ################################################################################
 # RANDOM
 ################################################################################
