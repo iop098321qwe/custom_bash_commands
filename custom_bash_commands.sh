@@ -824,7 +824,6 @@ EOF
   #####################################
   # Default Behavior: Sort by Extension
   #####################################
-
   if [ -z "$mode" ] && [ "$interactive_mode" -eq 0 ]; then
     mode="ext"
   fi
@@ -858,6 +857,25 @@ EOF
   if [ -z "$mode" ]; then
     echo "No sorting mode provided. Use -m flag or -i for interactive selection."
     return 1
+  fi
+
+  #####################################
+  # Confirmation prompt before executing sorting
+  #####################################
+  echo "You have selected the following options:"
+  echo "  Sorting Mode    : $mode"
+  if [ "$interactive_mode" -eq 1 ]; then
+    echo "  Interactive Mode: Enabled"
+  else
+    echo "  Interactive Mode: Disabled"
+  fi
+
+  # Prompt for confirmation with a default of 'n' (cancel)
+  read -r -p "Proceed with sorting? (y/N): " confirm
+  confirm=${confirm:-n}
+  if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+    echo "Sorting operation canceled."
+    return 0
   fi
 
   #####################################
@@ -927,6 +945,8 @@ EOF
     echo "Files have been sorted into directories based on modification date."
   }
 
+  # TODO: Implement selecting the size categories interactively, and defaulting to the current implementation.
+  #
   # Function to sort files by file size into categories:
   #   - small:  < 1MB
   #   - medium: 1MB to 10MB
@@ -976,6 +996,7 @@ EOF
   esac
 
   echo "Sorting operation completed successfully."
+  echo "There is no way to undo what you just did. Stay tuned for possible undo in the future."
 }
 
 ################################################################################
