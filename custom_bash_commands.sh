@@ -930,6 +930,8 @@ EOF
     echo "Files have been sorted into directories based on the first letter."
   }
 
+  # TODO: Implement selecting the time format/grouping interactively, and default to the current implementation. (Using fzf)
+  #
   # Function to sort files by modification time (grouped by year-month).
   sort_by_time() {
     echo "Sorting files by modification time (grouped as YYYY-MM)..."
@@ -945,7 +947,7 @@ EOF
     echo "Files have been sorted into directories based on modification date."
   }
 
-  # TODO: Implement selecting the size categories interactively, and defaulting to the current implementation.
+  # TODO: Implement selecting the size categories interactively, and defaulting to the current implementation. (Using fzf)
   #
   # Function to sort files by file size into categories:
   #   - small:  < 1MB
