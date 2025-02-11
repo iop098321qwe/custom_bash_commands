@@ -2,12 +2,250 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
-## [2.30.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.30.0...v2.30.1) (2025-02-01)
+## [305.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.2.0...v305.0.0) (2025-10-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **versioning:** hard reset with clean codebase
+
+* **versioning:** adjust version number ([c014918](https://github.com/iop098321qwe/custom_bash_commands/commit/c014918e9b1e000eeeaaf23c548f17045ff0fe03))
+
+
+### Features
+
+* **aliases:** remove unused aliases ([f59e360](https://github.com/iop098321qwe/custom_bash_commands/commit/f59e3600b81ecca1c234b8da95edefba23a109e9))
+* **autocomplete:** remove cht.sh autocomplete ([bda21c3](https://github.com/iop098321qwe/custom_bash_commands/commit/bda21c361fc2dd22320c9691e53727616050f71b))
+* **function:** add more directories to setup_directories function ([27654ff](https://github.com/iop098321qwe/custom_bash_commands/commit/27654ffa532726762150749ff076139de6ba9d59))
+* **function:** remove `up` function ([0f581db](https://github.com/iop098321qwe/custom_bash_commands/commit/0f581dbd3f5611e7c7cf809fbdfbb371d3a4f253))
+* **function:** remove check_install functions ([fe633d1](https://github.com/iop098321qwe/custom_bash_commands/commit/fe633d197d242297e0745bdce53173b144d4d932))
+* **terminal settings:** move terminal settings to .bashrc ([b8e97e1](https://github.com/iop098321qwe/custom_bash_commands/commit/b8e97e13a46dcb05401f8d14a4ca1a16d42cd2db))
 
 
 ### Bug Fixes
 
+* **file:** remove any references to deprecated .version file ([8fdbaba](https://github.com/iop098321qwe/custom_bash_commands/commit/8fdbaba462188e1d39ba077e2ad3d43f103c75aa))
+
+## [304.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.1.0...v304.2.0) (2025-10-21)
+
+
+### Features
+
+* **smartsort:** expand interactive sorting options ([69d7327](https://github.com/iop098321qwe/custom_bash_commands/commit/69d7327e7439f358bb2e3419cdca01c448218836))
+
+
+### Bug Fixes
+
+* **function:** fix wording in smartsort interactive ([a0db78f](https://github.com/iop098321qwe/custom_bash_commands/commit/a0db78fe6992d2d6fcda43b058e86e97b3667ecb))
+* **function:** remove message for smart_sort ([7c5a9bc](https://github.com/iop098321qwe/custom_bash_commands/commit/7c5a9bc1311c084db99dd6a3635c1e10a74236d1))
+* **smartsort:** allow empty gum selection ([3d5950c](https://github.com/iop098321qwe/custom_bash_commands/commit/3d5950c709f25767b8f06c70456884006c4fddfe))
+
+## [304.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.0.1...v304.1.0) (2025-10-19)
+
+
+### Features
+
+* **agents file:** add agents file ([186b833](https://github.com/iop098321qwe/custom_bash_commands/commit/186b833713e4eabcb02910e986f8add882061029))
+
+## [304.0.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.0.0...v304.0.1) (2025-10-18)
+
+
+### Bug Fixes
+
+* **function name:** fix show_help function to be usage function ([06cdc8b](https://github.com/iop098321qwe/custom_bash_commands/commit/06cdc8b810dd39000bfff638b428b0820c96a50a))
+* **message:** move cargo update message ([ec63117](https://github.com/iop098321qwe/custom_bash_commands/commit/ec631175d58ef1759709be8f3c831a4bc8d0a27a))
+
+## [304.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v303.0.1...v304.0.0) (2025-10-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* **versioning:** this will reset to 304.0.0
+
+* **versioning:** increment the versioning number ([054f0ac](https://github.com/iop098321qwe/custom_bash_commands/commit/054f0ac293cedbb48bab4a420c67f92d792e7ad1))
+
+## [303.0.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v303.0.0...v303.0.1) (2025-10-16)
+
+## [303.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.6.0...v303.0.0) (2025-10-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **versioning:** adjust versioning
+
+* **versioning:** increment versioning number ([8938489](https://github.com/iop098321qwe/custom_bash_commands/commit/8938489de7efffef8abd234ed6677fcd90186144))
+
+
+### Features
+
+* **function:** remove `mvfiles` function ([af820e8](https://github.com/iop098321qwe/custom_bash_commands/commit/af820e875b35e90a96da19170cbb39fb8c16b8b4))
+* **function:** remove incon function ([d1a54ab](https://github.com/iop098321qwe/custom_bash_commands/commit/d1a54ab497f49c3ab37972d9d2a33735c77dffa4))
+
+
+### Bug Fixes
+
+* **function:** fix gh cli issue in the `incon` function ([370b984](https://github.com/iop098321qwe/custom_bash_commands/commit/370b9845f1a984cc181bbea9e0df685561fcb2e7))
+
+## [302.6.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.5.3...v302.6.0) (2025-10-15)
+
+
+### Features
+
+* **autocomplete:** add atuin autocomplete ([704e7dc](https://github.com/iop098321qwe/custom_bash_commands/commit/704e7dc509628fa40761069024b79632c20f2e48))
+
+## [302.5.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.5.2...v302.5.3) (2025-10-15)
+
+
+### Bug Fixes
+
+* **versioning:** fix versioning number ([b5a0020](https://github.com/iop098321qwe/custom_bash_commands/commit/b5a0020b5102fc5dc29418edc0032c15255679f2))
+
+## [302.5.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.5.1...v302.5.2) (2025-10-15)
+
+
+### Bug Fixes
+
+* **function:** add cargo update message to update function ([7f4414c](https://github.com/iop098321qwe/custom_bash_commands/commit/7f4414c71d91df53309f78f5894cbe3bcb4c61f7))
+* **function:** remove cargo updates from update function ([959dfb5](https://github.com/iop098321qwe/custom_bash_commands/commit/959dfb5f75bf9a7d9aa0c253c4f48a3375293339))
+
+## [302.5.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.5.0...v302.5.1) (2025-10-15)
+
+
+### Bug Fixes
+
+* **versioning:** fix the versioning ([5a02fbb](https://github.com/iop098321qwe/custom_bash_commands/commit/5a02fbb0b4ff3c601d26ed27de0f568ca02e2eb1))
+
+## [302.5.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.4.0...v302.5.0) (2025-10-15)
+
+
+### Features
+
+* **function:** add cargo update to update function ([18013af](https://github.com/iop098321qwe/custom_bash_commands/commit/18013affc4bf0375cc2bedbbe61e1b8e552c8966))
+
+## [302.4.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.3.0...v302.4.0) (2025-10-15)
+
+
+### Features
+
+* **function:** add atuin to update function ([c50fd8d](https://github.com/iop098321qwe/custom_bash_commands/commit/c50fd8da42fcd4570669e3c8f53eaf674bfaa2be))
+
+## [302.3.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.2.0...v302.3.0) (2025-09-09)
+
+
+### Features
+
+* **function:** add `upgrade` to update function ([d72ad39](https://github.com/iop098321qwe/custom_bash_commands/commit/d72ad399604e8ee372a6f3102ad58caf70935027))
+
+## [302.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.1.0...v302.2.0) (2025-06-07)
+
+
+### Features
+
+* **alias:** add dup alias and remove dup function ([0eb56cd](https://github.com/iop098321qwe/custom_bash_commands/commit/0eb56cd9d1b79bbf7d3f08741b7722d268f0abb4))
+* **license:** add gpl-3.0 license ([409fc61](https://github.com/iop098321qwe/custom_bash_commands/commit/409fc619c2daacfac71a16aae0339a703ecf59ec))
+* **update notifications:** add update notifications ([030ac24](https://github.com/iop098321qwe/custom_bash_commands/commit/030ac248d67777adb404c7b006b973165713ab45))
+
+
+### Bug Fixes
+
+* **alias:** update `naked` alias ([8591a5c](https://github.com/iop098321qwe/custom_bash_commands/commit/8591a5c10612f08d3485124bb97f1a0ab7908c65))
+
+## [302.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.0.0...v302.1.0) (2025-05-19)
+
+
+### Features
+
+* **alias:** add `lzg` alias for lazydocker ([934324f](https://github.com/iop098321qwe/custom_bash_commands/commit/934324f29e7719dfd39634521f042816b873f93b))
+* **alias:** add `nv` alias ([cb8dabb](https://github.com/iop098321qwe/custom_bash_commands/commit/cb8dabb5460c4c10094ee9e7fd56693616a89af8))
+* **alias:** add `selectivebatchopen` and `sbo` aliases ([edca681](https://github.com/iop098321qwe/custom_bash_commands/commit/edca6817470efa4387849770003d85a356208b4a))
+* **alias:** add dup alias for printing duplicates in lists ([a1c21db](https://github.com/iop098321qwe/custom_bash_commands/commit/a1c21db47f8dc2cf1e65924cc9fb0f0f57697cb4))
+* **alias:** add fzf selection to `gco` alias ([7609f4f](https://github.com/iop098321qwe/custom_bash_commands/commit/7609f4f5c5570bf03ca9b8542487f3908e21e75b))
+* **alias:** add line alias ([afca555](https://github.com/iop098321qwe/custom_bash_commands/commit/afca555d3b129b3157f1b200d2f2a00bb1ffb46a))
+* **alias:** add naked alias ([37c186a](https://github.com/iop098321qwe/custom_bash_commands/commit/37c186af43cf467d7234888a1dda02fe3444c43f))
+* **alias:** add please alias ([d5fe867](https://github.com/iop098321qwe/custom_bash_commands/commit/d5fe867197041f3938f861a8e4dd63ff2052135e))
+* **function:** batchopen ([138d888](https://github.com/iop098321qwe/custom_bash_commands/commit/138d888d46789749988889f216a3d11e3388a56a))
+
+
+### Bug Fixes
+
+* **alias:** change `lg` alias to `lzg` for lazygit ([76864c5](https://github.com/iop098321qwe/custom_bash_commands/commit/76864c5e0cdc2d87e90158b88f482c62114f88cc))
+* **alias:** correct syntax in the `nv` alias ([8cbc125](https://github.com/iop098321qwe/custom_bash_commands/commit/8cbc12578d89169f26b5f2591607bb148c38f7a7))
+* **alias:** fix recursion for `nv` to navigate all directories ([1b3b42e](https://github.com/iop098321qwe/custom_bash_commands/commit/1b3b42e691a3046075f1265412ff516baa38610d))
+* **alias:** remove `nohup` from `selectivebatchopen` alias ([afe9073](https://github.com/iop098321qwe/custom_bash_commands/commit/afe9073a640c7c5037b72f1ff8ed1cbbf4e94792))
+* **function:** fix batchopen not opening in browser ([197781e](https://github.com/iop098321qwe/custom_bash_commands/commit/197781eb8206dc06f378a420c6c3f624edbaad5b))
+* **function:** fix dup function syntax errors ([1ab7b76](https://github.com/iop098321qwe/custom_bash_commands/commit/1ab7b76dd337b76b41713524bc65fa432f2700d3))
+* **function:** fix nohup in batchopen not working properly ([70bfd6c](https://github.com/iop098321qwe/custom_bash_commands/commit/70bfd6ce0fc9c8b98084b3dc036add2dc36c668c))
+* **function:** fix update command to properly update yt-dlp ([03ca3bd](https://github.com/iop098321qwe/custom_bash_commands/commit/03ca3bda22ae6360f9fe3ef83eeb176e9d1634ed))
+* **function:** update function now also includes apt clean ([fd459f1](https://github.com/iop098321qwe/custom_bash_commands/commit/fd459f19662a6967f496f14c139ed55fe6eeab4b))
+* **style:** change logo file title ([f676c91](https://github.com/iop098321qwe/custom_bash_commands/commit/f676c9144252e6f9e1a29013e593413c4a3c3193))
+* **theme:** change theme to catppuccin-mocha ([4c78d1d](https://github.com/iop098321qwe/custom_bash_commands/commit/4c78d1d54cb865aa8171ffa2832d12626162aa11))
+* **versioning:** adjust versioning ([c32fee1](https://github.com/iop098321qwe/custom_bash_commands/commit/c32fee18796c13cf2295c1d9c54881445763b428))
+* **versioning:** fix versioning style to include "v" ([88dc3ec](https://github.com/iop098321qwe/custom_bash_commands/commit/88dc3ecc66d728f2683f2ac7e1ba9f985f6bb1ce))
+
+## [302.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.33.0...v302.0.0) (2025-02-25)
+
+
+### Features
+
+* **function:** integrate better logic and Charm Gum into `update` ([1544efe](https://github.com/iop098321qwe/custom_bash_commands/commit/1544efea800b2b1712dda9a3886226d78a270f9a))
+
+
+### Bug Fixes
+
+* **alias:** actually fix `refresh` alias ([f6bd047](https://github.com/iop098321qwe/custom_bash_commands/commit/f6bd047fefd58c3ef00638db6afcb49fbc8db09d))
+* **alias:** fix `refresh` alias for better workability ([d8d1577](https://github.com/iop098321qwe/custom_bash_commands/commit/d8d1577aff9f36e17062530a6c7fa52aff46b99c))
+* **function:** fix logic of the `update` command ([30ce0f1](https://github.com/iop098321qwe/custom_bash_commands/commit/30ce0f184b9637f79a844100b796cb13ce097ad3))
+
+## [2.32.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.31.0...v2.32.0) (2025-02-24)
+
+
+### Features
+
+* **function:** change style of `display_info` and `display_version` functions ([7cba59a](https://github.com/iop098321qwe/custom_bash_commands/commit/7cba59afd5148e8263aad69e02e8577508a826cb))
+* **function:** implement the use of `gum` for better interactivity ([eb250ce](https://github.com/iop098321qwe/custom_bash_commands/commit/eb250ce17fc27ce131ccb04bfd97af2958918a20))
+* **function:** remove `sortalpha` function ([38c6de9](https://github.com/iop098321qwe/custom_bash_commands/commit/38c6de9ec8c3af1de52878c1341ee75ec9264976))
+* **remaster:** clean up code and rewrite help flags ([3d2c652](https://github.com/iop098321qwe/custom_bash_commands/commit/3d2c652d385892b3d4136761e3023c0bb2eea86a))
+* **versioning:** update to Epoch SemVer versioning ([6d92a23](https://github.com/iop098321qwe/custom_bash_commands/commit/6d92a23ec4095f090aeaf5faff1fd83ad74414bd))
+
+
+### Bug Fixes
+
+* **alias:** fix eza aliases to show icons ([2849432](https://github.com/iop098321qwe/custom_bash_commands/commit/2849432a2c422ea18be3a9686d1cdb82518389a6))
+* **function:** fix `display_info` function ([9b4530c](https://github.com/iop098321qwe/custom_bash_commands/commit/9b4530c08c8b7c481abaf565da9a932ade2d52a5))
+* **function:** fix backup function ([187b764](https://github.com/iop098321qwe/custom_bash_commands/commit/187b7641d628c40c9dc5a00941a19207c0c8ecd7))
+* **function:** fix wiki command and clean up ([6e2d1d0](https://github.com/iop098321qwe/custom_bash_commands/commit/6e2d1d0083cd1b185a30935ce7a41360dbfa377a))
+* **function:** remove `first_time_setup` function call ([b44a8d4](https://github.com/iop098321qwe/custom_bash_commands/commit/b44a8d49afa3fd53ea62fbb2016384da5334b501))
+* **style:** fix style ([120c975](https://github.com/iop098321qwe/custom_bash_commands/commit/120c9759e23a1b1a20c36e08cf9f44d7af48116e))
+* **style:** remove excess comments from code ([0853809](https://github.com/iop098321qwe/custom_bash_commands/commit/0853809b0d9b6f70beb086ade582f37d1edb270b))
+* **versioning:** fix versioning ([f0b15cc](https://github.com/iop098321qwe/custom_bash_commands/commit/f0b15cc9d3a860a322d8dd4a099e632ad5e5fbdb))
+
+## [2.31.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.30.0...v2.31.0) (2025-02-11)
+
+
+### Features
+
+* **function:** add `smart_sort` function ([d960ccf](https://github.com/iop098321qwe/custom_bash_commands/commit/d960ccf389281e8c2bbed787728329a48f04ca90))
+* **function:** update the functionality of `smart_sort` and add `ssort` alias ([220bb08](https://github.com/iop098321qwe/custom_bash_commands/commit/220bb0853d08cd997810487707ffe69a143ccb37))
+* **module:** add functions and aliases from main script to pron-module ([2c275af](https://github.com/iop098321qwe/custom_bash_commands/commit/2c275af8c8f517a49b972269e930c84f7aab61ca))
+* **module:** develop the `pron-module` ([0e0e35d](https://github.com/iop098321qwe/custom_bash_commands/commit/0e0e35d69118a269bd24015304ad2625806f92c3))
+* **script:** add `cbc_aliases` script to separate the aliases from the main script ([2aecce2](https://github.com/iop098321qwe/custom_bash_commands/commit/2aecce2ea1076123f19137fc1899b742d37334c4))
+* **script:** move aliases to separate script ([bb263fa](https://github.com/iop098321qwe/custom_bash_commands/commit/bb263fa026c6efaa46906728887d696ed2150f2b))
+
+
+### Bug Fixes
+
+* **alias:** fix `test` alias ([031fbd3](https://github.com/iop098321qwe/custom_bash_commands/commit/031fbd313cec36f0ea23bc54edfea7462054e4f4))
+* **function:** add cbc_aliases file to `updatecbc` command ([0e13bba](https://github.com/iop098321qwe/custom_bash_commands/commit/0e13bba396b22f639795a5dbe960ce032f25a01f))
+* **function:** correct issue parsing the interactive flag (-i) for `smart_sort` ([e4cab14](https://github.com/iop098321qwe/custom_bash_commands/commit/e4cab146a7ca7976ec2ad9cdda9211464551bd3b))
+* **function:** fix issue with `smart_sort` function ([4f559c0](https://github.com/iop098321qwe/custom_bash_commands/commit/4f559c0ee7b2b5db379d29cc27e13fe793bccad4))
+* remove that showed the alias script was being sourced correctly ([854e77e](https://github.com/iop098321qwe/custom_bash_commands/commit/854e77eaec0555d657305634c5fba2b9b4adfb2f))
+* **sourcing:** fix alias script not being sourced properly ([713c014](https://github.com/iop098321qwe/custom_bash_commands/commit/713c014fcd826533503621d8bc9ad0a3a443f642))
+* **style:** capitalize comment function headers ([f42ad87](https://github.com/iop098321qwe/custom_bash_commands/commit/f42ad874fb3ac829634a18147b1dc9d0ecac3a2d))
+* **todo:** add inline todos ([ce1e8b1](https://github.com/iop098321qwe/custom_bash_commands/commit/ce1e8b1662d14ba89c700bbb582cb6a5709a542d))
+* **versioning:** fix the versioning number and some variable calls ([9046950](https://github.com/iop098321qwe/custom_bash_commands/commit/9046950c52ca2b2b69937b0db2d19099b2352bcf))
+* **versioning:** fix the versioning number in the file ([73fa9fa](https://github.com/iop098321qwe/custom_bash_commands/commit/73fa9fae243ce09e5dadbf36f1b10e9a4fbd4829))
 * **versioning:** fix versioning again ([cb94816](https://github.com/iop098321qwe/custom_bash_commands/commit/cb94816cb9136f5f46c474b9be3891c0d96c2845))
+* **versioning:** fix versioning number ([18f90bb](https://github.com/iop098321qwe/custom_bash_commands/commit/18f90bb2cdac6e125839face113531eb5e0036ab))
 
 ## [2.30.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.29.0...v2.30.0) (2025-02-01)
 
