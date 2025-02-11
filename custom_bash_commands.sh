@@ -1,447 +1,70 @@
 #!/usr/bin/env bash
 VERSION="2.31.0"
 
-testfunc() {
-  echo "This is a test function."
-}
+################################################################################################################################################################
+# PRON MODULE
+################################################################################################################################################################
 
-###################################################################################################################################################################
-# CUSTOM BASH COMMANDS
-###################################################################################################################################################################
-
-# Set the config file path
-CONFIG_FILE="$HOME/.cbc.config"
+# TODO: Find a way to make pron module work with the cbcs command to show help information.
 
 ################################################################################
-# Create config file function
+# PHOPEN
 ################################################################################
 
-# Function to create the config file with default values if it does not exist
-create_config_file() {
-  echo "# Configuration file for Custom Bash Commands (CBC) by iop098321qwe" >>"$CONFIG_FILE"
-  echo " " >>"$CONFIG_FILE"
-  echo "# First-time setup?" >>"$CONFIG_FILE"
-  echo "FIRST_TIME=true" >>"$CONFIG_FILE"
-  echo " " >>"$CONFIG_FILE"
-  echo "# Settings for additional software installation" >>"$CONFIG_FILE"
-  echo " " >>"$CONFIG_FILE"
-  echo "NEOVIM=true" >>"$CONFIG_FILE"
-  echo "BAT=false" >>"$CONFIG_FILE"
-  echo "EZA=false" >>"$CONFIG_FILE"
-  echo "ZOXIDE=false" >>"$CONFIG_FILE"
-  echo "FZF=false" >>"$CONFIG_FILE"
-  echo "ZELLI=false" >>"$CONFIG_FILE"
-  echo "THEFUCK=false" >>"$CONFIG_FILE"
-  echo "OBSIDIAN=false" >>"$CONFIG_FILE"
-  echo "RANGER=true" >>"$CONFIG_FILE"
-  echo "HSTR=true" >>"$CONFIG_FILE"
-  echo "Config file created at $CONFIG_FILE"
-}
+# Describe the phopen function and its options and usage
 
-# Check if config file exists, and if not, create it with default values
-if [ ! -f "$CONFIG_FILE" ]; then
-  create_config_file
-fi
-
-################################################################################
-# First-time setup function
-################################################################################
-
-# Function to run the first-time setup for Custom Bash Commands
-first_time_setup() {
-
-  # Read the FIRST_TIME variable from the config file
-  source "$CONFIG_FILE"
-
-  # Check if it is the first time running the setup
-  if [ "$FIRST_TIME" = true ]; then
-    echo "Welcome to Custom Bash Commands (CBC) by iop098321qwe!"
-    echo "This setup will guide you through the initial configuration."
-    echo " "
-    echo "Let's get started!"
-    echo " "
-
-    # Prompt the user to install additional software
-    echo "Additional Software Installation:"
-    echo " "
-    echo "Would you like to install the following software packages?"
-    echo " "
-    echo "1. Neovim"
-    echo "2. Bat"
-    echo "3. exa"
-    echo "4. Zoxide"
-    echo "5. fzf"
-    echo "6. Zellij"
-    echo "7. thefuck"
-    echo "8. Obsidian"
-    echo "9. Ranger"
-    echo "10. hstr"
-    echo " "
-    echo "Enter the corresponding numbers separated by spaces (e.g., '1 2 3'), or enter 'a' to install all: "
-    read -p "Your choice: " software_choices
-
-    # Check the user's choices and update the config file
-    if [[ $software_choices == *"a"* ]]; then
-      sed -i 's/NEOVIM=false/NEOVIM=true/' "$CONFIG_FILE"
-      sed -i 's/BAT=false/BAT=true/' "$CONFIG_FILE"
-      sed -i 's/EZA=false/EZA=true/' "$CONFIG_FILE"
-      sed -i 's/ZOXIDE=false/ZOXIDE=true/' "$CONFIG_FILE"
-      sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
-      sed -i 's/ZELLI=false/ZELLI=true/' "$CONFIG_FILE"
-      sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
-      sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
-      sed -i 's/RANGER=false/RANGER=true/' "CONFIG_FILE"
-    else
-      if [[ $software_choices == *"1"* ]]; then
-        sed -i 's/NEOVIM=false/NEOVIM=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"2"* ]]; then
-        sed -i 's/BAT=false/BAT=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"3"* ]]; then
-        sed -i 's/EZA=false/EZA=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"4"* ]]; then
-        sed -i 's/ZOXIDE=false/ZOXIDE=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"5"* ]]; then
-        sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"6"* ]]; then
-        sed -i 's/ZELLI=false/ZELLI=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"7"* ]]; then
-        sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"8"* ]]; then
-        sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"9"* ]]; then
-        sed -i 's/RANGER=false/RANGER=true/' "CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"10"* ]]; then
-        sed -i 's/HSTR=false/HSTR=true/' "CONFIG_FILE"
-      fi
-    fi
-
-    # Update the FIRST_TIME variable in the config file
-    sed -i 's/FIRST_TIME=true/FIRST_TIME=false/' "$CONFIG_FILE"
-    echo " "
-    echo "Setup complete! Please restart your terminal to apply the changes."
-  else
-    echo -e "Configuration can be edited in \e[33m$CONFIG_FILE\e[0m or by using \e[36mconf\e[0m command."
-    alias conf="nvim $CONFIG_FILE"
-  fi
-}
-
-################################################################################
-# Remove cbc configuration file
-################################################################################
-
-# Function to remove configuration file for CBC
-rmconf() {
-  if [ -f "$CONFIG_FILE" ]; then
-    rm "$CONFIG_FILE"
-    echo "Config file removed."
-  else
-    echo "Config file does not exist."
-  fi
-}
-
-################################################################################
-# Append to end of .bashrc function
-################################################################################
-
-# Function to append the CBC script to the end of the .bashrc file
-append_to_bashrc() {
-  # Check if the CBC script is already sourced in the .bashrc file
-  if ! grep -q ".custom_bash_commands.sh" "$HOME/.bashrc"; then
-    # Append the CBC script to the end of the .bashrc file
-    echo "###################################################################################################################################################################" >>"$HOME/.bashrc"
-    echo "# Custom Additions" >>"$HOME/.bashrc"
-    echo "###################################################################################################################################################################" >>"$HOME/.bashrc"
-    echo " " >>"$HOME/.bashrc"
-    echo "#source ~/.update_commands.sh" >>"$HOME/.bashrc"
-    echo "source ~/.custom_bash_commands.sh" >>"$HOME/.bashrc"
-  fi
-}
-
-# Call the append_to_bashrc function
-append_to_bashrc
-
-################################################################################
-# REPEAT
-################################################################################
-
-# repeat
-# Description: Function to repeat any given command a set number of times
-# Usage: repeat <number>
+# phopen
+# Description: This function lists .mp4 files in the current directory using fzf
+#              with exact-match (-e) and multi-select (-m) modes, then opens
+#              associated URLs in the default browser by extracting the text
+#              within square brackets [ ] in the filenames and appending it to
+#              a predefined URL prefix.
+# Usage: phopen [-h]
 # Options:
 #   -h    Display this help message
+#
+# Example: phopen
 
-# Example: repeat 4 echo "hello"
+#########
 
-################################################################################
-# Function to repeat a command any given number of times
-repeat() {
-  OPTIND=1        # Reset getopts index to handle multiple runs
-  local delay=0   # Default delay is 0 seconds
-  local verbose=0 # Default verbose mode is off
-  local count     # Declare count as a local variable to limit its scope
+# phopen function: Extracts parameter from filenames and opens them in default browser
+phopen() {
+  URL_PREFIX="https://www.pornhub.com/view_video.php?viewkey="
 
-  # Function to display help
-  usage() {
-    cat <<EOF
-Usage: repeat [-h] count [-d delay] [-v] command [arguments...]
-
-Options:
-  -h            Display this help message and return
-  -d delay      Delay in seconds between each repetition
-  -v            Enable verbose mode for debugging and tracking runs
-
-Arguments:
-  count         The number of times to repeat the command
-  command       The command(s) to be executed (use ';' to separate multiple commands)
-  [arguments]   Optional arguments passed to the command(s)
-EOF
-  }
-
-  # Parse options first
-  while getopts "hd:v" opt; do
+  while getopts "h" opt; do
     case "$opt" in
     h)
-      usage
+      echo "Usage: phopen [-h]"
+      echo "Open video URLs based on the keys in the filenames of .mp4 files in the current directory."
+      echo "  -h  Display this help message"
       return 0
-      ;;
-    d)
-      delay="$OPTARG"
-      if ! echo "$delay" | grep -Eq '^[0-9]+$'; then
-        echo " "
-        echo "Error: DELAY must be a non-negative integer."
-        echo " "
-        return 1
-      fi
-      ;;
-    v)
-      verbose=1
       ;;
     *)
-      usage
-      return 1
-      ;;
-    esac
-  done
-  shift $((OPTIND - 1)) # Remove parsed options from arguments
-
-  # Check if help flag was invoked alone
-  if [ "$OPTIND" -eq 2 ] && [ "$#" -eq 0 ]; then
-    return 0
-  fi
-
-  # Ensure count argument exists
-  if [ "$#" -lt 2 ]; then
-    echo " "
-    echo "Error: Missing count and command arguments."
-    echo " "
-    usage
-    return 1
-  fi
-
-  count=$1 # Assign count within local scope
-  shift
-
-  # Ensure count is a valid positive integer
-  if ! echo "$count" | grep -Eq '^[0-9]+$'; then
-    echo " "
-    echo "Error: COUNT must be a positive integer."
-    echo " "
-    usage
-    return 1
-  fi
-
-  # Ensure a command is provided
-  if [ "$#" -lt 1 ]; then
-    echo " "
-    echo "Error: No command provided."
-    echo " "
-    usage
-    return 1
-  fi
-
-  # Combine remaining arguments as a single command string
-  local cmd="$*"
-
-  # Repeat the command COUNT times with optional delay
-  for i in $(seq 1 "$count"); do
-    if [ "$verbose" -eq 1 ]; then
-      echo " "
-      echo "Running iteration $i of $count: $cmd"
-      echo " "
-    fi
-    eval "$cmd"
-    if [ "$delay" -gt 0 ] && [ "$i" -lt "$count" ]; then
-      if [ "$verbose" -eq 1 ]; then
-        echo " "
-        echo "Sleeping for $delay seconds..."
-        echo " "
-      fi
-      sleep "$delay"
-    fi
-  done
-}
-
-################################################################################
-# random
-################################################################################
-
-# random
-# Description: Function to open a random .mp4 file in the current directory
-# Usage: random
-# Options:
-#   -h    Display this help message
-
-# Example: random  ---Opens a random .mp4 file in the current directory.
-
-################################################################################
-
-# Function to open a random .mp4 file in the current directory
-random() {
-  # Function to display help message
-  show_help() {
-    cat <<EOF
-Description: Function to open a random .mp4 file in the current directory
-Usage: random [-h]
-Options:
-  -h    Display this help message
-EOF
-  }
-
-  # Parse options using getopts
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      show_help
-      return 0
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      show_help
-      return 1
-      ;;
-    esac
-  done
-
-  # Gather all .mp4 files in the current directory
-  mp4_files=(./*.mp4)
-
-  # Check if there are any mp4 files
-  if [ ${#mp4_files[@]} -eq 0 ] || [ ! -e "${mp4_files[0]}" ]; then
-    echo "No mp4 files found in the current directory."
-    return 1
-  fi
-
-  # Select a random file from the list
-  random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
-
-  # Open the random file using the default application
-  nohup xdg-open "$random_file" 2>/dev/null
-
-  # Check if the file was opened successfully
-  if [ $? -ne 0 ]; then
-    echo "Failed to open the file: $random_file"
-    return 1
-  fi
-
-  echo "Opened: $random_file"
-}
-
-# Place this entire function in your .bashrc or other shell configuration file.
-# Then, reload your shell or source .bashrc to use it.
-
-################################################################################
-# SORTALPHA
-################################################################################
-
-# TODO: Add comments and -h flag for clarity in the function
-sortalpha() {
-  # initialize local variables
-  local extension=""
-  local first_letter=""
-
-  # Reset getopts index to handle multiple runs
-  OPTIND=1
-
-  # parse options using getopts
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      echo "Description: Function to sort files in the current directory alphabetically by extension"
-      echo "Usage: sortalpha [-h]"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      return 0
-      ;;
-    \?)
       echo "Invalid option: -$OPTARG" >&2
       return 1
       ;;
     esac
   done
 
-  shift $((OPTIND - 1))
+  selected="$(find . -maxdepth 1 -type f -name "*.mp4" | fzf -e -m --prompt='Select your .mp4 file(s): ')"
+  [ -z "$selected" ] && return 0
 
-  # HELPER: check if fzf is installed
-  check_fzf_install() {
-    if ! command -v fzf >/dev/null 2>&1; then
-      echo "fzf is not installed. Please install fzf first."
-      return 1
-    fi
-  }
+  while IFS= read -r file; do
+    filename="${file%.*}"
+    if [[ "$filename" =~ \[(.*)\] ]]; then
+      content="${BASH_REMATCH[1]}"
+      url="${URL_PREFIX}${content}"
 
-  # HELPER: check if the extension variable is empty
-  check_ext() {
-    if [ -z "$extension" ]; then
-      echo "No extension selected. Exiting..."
-      return 1
-    fi
-  }
-
-  # HELPER: choose extension to sort files by
-  select_extension() {
-    # prompt the user to select an extension to sort files by and assign to "extension" variable
-    extension=$(find . -maxdepth 1 -type f | sed 's/.*\.//' | sort -u | fzf --prompt="Select an extension to sort files by: ")
-
-    # check if the extension variable is empty
-    check_ext || return 1
-
-    # display a message to the user for the extension to sort files by
-    echo -e "\nSorting files by the following extension: $extension"
-  }
-
-  # HELPER: iterate through each file in the current directory and move to a new directory based on the first letter of the file
-  move_files() {
-    check_ext || return 1
-    for file in *."$extension"; do
-      if [ -f "$file" ]; then
-        first_letter=$(echo "$file" | cut -c1 | tr '[:upper:]' '[:lower:]')
-        mkdir -p "$first_letter"
-        mv "$first_letter"*."$extension" "$first_letter"/
+      if command -v xdg-open >/dev/null 2>&1; then
+        nohup xdg-open "$url"
+      elif command -v open >/dev/null 2>&1; then
+        nohup open "$url"
+      else
+        echo "No recognized browser open command found. Please open this URL manually:"
+        echo "$url"
       fi
-    done
-    printf "\nFile sorting alphabetically completed successfully."
-  }
-
-  # MAIN LOGIC
-
-  # Check if fzf is installed
-  check_fzf_install || return 1
-
-  # select extension to sort files by
-  select_extension || return 1
-
-  # move files to new directories based on the first letter of the file
-  move_files
-  printf "\nNo way to undo what you have just done... Maybe use ranger and manually move back? :)\n"
+    fi
+  done <<<"$selected"
 }
 
 ################################################################################
@@ -676,7 +299,7 @@ EOF
 }
 
 ################################################################################
-# sopen
+# SOPEN
 ################################################################################
 
 # sopen
@@ -747,7 +370,7 @@ sopen() {
 }
 
 ################################################################################
-# sopenexact
+# SOPENEXACT
 ################################################################################
 
 # sopenexact
@@ -817,8 +440,722 @@ sopenexact() {
   done <"$file"
 }
 
+################################################################################################################################################################
+
+###################################################################################################################################################################
+# CUSTOM BASH COMMANDS
+###################################################################################################################################################################
+
+# Set the config file path
+CONFIG_FILE="$HOME/.cbc.config"
+
 ################################################################################
-# wiki
+# SOURCE ALIAS FILE
+################################################################################
+
+source ~/.cbc_aliases.sh
+
+################################################################################
+# Create config file function
+################################################################################
+
+# Function to create the config file with default values if it does not exist
+create_config_file() {
+  echo "# Configuration file for Custom Bash Commands (CBC) by iop098321qwe" >>"$CONFIG_FILE"
+  echo " " >>"$CONFIG_FILE"
+  echo "# First-time setup?" >>"$CONFIG_FILE"
+  echo "FIRST_TIME=true" >>"$CONFIG_FILE"
+  echo " " >>"$CONFIG_FILE"
+  echo "# Settings for additional software installation" >>"$CONFIG_FILE"
+  echo " " >>"$CONFIG_FILE"
+  echo "NEOVIM=true" >>"$CONFIG_FILE"
+  echo "BAT=false" >>"$CONFIG_FILE"
+  echo "EZA=false" >>"$CONFIG_FILE"
+  echo "ZOXIDE=false" >>"$CONFIG_FILE"
+  echo "FZF=false" >>"$CONFIG_FILE"
+  echo "ZELLI=false" >>"$CONFIG_FILE"
+  echo "THEFUCK=false" >>"$CONFIG_FILE"
+  echo "OBSIDIAN=false" >>"$CONFIG_FILE"
+  echo "RANGER=true" >>"$CONFIG_FILE"
+  echo "HSTR=true" >>"$CONFIG_FILE"
+  echo "Config file created at $CONFIG_FILE"
+}
+
+# Check if config file exists, and if not, create it with default values
+if [ ! -f "$CONFIG_FILE" ]; then
+  create_config_file
+fi
+
+################################################################################
+# First-time setup function
+################################################################################
+
+# Function to run the first-time setup for Custom Bash Commands
+first_time_setup() {
+
+  # Read the FIRST_TIME variable from the config file
+  source "$CONFIG_FILE"
+
+  # Check if it is the first time running the setup
+  if [ "$FIRST_TIME" = true ]; then
+    echo "Welcome to Custom Bash Commands (CBC) by iop098321qwe!"
+    echo "This setup will guide you through the initial configuration."
+    echo " "
+    echo "Let's get started!"
+    echo " "
+
+    # Prompt the user to install additional software
+    echo "Additional Software Installation:"
+    echo " "
+    echo "Would you like to install the following software packages?"
+    echo " "
+    echo "1. Neovim"
+    echo "2. Bat"
+    echo "3. exa"
+    echo "4. Zoxide"
+    echo "5. fzf"
+    echo "6. Zellij"
+    echo "7. thefuck"
+    echo "8. Obsidian"
+    echo "9. Ranger"
+    echo "10. hstr"
+    echo " "
+    echo "Enter the corresponding numbers separated by spaces (e.g., '1 2 3'), or enter 'a' to install all: "
+    read -p "Your choice: " software_choices
+
+    # Check the user's choices and update the config file
+    if [[ $software_choices == *"a"* ]]; then
+      sed -i 's/NEOVIM=false/NEOVIM=true/' "$CONFIG_FILE"
+      sed -i 's/BAT=false/BAT=true/' "$CONFIG_FILE"
+      sed -i 's/EZA=false/EZA=true/' "$CONFIG_FILE"
+      sed -i 's/ZOXIDE=false/ZOXIDE=true/' "$CONFIG_FILE"
+      sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
+      sed -i 's/ZELLI=false/ZELLI=true/' "$CONFIG_FILE"
+      sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
+      sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
+      sed -i 's/RANGER=false/RANGER=true/' "CONFIG_FILE"
+    else
+      if [[ $software_choices == *"1"* ]]; then
+        sed -i 's/NEOVIM=false/NEOVIM=true/' "$CONFIG_FILE"
+      fi
+      if [[ $software_choices == *"2"* ]]; then
+        sed -i 's/BAT=false/BAT=true/' "$CONFIG_FILE"
+      fi
+      if [[ $software_choices == *"3"* ]]; then
+        sed -i 's/EZA=false/EZA=true/' "$CONFIG_FILE"
+      fi
+      if [[ $software_choices == *"4"* ]]; then
+        sed -i 's/ZOXIDE=false/ZOXIDE=true/' "$CONFIG_FILE"
+      fi
+      if [[ $software_choices == *"5"* ]]; then
+        sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
+      fi
+      if [[ $software_choices == *"6"* ]]; then
+        sed -i 's/ZELLI=false/ZELLI=true/' "$CONFIG_FILE"
+      fi
+      if [[ $software_choices == *"7"* ]]; then
+        sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
+      fi
+      if [[ $software_choices == *"8"* ]]; then
+        sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
+      fi
+      if [[ $software_choices == *"9"* ]]; then
+        sed -i 's/RANGER=false/RANGER=true/' "CONFIG_FILE"
+      fi
+      if [[ $software_choices == *"10"* ]]; then
+        sed -i 's/HSTR=false/HSTR=true/' "CONFIG_FILE"
+      fi
+    fi
+
+    # Update the FIRST_TIME variable in the config file
+    sed -i 's/FIRST_TIME=true/FIRST_TIME=false/' "$CONFIG_FILE"
+    echo " "
+    echo "Setup complete! Please restart your terminal to apply the changes."
+  else
+    echo -e "Configuration can be edited in \e[33m$CONFIG_FILE\e[0m or by using \e[36mconf\e[0m command."
+    alias conf="nvim $CONFIG_FILE"
+  fi
+}
+
+################################################################################
+# Remove cbc configuration file
+################################################################################
+
+# Function to remove configuration file for CBC
+rmconf() {
+  if [ -f "$CONFIG_FILE" ]; then
+    rm "$CONFIG_FILE"
+    echo "Config file removed."
+  else
+    echo "Config file does not exist."
+  fi
+}
+
+################################################################################
+# Append to end of .bashrc function
+################################################################################
+
+# Function to append the CBC script to the end of the .bashrc file
+append_to_bashrc() {
+  # Check if the CBC script is already sourced in the .bashrc file
+  if ! grep -q ".custom_bash_commands.sh" "$HOME/.bashrc"; then
+    # Append the CBC script to the end of the .bashrc file
+    echo "###################################################################################################################################################################" >>"$HOME/.bashrc"
+    echo "# Custom Additions" >>"$HOME/.bashrc"
+    echo "###################################################################################################################################################################" >>"$HOME/.bashrc"
+    echo " " >>"$HOME/.bashrc"
+    echo "#source ~/.update_commands.sh" >>"$HOME/.bashrc"
+    echo "source ~/.custom_bash_commands.sh" >>"$HOME/.bashrc"
+  fi
+}
+
+# Call the append_to_bashrc function
+append_to_bashrc
+
+################################################################################
+# REPEAT
+################################################################################
+
+# repeat
+# Description: Function to repeat any given command a set number of times
+# Usage: repeat <number>
+# Options:
+#   -h    Display this help message
+
+# Example: repeat 4 echo "hello"
+
+# Function to repeat a command any given number of times
+repeat() {
+  OPTIND=1        # Reset getopts index to handle multiple runs
+  local delay=0   # Default delay is 0 seconds
+  local verbose=0 # Default verbose mode is off
+  local count     # Declare count as a local variable to limit its scope
+
+  # Function to display help
+  usage() {
+    cat <<EOF
+Usage: repeat [-h] count [-d delay] [-v] command [arguments...]
+
+Options:
+  -h            Display this help message and return
+  -d delay      Delay in seconds between each repetition
+  -v            Enable verbose mode for debugging and tracking runs
+
+Arguments:
+  count         The number of times to repeat the command
+  command       The command(s) to be executed (use ';' to separate multiple commands)
+  [arguments]   Optional arguments passed to the command(s)
+EOF
+  }
+
+  # Parse options first
+  while getopts "hd:v" opt; do
+    case "$opt" in
+    h)
+      usage
+      return 0
+      ;;
+    d)
+      delay="$OPTARG"
+      if ! echo "$delay" | grep -Eq '^[0-9]+$'; then
+        echo " "
+        echo "Error: DELAY must be a non-negative integer."
+        echo " "
+        return 1
+      fi
+      ;;
+    v)
+      verbose=1
+      ;;
+    *)
+      usage
+      return 1
+      ;;
+    esac
+  done
+  shift $((OPTIND - 1)) # Remove parsed options from arguments
+
+  # Check if help flag was invoked alone
+  if [ "$OPTIND" -eq 2 ] && [ "$#" -eq 0 ]; then
+    return 0
+  fi
+
+  # Ensure count argument exists
+  if [ "$#" -lt 2 ]; then
+    echo " "
+    echo "Error: Missing count and command arguments."
+    echo " "
+    usage
+    return 1
+  fi
+
+  count=$1 # Assign count within local scope
+  shift
+
+  # Ensure count is a valid positive integer
+  if ! echo "$count" | grep -Eq '^[0-9]+$'; then
+    echo " "
+    echo "Error: COUNT must be a positive integer."
+    echo " "
+    usage
+    return 1
+  fi
+
+  # Ensure a command is provided
+  if [ "$#" -lt 1 ]; then
+    echo " "
+    echo "Error: No command provided."
+    echo " "
+    usage
+    return 1
+  fi
+
+  # Combine remaining arguments as a single command string
+  local cmd="$*"
+
+  # Repeat the command COUNT times with optional delay
+  for i in $(seq 1 "$count"); do
+    if [ "$verbose" -eq 1 ]; then
+      echo " "
+      echo "Running iteration $i of $count: $cmd"
+      echo " "
+    fi
+    eval "$cmd"
+    if [ "$delay" -gt 0 ] && [ "$i" -lt "$count" ]; then
+      if [ "$verbose" -eq 1 ]; then
+        echo " "
+        echo "Sleeping for $delay seconds..."
+        echo " "
+      fi
+      sleep "$delay"
+    fi
+  done
+}
+
+################################################################################
+# SMART_SORT
+################################################################################
+
+# smart_sort: A multifunctional interactive file sorting tool for the current directory.
+
+# Description:
+#   This function sorts files in the current directory based on different criteria.
+#   Available sorting modes are:
+#     - ext   : Sort by file extension.
+#     - alpha : Sort by the first letter of the filename.
+#     - time  : Sort by modification time (grouped by YYYY-MM).
+#     - size  : Sort by file size into categories (small, medium, large).
+
+# Usage:
+#   smart_sort [-h] [-i] [-m mode]
+
+# Options:
+#   -h        Display this help message.
+#   -i        Enable interactive mode for selection of sorting options.
+#             When used alone, interactive mode will prompt for all options via fzf.
+#             When combined with other flags, interactive mode is disabled.
+#   -m mode   Specify sorting mode directly. Available modes:
+#               ext   - Sort by file extension.
+#               alpha - Sort by the first letter of the filename.
+#               time  - Sort by modification time (YYYY-MM).
+#               size  - Sort by file size (small, medium, large).
+
+# Examples:
+#   smart_sort -i             # Launch interactive mode to choose sorting method.
+#   smart_sort -m ext         # Sort files by extension non-interactively.
+#   smart_sort -i -m size     # Note: Interactive mode is disabled when combined with -m flag; runs non-interactively.
+
+smart_sort() {
+  # Local variables initialization
+  local mode=""            # Sorting mode (ext, alpha, time, size)
+  local interactive_mode=0 # Flag for interactive mode (0: off, 1: on)
+  local extension=""       # Holds a specific extension if selected
+  local first_letter=""    # Holds the first letter of filenames during sorting
+  local file=""            # Temporary variable for file iteration
+
+  # Reset getopts index for multiple calls
+  OPTIND=1
+
+  # Parse command-line options using getopts
+  while getopts ":hm:i" opt; do
+    case $opt in
+    h)
+      # Display help message
+      cat <<'EOF'
+Description: Multifunctional interactive file sorting tool for the current directory.
+Usage: smart_sort [-h] [-i] [-m mode]
+Options:
+  -h        Display this help message.
+  -i        Enable interactive mode for selection of sorting options.
+            When used alone, interactive mode will prompt for all options via fzf.
+            When combined with other flags, interactive mode is disabled.
+  -m mode   Specify sorting mode directly. Available modes:
+              ext   - Sort by file extension.
+              alpha - Sort by the first letter of the filename.
+              time  - Sort by modification time (YYYY-MM).
+              size  - Sort by file size (small, medium, large).
+Examples:
+  smart_sort -i             # Launch interactive mode to choose sorting method.
+  smart_sort -m ext         # Sort files by extension non-interactively.
+  smart_sort -i -m size     # NOTE: Interactive mode is disabled when combined with -m flag; runs non-interactively.
+EOF
+      return 0
+      ;;
+    i)
+      interactive_mode=1 # Set interactive mode flag
+      ;;
+    m)
+      mode="$OPTARG" # Set the sorting mode
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    :)
+      echo -e "Option -$OPTARG requires an argument you" "\033[031mSTUPID FUCK!\033[0m" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  # Remove processed options from the positional parameters
+  shift $((OPTIND - 1))
+
+  #####################################
+  # Default Behavior: Sort by Extension
+  #####################################
+  if [ -z "$mode" ] && [ "$interactive_mode" -eq 0 ]; then
+    mode="ext"
+  fi
+
+  #####################################
+  # Process Interactive Mode Logic
+  #####################################
+  if [ "$interactive_mode" -eq 1 ]; then
+    if [ -z "$mode" ]; then
+      # If only -i flag is provided, enforce interactive selection.
+      # Check if fzf is installed.
+      if ! command -v fzf >/dev/null 2>&1; then
+        echo "fzf is not installed. Please install fzf to use interactive mode."
+        return 1
+      fi
+      # Interactive selection for sorting mode via fzf.
+      mode=$(printf "ext\nalpha\ntime\nsize" | fzf --prompt="Select sorting mode: ")
+      # If fzf returns an empty result, exit.
+      if [ -z "$mode" ]; then
+        echo "No sorting mode selected. Exiting..."
+        return 1
+      fi
+    else
+      # If -i flag is used along with -m flag, interactive mode is disabled.
+      echo "Note: Interactive mode (-i) is ignored when combined with other flags. Running non-interactively with mode: $mode"
+      interactive_mode=0
+    fi
+  fi
+
+  # If mode is still empty in non-interactive mode, display error and exit.
+  if [ -z "$mode" ]; then
+    echo "No sorting mode provided. Use -m flag or -i for interactive selection."
+    return 1
+  fi
+
+  #####################################
+  # Confirmation prompt before executing sorting
+  #####################################
+  echo "You have selected the following options:"
+  echo "  Sorting Mode    : $mode"
+  if [ "$interactive_mode" -eq 1 ]; then
+    echo "  Interactive Mode: Enabled"
+  else
+    echo "  Interactive Mode: Disabled"
+  fi
+
+  # Prompt for confirmation with a default of 'n' (cancel)
+  read -r -p "Proceed with sorting? (y/N): " confirm
+  confirm=${confirm:-n}
+  if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+    echo "Sorting operation canceled."
+    return 0
+  fi
+
+  #####################################
+  # Sorting Mode Functions
+  #####################################
+
+  # Function to sort by file extension.
+  sort_by_extension() {
+    # Interactive selection: choose to sort a specific extension or all extensions.
+    local choice
+    choice=$(printf "Select specific extension\nSort all by extension" | fzf --prompt="Choose option for extension sorting: ")
+    if [[ "$choice" == "Select specific extension" ]]; then
+      # List available file extensions interactively.
+      # TODO: Set up multi select for extensions to allow selective sorting
+      extension=$(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u | fzf --no-multi --prompt="Select an extension: ")
+      if [ -z "$extension" ]; then
+        echo "No extension selected. Exiting..."
+        return 1
+      fi
+      echo -e "\nSorting files with extension: .$extension"
+      mkdir -p "$extension"
+      for file in *."$extension"; do
+        [ -f "$file" ] && mv "$file" "$extension"/ # Move each matching file
+      done
+      echo "Files with extension .$extension have been moved to directory: $extension"
+    elif [[ "$choice" == "Sort all by extension" ]]; then
+      local ext
+      for ext in $(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u); do
+        mkdir -p "$ext"
+        for file in *."$ext"; do
+          [ -f "$file" ] && mv "$file" "$ext"/
+        done
+        echo "Files with extension .$ext have been moved to directory: $ext"
+      done
+    else
+      echo "Invalid selection."
+      return 1
+    fi
+  }
+
+  # Function to sort files alphabetically by the first letter of the filename.
+  sort_by_alpha() {
+    echo "Sorting files alphabetically by the first letter..."
+    for file in *; do
+      if [ -f "$file" ]; then
+        # Extract the first letter and convert it to lowercase.
+        first_letter=$(echo "$file" | cut -c1 | tr '[:upper:]' '[:lower:]')
+        mkdir -p "$first_letter"
+        mv "$file" "$first_letter"/
+      fi
+    done
+    echo "Files have been sorted into directories based on the first letter."
+  }
+
+  # TODO: Implement selecting the time format/grouping interactively, and default to the current implementation. (Using fzf)
+  #
+  # Function to sort files by modification time (grouped by year-month).
+  sort_by_time() {
+    echo "Sorting files by modification time (grouped as YYYY-MM)..."
+    for file in *; do
+      if [ -f "$file" ]; then
+        # Retrieve the file's modification date in YYYY-MM format.
+        local mod_date
+        mod_date=$(date -r "$file" +"%Y-%m")
+        mkdir -p "$mod_date"
+        mv "$file" "$mod_date"/
+      fi
+    done
+    echo "Files have been sorted into directories based on modification date."
+  }
+
+  # TODO: Implement selecting the size categories interactively, and defaulting to the current implementation. (Using fzf)
+  #
+  # Function to sort files by file size into categories:
+  #   - small:  < 1MB
+  #   - medium: 1MB to 10MB
+  #   - large:  > 10MB
+  sort_by_size() {
+    echo "Sorting files by size into categories: small (<1MB), medium (1MB-10MB), large (>10MB)..."
+    for file in *; do
+      if [ -f "$file" ]; then
+        # Get the file size in bytes.
+        local size
+        size=$(stat -c%s "$file")
+        local category=""
+        if [ "$size" -lt 1048576 ]; then
+          category="small"
+        elif [ "$size" -lt 10485760 ]; then
+          category="medium"
+        else
+          category="large"
+        fi
+        mkdir -p "$category"
+        mv "$file" "$category"/
+      fi
+    done
+    echo "Files have been sorted into size categories: small, medium, and large."
+  }
+
+  #####################################
+  # Main Logic: Execute Selected Sorting Mode
+  #####################################
+  case "$mode" in
+  ext)
+    sort_by_extension || return 1
+    ;;
+  alpha)
+    sort_by_alpha || return 1
+    ;;
+  time)
+    sort_by_time || return 1
+    ;;
+  size)
+    sort_by_size || return 1
+    ;;
+  *)
+    echo "Invalid sorting mode: $mode"
+    return 1
+    ;;
+  esac
+
+  echo "Sorting operation completed successfully."
+  echo "There is no way to undo what you just did. Stay tuned for possible undo in the future."
+}
+
+################################################################################
+# RANDOM
+################################################################################
+
+# random
+# Description: Function to open a random .mp4 file in the current directory
+# Usage: random
+# Options:
+#   -h    Display this help message
+
+# Example: random  ---Opens a random .mp4 file in the current directory.
+
+################################################################################
+
+# Function to open a random .mp4 file in the current directory
+random() {
+  # Function to display help message
+  show_help() {
+    cat <<EOF
+Description: Function to open a random .mp4 file in the current directory
+Usage: random [-h]
+Options:
+  -h    Display this help message
+EOF
+  }
+
+  # Parse options using getopts
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help
+      return 0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      show_help
+      return 1
+      ;;
+    esac
+  done
+
+  # Gather all .mp4 files in the current directory
+  mp4_files=(./*.mp4)
+
+  # Check if there are any mp4 files
+  if [ ${#mp4_files[@]} -eq 0 ] || [ ! -e "${mp4_files[0]}" ]; then
+    echo "No mp4 files found in the current directory."
+    return 1
+  fi
+
+  # Select a random file from the list
+  random_file=$(find . -maxdepth 1 -type f -name "*.mp4" | shuf -n 1)
+
+  # Open the random file using the default application
+  nohup xdg-open "$random_file" 2>/dev/null
+
+  # Check if the file was opened successfully
+  if [ $? -ne 0 ]; then
+    echo "Failed to open the file: $random_file"
+    return 1
+  fi
+
+  echo "Opened: $random_file"
+}
+
+# Place this entire function in your .bashrc or other shell configuration file.
+# Then, reload your shell or source .bashrc to use it.
+
+################################################################################
+# SORTALPHA
+################################################################################
+
+sortalpha() {
+  # initialize local variables
+  local extension=""
+  local first_letter=""
+
+  # Reset getopts index to handle multiple runs
+  OPTIND=1
+
+  # parse options using getopts
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      echo "Description: Function to sort files in the current directory alphabetically by extension"
+      echo "Usage: sortalpha [-h]"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      return 0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  # HELPER: check if fzf is installed
+  check_fzf_install() {
+    if ! command -v fzf >/dev/null 2>&1; then
+      echo "fzf is not installed. Please install fzf first."
+      return 1
+    fi
+  }
+
+  # HELPER: check if the extension variable is empty
+  check_ext() {
+    if [ -z "$extension" ]; then
+      echo "No extension selected. Exiting..."
+      return 1
+    fi
+  }
+
+  # HELPER: choose extension to sort files by
+  select_extension() {
+    # prompt the user to select an extension to sort files by and assign to "extension" variable
+    extension=$(find . -maxdepth 1 -type f | sed 's/.*\.//' | sort -u | fzf --prompt="Select an extension to sort files by: ")
+
+    # check if the extension variable is empty
+    check_ext || return 1
+
+    # display a message to the user for the extension to sort files by
+    echo -e "\nSorting files by the following extension: $extension"
+  }
+
+  # HELPER: iterate through each file in the current directory and move to a new directory based on the first letter of the file
+  move_files() {
+    check_ext || return 1
+    for file in *."$extension"; do
+      if [ -f "$file" ]; then
+        first_letter=$(echo "$file" | cut -c1 | tr '[:upper:]' '[:lower:]')
+        mkdir -p "$first_letter"
+        mv "$first_letter"*."$extension" "$first_letter"/
+      fi
+    done
+    printf "\nFile sorting alphabetically completed successfully."
+  }
+
+  # MAIN LOGIC
+
+  # Check if fzf is installed
+  check_fzf_install || return 1
+
+  # select extension to sort files by
+  select_extension || return 1
+
+  # move files to new directories based on the first letter of the file
+  move_files
+  printf "\nNo way to undo what you have just done... Maybe use ranger and manually move back? :)\n"
+}
+
+################################################################################
+# WIKI
 ################################################################################
 
 # wiki
@@ -873,7 +1210,7 @@ wiki() {
 }
 
 ################################################################################
-# changes
+# CHANGES
 ################################################################################
 
 # changes
@@ -913,7 +1250,7 @@ changes() {
 }
 
 ################################################################################
-# Create a function to open the doftiles repository in the default browser
+# DOTFILES
 ################################################################################
 
 # doftiles
@@ -944,7 +1281,7 @@ dotfiles() {
 }
 
 ################################################################################
-# Create a function to set up directories
+# SETUP_DIRECTORIES
 ################################################################################
 
 # Function to set up directories (Temporary, GitHub Repositories)
@@ -1871,66 +2208,6 @@ backup() {
   local backup_filename="${filename}_backup_${timestamp}.bak" # Create the backup file name
 
   cp "$1" "$backup_filename"
-}
-
-################################################################################
-# PHOPEN
-################################################################################
-
-# Describe the phopen function and its options and usage
-
-# phopen
-# Description: This function lists .mp4 files in the current directory using fzf
-#              with exact-match (-e) and multi-select (-m) modes, then opens
-#              associated URLs in the default browser by extracting the text
-#              within square brackets [ ] in the filenames and appending it to
-#              a predefined URL prefix.
-# Usage: phopen [-h]
-# Options:
-#   -h    Display this help message
-#
-# Example: phopen
-
-#########
-
-# phopen function: Extracts parameter from filenames and opens them in default browser
-phopen() {
-  URL_PREFIX="https://www.pornhub.com/view_video.php?viewkey="
-
-  while getopts "h" opt; do
-    case "$opt" in
-    h)
-      echo "Usage: phopen [-h]"
-      echo "Open video URLs based on the keys in the filenames of .mp4 files in the current directory."
-      echo "  -h  Display this help message"
-      return 0
-      ;;
-    *)
-      echo "Invalid option: -$OPTARG" >&2
-      return 1
-      ;;
-    esac
-  done
-
-  selected="$(find . -maxdepth 1 -type f -name "*.mp4" | fzf -e -m --prompt='Select your .mp4 file(s): ')"
-  [ -z "$selected" ] && return 0
-
-  while IFS= read -r file; do
-    filename="${file%.*}"
-    if [[ "$filename" =~ \[(.*)\] ]]; then
-      content="${BASH_REMATCH[1]}"
-      url="${URL_PREFIX}${content}"
-
-      if command -v xdg-open >/dev/null 2>&1; then
-        nohup xdg-open "$url"
-      elif command -v open >/dev/null 2>&1; then
-        nohup open "$url"
-      else
-        echo "No recognized browser open command found. Please open this URL manually:"
-        echo "$url"
-      fi
-    fi
-  done <<<"$selected"
 }
 
 ################################################################################
@@ -3322,12 +3599,6 @@ mvfiles() {
     mv *.$(echo $ext | tr '[:lower:]' '[:upper:]') $ext 2>/dev/null
   done
 }
-
-###################################################################################################################################################################
-# SOURCE ALIAS FILE
-###################################################################################################################################################################
-
-source ~/.cbc_aliases.sh
 
 ###################################################################################################################################################################
 
