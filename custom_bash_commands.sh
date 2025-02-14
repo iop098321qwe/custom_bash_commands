@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 VERSION="201.0.0"
 
+###################################################################################################################################################################
+# CUSTOM BASH COMMANDS
+###################################################################################################################################################################
+
 ################################################################################################################################################################
 # PRON MODULE
 ################################################################################################################################################################
@@ -442,13 +446,6 @@ sopenexact() {
 
 ################################################################################################################################################################
 
-###################################################################################################################################################################
-# CUSTOM BASH COMMANDS
-###################################################################################################################################################################
-
-# Set the config file path
-CONFIG_FILE="$HOME/.cbc.config"
-
 ################################################################################
 # SOURCE ALIAS FILE
 ################################################################################
@@ -485,111 +482,6 @@ create_config_file() {
 if [ ! -f "$CONFIG_FILE" ]; then
   create_config_file
 fi
-
-################################################################################
-# First-time setup function
-################################################################################
-
-# Function to run the first-time setup for Custom Bash Commands
-first_time_setup() {
-
-  # Read the FIRST_TIME variable from the config file
-  source "$CONFIG_FILE"
-
-  # Check if it is the first time running the setup
-  if [ "$FIRST_TIME" = true ]; then
-    echo "Welcome to Custom Bash Commands (CBC) by iop098321qwe!"
-    echo "This setup will guide you through the initial configuration."
-    echo " "
-    echo "Let's get started!"
-    echo " "
-
-    # Prompt the user to install additional software
-    echo "Additional Software Installation:"
-    echo " "
-    echo "Would you like to install the following software packages?"
-    echo " "
-    echo "1. Neovim"
-    echo "2. Bat"
-    echo "3. exa"
-    echo "4. Zoxide"
-    echo "5. fzf"
-    echo "6. Zellij"
-    echo "7. thefuck"
-    echo "8. Obsidian"
-    echo "9. Ranger"
-    echo "10. hstr"
-    echo " "
-    echo "Enter the corresponding numbers separated by spaces (e.g., '1 2 3'), or enter 'a' to install all: "
-    read -p "Your choice: " software_choices
-
-    # Check the user's choices and update the config file
-    if [[ $software_choices == *"a"* ]]; then
-      sed -i 's/NEOVIM=false/NEOVIM=true/' "$CONFIG_FILE"
-      sed -i 's/BAT=false/BAT=true/' "$CONFIG_FILE"
-      sed -i 's/EZA=false/EZA=true/' "$CONFIG_FILE"
-      sed -i 's/ZOXIDE=false/ZOXIDE=true/' "$CONFIG_FILE"
-      sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
-      sed -i 's/ZELLI=false/ZELLI=true/' "$CONFIG_FILE"
-      sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
-      sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
-      sed -i 's/RANGER=false/RANGER=true/' "CONFIG_FILE"
-    else
-      if [[ $software_choices == *"1"* ]]; then
-        sed -i 's/NEOVIM=false/NEOVIM=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"2"* ]]; then
-        sed -i 's/BAT=false/BAT=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"3"* ]]; then
-        sed -i 's/EZA=false/EZA=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"4"* ]]; then
-        sed -i 's/ZOXIDE=false/ZOXIDE=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"5"* ]]; then
-        sed -i 's/FZF=false/FZF=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"6"* ]]; then
-        sed -i 's/ZELLI=false/ZELLI=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"7"* ]]; then
-        sed -i 's/THEFUCK=false/THEFUCK=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"8"* ]]; then
-        sed -i 's/OBSIDIAN=false/OBSIDIAN=true/' "$CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"9"* ]]; then
-        sed -i 's/RANGER=false/RANGER=true/' "CONFIG_FILE"
-      fi
-      if [[ $software_choices == *"10"* ]]; then
-        sed -i 's/HSTR=false/HSTR=true/' "CONFIG_FILE"
-      fi
-    fi
-
-    # Update the FIRST_TIME variable in the config file
-    sed -i 's/FIRST_TIME=true/FIRST_TIME=false/' "$CONFIG_FILE"
-    echo " "
-    echo "Setup complete! Please restart your terminal to apply the changes."
-  else
-    echo -e "Configuration can be edited in \e[33m$CONFIG_FILE\e[0m or by using \e[36mconf\e[0m command."
-    alias conf="nvim $CONFIG_FILE"
-  fi
-}
-
-################################################################################
-# Remove cbc configuration file
-################################################################################
-
-# Function to remove configuration file for CBC
-rmconf() {
-  if [ -f "$CONFIG_FILE" ]; then
-    rm "$CONFIG_FILE"
-    echo "Config file removed."
-  else
-    echo "Config file does not exist."
-  fi
-}
 
 ################################################################################
 # Append to end of .bashrc function
