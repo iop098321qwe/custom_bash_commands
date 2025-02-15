@@ -453,37 +453,6 @@ sopenexact() {
 source ~/.cbc_aliases.sh
 
 ################################################################################
-# Create config file function
-################################################################################
-
-# Function to create the config file with default values if it does not exist
-create_config_file() {
-  echo "# Configuration file for Custom Bash Commands (CBC) by iop098321qwe" >>"$CONFIG_FILE"
-  echo " " >>"$CONFIG_FILE"
-  echo "# First-time setup?" >>"$CONFIG_FILE"
-  echo "FIRST_TIME=true" >>"$CONFIG_FILE"
-  echo " " >>"$CONFIG_FILE"
-  echo "# Settings for additional software installation" >>"$CONFIG_FILE"
-  echo " " >>"$CONFIG_FILE"
-  echo "NEOVIM=true" >>"$CONFIG_FILE"
-  echo "BAT=false" >>"$CONFIG_FILE"
-  echo "EZA=false" >>"$CONFIG_FILE"
-  echo "ZOXIDE=false" >>"$CONFIG_FILE"
-  echo "FZF=false" >>"$CONFIG_FILE"
-  echo "ZELLI=false" >>"$CONFIG_FILE"
-  echo "THEFUCK=false" >>"$CONFIG_FILE"
-  echo "OBSIDIAN=false" >>"$CONFIG_FILE"
-  echo "RANGER=true" >>"$CONFIG_FILE"
-  echo "HSTR=true" >>"$CONFIG_FILE"
-  echo "Config file created at $CONFIG_FILE"
-}
-
-# Check if config file exists, and if not, create it with default values
-if [ ! -f "$CONFIG_FILE" ]; then
-  create_config_file
-fi
-
-################################################################################
 # Append to end of .bashrc function
 ################################################################################
 
@@ -496,7 +465,6 @@ append_to_bashrc() {
     echo "# Custom Additions" >>"$HOME/.bashrc"
     echo "###################################################################################################################################################################" >>"$HOME/.bashrc"
     echo " " >>"$HOME/.bashrc"
-    echo "#source ~/.update_commands.sh" >>"$HOME/.bashrc"
     echo "source ~/.custom_bash_commands.sh" >>"$HOME/.bashrc"
   fi
 }
@@ -919,7 +887,8 @@ Options:
 EOF
   }
 
-  # Parse options using getopts
+  OPTIND=1
+
   while getopts ":h" opt; do
     case $opt in
     h)
@@ -933,6 +902,8 @@ EOF
       ;;
     esac
   done
+
+  shift $((OPTIND - 1))
 
   # Gather all .mp4 files in the current directory
   mp4_files=(./*.mp4)
@@ -1060,25 +1031,28 @@ changes() {
 # DOTFILES
 ################################################################################
 
-# doftiles
-# Description: Function to open the doftiles repository in the default browser
-# Usage: doftiles
-# Options:
-#   -h    Display this help message
-
-# Example: doftiles  ---Opens the doftiles repository in the default browser.
-
-##########
-
-# Function to open the doftiles repository in the default browser
 dotfiles() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: Function to open the dotfiles repository in the default browser"
-    echo "Usage: dotfiles"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
+  OPTIND=1
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      echo "Description: Function to open the dotfiles repository in the default browser"
+      echo "Usage: dotfiles"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      echo " "
+      echo "Example: dotfiles"
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
 
   # Define the dotfiles repository URL
   dotfiles_url="https://github.com/iop098321qwe/dotfiles"
@@ -1093,11 +1067,36 @@ dotfiles() {
 
 # Function to set up directories (Temporary, GitHub Repositories)
 setup_directories() {
+  OPTIND=1
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      echo "Description: Function to set up directories (Temporary, GitHub Repositories, Grymm's Grimoires)"
+      echo "Usage: setup_directories"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      echo " "
+      echo "Example: setup_directories"
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
   # Create the Temporary directory if it does not exist
-  mkdir -p ~/Documents/Temporary
+  mkdir -p ~/Documents/Temporary/screenshots/
 
   # Create the GitHub Repositories directory if it does not exist
   mkdir -p ~/Documents/github_repositories
+
+  # Create the Grymm's Grimoires directory if it does not exist
+  mkdir -p ~/Documents/grymms_grimoires/
 }
 
 # Call the setup_directories function
@@ -1107,85 +1106,36 @@ setup_directories
 # DISPLAY VERSION
 ################################################################################
 
-# Describe the display_version function and its options and usage
-
-# display_version
-# Description: This function allows you to display the version.txt file from the local repository
-# Alias: dv
-# Usage: display_version
-# Options:
-#   -h    Display this help message
-
-# Example: display_version  ---Displays the version number from the .version file from the local repository
-
-##########
-
-# Function to display the .version file from the local repository.
 display_version() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: This function allows you to display the version number from the .version file from the local repository."
-    echo "Alias: dv"
-    echo "Usage: display_version"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
+  OPTIND=1
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      echo "Description: This function allows you to display the version number from the .custom_bash_commands file from the local repository."
+      echo "Alias: dv"
+      echo "Usage: display_version"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      echo " "
+      echo "Example: display_version"
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
   # Create an alias for the display_version function
   # alias dv="display_version"
-  # Read the contents of the .version file and display it in the terminal
-  version_number=$VERSION
-  echo -e "Using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$version_number\e[0m. To see the changes in this version, use \e[36mchanges\e[0m command."
+  echo -e "Using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$VERSION\e[0m. To see the changes in this version, use \e[36mchanges\e[0m command."
   echo -e "Show commands included with \e[36mcbcs [-h]\e[0m or typing \e[36mcommands\e[0m (\e[36mcomm\e[0m for shortcut)."
   echo -e "If you wish to stop using \e[32mCBC\e[0m, \e[31mremove\e[0m \e[33m.custom_bash_commands.sh\e[0m from your \e[33m.bashrc\e[0m file using \e[36meditbash\e[0m (\e[32mCBC\e[0m)."
   echo -e "Check out the Wiki for more information (or use \e[36mwiki\e[0m): \e[34m[link](https://github.com/iop098321qwe/custom_bash_commands/wiki)\e[0m"
-}
-
-# Create a file to store the display_version configuration
-display_version_config_file=~/.display_version_config
-
-# Check if the display_version configuration file exists and create it prompting the user for a username and font if it does not
-if [ ! -f $display_version_config_file ]; then
-
-  # Check if the enable_display_version variable does not exist in the display_version configuration file
-  if ! grep -q "enable_display_version" $display_version_config_file; then
-
-    # Prompt the user if they want to enable the welcome message
-    while true; do
-      read -p "Would you like to enable the display_version message? HIGHLY RECOMMENDED (y/n): " enable_display_version
-
-      # Check if the user wants to enable the display_version message
-      if [[ $enable_display_version == "y" || $enable_display_version == "Y" ]]; then
-        enable_display_version="y"
-        break
-      elif [[ $enable_display_version == "n" || $enable_display_version == "N" ]]; then
-        enable_display_version="n"
-        break
-      else
-        echo "Invalid input. Please enter 'y' or 'n'."
-      fi
-    done
-
-    # Store the enable_display_version variable in the display_version configuration file
-    echo "enable_display_version=$enable_display_version" >>$display_version_config_file
-  fi
-fi
-
-# Create a function to remove the configuration file and refresh the terminal
-remove_display_version_config() {
-  # Alias for the remove_display_version_config function
-  # alias rdvc="remove_display_version_config"
-  # Prompt the user to confirm the removal of the display_version configuration file
-  read -p "Are you sure you want to remove the display_version configuration file? (y/n): " confirm
-
-  # Check if the user wants to remove the display_version configuration file
-  if [[ $confirm == "y" || $confirm == "Y" ]]; then
-    # Remove the display_version configuration file
-    rm $display_version_config_file
-    echo "Display version configuration file removed."
-    echo "Refresh terminal to apply changes."
-  else
-    echo "Display version configuration file removal canceled."
-  fi
 }
 
 ################################################################################
@@ -1293,26 +1243,6 @@ cbcs() {
     echo "refresh"
     echo "         Description: Refresh the terminal session"
     echo "         Usage: refresh"
-    echo " "
-    echo "remove_figlet_config"
-    echo "         Description: Remove the figlet configuration file and refresh the terminal"
-    echo "         Usage: remove_figlet_config"
-    echo "         Aliases: rfc"
-    echo " "
-    echo "remove_neofetch_config"
-    echo "         Description: Remove the neofetch configuration file and refresh the terminal"
-    echo "         Usage: remove_neofetch_config"
-    echo "         Aliases: rnc"
-    echo " "
-    echo "remove_session_id_config"
-    echo "          Description: Remove the session ID configuration file and refresh the terminal"
-    echo "          Usage: remove_session_id_config"
-    echo "          Aliases: rsc"
-    echo " "
-    echo "remove_display_version_config"
-    echo "          Description: Remove the display version configuration file and refresh the terminal"
-    echo "          Usage: remove_display_version_config"
-    echo "          Aliases: rdvc"
     echo " "
     echo "remove_all_cbc_configs"
     echo "          Description: Remove all configuration files associated with CBC"
@@ -1957,9 +1887,6 @@ cbcs() {
     echo "pu"
     echo "regex_help"
     echo "remove_all_cbc_configs"
-    echo "remove_display_version_config"
-    echo "remove_figlet_config"
-    echo "remove_neofetch_config"
     echo "remove_session_id_config"
     echo "rm"
     echo "rma"
@@ -2164,128 +2091,65 @@ up() {
 }
 
 ################################################################################
-# REMOVE ALL CBC CONFIGS
+# REMOVE ALL CBC CONFIGS - BOOKMARK
 ################################################################################
 
-# Describe the remove_all_cbc_configs function and its options and usage
-
-# remove_all_cbc_configs
-# Description: A function to remove all configuration files associated with CBC
-# Alias: racc
-# Usage: remove_all_cbc_configs
-# Options:
-#   -h    Display this help message
-
-# Example: remove_all_cbc_configs  ---Removes all configuration files associated with CBC.
-
-# Create a function to call rfc, rnc, rsc, and rdvc
 remove_all_cbc_configs() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: A function to remove all configuration files associated with CBC"
-    echo "Alias: racc"
-    echo "Usage: remove_all_cbc_configs"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
+  OPTIND=1
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      echo "Description: A function to remove all configuration files associated with CBC"
+      echo "Usage: remove_all_cbc_configs"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      echo " "
+      echo "Example: remove_all_cbc_configs"
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG. Use -h for help."
+      return
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
   # Alias for the remove_all_cbc_configs function
   # Alias: remove_all_cbc_configs="racc"
-  # Call the rfc, rnc, rsc, and rdvc functions
-  remove_figlet_config
-  remove_neofetch_config
+  # Call the rnc, rsc, and rdvc functions
   remove_session_id_config
-  remove_display_version_config
 }
 
 ################################################################################
-# CC
+# INCON - BOOKMARK
 ################################################################################
 
-# Describe the cc function and its options and usage
-
-# cc
-# Description: A function to combine the git add/commit process
-# Usage: cc [message]
-# Options:
-#   -h    Display this help message
-
-# Example: cc "Initial commit"  ---Adds all files, commits with the message "Initial commit", and pushes to the current branch.
-
-##########
-
-# Function to combine the git add/commit process
-cc() {
-  # Get the current branch name with error handling
-  currentBranch=$(git symbolic-ref --short -q HEAD 2>/dev/null)
-  if [ -z "$currentBranch" ]; then
-    echo "Error: Not a git repository or no branch detected. Please navigate to a valid git repository."
-    return 1
-  fi
-
-  echo " "
-  echo "Current branch: $currentBranch"
-  echo " "
-  echo "Available Branches:"
-  git branch --color=always | grep -e '^*' -e ''
-  echo " "
-  read -p "Do you want to continue pushing to the current branch? (y/n): " choice
-
-  if [ "$choice" = "y" ]; then
-    read -p "Do you want to stage all changes? (y/n): " stage_all
-    if [ "$stage_all" = "y" ]; then
-      git add .
-    else
-      read -p "Please specify the files you want to stage: " files
-      if [ -n "$files" ]; then
-        git add $files
-      else
-        echo "No files specified. Staging canceled."
-        return 1
-      fi
-    fi
-
-    git commit || {
-      echo "Commit failed. Aborting push."
-      return 1
-    }
-    read -p "Do you want to push the changes to the branch '$currentBranch'? (y/n): " push_choice
-    if [ "$push_choice" = "y" ]; then
-      echo "Pushing to branch: $currentBranch"
-      git push origin "$currentBranch" || {
-        echo "Push failed."
-        return 1
-      }
-    else
-      echo "Push canceled."
-    fi
-  else
-    echo "Push to the current branch canceled."
-  fi
-}
-
-################################################################################
-# INCON
-################################################################################
-
-# Describe the incon function and its options and usage
-
-# incon
-# Description: A function to initialize a local git repo, create/connect it to a GitHub repo, and set up files
-# Usage: incon
-
-# Example: incon test ---Initializes a local git repo, creates/connects it to a GitHub repo, and sets up files.
-
-##########
-
-# A function to initialize a local git repo, create/connect it to a GitHub repo, and set up files
 incon() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: A function to initialize a local git repo, create/connect it to a GitHub repo, and set up files"
-    echo "Usage: incon [repo_name]"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
+  OPTIND=1
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      echo "Description: A function to initialize a local git repo, create/connect it to a GitHub repo, and set up files"
+      echo "Usage: incon"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      echo " "
+      echo "Example: incon"
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG. Use -h for help."
+      return
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
   # Ensure the gh tool is installed.
   if ! command -v gh &>/dev/null; then
     echo "gh (GitHub CLI) not found. Please install it to proceed."
@@ -2299,64 +2163,80 @@ incon() {
   fi
 
   # 1. Initialize a new local Git repository
-  git init
+  function init_git() {
+    git init
+    touch .gitignore
+    touch README.md
+    repo_name=$(basename $(pwd) | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+    formatted_name=$(echo $repo_name | tr '_' ' ' | sed -e "s/\b\(.\)/\u\1/g")
+    echo "# $formatted_name" >README.md
+    echo "* Not started" >>README.md
+  }
 
-  # Create a .gitignore and README.md file
-  touch .gitignore
-  touch README.md
-  repo_name=$(basename $(pwd) | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
-  formatted_name=$(echo $repo_name | tr '_' ' ' | sed -e "s/\b\(.\)/\u\1/g")
-  echo "# $formatted_name" >README.md
-  echo "* Not started" >>README.md
+  # Call the init_git function
+  init_git
 
   # 2. Create a new remote public repository on GitHub using the gh tool
-  gh repo create $repo_name --private || {
-    echo "Repository creation failed. Exiting."
-    return
+  new_remote_repo() {
+    gh repo create "$repo_name" || {
+      echo "Repository creation failed. Exiting"
+      return
+    }
   }
+
+  # Call the new_remote_repo function
+  new_remote_repo
 
   # 3. Connect the local repository to the newly created remote repository on GitHub
-  git remote add origin "https://github.com/$(gh api user | jq -r '.login')/$repo_name.git"
-
-  # 4. Add all files, commit, and push
-  git add README.md
-  git commit -m "Initial commit"
-  git push -u origin main || {
-    echo "Push to main failed. Exiting."
-    return
+  connect_to_remote() {
+    git remote add origin "https://github.com/$(gh api user | jq -r '.login')/$repo_name.git"
   }
 
+  # Call the connect_to_remote function
+  connect_to_remote
+
+  # 4. Add all files, commit, and push
+  add_commit_push() {
+    git add .
+    git commit -m "Initial commit"
+    git push -u origin main || {
+      echo "Push to main failed. Exiting."
+      return
+    }
+  }
+
+  # Call the add_commit_push function
+  add_commit_push
+
   echo "Local and remote repositories have successfully initialized."
-  echo "Note: Only the README.md file has been added. Please add and commit additional files as needed."
 }
 
 ################################################################################
 # MKDIRS
 ################################################################################
 
-# Describe the mkdirs function and its options and usage
-
-# mkdirs
-# Description: A function to create a directory then switch into it
-# Usage: mkdirs [directory]
-# Options:
-#   -h    Display this help message
-
-# Example: mkdirs test  ---Creates a directory called test and switches into it.
-
-##########
-
-# Function to create a directory and switch into it
 mkdirs() {
-  # Check for the help flag
-  if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
-    # Display the help message
-    echo "Description: A function to create a directory then switch into it"
-    echo "Usage: mkdirs [directory]"
-    echo "Options:"
-    echo "  -h, --help    Display this help message"
-    return
-  fi
+  OPTIND=1
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      echo "Description: A function to create a directory then switch into it"
+      echo "Usage: mkdirs [directory]"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      echo " "
+      echo "Example: mkdirs test"
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG. Use -h for help."
+      return
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
 
   # Check if the directory name is provided
   if [ -z "$1" ]; then
@@ -2372,35 +2252,50 @@ mkdirs() {
 # UPDATE
 ################################################################################
 
-# Describe the update function and its options and usage
-
-# update
-# Description: A function to update the system and reboot if desired
-# Usage: update [option]
-# Options:
-#   -r           Reboot the system after updating
-#   -s           Shutdown the system after updating
-#   -h|--help    Display this help message
-#   -l           Display the log file path
-
-# Example: update -r  ---Updates the system and reboots the system after updating.
-
-##########
-
-# Create an update command to update your Linux machine.
 update() {
-  # Check if the '-h' or '--help' flag is provided
-  if [[ $1 == "-h" || $1 == "--help" ]]; then
-    # Display the help message
-    echo "Description: A function to update the system and reboot if desired"
-    echo "Usage: update [option]"
-    echo "Options:"
-    echo "  -r            Reboot the system after updating"
-    echo "  -s            Shutdown the system after updating"
-    echo "  -h|--help     Display this help message"
-    echo "  -l            Display the log file path"
-    return
-  fi
+  OPTIND=1
+  local reboot=false
+  shutdown=false
+
+  while getopts ":hrsl" opt; do
+    case $opt in
+    h)
+      echo "Description: A function to update the system and reboot if desired"
+      echo "Usage: update [option]"
+      echo "Options:"
+      echo "  -r        Reboot the system after updating"
+      echo "  -s        Shutdown the system after updating"
+      echo "  -h        Display this help message"
+      echo "  -l        Display the log file path"
+      echo " "
+      echo "Example: update -r"
+      return
+      ;;
+    r)
+      # Reboot the system after updating
+      echo "Rebooting after updates enabled."
+      # reboot=true
+      return
+      ;;
+    s)
+      # Shutdown the system after updating
+      echo "Shutting down the system..."
+      # sudo shutdown now
+      return
+      ;;
+    l)
+      # Display the log file path
+      # echo "Update logs saved to: ~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log"
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG. Use -h for help."
+      return
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
 
   # Create the log directory if it doesn't exist
   mkdir -p ~/Documents/update_logs
@@ -2496,23 +2391,6 @@ update() {
 # MAKEMAN
 ################################################################################
 
-# Describe the makeman function and its options and usage
-
-# makeman
-# Description: Function to generate a PDF file from a man page
-# Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>
-# Options:
-#   -h           Display this help message
-#   -f <file>    Specify a file with a list of commands
-#   -o <dir>     Specify an output directory (default: ~/Documents/grymms_grimoires/command_manuals)
-#   -r           Remove existing files in the output directory that are not listed in the specified file
-
-# Example: makeman ls  ---Generates a PDF file for the 'ls' command manual.
-# Example: makeman -f commands.txt -r  ---Generates PDF files for commands listed in 'commands.txt' and removes unlisted files.
-
-##########
-
-# Function to generate a PDF file from a man page or a list of commands
 makeman() {
   local file=""
   local output_dir="$HOME/Documents/grymms_grimoires/command_manuals"
@@ -2533,6 +2411,9 @@ makeman() {
       echo "  -f <file>    Specify a file with a list of commands"
       echo "  -o <dir>     Specify an output directory (default: ~/Documents/grymms_grimoires/command_manuals)"
       echo "  -r           Remove existing files in the output directory that are not listed in the specified file"
+      echo " "
+      echo "Example: makeman ls"
+      echo "Example: makeman -f commands.txt -r"
       return 0
       ;;
     f)
@@ -2556,6 +2437,7 @@ makeman() {
       ;;
     esac
   done
+  
   shift $((OPTIND - 1))
 
   # Process remaining arguments as the command
@@ -2611,36 +2493,11 @@ makeman() {
   fi
 }
 
-# Example usage:
-# makeman ls
-# makeman -f commands.txt
-# makeman -o /custom/output/directory ls
-# makeman -f commands.txt -r
-
 ################################################################################
 # REGEX HELP (REWRITE)
 ################################################################################
 
-# Describe the regex_help function and its options and usage
-
-# regex_help
-# Description: A function to display help for regular expressions
-# Usage: regex_help [-f|--flavor <flavor>] [-h|--help]
-# Options:
-#   -f|--flavor <flavor>    Specify the regex flavor (e.g., POSIX-extended, POSIX-basic, PCRE)
-#   -h|--help               Display this help message
-#   --example               Display an example of the regex flavor
-
-# Example: regex_help -f PCRE  ---Displays help for PCRE regular expressions.
-
-# Create a function to display help for regular expressions
 regex_help() {
-  # Check if the '-h' flag is provided
-  # PLACEHOLDER
-
-  # Check if the '--help' flag is provided and provide a more detailed help message
-  # PLACEHOLDER
-
   # Default flavor
   local flavor="POSIX-extended"
 
@@ -2657,8 +2514,14 @@ regex_help() {
       fi
       ;;
     -h | --help) # Help flag
+      echo "Description: A function to display help for regular expressions"
       echo "Usage: regex_help [-f|--flavor <flavor>] [-h|--help]"
-      echo "Flavors: POSIX-extended, POSIX-basic, PCRE"
+      echo "Options:"
+      echo "  -f|--flavor <flavor>    Specify the regex flavor (e.g., POSIX-extended, POSIX-basic, PCRE)"
+      echo "  -h|--help               Display this help message"
+      echo "  --example(?)               Display an example of the regex flavor"
+      echo " "
+      echo "Example: regex_help -f PCRE"
       return 0
       ;;
     *) # Handle unexpected options
@@ -2712,12 +2575,6 @@ regex_help() {
     echo "  - \\W: Matches any non-word character"
     echo "  - (abc|def): Matches either 'abc' or 'def'"
     ;;
-  # Help flag
-  "help")
-    echo "Usage: regex_help [-f|--flavor <flavor>] [-h|--help]"
-    echo "Flavors: POSIX-extended, POSIX-basic, PCRE"
-    return 0
-    ;;
   *)
     # Handle unexpected flavors
     echo "Error: Unsupported flavor $flavor" >&2
@@ -2730,28 +2587,28 @@ regex_help() {
 # EXTRACT
 ################################################################################
 
-# Describe the extract function and its options and usage
-
-# extract
-# Description: A function to extract compressed files
-# Alias: ext
-# Usage: extract [file]
-# Options:
-#   -h    Display this help message
-
-# Example: extract file.tar.gz  ---Extracts the file file.tar.gz.
-
-##########
-
-# Function to extract compressed files
 extract() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: A function to extract compressed files"
-    echo "Usage: extract [file]"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
+  OPTIND=1
+
+  while getopts ":h" opt; do
+    case ${opt} in
+    h)
+      echo "Description: A function to extract compressed files"
+      echo "Usage: extract [file]"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      echo " "
+      echo "Example: extract file.tar.gz"
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
 
   if [ -z "$1" ]; then
     echo "Error: No file specified"
@@ -2783,235 +2640,10 @@ extract() {
 }
 
 ################################################################################
-# FIGLET CONFIGURATION
-################################################################################
-
-# Check to see if figlet is installed and install it if it is not
-if ! command -v figlet &>/dev/null; then
-  echo "figlet not found. Installing..."
-  sudo apt install figlet
-fi
-
-# Create a file to store figlet configuration and message text
-figlet_config_file=~/.figlet_config
-
-# Check if the figlet configuration file exists and create it prompting the user for a username and font if it does not
-if [ ! -f $figlet_config_file ]; then
-
-  # Check if the enable_figlet variable does not exist in the figlet configuration file
-  if ! grep -q "enable_figlet" $figlet_config_file; then
-
-    # Prompt the user if they want to enable the welcome message
-    while true; do
-      read -p "Would you like to enable the welcome message? (y/n): " enable_welcome
-
-      # Check if the user wants to enable the welcome message
-      if [[ $enable_welcome == "y" || $enable_welcome == "Y" ]]; then
-        enable_figlet="y"
-        break
-      elif [[ $enable_welcome == "n" || $enable_welcome == "N" ]]; then
-        enable_figlet="n"
-        break
-      else
-        echo "Invalid input. Please enter 'y' or 'n'."
-      fi
-    done
-
-    # Store the enable_figlet variable in the figlet configuration file
-    echo "enable_figlet=$enable_figlet" >>$figlet_config_file
-  fi
-
-  # Check if the welcome message is enabled
-  if [[ $enable_figlet == "y" || $enable_figlet == "Y" ]]; then
-    while true; do
-
-      # Prompt the user to enter a username
-      read -p "Enter a username to use with figlet: " username
-
-      # Prompt the user to enter a font
-      read -p "Enter a font to use with figlet [future]: " font
-      font=${font:-future}
-
-      # Display the entered username and font
-      echo "Username: $username"
-      echo "Font: $font"
-
-      # Prompt the user to confirm the username and font
-      read -p "Is this correct? (y/n): " confirm
-
-      case $confirm in
-      [Yy]*)
-        echo "username=$username" >>$figlet_config_file
-        echo "font=$font" >>$figlet_config_file
-        break
-        ;;
-      [Nn]*)
-        echo "Username and font not confirmed. Please try again."
-        ;;
-      *)
-        echo "Invalid input. Please enter 'y' or 'n'."
-        ;;
-      esac
-    done
-  fi
-fi
-
-# Create a function to remove the configuration file and refresh the terminal
-remove_figlet_config() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: A function to remove the figlet configuration file and refresh the terminal"
-    echo "Alias: rfc"
-    echo "Usage: remove_figlet_config"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
-  # Alias for the remove_figlet_config function
-  # alias rfc="remove_figlet_config"
-  # Prompt the user to confirm the removal of the figlet configuration file
-  read -p "Are you sure you want to remove the figlet configuration file? (y/n): " confirm
-
-  # Check if the user wants to remove the figlet configuration file
-  if [[ $confirm == "y" || $confirm == "Y" ]]; then
-    # Remove the figlet configuration file
-    rm $figlet_config_file
-    echo "Figlet configuration file removed."
-    echo "Refresh terminal to apply changes."
-  else
-    echo "Figlet configuration file removal canceled."
-  fi
-}
-
-################################################################################
-# SESSION ID GENERATION
-################################################################################
-
-# Create a variable to store a number that will serve as the session ID, and increment it by 1 each time it is loaded
-if [ -f ~/.session_id ]; then
-  session_id=$(<~/.session_id)
-  session_id=$((session_id + 1))
-  echo $session_id >~/.session_id
-else
-  session_id=1
-  echo $session_id >~/.session_id
-fi
-
-# Prompt the user if they would like to display the session ID on terminal run and store the response in a configuration file
-if [ ! -f ~/.session_id_config ]; then
-  while true; do
-    read -p "Would you like to display the session ID on terminal run? (y/n): " enable_session_id
-
-    # Check if the user wants to enable the session ID on terminal run
-    if [[ $enable_session_id == "y" || $enable_session_id == "Y" ]]; then
-      echo "enable_session_id=y" >>~/.session_id_config
-      break
-    elif [[ $enable_session_id == "n" || $enable_session_id == "N" ]]; then
-      echo "enable_session_id=n" >>~/.session_id_config
-      break
-    else
-      echo "Invalid input. Please enter 'y' or 'n'."
-    fi
-  done
-fi
-
-# Create a function to remove the configuration file
-remove_session_id_config() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: A function to remove the session ID configuration file"
-    echo "Alias: rsc"
-    echo "Usage: remove_session_id_config"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
-  # Alias for the remove_session_id_config function
-  # alias rsc="remove_session_id_config"
-  # Prompt the user to confirm the removal of the session ID configuration file
-  read -p "Are you sure you want to remove the session ID configuration file? (y/n): " confirm
-
-  # Check if the user wants to remove the session ID configuration file
-  if [[ $confirm == "y" || $confirm == "Y" ]]; then
-    # Remove the session ID configuration file
-    rm ~/.session_id_config
-    echo "Session ID configuration file removed."
-    echo "Refresh terminal to apply changes."
-  else
-    echo "Session ID configuration file removal canceled."
-  fi
-}
-
-################################################################################
-# NEOFETCH CONFIGURATION
-################################################################################
-
-# Check to see if neofetch is installed and install it if it is not, then call it
-if ! command -v neofetch &>/dev/null; then
-  echo "neofetch not found. Installing..."
-  sudo apt install neofetch
-fi
-
-# Prompt the user if they would like to enable neofetch on terminal run and store the response in a configuration file
-if [ ! -f ~/.neofetch_config ]; then
-  while true; do
-    read -p "Would you like to enable neofetch on terminal run? (y/n): " enable_neofetch
-
-    # Check if the user wants to enable neofetch on terminal run
-    if [[ $enable_neofetch == "y" || $enable_neofetch == "Y" ]]; then
-      echo "enable_neofetch=y" >>~/.neofetch_config
-      break
-    elif [[ $enable_neofetch == "n" || $enable_neofetch == "N" ]]; then
-      echo "enable_neofetch=n" >>~/.neofetch_config
-      break
-    else
-      echo "Invalid input. Please enter 'y' or 'n'."
-    fi
-  done
-fi
-
-# Create a function to remove the configuration file and refresh the terminal
-remove_neofetch_config() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: A function to remove the neofetch configuration file and refresh the terminal"
-    echo "Alias: rnc"
-    echo "Usage: remove_neofetch_config"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
-  # Alias for the remove_neofetch_config function
-  # alias rnc="remove_neofetch_config"
-
-  # Prompt the user to confirm the removal of the neofetch configuration file
-  read -p "Are you sure you want to remove the neofetch configuration file? (y/n): " confirm
-
-  # Check if the user wants to remove the neofetch configuration file
-  if [[ $confirm == "y" || $confirm == "Y" ]]; then
-    # Remove the neofetch configuration file
-    rm ~/.neofetch_config
-    echo "Neofetch configuration file removed."
-    echo "Refresh terminal to apply changes."
-  else
-    echo "Neofetch configuration file removal canceled."
-  fi
-}
-
-################################################################################
 # ODT
 ################################################################################
 
-# Describe the odt function and its options and usage
-
-# odt
-# Description: A function to create a .odt file in the current directory and open it
-# Usage: odt [filename]
-# Options:
-#   -h    Display this help message
-
-# Example: odt test  ---Creates a .odt file called test and opens it in the current directory.
-
-# Create odt command to create a .odt file in the current directory and open it
 odt() {
-  # Use getopts to handle Options
   OPTIND=1
 
   while getopts ":h" opt; do
@@ -3021,6 +2653,8 @@ odt() {
       echo "Usage: odt [filename]"
       echo "Options:"
       echo "  -h    Display this help message"
+      echo " "
+      echo "Example: odt test"
       return
       ;;
     \?)
@@ -3235,55 +2869,25 @@ filehash() {
 # DISPLAY INFO
 ################################################################################
 
-# Describe the display_info function and its options and usage
-
-# display_info
-# Description: A function to display information
-# Usage: display_info
-# Options:
-#   -h    Display this help message
-
-# Example: display_info  ---Displays information.
-
-# Function to display information
 display_info() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: A function to display CBC information"
-    echo "Usage: display_info"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
-  # Alias for the display_info function
-  # alias di="display_info"
+  while getopts ":h" opt; do
+    case ${opt} in
+    h)
+      echo "Description: A function to display information"
+      echo "Usage: display_info"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      echo " "
+      echo "Example: display_info"
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+    esac
+  done
 
-  # Check if the 'enable_display_version' variable in the display version configuration file is equal to 'n'
-  if ! grep -q "enable_display_version=n" ~/.display_version_config; then
-    # Display the version number using the display_version function
-    display_version
-  fi
-
-  # Check if the 'enable_session_id' variable in the session ID configuration file is equal to 'n'
-  if ! grep -q "enable_session_id=n" ~/.session_id_config; then
-    # Display the session ID
-    echo -e "Session ID: \e[33m$session_id\e[0m"
-  fi
-
-  # Check if the 'enable_neofetch' variable in the neofetch configuration file is equal to 'n'
-  if ! grep -q "enable_neofetch=n" ~/.neofetch_config; then
-    # Display system information using neofetch
-    neofetch
-  fi
-
-  # Check if the 'enable_figlet' variable in the figlet configuration file is equal to 'n'
-  if ! grep -q "enable_figlet=n" $figlet_config_file; then
-    # Get the font from the figlet configuration file
-    fig_font=$(grep -oP 'font=\K.*' $figlet_config_file)
-    fig_user=$(grep -oP 'username=\K.*' $figlet_config_file)
-    # Display a welcome message using figlet and the username from the figlet configuration file and the font with a border
-    figlet -f $fig_font "Welcome $fig_user" -F border
-  fi
-}
+  display_version
 
 ################################################################################
 # UPDATECBC
@@ -3419,8 +3023,6 @@ display_info
 # If FIRST_TIME is set to true in the config file, display the welcome message and run cbcs -h
 if [ "$FIRST_TIME" = "true" ]; then
   # Display the welcome message
-  echo " "
-  figlet -f future Welcome to custom bash commands!
   echo " "
   echo "Run cbcs [-h] with help flag to display descriptions and usage."
   echo " "
