@@ -2437,7 +2437,7 @@ makeman() {
       ;;
     esac
   done
-  
+
   shift $((OPTIND - 1))
 
   # Process remaining arguments as the command
@@ -2888,6 +2888,7 @@ display_info() {
   done
 
   display_version
+}
 
 ################################################################################
 # UPDATECBC
