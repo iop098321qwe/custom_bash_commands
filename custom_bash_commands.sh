@@ -15,32 +15,20 @@ VERSION="201.0.0"
 # PHOPEN
 ################################################################################
 
-# Describe the phopen function and its options and usage
-
-# phopen
-# Description: This function lists .mp4 files in the current directory using fzf
-#              with exact-match (-e) and multi-select (-m) modes, then opens
-#              associated URLs in the default browser by extracting the text
-#              within square brackets [ ] in the filenames and appending it to
-#              a predefined URL prefix.
-# Usage: phopen [-h]
-# Options:
-#   -h    Display this help message
-#
-# Example: phopen
-
-#########
-
-# phopen function: Extracts parameter from filenames and opens them in default browser
 phopen() {
   URL_PREFIX="https://www.pornhub.com/view_video.php?viewkey="
+  OPTIND=1
 
   while getopts "h" opt; do
     case "$opt" in
     h)
+      echo "Description: This function opens special .mp4 files in the browser using fzf and"
+      echo "             a predefined URL prefix."
       echo "Usage: phopen [-h]"
-      echo "Open video URLs based on the keys in the filenames of .mp4 files in the current directory."
-      echo "  -h  Display this help message"
+      echo "Options:"
+      echo "  -h    Display this help message"
+      echo " "
+      echo "Example: phopen"
       return 0
       ;;
     *)
@@ -49,6 +37,8 @@ phopen() {
       ;;
     esac
   done
+
+  shift $((OPTIND - 1))
 
   selected="$(find . -maxdepth 1 -type f -name "*.mp4" | fzf -e -m --prompt='Select your .mp4 file(s): ')"
   [ -z "$selected" ] && return 0
@@ -3054,7 +3044,7 @@ fi
 check_install_zoxide() {
   # Check if zoxide is installed, and if it is, source the zoxide init script
   if command -v zoxide &>/dev/null; then
-    eval "$(zoxide init --cmd cd bash)"
+    # eval "$(zoxide init --cmd cd bash)"
   # If zoxide is not installed, install it
   else
     echo "zoxide not found. Install with chezmoi"
