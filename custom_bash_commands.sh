@@ -65,33 +65,29 @@ phopen() {
 # PHSEARCH
 ################################################################################
 
-# phsearch
-# Description: Prompts the user for a search term, constructs a search URL, and opens it
-# Usage: phsearch
-# Options:
-#   -h    Display this help message
-
-# Example: phsearch
-# Enter search term: funny cats
-# Opens: https://www.example.com/video/search?search=funny+cats
-
-################################################################################
-# Function to prompt for a search term, construct a URL, and open it in the default browser
 phsearch() {
-  OPTIND=1 # Reset getopts index to handle multiple runs
-
-  # Function to display help
+  # Function to display usage
   usage() {
-    cat <<EOF
-Usage: phsearch [-h]
+    gum style \
+      --border double \
+      --margin "1" \
+      --padding "1" \
+      --border-foreground 212 \
+      "Description:
+  Prompts the user for a search term, constructs a search URL, and opens it in the default browser.
+
+Usage:
+  phsearch [-h]
+
 Options:
   -h    Display this help message
-Description:
-  Prompts the user for a search term, constructs a search URL, and opens it.
-EOF
+
+Example:
+  phsearch"
   }
 
-  # Parse options
+  OPTIND=1
+
   while getopts "h" opt; do
     case "$opt" in
     h)
@@ -104,10 +100,17 @@ EOF
       ;;
     esac
   done
+
   shift $((OPTIND - 1))
 
-  # Prompt user for a search term
-  read -p "Enter search term: " search_term
+  # Prompt user for a search term using gum input
+  search_term=$(gum input --placeholder "Enter search term...")
+
+  # Exit if no input is given
+  if [[ -z "$search_term" ]]; then
+    gum style --foreground 9 "No search term entered. Exiting..."
+    return 1
+  fi
 
   # Replace spaces in the search term with '+' using parameter expansion
   formatted_term=${search_term// /+}
@@ -115,8 +118,8 @@ EOF
   # Construct the search URL
   search_url="https://www.pornhub.com/video/search?search=${formatted_term}"
 
-  # Open the URL in the default browser using nohup and xdg-open
-  nohup xdg-open "$search_url" >/dev/null 2>&1 &
+  # Show the search URL before opening it
+  gum confirm "Open search: $search_url?" && nohup xdg-open "$search_url" >/dev/null 2>&1 &
 }
 
 ################################################################################
@@ -3041,15 +3044,15 @@ fi
 ###################################################################################################################################################################
 
 # Function to check if zoxide is installed and install it if necessary
-check_install_zoxide() {
-  # Check if zoxide is installed, and if it is, source the zoxide init script
-  if command -v zoxide &>/dev/null; then
-    # eval "$(zoxide init --cmd cd bash)"
-  # If zoxide is not installed, install it
-  else
-    echo "zoxide not found. Install with chezmoi"
-  fi
-}
+# check_install_zoxide() {
+#   # Check if zoxide is installed, and if it is, source the zoxide init script
+#   if command -v zoxide &>/dev/null; then
+#     # eval "$(zoxide init --cmd cd bash)"
+#   # If zoxide is not installed, install it
+#   else
+#     echo "zoxide not found. Install with chezmoi"
+#   fi
+# }
 
 ###################################################################################################################################################################
 # Ensure that ranger is installed, and if not install it.
