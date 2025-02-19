@@ -72,16 +72,16 @@ alias iopen='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.pn
 alias iopenexact='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" \) | fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
 alias io='iopen'
 alias ioe='iopenexact'
-alias la="eza --group-directories-first -a"
-alias lar="eza -r --group-directories-first -a"
-alias le="eza --group-directories-first -s extension"
-alias ll="eza --group-directories-first --smart-group --total-size -hl"
-alias llt="eza --group-directories-first --smart-group --total-size -hlT"
-alias lsd="eza --group-directories-first -D"
-alias ls="eza --group-directories-first"
-alias lsf="eza --group-directories-first -f"
-alias lsr="eza --group-directories-first -r"
-alias lt="eza --group-directories-first -T"
+alias la="eza --icons=always --group-directories-first -a"
+alias lar="eza --icons=always -r --group-directories-first -a"
+alias le="eza --icons=always --group-directories-first -s extension"
+alias ll="eza --icons=always --group-directories-first --smart-group --total-size -hl"
+alias llt="eza --icons=always --group-directories-first --smart-group --total-size -hlT"
+alias lsd="eza --icons=always --group-directories-first -D"
+alias ls="eza --icons=always --group-directories-first"
+alias lsf="eza --icons=always --group-directories-first -f"
+alias lsr="eza --icons=always --group-directories-first -r"
+alias lt="eza --icons=always --group-directories-first -T"
 alias lg='lazygit'
 alias ln='ln -i'
 alias man='sudo man'
@@ -111,8 +111,9 @@ alias sa='sortalpha'
 alias s='sudo'
 alias so='sopen'
 alias soe='sopenexact'
+alias ssort='smart_sort'
 alias temp='cd ~/Documents/Temporary && ls'
-alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh'
+alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh; source ~/Documents/github_repositories/custom_bash_commands/cbc_aliases.sh'
 alias ucbc='updatecbc'
 alias update_master_list='cat _master_batch.txt | xargs -I {} cat {} | sort -u > _temp_master_list.txt && mv _temp_master_list.txt _master_list.txt && batcat _master_list.txt'
 alias uml='update_master_list'
