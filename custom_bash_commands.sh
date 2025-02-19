@@ -68,22 +68,38 @@ phopen() {
 phsearch() {
   # Function to display usage
   usage() {
+    # Description Box
     gum style \
       --border double \
       --margin "1" \
       --padding "1" \
-      --border-foreground 212 \
+      --border-foreground "#dddddd" \
       "Description:
-  Prompts the user for a search term, constructs a search URL, and opens it in the default browser.
+        Prompts the user for a search term, constructs a search URL, and opens it in the default browser."
 
-Usage:
-  phsearch [-h]
+    gum style \
+      --border double \
+      --margin "1" \
+      --padding "1" \
+      --border-foreground "#aaa999" \
+      "Usage:
+        phsearch [-h]"
 
-Options:
-  -h    Display this help message
+    gum style \
+      --border double \
+      --margin "1" \
+      --padding "1" \
+      --border-foreground "#ffcc00" \
+      "Options:
+          -h    Display this help message"
 
-Example:
-  phsearch"
+    gum style \
+      --border double \
+      --margin "1" \
+      --padding "1" \
+      --border-foreground "#ff9900" \
+      "Example:
+        phsearch"
   }
 
   OPTIND=1
