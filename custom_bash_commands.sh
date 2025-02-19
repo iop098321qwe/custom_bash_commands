@@ -3075,23 +3075,6 @@ mvfiles() {
 display_info
 
 ###################################################################################################################################################################
-# FIRST TIME SET UP
-###################################################################################################################################################################
-
-# If FIRST_TIME is set to true in the config file, display the welcome message and run cbcs -h
-if [ "$FIRST_TIME" = "true" ]; then
-  # Display the welcome message
-  echo " "
-  echo "Run cbcs [-h] with help flag to display descriptions and usage."
-  echo " "
-  # Run cbcs -h
-  cbcs -h
-fi
-
-# Call the first time set up function
-first_time_setup
-
-###################################################################################################################################################################
 ###################################################################################################################################################################
 
 # The following lines allows previously defined aliases and functions to be used in the terminal after the custom_bash_commands.sh script is run
