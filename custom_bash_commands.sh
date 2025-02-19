@@ -124,7 +124,7 @@ phsearch() {
 
   # Exit if no input is given
   if [[ -z "$search_term" ]]; then
-    gum style --foreground 9 "No search term entered. Exiting..."
+    gum style --foreground "#ff0000" "No search term entered. Exiting..."
     return 1
   fi
 
@@ -135,7 +135,16 @@ phsearch() {
   search_url="https://www.pornhub.com/video/search?search=${formatted_term}"
 
   # Show the search URL before opening it
-  gum confirm "Open search: $search_url?" && nohup xdg-open "$search_url" >/dev/null 2>&1 &
+  gum style --foreground 10 "🔍 Searching for: $search_term"
+  gum style --border normal --padding "1" --border-foreground 4 "URL: $search_url"
+
+  # Ask for confirmation before opening
+  if gum confirm "Open this search in your browser?"; then
+    gum spin --spinner dot --title "Opening browser..." -- nohup xdg-open "$search_url" >/dev/null 2>&1 &
+    gum style --foreground 2 "✅ Search opened successfully!"
+  else
+    gum style --foreground 9 "❌ Search canceled."
+  fi
 }
 
 ################################################################################
