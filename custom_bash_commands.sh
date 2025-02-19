@@ -1125,22 +1125,59 @@ setup_directories
 ################################################################################
 
 display_version() {
+  # Function to display usage
+  usage() {
+    gum style \
+      --border double \
+      --margin "1" \
+      --padding "1" \
+      --border-foreground "#dddddd" \
+      "Description:
+        This function displays the version number from the .custom_bash_commands file in the local repository."
+
+    gum style \
+      --border double \
+      --margin "1" \
+      --padding "1" \
+      --border-foreground "#aa55dd" \
+      "Alias:
+        dv"
+
+    gum style \
+      --border double \
+      --margin "1" \
+      --padding "1" \
+      --border-foreground "#ffcc00" \
+      "Usage:
+        display_version"
+
+    gum style \
+      --border double \
+      --margin "1" \
+      --padding "1" \
+      --border-foreground "#ff9900" \
+      "Options:
+          -h    Display this help message"
+
+    gum style \
+      --border double \
+      --margin "1" \
+      --padding "1" \
+      --border-foreground "#ff6600" \
+      "Example:
+        display_version"
+  }
+
   OPTIND=1
 
-  while getopts ":h" opt; do
-    case $opt in
+  while getopts "h" opt; do
+    case "$opt" in
     h)
-      echo "Description: This function allows you to display the version number from the .custom_bash_commands file from the local repository."
-      echo "Alias: dv"
-      echo "Usage: display_version"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: display_version"
-      return
+      usage
+      return 0
       ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
+    *)
+      gum style --foreground "#ff0000" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -1148,12 +1185,14 @@ display_version() {
 
   shift $((OPTIND - 1))
 
-  # Create an alias for the display_version function
-  # alias dv="display_version"
-  echo -e "Using \e[32mCustom Bash Commands\e[0m (by \e[35miop098321qwe\e[0m) \e[34mVersion:\e[0m \e[34m$VERSION\e[0m. To see the changes in this version, use \e[36mchanges\e[0m command."
-  echo -e "Show commands included with \e[36mcbcs [-h]\e[0m or typing \e[36mcommands\e[0m (\e[36mcomm\e[0m for shortcut)."
-  echo -e "If you wish to stop using \e[32mCBC\e[0m, \e[31mremove\e[0m \e[33m.custom_bash_commands.sh\e[0m from your \e[33m.bashrc\e[0m file using \e[36meditbash\e[0m (\e[32mCBC\e[0m)."
-  echo -e "Check out the Wiki for more information (or use \e[36mwiki\e[0m): \e[34m[link](https://github.com/iop098321qwe/custom_bash_commands/wiki)\e[0m"
+  # Display version details in a fancy box
+  gum style --border double --foreground "#00ff00" "Using Custom Bash Commands (by iop098321qwe)"
+  gum style --foreground "#ffff00" "Version: $VERSION 🔹🔹 To see the changes in this version, use the 'changes' command."
+  gum style \
+    --foreground "#33ccff" \
+    "Show available commands with 'cbcs [-h]' or by typing 'commands' ('comm' for shortcut).
+      To stop using CBC, remove '.custom_bash_commands.sh' from your '.bashrc' file using 'editbash'.
+      Use the 'wiki' command or visit: https://github.com/iop098321qwe/custom_bash_commands/wiki"
 }
 
 ################################################################################
