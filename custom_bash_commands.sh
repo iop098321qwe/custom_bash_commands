@@ -81,7 +81,7 @@ phsearch() {
       --border double \
       --margin "1" \
       --padding "1" \
-      --border-foreground "#aaa999" \
+      --border-foreground "#aa55dd" \
       "Usage:
         phsearch [-h]"
 
