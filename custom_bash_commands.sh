@@ -151,37 +151,25 @@ phsearch() {
 # PRONLIST
 ################################################################################
 
-# pronlist
-# Description: Function to process URLs listed in _batch.txt and download files
-#              using yt-dlp with a specified configuration file. The titles of
-#              the downloaded files are saved to individual output files.
-# Usage: pronlist [-h] [-l line_number]
-# Options:
-#   -h    Show this help message and exit
-#   -l    Process a specific line number from _batch.txt
-#
-# Example: pronlist
-#          pronlist -l 3
-#
-# Requires:
-#   - _batch.txt: File containing URLs (one per line)
-#   - _configs.txt: yt-dlp configuration file
-################################################################################
-
-# Function to generate a list of what each url downloads using yt-dlp
 pronlist() {
   # Function to display usage information for the script
   usage() {
     cat <<EOF
-Usage: pronlist [-h] [-l]
+Description:
+  Processes each URL in the selected .txt file and uses yt-dlp with the _configs.txt
+  configuration file to generate a sanitized output file listing the downloaded titles.
 
 Options:
   -h    Show this help message and exit
   -l    Select and process a specific line from the selected .txt file
 
-Description:
-  Processes each URL in the selected .txt file and uses yt-dlp with the _configs.txt
-  configuration file to generate a sanitized output file listing the downloaded titles.
+Example:
+  pronlist
+  pronlist -l 3
+
+Requires:
+  - _batch.txt: File containing URLs (one per line)
+  - _configs.txt: yt-dlp configuration file
 EOF
   }
 
@@ -324,18 +312,40 @@ EOF
 # SOPEN
 ################################################################################
 
-# sopen
-# Description: Function to open .mp4 files in the current directory that match
-#              patterns generated from lines in a selected .txt file.
-# Usage: sopen
-# Options:
-
-# Example: sopen  --- Prompts for a .txt file and opens matching .mp4 files.
-
-##########
-
-# Function to open .mp4 files matching patterns from a .txt file
 sopen() {
+  OPTIND=1
+
+  usage() {
+    cat <<EOF
+Description: 
+  Function to open .mp4 files in the current directory that match patterns generated from lines in a selected .txt file.
+
+Usage: 
+  sopen [-h]
+
+Options:
+  -h    Display this help message
+
+Example:
+  sopen
+EOF
+  }
+
+  while getopts "h" opt; do
+    case "$opt" in
+    h)
+      usage
+      return 0
+      ;;
+    *)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
   # Use fzf to select a .txt file in the current directory
   local file
   file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf --prompt="Select a .txt file: ")
