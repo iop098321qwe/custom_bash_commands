@@ -318,7 +318,8 @@ sopen() {
   usage() {
     cat <<EOF
 Description: 
-  Function to open .mp4 files in the current directory that match patterns generated from lines in a selected .txt file.
+  Function to open .mp4 files in the current directory that match patterns
+  generated from lines in a selected .txt file.
 
 Usage: 
   sopen [-h]
@@ -405,18 +406,40 @@ EOF
 # SOPENEXACT
 ################################################################################
 
-# sopenexact
-# Description: Function to open .mp4 files in the current directory that match
-#              patterns generated from lines in a selected .txt file.
-# Usage: sopenexact
-# Options:
-
-# Example: sopenexact  --- Prompts for a .txt file and opens matching .mp4 files.
-
-##########
-
-# Function to open .mp4 files matching patterns from a .txt file
 sopenexact() {
+  OPTIND=1
+
+  usage() {
+    cat <<EOF
+Description: 
+  Function to open .mp4 files in the current directory that match exact
+  patterns generated from lines in a selected .txt file.
+
+Usage: 
+  sopenexact [-h]
+
+Options:
+  -h    Display this help message
+
+Example:
+  sopenexact
+EOF
+  }
+
+  while getopts "h" opt; do
+    case "$opt" in
+    h)
+      usage
+      return 0
+      ;;
+    *)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
   # Use fzf to select a .txt file in the current directory
   local file
   file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf -e --prompt="Select a .txt file: ")
@@ -504,15 +527,6 @@ append_to_bashrc
 # REPEAT
 ################################################################################
 
-# repeat
-# Description: Function to repeat any given command a set number of times
-# Usage: repeat <number>
-# Options:
-#   -h    Display this help message
-
-# Example: repeat 4 echo "hello"
-
-# Function to repeat a command any given number of times
 repeat() {
   OPTIND=1        # Reset getopts index to handle multiple runs
   local delay=0   # Default delay is 0 seconds
@@ -522,7 +536,11 @@ repeat() {
   # Function to display help
   usage() {
     cat <<EOF
-Usage: repeat [-h] count [-d delay] [-v] command [arguments...]
+Description: 
+  Function to repeat any given command a set number of times.
+
+Usage: 
+  repeat [-h] count [-d delay] [-v] command [arguments...]
 
 Options:
   -h            Display this help message and return
@@ -533,6 +551,10 @@ Arguments:
   count         The number of times to repeat the command
   command       The command(s) to be executed (use ';' to separate multiple commands)
   [arguments]   Optional arguments passed to the command(s)
+
+Example:
+  repeat 3 echo "Hello, World!"
+  repeat 5 -d 2 -v echo "Hello, World!"
 EOF
   }
 
