@@ -1034,40 +1034,55 @@ EOF
 # CHANGES
 ################################################################################
 
-# changes
-# Description: Function to open the CBC changelog in the default browser
-# Usage: changes
-# Options:
-#   -h    Display this help message
-#   -c    Copy the changelog URL to the clipboard
-
-# Example: changes  ---Opens the CBC changelog in the default browser.
-
-##########
-
-# Function to open the CBC wiki in the default browser
 changes() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: Function to open the CBC changelog in the default browser"
-    echo "Usage: changes"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    echo "  -c    Copy the changelog URL to the clipboard"
-    return
-  fi
+  OPTIND=1
 
   # Define the CBC wiki URL
-  changelog_url="https://github.com/iop098321qwe/custom_bash_commands/blob/main/CHANGELOG.md"
+  local changelog_url="https://github.com/iop098321qwe/custom_bash_commands/blob/main/CHANGELOG.md"
 
-  # Check for options
-  if [ "$1" = "-c" ]; then
-    # Copy the changelog URL to the clipboard
-    echo "$changelog_url" | xclip -selection clipboard
-    echo "Changelog URL copied to clipboard."
-  else
-    # Open the CBC wiki in the default browser
+  usage() {
+    cat <<EOF
+Description:
+  Function to open the CBC changelog in the default browser.
+
+Usage:
+  changes
+
+Options:
+  -h    Display this help message
+  -c    Copy the changelog URL to the clipboard
+
+Example:
+  changes
+EOF
+  }
+
+  while getopts ":hc" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    c)
+      echo "$changelog_url" | xclip -selection clipboard
+      echo "Changelog URL copied to clipboard."
+      return 0
+      ;;
+    *)
+      # invalid options
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  # Function to open the changelog in the default browser
+  open_changelog() {
     nohup xdg-open "$changelog_url"
-  fi
+  }
+
+  # Call the open_changelog function
+  open_changelog
 }
 
 ################################################################################
