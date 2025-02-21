@@ -646,35 +646,6 @@ EOF
 # SMART_SORT
 ################################################################################
 
-# smart_sort: A multifunctional interactive file sorting tool for the current directory.
-
-# Description:
-#   This function sorts files in the current directory based on different criteria.
-#   Available sorting modes are:
-#     - ext   : Sort by file extension.
-#     - alpha : Sort by the first letter of the filename.
-#     - time  : Sort by modification time (grouped by YYYY-MM).
-#     - size  : Sort by file size into categories (small, medium, large).
-
-# Usage:
-#   smart_sort [-h] [-i] [-m mode]
-
-# Options:
-#   -h        Display this help message.
-#   -i        Enable interactive mode for selection of sorting options.
-#             When used alone, interactive mode will prompt for all options via fzf.
-#             When combined with other flags, interactive mode is disabled.
-#   -m mode   Specify sorting mode directly. Available modes:
-#               ext   - Sort by file extension.
-#               alpha - Sort by the first letter of the filename.
-#               time  - Sort by modification time (YYYY-MM).
-#               size  - Sort by file size (small, medium, large).
-
-# Examples:
-#   smart_sort -i             # Launch interactive mode to choose sorting method.
-#   smart_sort -m ext         # Sort files by extension non-interactively.
-#   smart_sort -i -m size     # Note: Interactive mode is disabled when combined with -m flag; runs non-interactively.
-
 smart_sort() {
   # Local variables initialization
   local mode=""            # Sorting mode (ext, alpha, time, size)
@@ -686,29 +657,44 @@ smart_sort() {
   # Reset getopts index for multiple calls
   OPTIND=1
 
-  # Parse command-line options using getopts
-  while getopts ":hm:i" opt; do
-    case $opt in
-    h)
-      # Display help message
-      cat <<'EOF'
-Description: Multifunctional interactive file sorting tool for the current directory.
-Usage: smart_sort [-h] [-i] [-m mode]
+  usage() {
+    cat <<EOF
+Description:
+  This function sorts files in the current directory based on different
+  criteria. 
+  Available sorting modes are:
+  - ext   : Sort by file extension.
+  - alpha : Sort by the first letter of the filename.
+  - time  : Sort by modification time (grouped by YYYY-MM).
+  - size  : Sort by file size into categories (small, medium, large).
+
+Usage:
+  smart_sort [-h] [-i] [-m mode]
+
 Options:
   -h        Display this help message.
   -i        Enable interactive mode for selection of sorting options.
-            When used alone, interactive mode will prompt for all options via fzf.
+            When used alone, interactive mode will prompt for all options via
+            fzf.
             When combined with other flags, interactive mode is disabled.
   -m mode   Specify sorting mode directly. Available modes:
               ext   - Sort by file extension.
               alpha - Sort by the first letter of the filename.
               time  - Sort by modification time (YYYY-MM).
               size  - Sort by file size (small, medium, large).
+
 Examples:
-  smart_sort -i             # Launch interactive mode to choose sorting method.
-  smart_sort -m ext         # Sort files by extension non-interactively.
-  smart_sort -i -m size     # NOTE: Interactive mode is disabled when combined with -m flag; runs non-interactively.
+  smart_sort -i
+  smart_sort -m ext
+  smart_sort -i -m size
 EOF
+  }
+
+  # Parse command-line options using getopts
+  while getopts ":hm:i" opt; do
+    case $opt in
+    h)
+      usage
       return 0
       ;;
     i)
@@ -915,39 +901,35 @@ EOF
 # RANDOM
 ################################################################################
 
-# random
-# Description: Function to open a random .mp4 file in the current directory
-# Usage: random
-# Options:
-#   -h    Display this help message
-
-# Example: random  ---Opens a random .mp4 file in the current directory.
-
-################################################################################
-
-# Function to open a random .mp4 file in the current directory
 random() {
+  OPTIND=1
+
   # Function to display help message
-  show_help() {
+  usage() {
     cat <<EOF
-Description: Function to open a random .mp4 file in the current directory
-Usage: random [-h]
+Description: 
+  Function to open a random .mp4 file in the current directory.
+
+Usage: 
+  random [-h]
+
 Options:
   -h    Display this help message
+
+Example:
+  random
 EOF
   }
-
-  OPTIND=1
 
   while getopts ":h" opt; do
     case $opt in
     h)
-      show_help
+      usage
       return 0
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
-      show_help
+      usage
       return 1
       ;;
     esac
@@ -979,62 +961,73 @@ EOF
   echo "Opened: $random_file"
 }
 
-# Place this entire function in your .bashrc or other shell configuration file.
-# Then, reload your shell or source .bashrc to use it.
-
 ################################################################################
 # WIKI
 ################################################################################
 
-# wiki
-# Description: Function to open the CBC wiki in the default browser
-# Usage: wiki
-# Options:
-#   -h    Display this help message
-#   -c    Copy the wiki URL to the clipboard
-#   -C    Open the wiki to the CBC commands section
-#   -A    Open the wiki to the CBC aliases section
-#   -F    Open the wiki to the CBC functions section
-
-# Example: wiki  ---Opens the CBC wiki in the default browser.
-
-##########
-
-# Function to open the CBC wiki in the default browser
 wiki() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: Function to open the CBC wiki in the default browser"
-    echo "Usage: wiki"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    echo "  -c    Copy the wiki URL to the clipboard"
-    echo "  -C    Open the wiki to the CBC commands section"
-    echo "  -A    Open the wiki to the CBC aliases section"
-    echo "  -F    Open the wiki to the CBC functions section"
-    return
-  fi
+  OPTIND=1
 
   # Define the CBC wiki URL
   wiki_url="https://github.com/iop098321qwe/custom_bash_commands/wiki"
 
-  # Check for options
-  if [ "$1" = "-c" ]; then
-    # Copy the wiki URL to the clipboard
-    echo "$wiki_url" | xclip -selection clipboard
-    echo "Wiki URL copied to clipboard."
-  elif [ "$1" = "-C" ]; then
-    # Open the wiki to the CBC commands section
-    nohup xdg-open "$wiki_url#cbc-commands"
-  elif [ "$1" = "-A" ]; then
-    # Open the wiki to the CBC aliases section
-    nohup xdg-open "$wiki_url#cbc-aliases"
-  elif [ "$1" = "-F" ]; then
-    # Open the wiki to the CBC functions section
-    nohup xdg-open "$wiki_url#cbc-functions"
-  else
-    # Open the CBC wiki in the default browser
-    hohup xdg-open "$wiki_url"
-  fi
+  usage() {
+    cat <<EOF
+
+Description: 
+  Function to open the CBC wiki in the default browser
+
+Usage: 
+  wiki
+
+Options:
+  -h    Display this help message
+  -c    Copy the wiki URL to the clipboard
+  -C    Open the wiki to the CBC commands section
+  -A    Open the wiki to the CBC aliases section
+  -F    Open the wiki to the CBC functions section
+
+Example: 
+  wiki
+  wiki -A
+EOF
+  }
+
+  while getopts ":hcCAF" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    c)
+      echo "$wiki_url" | xclip -selection clipboard
+      echo "Wiki URL copied to clipboard."
+      return 0
+      ;;
+    C)
+      nohup xdg-open "$wiki_url/Commands"
+      return 0
+      ;;
+    A)
+      nohup xdg-open "$wiki_url/Aliases"
+      return 0
+      ;;
+    F)
+      nohup xdg-open "$wiki_url/Functions"
+      return 0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    *)
+      nohup xdg-open "$wiki_url"
+      return 0
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
 }
 
 ################################################################################
