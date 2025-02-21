@@ -132,6 +132,65 @@ cbc_spinner() {
 # CUSTOM BASH COMMANDS
 ###################################################################################################################################################################
 
+# Write a function `helpme` that will utilize Charm Gum to work interactively
+# to help the user understand functions within this script.
+
+helpme() {
+  OPTIND=1
+
+  # Function to display usage information for the script
+  usage() {
+    cat <<EOF
+Description: 
+  This function provides interactive help for the Custom Bash Commands (CBC)
+  script.
+
+Usage:
+  helpme [-h | -i] [function_name]
+
+Options:
+  -h    Display this help message and exit
+  -i    Enable interactive mode for selecting a function to display help for
+
+Example:
+  helpme "comm"
+EOF
+  }
+
+  while getopts "hi" opt; do
+    case "$opt" in
+    h)
+      usage
+      return 0
+      ;;
+    i)
+      # Interactive mode to select a function to display help for
+      # TODO: Implement interactive mode for helpme function
+      #
+      # local function
+      # function=$(gum list --prompt="Select a function to display help for: " --query="cbc" | fzf)
+      # if [ -n "$function" ]; then
+      # gum style --border double --padding "1" --border-foreground "#ffcc00" "Help for function: $function"
+      # gum style --border double --padding "1" --border-foreground "#ff9900" "$(type "$function")"
+      # gum style --border double --padding "1" --border-foreground "#ff9900" "$(help "$function")"
+      # else
+      # gum style --foreground "#ff0000" "No function selected. Exiting..."
+      # return 1
+      # fi
+      ;;
+    *)
+      usage
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  # Display help for the specified function
+  # TODO: Complete the implementation of the helpme function
+}
+
 ################################################################################################################################################################
 # PRON MODULE
 ################################################################################################################################################################
