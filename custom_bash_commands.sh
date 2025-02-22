@@ -1239,20 +1239,6 @@ display_version() {
 # CBCS
 ################################################################################
 
-# Describe the cbcs function and its options and usage
-
-# cbcs
-# Description: This function allows you to display a list of all available custom commands in this script
-# Usage: cbcs [-h]
-# Options:
-#   -h    Display this help message
-#   -a    Display all available custom commands with descriptions
-
-# Example: cbcs  ---Displays a list of all available custom commands in this script.
-
-##########
-
-# Create a function to display a list of all available custom commands in this script
 cbcs() {
   OPTIND=1
   all_info=false
@@ -2060,32 +2046,74 @@ EOF
 # BACKUP
 ################################################################################
 
-# Describe the backup function and its options and usage
-
-# backup
-# Description: This function allows you to create a backup file of a file.
-# Usage: backup [file]
-# Options:
-#   -h    Display this help message
-
-# Example: backup test.txt  ---Creates a backup file of test.txt.
-
-##########
-
-# Function to create a backup file of a file.
 backup() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: This function allows you to create a backup file of a file."
-    echo "Usage: backup [file]"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
+  OPTIND=1
+
   local filename=$(basename "$1")                             # Get the base name of the file
   local timestamp=$(date +%Y.%m.%d.%H.%M.%S)                  # Get the current timestamp
   local backup_filename="${filename}_backup_${timestamp}.bak" # Create the backup file name
 
-  cp "$1" "$backup_filename"
+  usage() {
+    cat <<EOF
+Description: 
+  This function allows you to create a backup file of a file.
+
+Usage: 
+  backup [file]
+
+Options:
+  -h    Display this help message
+
+Example: 
+  backup test.txt
+EOF
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      usage
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG. Use -h for help."
+      return
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  # Function to check if no arguments are provided
+  check_no_arguments() {
+    if [ $# -eq 0 ]; then
+      echo "Error: No arguments provided. Use -h for help."
+      return 1
+    fi
+  }
+
+  # Function to check if the file exists
+  check_file_exists() {
+    if [ ! -f "$1" ]; then
+      echo "Error: File not found."
+      return 1
+    fi
+  }
+
+  # Function to create a backup file
+  make_backup() {
+    cp "$1" "$backup_filename" && echo "Backup created: $backup_filename"
+  }
+
+  # Main logic
+  main() {
+    check_no_arguments "$@" || return
+    check_file_exists "$1" || return
+    make_backup "$1"
+  }
+
+  # Call the main function with arguments
+  main "$@"
 }
 
 ################################################################################
