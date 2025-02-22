@@ -2120,19 +2120,8 @@ EOF
 # UP
 ################################################################################
 
-# Describe the up function and its options and usage
+# TODO: create usage function and adjust the getopts section and fix the main logic
 
-# up
-# Description: This function allows you to move up in the directory hierarchy by a specified number of levels.
-# Usage: up [number of levels]
-# Options:
-#   -h    Display this help message
-
-# Example: up 2  ---Moves up 2 levels in the directory hierarchy.
-
-##########
-
-# Function to move up in the directory hierarchy by a specified number of levels.
 up() {
   # Initialize flags with default values
   local clear_terminal=false
@@ -2845,17 +2834,6 @@ odt() {
 # ODS
 ################################################################################
 
-# Describe the ods function and its options and usage
-
-# ods
-# Description: A function to create a .ods file in the current directory and open it
-# Usage: ods [filename]
-# Options:
-#   -h    Display this help message
-
-# Example: ods test  ---Creates a .ods file called test and opens it in the current directory.
-
-# Create ods command to create a .ods file in the current directory and open it
 ods() {
   # Use getopts to handle Options
   OPTIND=1
@@ -2902,6 +2880,9 @@ ods() {
 # Example: filehash -da  ---Runs all hash methods on all files in the current directory.
 
 # Define the filehash function to generate a hash of a file
+
+# TODO: add usage function, fix getopts section, and fix the main logic
+
 filehash() {
   if [ "$1" = "-h" ]; then
     # Display help message if -h option is provided
@@ -3066,15 +3047,8 @@ display_info() {
 # UPDATECBC
 ################################################################################
 
-# Create a function to update the custom bash commands script and display the version number
+# TODO: add usage function, fix getopts section, and fix the main logic
 
-# updatecbc
-# Description: A function to update the custom bash commands script and display the version number
-# Usage: updatecbc
-# Options:
-#   -h    Display this help message
-
-# Create a function to update the custom bash commands script and display the version number
 updatecbc() {
   # Initialize OPTIND to 1 since it is a global variable within the script
   OPTIND=1
@@ -3159,6 +3133,8 @@ updatecbc() {
 #   -h    Display this help message
 
 # Create a function to move files to a directory based on file type suffix and named with the suffix without a '.' prefix
+
+# TODO: rework this function
 
 mvfiles() {
   if [ "$1" = "-h" ]; then
