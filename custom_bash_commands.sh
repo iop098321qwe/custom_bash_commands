@@ -151,37 +151,25 @@ phsearch() {
 # PRONLIST
 ################################################################################
 
-# pronlist
-# Description: Function to process URLs listed in _batch.txt and download files
-#              using yt-dlp with a specified configuration file. The titles of
-#              the downloaded files are saved to individual output files.
-# Usage: pronlist [-h] [-l line_number]
-# Options:
-#   -h    Show this help message and exit
-#   -l    Process a specific line number from _batch.txt
-#
-# Example: pronlist
-#          pronlist -l 3
-#
-# Requires:
-#   - _batch.txt: File containing URLs (one per line)
-#   - _configs.txt: yt-dlp configuration file
-################################################################################
-
-# Function to generate a list of what each url downloads using yt-dlp
 pronlist() {
   # Function to display usage information for the script
   usage() {
     cat <<EOF
-Usage: pronlist [-h] [-l]
+Description:
+  Processes each URL in the selected .txt file and uses yt-dlp with the _configs.txt
+  configuration file to generate a sanitized output file listing the downloaded titles.
 
 Options:
   -h    Show this help message and exit
   -l    Select and process a specific line from the selected .txt file
 
-Description:
-  Processes each URL in the selected .txt file and uses yt-dlp with the _configs.txt
-  configuration file to generate a sanitized output file listing the downloaded titles.
+Example:
+  pronlist
+  pronlist -l 3
+
+Requires:
+  - _batch.txt: File containing URLs (one per line)
+  - _configs.txt: yt-dlp configuration file
 EOF
   }
 
@@ -324,18 +312,41 @@ EOF
 # SOPEN
 ################################################################################
 
-# sopen
-# Description: Function to open .mp4 files in the current directory that match
-#              patterns generated from lines in a selected .txt file.
-# Usage: sopen
-# Options:
-
-# Example: sopen  --- Prompts for a .txt file and opens matching .mp4 files.
-
-##########
-
-# Function to open .mp4 files matching patterns from a .txt file
 sopen() {
+  OPTIND=1
+
+  usage() {
+    cat <<EOF
+Description: 
+  Function to open .mp4 files in the current directory that match patterns
+  generated from lines in a selected .txt file.
+
+Usage: 
+  sopen [-h]
+
+Options:
+  -h    Display this help message
+
+Example:
+  sopen
+EOF
+  }
+
+  while getopts "h" opt; do
+    case "$opt" in
+    h)
+      usage
+      return 0
+      ;;
+    *)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
   # Use fzf to select a .txt file in the current directory
   local file
   file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf --prompt="Select a .txt file: ")
@@ -395,18 +406,40 @@ sopen() {
 # SOPENEXACT
 ################################################################################
 
-# sopenexact
-# Description: Function to open .mp4 files in the current directory that match
-#              patterns generated from lines in a selected .txt file.
-# Usage: sopenexact
-# Options:
-
-# Example: sopenexact  --- Prompts for a .txt file and opens matching .mp4 files.
-
-##########
-
-# Function to open .mp4 files matching patterns from a .txt file
 sopenexact() {
+  OPTIND=1
+
+  usage() {
+    cat <<EOF
+Description: 
+  Function to open .mp4 files in the current directory that match exact
+  patterns generated from lines in a selected .txt file.
+
+Usage: 
+  sopenexact [-h]
+
+Options:
+  -h    Display this help message
+
+Example:
+  sopenexact
+EOF
+  }
+
+  while getopts "h" opt; do
+    case "$opt" in
+    h)
+      usage
+      return 0
+      ;;
+    *)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
   # Use fzf to select a .txt file in the current directory
   local file
   file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf -e --prompt="Select a .txt file: ")
@@ -494,15 +527,6 @@ append_to_bashrc
 # REPEAT
 ################################################################################
 
-# repeat
-# Description: Function to repeat any given command a set number of times
-# Usage: repeat <number>
-# Options:
-#   -h    Display this help message
-
-# Example: repeat 4 echo "hello"
-
-# Function to repeat a command any given number of times
 repeat() {
   OPTIND=1        # Reset getopts index to handle multiple runs
   local delay=0   # Default delay is 0 seconds
@@ -512,7 +536,11 @@ repeat() {
   # Function to display help
   usage() {
     cat <<EOF
-Usage: repeat [-h] count [-d delay] [-v] command [arguments...]
+Description: 
+  Function to repeat any given command a set number of times.
+
+Usage: 
+  repeat [-h] count [-d delay] [-v] command [arguments...]
 
 Options:
   -h            Display this help message and return
@@ -523,6 +551,10 @@ Arguments:
   count         The number of times to repeat the command
   command       The command(s) to be executed (use ';' to separate multiple commands)
   [arguments]   Optional arguments passed to the command(s)
+
+Example:
+  repeat 3 echo "Hello, World!"
+  repeat 5 -d 2 -v echo "Hello, World!"
 EOF
   }
 
@@ -614,35 +646,6 @@ EOF
 # SMART_SORT
 ################################################################################
 
-# smart_sort: A multifunctional interactive file sorting tool for the current directory.
-
-# Description:
-#   This function sorts files in the current directory based on different criteria.
-#   Available sorting modes are:
-#     - ext   : Sort by file extension.
-#     - alpha : Sort by the first letter of the filename.
-#     - time  : Sort by modification time (grouped by YYYY-MM).
-#     - size  : Sort by file size into categories (small, medium, large).
-
-# Usage:
-#   smart_sort [-h] [-i] [-m mode]
-
-# Options:
-#   -h        Display this help message.
-#   -i        Enable interactive mode for selection of sorting options.
-#             When used alone, interactive mode will prompt for all options via fzf.
-#             When combined with other flags, interactive mode is disabled.
-#   -m mode   Specify sorting mode directly. Available modes:
-#               ext   - Sort by file extension.
-#               alpha - Sort by the first letter of the filename.
-#               time  - Sort by modification time (YYYY-MM).
-#               size  - Sort by file size (small, medium, large).
-
-# Examples:
-#   smart_sort -i             # Launch interactive mode to choose sorting method.
-#   smart_sort -m ext         # Sort files by extension non-interactively.
-#   smart_sort -i -m size     # Note: Interactive mode is disabled when combined with -m flag; runs non-interactively.
-
 smart_sort() {
   # Local variables initialization
   local mode=""            # Sorting mode (ext, alpha, time, size)
@@ -654,29 +657,44 @@ smart_sort() {
   # Reset getopts index for multiple calls
   OPTIND=1
 
-  # Parse command-line options using getopts
-  while getopts ":hm:i" opt; do
-    case $opt in
-    h)
-      # Display help message
-      cat <<'EOF'
-Description: Multifunctional interactive file sorting tool for the current directory.
-Usage: smart_sort [-h] [-i] [-m mode]
+  usage() {
+    cat <<EOF
+Description:
+  This function sorts files in the current directory based on different
+  criteria. 
+  Available sorting modes are:
+  - ext   : Sort by file extension.
+  - alpha : Sort by the first letter of the filename.
+  - time  : Sort by modification time (grouped by YYYY-MM).
+  - size  : Sort by file size into categories (small, medium, large).
+
+Usage:
+  smart_sort [-h] [-i] [-m mode]
+
 Options:
   -h        Display this help message.
   -i        Enable interactive mode for selection of sorting options.
-            When used alone, interactive mode will prompt for all options via fzf.
+            When used alone, interactive mode will prompt for all options via
+            fzf.
             When combined with other flags, interactive mode is disabled.
   -m mode   Specify sorting mode directly. Available modes:
               ext   - Sort by file extension.
               alpha - Sort by the first letter of the filename.
               time  - Sort by modification time (YYYY-MM).
               size  - Sort by file size (small, medium, large).
+
 Examples:
-  smart_sort -i             # Launch interactive mode to choose sorting method.
-  smart_sort -m ext         # Sort files by extension non-interactively.
-  smart_sort -i -m size     # NOTE: Interactive mode is disabled when combined with -m flag; runs non-interactively.
+  smart_sort -i
+  smart_sort -m ext
+  smart_sort -i -m size
 EOF
+  }
+
+  # Parse command-line options using getopts
+  while getopts ":hm:i" opt; do
+    case $opt in
+    h)
+      usage
       return 0
       ;;
     i)
@@ -883,39 +901,35 @@ EOF
 # RANDOM
 ################################################################################
 
-# random
-# Description: Function to open a random .mp4 file in the current directory
-# Usage: random
-# Options:
-#   -h    Display this help message
-
-# Example: random  ---Opens a random .mp4 file in the current directory.
-
-################################################################################
-
-# Function to open a random .mp4 file in the current directory
 random() {
+  OPTIND=1
+
   # Function to display help message
-  show_help() {
+  usage() {
     cat <<EOF
-Description: Function to open a random .mp4 file in the current directory
-Usage: random [-h]
+Description: 
+  Function to open a random .mp4 file in the current directory.
+
+Usage: 
+  random [-h]
+
 Options:
   -h    Display this help message
+
+Example:
+  random
 EOF
   }
-
-  OPTIND=1
 
   while getopts ":h" opt; do
     case $opt in
     h)
-      show_help
+      usage
       return 0
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
-      show_help
+      usage
       return 1
       ;;
     esac
@@ -947,102 +961,128 @@ EOF
   echo "Opened: $random_file"
 }
 
-# Place this entire function in your .bashrc or other shell configuration file.
-# Then, reload your shell or source .bashrc to use it.
-
 ################################################################################
 # WIKI
 ################################################################################
 
-# wiki
-# Description: Function to open the CBC wiki in the default browser
-# Usage: wiki
-# Options:
-#   -h    Display this help message
-#   -c    Copy the wiki URL to the clipboard
-#   -C    Open the wiki to the CBC commands section
-#   -A    Open the wiki to the CBC aliases section
-#   -F    Open the wiki to the CBC functions section
-
-# Example: wiki  ---Opens the CBC wiki in the default browser.
-
-##########
-
-# Function to open the CBC wiki in the default browser
 wiki() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: Function to open the CBC wiki in the default browser"
-    echo "Usage: wiki"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    echo "  -c    Copy the wiki URL to the clipboard"
-    echo "  -C    Open the wiki to the CBC commands section"
-    echo "  -A    Open the wiki to the CBC aliases section"
-    echo "  -F    Open the wiki to the CBC functions section"
-    return
-  fi
+  OPTIND=1
 
   # Define the CBC wiki URL
   wiki_url="https://github.com/iop098321qwe/custom_bash_commands/wiki"
 
-  # Check for options
-  if [ "$1" = "-c" ]; then
-    # Copy the wiki URL to the clipboard
-    echo "$wiki_url" | xclip -selection clipboard
-    echo "Wiki URL copied to clipboard."
-  elif [ "$1" = "-C" ]; then
-    # Open the wiki to the CBC commands section
-    nohup xdg-open "$wiki_url#cbc-commands"
-  elif [ "$1" = "-A" ]; then
-    # Open the wiki to the CBC aliases section
-    nohup xdg-open "$wiki_url#cbc-aliases"
-  elif [ "$1" = "-F" ]; then
-    # Open the wiki to the CBC functions section
-    nohup xdg-open "$wiki_url#cbc-functions"
-  else
-    # Open the CBC wiki in the default browser
-    hohup xdg-open "$wiki_url"
-  fi
+  usage() {
+    cat <<EOF
+
+Description: 
+  Function to open the CBC wiki in the default browser
+
+Usage: 
+  wiki
+
+Options:
+  -h    Display this help message
+  -c    Copy the wiki URL to the clipboard
+  -C    Open the wiki to the CBC commands section
+  -A    Open the wiki to the CBC aliases section
+  -F    Open the wiki to the CBC functions section
+
+Example: 
+  wiki
+  wiki -A
+EOF
+  }
+
+  while getopts ":hcCAF" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    c)
+      echo "$wiki_url" | xclip -selection clipboard
+      echo "Wiki URL copied to clipboard."
+      return 0
+      ;;
+    C)
+      nohup xdg-open "$wiki_url/Commands"
+      return 0
+      ;;
+    A)
+      nohup xdg-open "$wiki_url/Aliases"
+      return 0
+      ;;
+    F)
+      nohup xdg-open "$wiki_url/Functions"
+      return 0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    *)
+      nohup xdg-open "$wiki_url"
+      return 0
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
 }
 
 ################################################################################
 # CHANGES
 ################################################################################
 
-# changes
-# Description: Function to open the CBC changelog in the default browser
-# Usage: changes
-# Options:
-#   -h    Display this help message
-#   -c    Copy the changelog URL to the clipboard
-
-# Example: changes  ---Opens the CBC changelog in the default browser.
-
-##########
-
-# Function to open the CBC wiki in the default browser
 changes() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: Function to open the CBC changelog in the default browser"
-    echo "Usage: changes"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    echo "  -c    Copy the changelog URL to the clipboard"
-    return
-  fi
+  OPTIND=1
 
   # Define the CBC wiki URL
-  changelog_url="https://github.com/iop098321qwe/custom_bash_commands/blob/main/CHANGELOG.md"
+  local changelog_url="https://github.com/iop098321qwe/custom_bash_commands/blob/main/CHANGELOG.md"
 
-  # Check for options
-  if [ "$1" = "-c" ]; then
-    # Copy the changelog URL to the clipboard
-    echo "$changelog_url" | xclip -selection clipboard
-    echo "Changelog URL copied to clipboard."
-  else
-    # Open the CBC wiki in the default browser
+  usage() {
+    cat <<EOF
+Description:
+  Function to open the CBC changelog in the default browser.
+
+Usage:
+  changes
+
+Options:
+  -h    Display this help message
+  -c    Copy the changelog URL to the clipboard
+
+Example:
+  changes
+EOF
+  }
+
+  while getopts ":hc" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    c)
+      echo "$changelog_url" | xclip -selection clipboard
+      echo "Changelog URL copied to clipboard."
+      return 0
+      ;;
+    *)
+      # invalid options
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  # Function to open the changelog in the default browser
+  open_changelog() {
     nohup xdg-open "$changelog_url"
-  fi
+  }
+
+  # Call the open_changelog function
+  open_changelog
 }
 
 ################################################################################
@@ -1199,825 +1239,889 @@ display_version() {
 # CBCS
 ################################################################################
 
-# Describe the cbcs function and its options and usage
-
-# cbcs
-# Description: This function allows you to display a list of all available custom commands in this script
-# Usage: cbcs [-h]
-# Options:
-#   -h    Display this help message
-
-# Example: cbcs  ---Displays a list of all available custom commands in this script.
-
-##########
-
-# Create a function to display a list of all available custom commands in this script
 cbcs() {
-  if [[ $1 == "-h" ]]; then
-    # Display a list of all available custom commands and functions in this script with descriptions
-    echo " "
-    echo "########################################################################################################"
-    echo "################################### SEPARATE FUNCTION SECTION ##########################################"
-    echo "########################################################################################################"
-    echo "NOT CURRENTLY ALPHABETICAL"
-    echo " "
-    echo "backup"
-    echo "          Description: Create a backup file of a file"
-    echo "          Usage: backup <file>"
-    echo " "
-    echo "cbcs"
-    echo "          Description: Display a list of all available custom commands in this script"
-    echo "          Usage: cbcs [-h]"
-    echo "          Options:"
-    echo "              -h    Display this help message"
-    echo " "
-    echo "cc"
-    echo "          Description: Combine the git add, git commit and git push process interactively"
-    echo "          Usage: cc"
-    echo " "
-    echo "changes"
-    echo "          Description: Function to open the CBC changelog in the default browser"
-    echo "          Usage: changes [-h | -c]"
-    echo "          Options:"
-    echo "              -h    Display this help message"
-    echo "              -c    Copy the changelog URL to the clipboard"
-    echo " "
-    echo "cht.sh"
-    echo "         Description: Open the Cheat.sh client in the terminal"
-    echo "         Usage: cht.sh <query>"
-    echo " "
-    echo "display_info"
-    echo "          Description: Display CBC information"
-    echo "          Usage: display_info"
-    echo "          Aliases: 'di'"
-    echo " "
-    echo "display_version"
-    echo "          Description: Display the version number from the .version file"
-    echo "          Usage: display_version"
-    echo "          Aliases: 'dv'"
-    echo " "
-    echo "doftiles"
-    echo "         Description: Open the doftiles repository in the default browser"
-    echo "         Usage: doftiles"
-    echo " "
-    echo "extract"
-    echo "         Description: Extract compressed files"
-    echo "         Usage: extract [file]"
-    echo " "
-    echo "incon"
-    echo "         Description: Initialize a local git repo, create/connect it to a GitHub repo, and set up files"
-    echo "         Usage: incon [repo_name]"
-    echo " "
-    echo "mkdirs"
-    echo "         Description: Create a directory and switch into it"
-    echo "         Usage: mkdirs [directory]"
-    echo " "
-    echo "makeman"
-    echo "         Description: Function to generate a PDF file from a man page"
-    echo "         Usage: makeman [-h | -f <file> | -o <output_directory> | -r] <command>"
-    echo "         Options:"
-    echo "             -h    Display this help message"
-    echo "             -f    <file> : Specify the output file name"
-    echo "             -o    <output_directory> : Specify the output directory"
-    echo "             -r    Remove existing files in the output directory that are not listed in the specified file"
-    echo " "
-    echo "myip"
-    echo "         Description: Display the IP address of the current machine"
-    echo "         Usage: myip"
-    echo " "
-    echo "mvfiles"
-    echo "         Description: Move all files in a directory to subdirectories based on file type"
-    echo "         Usage: mvfiles"
-    echo " "
-    echo "pronlist"
-    echo "          Description: List files downloaded from _batch.txt per URL"
-    echo "          Usage: pronlist"
-    echo " "
-    echo "random"
-    echo "         Description: Open a random .mp4 file in the current directory"
-    echo "         Usage: random"
-    echo " "
-    echo "refresh"
-    echo "         Description: Refresh the terminal session"
-    echo "         Usage: refresh"
-    echo " "
-    echo "remove_all_cbc_configs"
-    echo "          Description: Remove all configuration files associated with CBC"
-    echo "          Usage: remove_all_cbc_configs"
-    echo "          Aliases: racc"
-    echo " "
-    echo "sortalpha"
-    echo "         Description: Sort files alphabetically into subdirectories by type and first letter"
-    echo "         Usage: sortalpha"
-    echo "         Aliases: sa"
-    echo " "
-    echo "seebash"
-    echo "          Description: Display the contents of the .bashrc file"
-    echo "          Usage: seebash"
-    echo " "
-    echo "up"
-    echo "          Description: Move up one directory level"
-    echo "          Usage: up [number of levels>=0 | -a | -h | -r | -q | -c | -p | -l]"
-    echo "          Options:"
-    echo "             -a    Move up all levels"
-    echo "             -h    Display this help message"
-    echo "             -r    Move up to the root directory"
-    echo "             -q    Move up quietly"
-    echo "             -c    Clear the screen after moving up"
-    echo "             -p    Print the current directory after moving up"
-    echo "             -l    List the contents of the current directory after moving up"
-    echo "rmconf"
-    echo "         Description: Remove the configuration file for CBC"
-    echo "         Usage: rmconf"
-    echo " "
-    echo "sopen"
-    echo "          Description: Open .mp4 files in the current directory that match patterns generated from lines in a selected .txt file"
-    echo "          Usage: sopen"
-    echo " "
-    echo "sopenexact"
-    echo "          Description: Open .mp4 files in the current directory that match patterns generated from lines in a selected .txt file using exact mode"
-    echo "          Usage: sopenexact"
-    echo " "
-    echo "update"
-    echo "          Description: "
-    echo "          Usage: update [-h | -r | -s | -l ]"
-    echo "          Options:"
-    echo "              -h : Display this help message"
-    echo "              -r : Restart the computer after updating"
-    echo "              -s : Shutdown the computer after updating"
-    echo "              -l : Display the path to the log file after updating"
-    echo " "
-    echo "wiki"
-    echo "         Description: Open the CBC wiki in the default browser"
-    echo "         Usage: wiki"
-    echo " "
-    echo "x"
-    echo "         Description: Make a file executable"
-    echo "         Usage: x [file]"
-    echo " "
-    echo "########################################################################################################"
-    echo "################################### SEPARATE ALIAS SECTION #############################################"
-    echo "########################################################################################################"
-    echo " "
-    echo "back"
-    echo "          Description: Change to the parent directory and list its contents"
-    echo "          Usage: back"
-    echo "          Alias For: 'cd .. && ls'"
-    echo " "
-    echo "bat"
-    echo "          Description: Alias shortcut for 'batcat'"
-    echo "          Usage: bat [options]"
-    echo "          Alias For: 'batcat'"
-    echo " "
-    echo "cbcc"
-    echo "          Description: Change to the custom_bash_commands directory, list its contents, and commit interactively"
-    echo "          Usage: cbcc"
-    echo "          Alias For: 'cdgh && cd custom_bash_commands && ls && cc'"
-    echo " "
-    echo "cbc"
-    echo "          Description: Change to the custom_bash_commands directory and list its contents"
-    echo "          Usage: cbc"
-    echo "          Alias For: 'cdgh && cd custom_bash_commands && ls'"
-    echo " "
-    echo "c"
-    echo "          Description: Clear the terminal screen and call display_info command"
-    echo "          Usage: c"
-    echo "          Alias For: 'clear && di"
-    echo " "
-    echo "ch"
-    echo "          Description: Alias shortcut for 'chezmoi'"
-    echo "          Usage: ch [options]"
-    echo "          Alias For: 'chezmoi'"
-    echo " "
-    echo "chup"
-    echo "          Description: Alias shortcut to pull updates from chezmoi"
-    echo "          Usage: chup"
-    echo "          Alias For: 'chezmoi update'"
-    echo " "
-    echo "cla"
-    echo "          Description: Clear the terminal screen and print the contents of the current directory including hidden"
-    echo "          Usage: cla"
-    echo "          Alias For: 'clear && di && la"
-    echo " "
-    echo "cls"
-    echo "          Description: Clear the terminal screen and print the contents of the current directory"
-    echo "          Usage: cls"
-    echo "          Alias For: 'clear && di && ls'"
-    echo " "
-    echo "commands"
-    echo "          Description: Display a list of all available custom commands in CBC using batcat"
-    echo "          Usage: commands"
-    echo "          Alias For: 'cbcs | batcat'"
-    echo " "
-    echo "commandsmore"
-    echo "          Description: Display a list of all available custom commands in CBC and additional information using batcat"
-    echo "          Usage: commandsmore"
-    echo "          Alias For: 'cbcs -h | batcat'"
-    echo " "
-    echo "comm"
-    echo "          Description: Shortcut for 'commands'"
-    echo "          Usage: comm"
-    echo "          Alias For: 'commands'"
-    echo " "
-    echo "commm"
-    echo "          Description: Shortcut for 'commandsmore'"
-    echo "          Usage: commm"
-    echo "          Alias For: 'commandsmore'"
-    echo " "
-    echo "cp"
-    echo "          Description: Alias for 'cp' with the '-i' option"
-    echo "          Usage: cp [source] [destination]"
-    echo "          Alias For: 'cp -i'"
-    echo " "
-    echo "di"
-    echo "          Description: Shortcut for 'display_info'"
-    echo "          Usage: di"
-    echo "          Alias For: 'display_info'"
-    echo " "
-    echo "dl"
-    echo "          Description: Shortcut for 'downloads'"
-    echo "          Usage: dl"
-    echo "          Alias For: 'downloads'"
-    echo " "
-    echo "docs"
-    echo "          Description: Change to the Documents directory and list its contents"
-    echo "          Usage: docs"
-    echo "          Alias For: 'cd ~/Documents && ls'"
-    echo " "
-    echo "downloads"
-    echo "          Description: Change to the Downloads directory and list its contents"
-    echo "          Usage: downloads"
-    echo "          Alias For: 'cd ~/Downloads && ls'"
-    echo " "
-    echo "dv"
-    echo "          Description: Shortcut for 'display_version'"
-    echo "          Usage: dv"
-    echo "          Alias For: 'display_version'"
-    echo " "
-    echo "editbash"
-    echo "          Description: Open the .bashrc file in the default terminal text editor"
-    echo "          Usage: editbash"
-    echo "          Alias For: '\$EDITOR ~/.bashrc'"
-    echo " "
-    echo "home"
-    echo "         Description: Change to the home directory and list its contents"
-    echo "         Usage: home"
-    echo "         Alias: cd ~ && ls"
-    echo " "
-    echo "iopen"
-    echo "          Description: Alias for 'fopen' to open image files"
-    echo "          Usage: iopen"
-    echo "          Aliases: 'io'"
-    echo " "
-    echo "iopenexact"
-    echo "          Description: Alias for 'fopenexact' to open image files"
-    echo "          Usage: iopenexact"
-    echo "          Aliases: 'ioe'"
-    echo " "
-    echo "io"
-    echo "          Description: Shortcut for 'iopen'"
-    echo "          Usage: io"
-    echo " "
-    echo "ioe"
-    echo "          Description: Shortcut for 'iopenexact'"
-    echo "          Usage: ioe"
-    echo " "
-    echo "rma"
-    echo "          Description: Remove the directory and all files it contains"
-    echo "          Usage: rma <directory>"
-    echo "          Alias For: 'rm -rfI'"
-    echo " "
-    echo "odt"
-    echo "          Description: Create a .odt file in the current directory and open it"
-    echo "          Usage: odt [filename]"
-    echo " "
-    echo "ods"
-    echo "          Description: Create a .ods file in the current directory and open it"
-    echo "          Usage: ods [filename]"
-    echo " "
-    echo "cdgh, (alias: cd ~/Documents/github_repositories && ls)"
-    echo "          Description: Change to the github_repositories directory and list its contents"
-    echo "          Usage: cdgh,   (alias: cd ~/Documents/github_repositories && ls)"
-    echo " "
-    echo "temp, (alias: cd ~/Documents/Temporary && ls)"
-    echo "          Description: Change to the Temporary directory and list its contents"
-    echo "          Usage: temp,   (alias: cd ~/Documents/Temporary && ls)"
-    echo " "
-    echo "test, (alias: source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh"
-    echo "          Description: Source the custom_bash_commands script for testing"
-    echo "          Usage: test,   (alias: source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh"
-    echo " "
-    echo "gs"
-    echo "          Description: Display the git status of the current directory"
-    echo "          Usage: gs"
-    echo "          Alias For: 'git status'"
-    echo " "
-    echo "ga, (alias: git add)"
-    echo "          Description: Add a file to the git repository"
-    echo "          Usage: ga [file]"
-    echo " "
-    echo "gaa, (alias: git add .)"
-    echo "          Description: Add all files to the git repository"
-    echo "          Usage: gaa"
-    echo " "
-    echo "gb, (alias: git branch)"
-    echo "          Description: Display the git branches of the current repository"
-    echo "          Usage: gb"
-    echo " "
-    echo "gco, (alias: git checkout)"
-    echo "          Description: Switch to a different branch in the git repository"
-    echo "          Usage: gco [branch]"
-    echo " "
-    echo "gcom, (alias: git checkout main)"
-    echo "          Description: Quickly switch to the main branch of a git repository"
-    echo "          Usage: gcom"
-    echo " "
-    echo "gcomm"
-    echo "          Description: Commit the changes to the local repository and open commit message in default editor"
-    echo "          Usage: gcomm]"
-    echo "          Alias For: git commit"
-    echo " "
-    echo "gpsh, (alias: git push)"
-    echo "          Description: Push the changes to the remote repository"
-    echo "          Usage: gpsh"
-    echo " "
-    echo "gpll, (alias: git pull)"
-    echo "          Description: Pull the changes from the remote repository"
-    echo "          Usage: gpll"
-    echo " "
-    echo "gpfom, (alias: git push -f origin main)"
-    echo "          Description: Force push the changes to the main branch of the remote repository with tags"
-    echo "          Usage: gpfom"
-    echo " "
-    echo "gsw"
-    echo "          Description: Alias for 'git switch'"
-    echo "          Usage: gsw [branch]"
-    echo " "
-    echo "gswm"
-    echo "         Description: Quickly switch to the main branch of a git repository"
-    echo "         Usage: gswm"
-    echo " "
-    echo "gswt"
-    echo "         Description: Quickly switch to the test branch of a git repository"
-    echo "         Usage: gswt"
-    echo " "
-    echo "filehash, (alias: fh)"
-    echo "         Description: Display the hash of a file"
-    echo "         Usage: filehash [file] [hash_type]"
-    echo " "
-    echo "python"
-    echo "         Description: Alias for 'python3'"
-    echo "         Usage: python [file]"
-    echo " "
-    echo "py"
-    echo "         Description: Alias for 'python3'"
-    echo "         Usage: py [file]"
-    echo " "
-    echo "pron"
-    echo "         Description: Activate yt-dlp using preset settings"
-    echo "         Usage: pron"
-    echo "          Alias For: 'yt-dlp --config-locations _configs.txt --batch-file _batch.txt'"
-    echo " "
-    echo "pronfile"
-    echo "         Description: Navigate to specific folder in T7 Shield"
-    echo "         Usage: pronfile"
-    echo " "
-    echo "pronupdate"
-    echo "         Description: Alias for 'pronfile && pron'"
-    echo "         Usage: pronupdate"
-    echo " "
-    echo "pu"
-    echo "         Description: Alias for 'pronupdate'"
-    echo "         Usage: pu"
-    echo " "
-    echo "regex_help"
-    echo "         Description: Display help for regular expressions"
-    echo "         Usage: regex_help [-f|--flavor <flavor>] [-h|--help]"
-    echo " "
-    echo "updatecbc, (alias: ucbc)"
-    echo "         Description: Update the custom bash commands script"
-    echo "         Usage: updatecbc"
-    echo " "
-    echo "fman"
-    echo "         Description: Fuzzy find a command and open the man page"
-    echo "         Usage: fman"
-    echo " "
-    echo "fcom"
-    echo "         Description: Fuzzy find a command and run it"
-    echo "         Usage: fcom"
-    echo " "
-    echo "fcomexact"
-    echo "         Description: Fuzzy find a command and run it using exact mode"
-    echo "         Usage: fcomexact"
-    echo " "
-    echo "fcome"
-    echo "         Description: Alias for 'fcomexact'"
-    echo "         Usage: fcome"
-    echo " "
-    echo "fhelp"
-    echo "         Description: Fuzzy find a command and display its help information"
-    echo "         Usage: fhelp"
-    echo " "
-    echo "fhelpexact"
-    echo "         Description: Fuzzy find a command and display its help information using exact mode"
-    echo "         Usage: fhelpexact"
-    echo " "
-    echo "fhelpe"
-    echo "         Description: Alias for 'fhelpexact'"
-    echo "         Usage: fhelpe"
-    echo " "
-    echo "historysearch"
-    echo "         Description: Search using fuzzy finder in the command history"
-    echo "         Usage: historysearch"
-    echo " "
-    echo "historysearchexact"
-    echo "         Description: Search using fuzzy finder in the command history using exact mode"
-    echo "         Usage: historysearchexact"
-    echo " "
-    echo "  hs"
-    echo "         Description: Alias for 'historysearch'"
-    echo "         Usage: hs"
-    echo " "
-    echo "  hse"
-    echo "         Description: Alias for 'historysearch' using exact mode"
-    echo "         Usage: hse"
-    echo " "
-    echo "  hsearch"
-    echo "         Description: Alias for 'historysearch'"
-    echo "         Usage: hsearch"
-    echo " "
-    echo "  i"
-    echo "         Description: Alias for 'sudo apt install'"
-    echo "         Usage: i [package]"
-    echo " "
-    echo "  ext"
-    echo "         Description: Alias for extract function"
-    echo "         Usage: ext [file]"
-    echo " "
-    echo "  vim"
-    echo "         Description: Alias for 'nvim'"
-    echo "         Usage: vim [file]"
-    echo " "
-    echo "  v"
-    echo "         Description: Alias for 'nvim'"
-    echo "         Usage: v [file]"
-    echo " "
-    echo "vopen"
-    echo "          Description: Alias for 'fopen' to open video files"
-    echo "          Usage: vopen"
-    echo "          Aliases: 'vo'"
-    echo " "
-    echo "vopenexact"
-    echo "          Description: Alias for 'fopenexact' to open video files"
-    echo "          Usage: vopenexact"
-    echo "          Aliases: 'voe'"
-    echo " "
-    echo "vo"
-    echo "          Description: Shortcut for 'vopen'"
-    echo "          Usage: vo"
-    echo " "
-    echo "voe"
-    echo "          Description: Shortcut for 'vopenexact'"
-    echo "          Usage: voe"
-    echo " "
-    echo "mopen"
-    echo "          Description: Alias for 'fopen' for media files."
-    echo "          Usage: mopen"
-    echo " "
-    echo "mopenexact"
-    echo "          Description: Alias for 'fopenexact' for media files."
-    echo "          Usage: mopenexact"
-    echo " "
-    echo "mo"
-    echo "          Description: Alias for 'mopen'"
-    echo "          Usage: mo"
-    echo " "
-    echo "moe"
-    echo "          Description: Alias for 'mopenexact'"
-    echo "          Usage: moe"
-    echo " "
-    echo "mv"
-    echo "          Description: Alias for 'mv' with the '-i' option"
-    echo "          Usage: mv [source] [destination]"
-    echo " "
-    echo "rm"
-    echo "         Description: Alias for 'rm' with the '-i' option"
-    echo "         Usage: rm [file]"
-    echo " "
-    echo "ln"
-    echo "         Description: Alias for 'ln' with the '-i' option"
-    echo "         Usage: ln [source] [destination]"
-    echo " "
-    echo "fobsidian"
-    echo "         Description: Open a file from the Obsidian vault in Obsidian"
-    echo "         Usage: fobsidian [file]"
-    echo " "
-    echo "fobs"
-    echo "         Description: Alias for 'fobsidian'"
-    echo "         Usage: fobs [file]"
-    echo " "
-    echo "la"
-    echo "         Description: List all files including hidden files using eza"
-    echo "         Usage: la"
-    echo " "
-    echo "lar"
-    echo "         Description: List all files including hidden files in reverse order using eza"
-    echo "         Usage: lar"
-    echo " "
-    echo "le"
-    echo "         Description: List all files including hidden files sorting by extension using eza"
-    echo "         Usage: le"
-    echo " "
-    echo "ll"
-    echo "         Description: List all files including hidden files with long format using eza"
-    echo "         Usage: ll"
-    echo " "
-    echo "llt"
-    echo "         Description: List all files including hidden files with long format and tree view using eza"
-    echo "         Usage: llt"
-    echo " "
-    echo "ls"
-    echo "         Description: List files using eza"
-    echo "         Usage: ls"
-    echo " "
-    echo "  lsd"
-    echo "         Description: List directories using eza"
-    echo "         Usage: lsd"
-    echo " "
-    echo "  lsf"
-    echo "         Description: List only files using eza"
-    echo "         Usage: lsf"
-    echo " "
-    echo "  lsr"
-    echo "         Description: List files using eza in reverse order"
-    echo "         Usage: lsr"
-    echo " "
-    echo "  lt"
-    echo "         Description: List files with tree view using eza"
-    echo "         Usage: lt"
-    echo " "
-    echo "  z"
-    echo "         Description: Alias for 'zellij'"
-    echo "         Usage: z [options]"
-    echo " "
-    echo "  commands"
-    echo "         Description: Display a list of all available custom commands in this script"
-    echo "         Usage: commands"
-    echo " "
-    echo "  fopen"
-    echo "         Description: Fuzzy find a file and open it"
-    echo "         Usage: fopen"
-    echo "  fopenexact"
-    echo "         Description: Fuzzy find a file and open it using exact mode"
-    echo "         Usage: fopenexact"
-    echo " "
-    echo "  fo"
-    echo "         Description: Alias for 'fopen'"
-    echo "         Usage: fo"
-    echo " "
-    echo "  foe"
-    echo "         Description: Alias for 'fopenexact'"
-    echo "         Usage: foe"
-    echo " "
-    echo "lg"
-    echo "          Description: Alias for 'lazygit'"
-    echo "          Usage: lg"
-    echo " "
-    echo "sa"
-    echo "          Description: Alias for 'sortalpha'"
-    echo "          Usage: sa"
-    echo " "
-    echo "s"
-    echo "          Description: Alias for 'sudo'"
-    echo "          Usage : s <command>"
-    echo " "
-    echo "so"
-    echo "          Description: Alias for 'sopen'"
-    echo "          Usage: so"
-    echo " "
-    echo "soe"
-    echo "          Description: Alias for 'sopenexact'"
-    echo "          Usage: soe"
-    echo " "
-    echo "ver"
-    echo "          Description: Shortcut for 'npx commit-and-tag-version'"
-    echo "          Usage: ver"
-    echo "          Alias For: 'npx commit-and-tag-version'"
-    echo " "
-    echo "verg"
-    echo "          Description: Combine 'ver' and 'gpfom' commands"
-    echo "          Usage: verg"
-    echo "          Alias For: 'ver && gpfom && echo \"Run 'gh cr' to create a new release\"'"
-    echo " "
-    echo ":q"
-    echo "          Description: Alias to exit terminal"
-    echo "          Usage: :q"
-    echo "          Alias For: 'exit'"
-    echo " "
-    echo ":wq"
-    echo "          Description: Alias to exit terminal"
-    echo "          Usage: :wq"
-    echo "          Alias For: 'exit'"
-    echo " "
-  else
-    # Display a list of all available custom commands and functions in this script
-    echo " "
-    echo "########################################################################################################"
-    echo "################################### SEPARATE FUNCTION SECTION ##########################################"
-    echo "########################################################################################################"
-    echo " "
-    echo "Use cbcs [-h] with help flag to display descriptions and usage. (NOT CURRENTLY ALPHABETICAL)"
-    echo " "
-    echo "backup"
-    echo "cbcs"
-    echo "cc"
-    echo "changes"
-    echo "cht.sh"
-    echo "display_info"
-    echo "display_version,"
-    echo "doftiles"
-    echo "extract"
-    echo "makeman"
-    echo "mkdirs"
-    echo "mvfiles"
-    echo "myip"
-    echo "pronlist"
-    echo "random"
-    echo "refresh"
-    echo "rmconf"
-    echo "sortalpha"
-    echo "seebash"
-    echo "sopen"
-    echo "sopenexact"
-    echo "up"
-    echo "wiki"
-    echo "x"
-    echo " "
-    echo "########################################################################################################"
-    echo "################################### SEPARATE ALIAS SECTION #############################################"
-    echo "########################################################################################################"
-    echo " "
-    echo "back"
-    echo "bat"
-    echo "cbcc"
-    echo "cbc"
-    echo "c"
-    echo "cdgh"
-    echo "ch"
-    echo "chup"
-    echo "cla"
-    echo "cls"
-    echo "commands"
-    echo "commandsmore"
-    echo "comm"
-    echo "commm"
-    echo "cp"
-    echo "di"
-    echo "dl"
-    echo "docs"
-    echo "downloads"
-    echo "dv"
-    echo "editbash"
-    echo "ext"
-    echo "fcom"
-    echo "fcome"
-    echo "fcomexact"
-    echo "fhelp"
-    echo "fhelpe"
-    echo "fhelpexact"
-    echo "filehash"
-    echo "fman"
-    echo "fo"
-    echo "fobs"
-    echo "fobsidian"
-    echo "foe"
-    echo "fopen"
-    echo "fopenexact"
-    echo "ga"
-    echo "gaa"
-    echo "gb"
-    echo "gco"
-    echo "gcom"
-    echo "gcomm"
-    echo "gp"
-    echo "gpfom"
-    echo "gs"
-    echo "gsw"
-    echo "gswm"
-    echo "gswt"
-    echo "historysearch"
-    echo "historysearchexact"
-    echo "home"
-    echo "hs"
-    echo "hse"
-    echo "hsearch"
-    echo "i"
-    echo "incon"
-    echo "iopen"
-    echo "iopenexact"
-    echo "io"
-    echo "ioe"
-    echo "la"
-    echo "lar"
-    echo "le"
-    echo "lg"
-    echo "ll"
-    echo "llt"
-    echo "ln"
-    echo "ls"
-    echo "lsd"
-    echo "lsf"
-    echo "lsr"
-    echo "lt"
-    echo "mopen"
-    echo "mopenexact"
-    echo "mo"
-    echo "moe"
-    echo "mv"
-    echo "ods"
-    echo "odt"
-    echo "py"
-    echo "python"
-    echo "pron"
-    echo "pronfile"
-    echo "pronupdate"
-    echo "pu"
-    echo "regex_help"
-    echo "remove_all_cbc_configs"
-    echo "remove_session_id_config"
-    echo "rm"
-    echo "rma"
-    echo "s"
-    echo "sa"
-    echo "so"
-    echo "soe"
-    echo "temp"
-    echo "test"
-    echo "update"
-    echo "updatecbc"
-    echo "ver"
-    echo "verg"
-    echo "vim"
-    echo "v"
-    echo "vopen"
-    echo "vopenexact"
-    echo "vo"
-    echo "voe"
-    echo "z"
-    echo ":q"
-    echo ":wq"
-  fi
+  OPTIND=1
+  all_info=false
+
+  usage() {
+    cat <<EOF
+Description: 
+  This function allows you to display a list of all available custom commands in this script
+
+Usage: 
+  cbcs [-h | -a]
+
+Options:
+  -h    Display this help message
+  -a    Display all available custom commands with descriptions
+
+Example: 
+  cbcs
+  cbcs -a
+EOF
+  }
+
+  while getopts ":ha" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    a)
+      all_info=true
+      ;;
+    *)
+      echo "Invalid option: -$OPTARG" >&2
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  main_logic() {
+    if [ "$all_info" = true ]; then
+      # Display a list of all available custom commands and functions in this script with descriptions
+      echo " "
+      echo "########################################################################################################"
+      echo "################################### SEPARATE FUNCTION SECTION ##########################################"
+      echo "########################################################################################################"
+      echo "NOT CURRENTLY ALPHABETICAL"
+      echo " "
+      echo "backup"
+      echo "          Description: Create a backup file of a file"
+      echo "          Usage: backup <file>"
+      echo " "
+      echo "cbcs"
+      echo "          Description: Display a list of all available custom commands in this script"
+      echo "          Usage: cbcs [-h]"
+      echo "          Options:"
+      echo "              -h    Display this help message"
+      echo " "
+      echo "cc"
+      echo "          Description: Combine the git add, git commit and git push process interactively"
+      echo "          Usage: cc"
+      echo " "
+      echo "changes"
+      echo "          Description: Function to open the CBC changelog in the default browser"
+      echo "          Usage: changes [-h | -c]"
+      echo "          Options:"
+      echo "              -h    Display this help message"
+      echo "              -c    Copy the changelog URL to the clipboard"
+      echo " "
+      echo "cht.sh"
+      echo "         Description: Open the Cheat.sh client in the terminal"
+      echo "         Usage: cht.sh <query>"
+      echo " "
+      echo "display_info"
+      echo "          Description: Display CBC information"
+      echo "          Usage: display_info"
+      echo "          Aliases: 'di'"
+      echo " "
+      echo "display_version"
+      echo "          Description: Display the version number from the .version file"
+      echo "          Usage: display_version"
+      echo "          Aliases: 'dv'"
+      echo " "
+      echo "doftiles"
+      echo "         Description: Open the doftiles repository in the default browser"
+      echo "         Usage: doftiles"
+      echo " "
+      echo "extract"
+      echo "         Description: Extract compressed files"
+      echo "         Usage: extract [file]"
+      echo " "
+      echo "incon"
+      echo "         Description: Initialize a local git repo, create/connect it to a GitHub repo, and set up files"
+      echo "         Usage: incon [repo_name]"
+      echo " "
+      echo "mkdirs"
+      echo "         Description: Create a directory and switch into it"
+      echo "         Usage: mkdirs [directory]"
+      echo " "
+      echo "makeman"
+      echo "         Description: Function to generate a PDF file from a man page"
+      echo "         Usage: makeman [-h | -f <file> | -o <output_directory> | -r] <command>"
+      echo "         Options:"
+      echo "             -h    Display this help message"
+      echo "             -f    <file> : Specify the output file name"
+      echo "             -o    <output_directory> : Specify the output directory"
+      echo "             -r    Remove existing files in the output directory that are not listed in the specified file"
+      echo " "
+      echo "myip"
+      echo "         Description: Display the IP address of the current machine"
+      echo "         Usage: myip"
+      echo " "
+      echo "mvfiles"
+      echo "         Description: Move all files in a directory to subdirectories based on file type"
+      echo "         Usage: mvfiles"
+      echo " "
+      echo "pronlist"
+      echo "          Description: List files downloaded from _batch.txt per URL"
+      echo "          Usage: pronlist"
+      echo " "
+      echo "random"
+      echo "         Description: Open a random .mp4 file in the current directory"
+      echo "         Usage: random"
+      echo " "
+      echo "refresh"
+      echo "         Description: Refresh the terminal session"
+      echo "         Usage: refresh"
+      echo " "
+      echo "remove_all_cbc_configs"
+      echo "          Description: Remove all configuration files associated with CBC"
+      echo "          Usage: remove_all_cbc_configs"
+      echo "          Aliases: racc"
+      echo " "
+      echo "sortalpha"
+      echo "         Description: Sort files alphabetically into subdirectories by type and first letter"
+      echo "         Usage: sortalpha"
+      echo "         Aliases: sa"
+      echo " "
+      echo "seebash"
+      echo "          Description: Display the contents of the .bashrc file"
+      echo "          Usage: seebash"
+      echo " "
+      echo "up"
+      echo "          Description: Move up one directory level"
+      echo "          Usage: up [number of levels>=0 | -a | -h | -r | -q | -c | -p | -l]"
+      echo "          Options:"
+      echo "             -a    Move up all levels"
+      echo "             -h    Display this help message"
+      echo "             -r    Move up to the root directory"
+      echo "             -q    Move up quietly"
+      echo "             -c    Clear the screen after moving up"
+      echo "             -p    Print the current directory after moving up"
+      echo "             -l    List the contents of the current directory after moving up"
+      echo "rmconf"
+      echo "         Description: Remove the configuration file for CBC"
+      echo "         Usage: rmconf"
+      echo " "
+      echo "sopen"
+      echo "          Description: Open .mp4 files in the current directory that match patterns generated from lines in a selected .txt file"
+      echo "          Usage: sopen"
+      echo " "
+      echo "sopenexact"
+      echo "          Description: Open .mp4 files in the current directory that match patterns generated from lines in a selected .txt file using exact mode"
+      echo "          Usage: sopenexact"
+      echo " "
+      echo "update"
+      echo "          Description: "
+      echo "          Usage: update [-h | -r | -s | -l ]"
+      echo "          Options:"
+      echo "              -h : Display this help message"
+      echo "              -r : Restart the computer after updating"
+      echo "              -s : Shutdown the computer after updating"
+      echo "              -l : Display the path to the log file after updating"
+      echo " "
+      echo "wiki"
+      echo "         Description: Open the CBC wiki in the default browser"
+      echo "         Usage: wiki"
+      echo " "
+      echo "x"
+      echo "         Description: Make a file executable"
+      echo "         Usage: x [file]"
+      echo " "
+      echo "########################################################################################################"
+      echo "################################### SEPARATE ALIAS SECTION #############################################"
+      echo "########################################################################################################"
+      echo " "
+      echo "back"
+      echo "          Description: Change to the parent directory and list its contents"
+      echo "          Usage: back"
+      echo "          Alias For: 'cd .. && ls'"
+      echo " "
+      echo "bat"
+      echo "          Description: Alias shortcut for 'batcat'"
+      echo "          Usage: bat [options]"
+      echo "          Alias For: 'batcat'"
+      echo " "
+      echo "cbcc"
+      echo "          Description: Change to the custom_bash_commands directory, list its contents, and commit interactively"
+      echo "          Usage: cbcc"
+      echo "          Alias For: 'cdgh && cd custom_bash_commands && ls && cc'"
+      echo " "
+      echo "cbc"
+      echo "          Description: Change to the custom_bash_commands directory and list its contents"
+      echo "          Usage: cbc"
+      echo "          Alias For: 'cdgh && cd custom_bash_commands && ls'"
+      echo " "
+      echo "c"
+      echo "          Description: Clear the terminal screen and call display_info command"
+      echo "          Usage: c"
+      echo "          Alias For: 'clear && di"
+      echo " "
+      echo "ch"
+      echo "          Description: Alias shortcut for 'chezmoi'"
+      echo "          Usage: ch [options]"
+      echo "          Alias For: 'chezmoi'"
+      echo " "
+      echo "chup"
+      echo "          Description: Alias shortcut to pull updates from chezmoi"
+      echo "          Usage: chup"
+      echo "          Alias For: 'chezmoi update'"
+      echo " "
+      echo "cla"
+      echo "          Description: Clear the terminal screen and print the contents of the current directory including hidden"
+      echo "          Usage: cla"
+      echo "          Alias For: 'clear && di && la"
+      echo " "
+      echo "cls"
+      echo "          Description: Clear the terminal screen and print the contents of the current directory"
+      echo "          Usage: cls"
+      echo "          Alias For: 'clear && di && ls'"
+      echo " "
+      echo "commands"
+      echo "          Description: Display a list of all available custom commands in CBC using batcat"
+      echo "          Usage: commands"
+      echo "          Alias For: 'cbcs | batcat'"
+      echo " "
+      echo "commandsmore"
+      echo "          Description: Display a list of all available custom commands in CBC and additional information using batcat"
+      echo "          Usage: commandsmore"
+      echo "          Alias For: 'cbcs -h | batcat'"
+      echo " "
+      echo "comm"
+      echo "          Description: Shortcut for 'commands'"
+      echo "          Usage: comm"
+      echo "          Alias For: 'commands'"
+      echo " "
+      echo "commm"
+      echo "          Description: Shortcut for 'commandsmore'"
+      echo "          Usage: commm"
+      echo "          Alias For: 'commandsmore'"
+      echo " "
+      echo "cp"
+      echo "          Description: Alias for 'cp' with the '-i' option"
+      echo "          Usage: cp [source] [destination]"
+      echo "          Alias For: 'cp -i'"
+      echo " "
+      echo "di"
+      echo "          Description: Shortcut for 'display_info'"
+      echo "          Usage: di"
+      echo "          Alias For: 'display_info'"
+      echo " "
+      echo "dl"
+      echo "          Description: Shortcut for 'downloads'"
+      echo "          Usage: dl"
+      echo "          Alias For: 'downloads'"
+      echo " "
+      echo "docs"
+      echo "          Description: Change to the Documents directory and list its contents"
+      echo "          Usage: docs"
+      echo "          Alias For: 'cd ~/Documents && ls'"
+      echo " "
+      echo "downloads"
+      echo "          Description: Change to the Downloads directory and list its contents"
+      echo "          Usage: downloads"
+      echo "          Alias For: 'cd ~/Downloads && ls'"
+      echo " "
+      echo "dv"
+      echo "          Description: Shortcut for 'display_version'"
+      echo "          Usage: dv"
+      echo "          Alias For: 'display_version'"
+      echo " "
+      echo "editbash"
+      echo "          Description: Open the .bashrc file in the default terminal text editor"
+      echo "          Usage: editbash"
+      echo "          Alias For: '\$EDITOR ~/.bashrc'"
+      echo " "
+      echo "home"
+      echo "         Description: Change to the home directory and list its contents"
+      echo "         Usage: home"
+      echo "         Alias: cd ~ && ls"
+      echo " "
+      echo "iopen"
+      echo "          Description: Alias for 'fopen' to open image files"
+      echo "          Usage: iopen"
+      echo "          Aliases: 'io'"
+      echo " "
+      echo "iopenexact"
+      echo "          Description: Alias for 'fopenexact' to open image files"
+      echo "          Usage: iopenexact"
+      echo "          Aliases: 'ioe'"
+      echo " "
+      echo "io"
+      echo "          Description: Shortcut for 'iopen'"
+      echo "          Usage: io"
+      echo " "
+      echo "ioe"
+      echo "          Description: Shortcut for 'iopenexact'"
+      echo "          Usage: ioe"
+      echo " "
+      echo "rma"
+      echo "          Description: Remove the directory and all files it contains"
+      echo "          Usage: rma <directory>"
+      echo "          Alias For: 'rm -rfI'"
+      echo " "
+      echo "odt"
+      echo "          Description: Create a .odt file in the current directory and open it"
+      echo "          Usage: odt [filename]"
+      echo " "
+      echo "ods"
+      echo "          Description: Create a .ods file in the current directory and open it"
+      echo "          Usage: ods [filename]"
+      echo " "
+      echo "cdgh, (alias: cd ~/Documents/github_repositories && ls)"
+      echo "          Description: Change to the github_repositories directory and list its contents"
+      echo "          Usage: cdgh,   (alias: cd ~/Documents/github_repositories && ls)"
+      echo " "
+      echo "temp, (alias: cd ~/Documents/Temporary && ls)"
+      echo "          Description: Change to the Temporary directory and list its contents"
+      echo "          Usage: temp,   (alias: cd ~/Documents/Temporary && ls)"
+      echo " "
+      echo "test, (alias: source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh"
+      echo "          Description: Source the custom_bash_commands script for testing"
+      echo "          Usage: test,   (alias: source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh"
+      echo " "
+      echo "gs"
+      echo "          Description: Display the git status of the current directory"
+      echo "          Usage: gs"
+      echo "          Alias For: 'git status'"
+      echo " "
+      echo "ga, (alias: git add)"
+      echo "          Description: Add a file to the git repository"
+      echo "          Usage: ga [file]"
+      echo " "
+      echo "gaa, (alias: git add .)"
+      echo "          Description: Add all files to the git repository"
+      echo "          Usage: gaa"
+      echo " "
+      echo "gb, (alias: git branch)"
+      echo "          Description: Display the git branches of the current repository"
+      echo "          Usage: gb"
+      echo " "
+      echo "gco, (alias: git checkout)"
+      echo "          Description: Switch to a different branch in the git repository"
+      echo "          Usage: gco [branch]"
+      echo " "
+      echo "gcom, (alias: git checkout main)"
+      echo "          Description: Quickly switch to the main branch of a git repository"
+      echo "          Usage: gcom"
+      echo " "
+      echo "gcomm"
+      echo "          Description: Commit the changes to the local repository and open commit message in default editor"
+      echo "          Usage: gcomm]"
+      echo "          Alias For: git commit"
+      echo " "
+      echo "gpsh, (alias: git push)"
+      echo "          Description: Push the changes to the remote repository"
+      echo "          Usage: gpsh"
+      echo " "
+      echo "gpll, (alias: git pull)"
+      echo "          Description: Pull the changes from the remote repository"
+      echo "          Usage: gpll"
+      echo " "
+      echo "gpfom, (alias: git push -f origin main)"
+      echo "          Description: Force push the changes to the main branch of the remote repository with tags"
+      echo "          Usage: gpfom"
+      echo " "
+      echo "gsw"
+      echo "          Description: Alias for 'git switch'"
+      echo "          Usage: gsw [branch]"
+      echo " "
+      echo "gswm"
+      echo "         Description: Quickly switch to the main branch of a git repository"
+      echo "         Usage: gswm"
+      echo " "
+      echo "gswt"
+      echo "         Description: Quickly switch to the test branch of a git repository"
+      echo "         Usage: gswt"
+      echo " "
+      echo "filehash, (alias: fh)"
+      echo "         Description: Display the hash of a file"
+      echo "         Usage: filehash [file] [hash_type]"
+      echo " "
+      echo "python"
+      echo "         Description: Alias for 'python3'"
+      echo "         Usage: python [file]"
+      echo " "
+      echo "py"
+      echo "         Description: Alias for 'python3'"
+      echo "         Usage: py [file]"
+      echo " "
+      echo "pron"
+      echo "         Description: Activate yt-dlp using preset settings"
+      echo "         Usage: pron"
+      echo "          Alias For: 'yt-dlp --config-locations _configs.txt --batch-file _batch.txt'"
+      echo " "
+      echo "pronfile"
+      echo "         Description: Navigate to specific folder in T7 Shield"
+      echo "         Usage: pronfile"
+      echo " "
+      echo "pronupdate"
+      echo "         Description: Alias for 'pronfile && pron'"
+      echo "         Usage: pronupdate"
+      echo " "
+      echo "pu"
+      echo "         Description: Alias for 'pronupdate'"
+      echo "         Usage: pu"
+      echo " "
+      echo "regex_help"
+      echo "         Description: Display help for regular expressions"
+      echo "         Usage: regex_help [-f|--flavor <flavor>] [-h|--help]"
+      echo " "
+      echo "updatecbc, (alias: ucbc)"
+      echo "         Description: Update the custom bash commands script"
+      echo "         Usage: updatecbc"
+      echo " "
+      echo "fman"
+      echo "         Description: Fuzzy find a command and open the man page"
+      echo "         Usage: fman"
+      echo " "
+      echo "fcom"
+      echo "         Description: Fuzzy find a command and run it"
+      echo "         Usage: fcom"
+      echo " "
+      echo "fcomexact"
+      echo "         Description: Fuzzy find a command and run it using exact mode"
+      echo "         Usage: fcomexact"
+      echo " "
+      echo "fcome"
+      echo "         Description: Alias for 'fcomexact'"
+      echo "         Usage: fcome"
+      echo " "
+      echo "fhelp"
+      echo "         Description: Fuzzy find a command and display its help information"
+      echo "         Usage: fhelp"
+      echo " "
+      echo "fhelpexact"
+      echo "         Description: Fuzzy find a command and display its help information using exact mode"
+      echo "         Usage: fhelpexact"
+      echo " "
+      echo "fhelpe"
+      echo "         Description: Alias for 'fhelpexact'"
+      echo "         Usage: fhelpe"
+      echo " "
+      echo "historysearch"
+      echo "         Description: Search using fuzzy finder in the command history"
+      echo "         Usage: historysearch"
+      echo " "
+      echo "historysearchexact"
+      echo "         Description: Search using fuzzy finder in the command history using exact mode"
+      echo "         Usage: historysearchexact"
+      echo " "
+      echo "  hs"
+      echo "         Description: Alias for 'historysearch'"
+      echo "         Usage: hs"
+      echo " "
+      echo "  hse"
+      echo "         Description: Alias for 'historysearch' using exact mode"
+      echo "         Usage: hse"
+      echo " "
+      echo "  hsearch"
+      echo "         Description: Alias for 'historysearch'"
+      echo "         Usage: hsearch"
+      echo " "
+      echo "  i"
+      echo "         Description: Alias for 'sudo apt install'"
+      echo "         Usage: i [package]"
+      echo " "
+      echo "  ext"
+      echo "         Description: Alias for extract function"
+      echo "         Usage: ext [file]"
+      echo " "
+      echo "  vim"
+      echo "         Description: Alias for 'nvim'"
+      echo "         Usage: vim [file]"
+      echo " "
+      echo "  v"
+      echo "         Description: Alias for 'nvim'"
+      echo "         Usage: v [file]"
+      echo " "
+      echo "vopen"
+      echo "          Description: Alias for 'fopen' to open video files"
+      echo "          Usage: vopen"
+      echo "          Aliases: 'vo'"
+      echo " "
+      echo "vopenexact"
+      echo "          Description: Alias for 'fopenexact' to open video files"
+      echo "          Usage: vopenexact"
+      echo "          Aliases: 'voe'"
+      echo " "
+      echo "vo"
+      echo "          Description: Shortcut for 'vopen'"
+      echo "          Usage: vo"
+      echo " "
+      echo "voe"
+      echo "          Description: Shortcut for 'vopenexact'"
+      echo "          Usage: voe"
+      echo " "
+      echo "mopen"
+      echo "          Description: Alias for 'fopen' for media files."
+      echo "          Usage: mopen"
+      echo " "
+      echo "mopenexact"
+      echo "          Description: Alias for 'fopenexact' for media files."
+      echo "          Usage: mopenexact"
+      echo " "
+      echo "mo"
+      echo "          Description: Alias for 'mopen'"
+      echo "          Usage: mo"
+      echo " "
+      echo "moe"
+      echo "          Description: Alias for 'mopenexact'"
+      echo "          Usage: moe"
+      echo " "
+      echo "mv"
+      echo "          Description: Alias for 'mv' with the '-i' option"
+      echo "          Usage: mv [source] [destination]"
+      echo " "
+      echo "rm"
+      echo "         Description: Alias for 'rm' with the '-i' option"
+      echo "         Usage: rm [file]"
+      echo " "
+      echo "ln"
+      echo "         Description: Alias for 'ln' with the '-i' option"
+      echo "         Usage: ln [source] [destination]"
+      echo " "
+      echo "fobsidian"
+      echo "         Description: Open a file from the Obsidian vault in Obsidian"
+      echo "         Usage: fobsidian [file]"
+      echo " "
+      echo "fobs"
+      echo "         Description: Alias for 'fobsidian'"
+      echo "         Usage: fobs [file]"
+      echo " "
+      echo "la"
+      echo "         Description: List all files including hidden files using eza"
+      echo "         Usage: la"
+      echo " "
+      echo "lar"
+      echo "         Description: List all files including hidden files in reverse order using eza"
+      echo "         Usage: lar"
+      echo " "
+      echo "le"
+      echo "         Description: List all files including hidden files sorting by extension using eza"
+      echo "         Usage: le"
+      echo " "
+      echo "ll"
+      echo "         Description: List all files including hidden files with long format using eza"
+      echo "         Usage: ll"
+      echo " "
+      echo "llt"
+      echo "         Description: List all files including hidden files with long format and tree view using eza"
+      echo "         Usage: llt"
+      echo " "
+      echo "ls"
+      echo "         Description: List files using eza"
+      echo "         Usage: ls"
+      echo " "
+      echo "  lsd"
+      echo "         Description: List directories using eza"
+      echo "         Usage: lsd"
+      echo " "
+      echo "  lsf"
+      echo "         Description: List only files using eza"
+      echo "         Usage: lsf"
+      echo " "
+      echo "  lsr"
+      echo "         Description: List files using eza in reverse order"
+      echo "         Usage: lsr"
+      echo " "
+      echo "  lt"
+      echo "         Description: List files with tree view using eza"
+      echo "         Usage: lt"
+      echo " "
+      echo "  z"
+      echo "         Description: Alias for 'zellij'"
+      echo "         Usage: z [options]"
+      echo " "
+      echo "  commands"
+      echo "         Description: Display a list of all available custom commands in this script"
+      echo "         Usage: commands"
+      echo " "
+      echo "  fopen"
+      echo "         Description: Fuzzy find a file and open it"
+      echo "         Usage: fopen"
+      echo "  fopenexact"
+      echo "         Description: Fuzzy find a file and open it using exact mode"
+      echo "         Usage: fopenexact"
+      echo " "
+      echo "  fo"
+      echo "         Description: Alias for 'fopen'"
+      echo "         Usage: fo"
+      echo " "
+      echo "  foe"
+      echo "         Description: Alias for 'fopenexact'"
+      echo "         Usage: foe"
+      echo " "
+      echo "lg"
+      echo "          Description: Alias for 'lazygit'"
+      echo "          Usage: lg"
+      echo " "
+      echo "sa"
+      echo "          Description: Alias for 'sortalpha'"
+      echo "          Usage: sa"
+      echo " "
+      echo "s"
+      echo "          Description: Alias for 'sudo'"
+      echo "          Usage : s <command>"
+      echo " "
+      echo "so"
+      echo "          Description: Alias for 'sopen'"
+      echo "          Usage: so"
+      echo " "
+      echo "soe"
+      echo "          Description: Alias for 'sopenexact'"
+      echo "          Usage: soe"
+      echo " "
+      echo "ver"
+      echo "          Description: Shortcut for 'npx commit-and-tag-version'"
+      echo "          Usage: ver"
+      echo "          Alias For: 'npx commit-and-tag-version'"
+      echo " "
+      echo "verg"
+      echo "          Description: Combine 'ver' and 'gpfom' commands"
+      echo "          Usage: verg"
+      echo "          Alias For: 'ver && gpfom && echo \"Run 'gh cr' to create a new release\"'"
+      echo " "
+      echo ":q"
+      echo "          Description: Alias to exit terminal"
+      echo "          Usage: :q"
+      echo "          Alias For: 'exit'"
+      echo " "
+      echo ":wq"
+      echo "          Description: Alias to exit terminal"
+      echo "          Usage: :wq"
+      echo "          Alias For: 'exit'"
+      echo " "
+    else
+      # Display a list of all available custom commands and functions in this script
+      echo " "
+      echo "########################################################################################################"
+      echo "################################### SEPARATE FUNCTION SECTION ##########################################"
+      echo "########################################################################################################"
+      echo " "
+      echo "Use cbcs [-h] with help flag to display descriptions and usage. (NOT CURRENTLY ALPHABETICAL)"
+      echo " "
+      echo "backup"
+      echo "cbcs"
+      echo "cc"
+      echo "changes"
+      echo "cht.sh"
+      echo "display_info"
+      echo "display_version,"
+      echo "doftiles"
+      echo "extract"
+      echo "makeman"
+      echo "mkdirs"
+      echo "mvfiles"
+      echo "myip"
+      echo "pronlist"
+      echo "random"
+      echo "refresh"
+      echo "rmconf"
+      echo "sortalpha"
+      echo "seebash"
+      echo "sopen"
+      echo "sopenexact"
+      echo "up"
+      echo "wiki"
+      echo "x"
+      echo " "
+      echo "########################################################################################################"
+      echo "################################### SEPARATE ALIAS SECTION #############################################"
+      echo "########################################################################################################"
+      echo " "
+      echo "back"
+      echo "bat"
+      echo "cbcc"
+      echo "cbc"
+      echo "c"
+      echo "cdgh"
+      echo "ch"
+      echo "chup"
+      echo "cla"
+      echo "cls"
+      echo "commands"
+      echo "commandsmore"
+      echo "comm"
+      echo "commm"
+      echo "cp"
+      echo "di"
+      echo "dl"
+      echo "docs"
+      echo "downloads"
+      echo "dv"
+      echo "editbash"
+      echo "ext"
+      echo "fcom"
+      echo "fcome"
+      echo "fcomexact"
+      echo "fhelp"
+      echo "fhelpe"
+      echo "fhelpexact"
+      echo "filehash"
+      echo "fman"
+      echo "fo"
+      echo "fobs"
+      echo "fobsidian"
+      echo "foe"
+      echo "fopen"
+      echo "fopenexact"
+      echo "ga"
+      echo "gaa"
+      echo "gb"
+      echo "gco"
+      echo "gcom"
+      echo "gcomm"
+      echo "gp"
+      echo "gpfom"
+      echo "gs"
+      echo "gsw"
+      echo "gswm"
+      echo "gswt"
+      echo "historysearch"
+      echo "historysearchexact"
+      echo "home"
+      echo "hs"
+      echo "hse"
+      echo "hsearch"
+      echo "i"
+      echo "incon"
+      echo "iopen"
+      echo "iopenexact"
+      echo "io"
+      echo "ioe"
+      echo "la"
+      echo "lar"
+      echo "le"
+      echo "lg"
+      echo "ll"
+      #   echo "llt"
+      #   echo "ln"
+      #   echo "ls"
+      #   echo "lsd"
+      #   echo "lsf"
+      echo "lsr"
+      echo "lt"
+      echo "mopen"
+      echo "mopenexact"
+      echo "mo"
+      echo "moe"
+      echo "mv"
+      echo "ods"
+      echo "odt"
+      echo "py"
+      echo "python"
+      echo "pron"
+      echo "pronfile"
+      echo "pronupdate"
+      echo "pu"
+      echo "regex_help"
+      echo "remove_all_cbc_configs"
+      echo "remove_session_id_config"
+      echo "rm"
+      echo "rma"
+      echo "s"
+      echo "sa"
+      echo "so"
+      echo "soe"
+      echo "temp"
+      echo "test"
+      echo "update"
+      echo "updatecbc"
+      echo "ver"
+      echo "verg"
+      echo "vim"
+      echo "v"
+      echo "vopen"
+      echo "vopenexact"
+      echo "vo"
+      echo "voe"
+      echo "z"
+      echo ":q"
+      echo ":wq"
+    fi
+  }
+
+  # Call the main logic function
+  main_logic
+
+  # if [[ $1 == "-h" ]]; then
 }
 
 ################################################################################
 # BACKUP
 ################################################################################
 
-# Describe the backup function and its options and usage
-
-# backup
-# Description: This function allows you to create a backup file of a file.
-# Usage: backup [file]
-# Options:
-#   -h    Display this help message
-
-# Example: backup test.txt  ---Creates a backup file of test.txt.
-
-##########
-
-# Function to create a backup file of a file.
 backup() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: This function allows you to create a backup file of a file."
-    echo "Usage: backup [file]"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
+  OPTIND=1
+
   local filename=$(basename "$1")                             # Get the base name of the file
   local timestamp=$(date +%Y.%m.%d.%H.%M.%S)                  # Get the current timestamp
   local backup_filename="${filename}_backup_${timestamp}.bak" # Create the backup file name
 
-  cp "$1" "$backup_filename"
+  usage() {
+    cat <<EOF
+Description: 
+  This function allows you to create a backup file of a file.
+
+Usage: 
+  backup [file]
+
+Options:
+  -h    Display this help message
+
+Example: 
+  backup test.txt
+EOF
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      usage
+      return
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG. Use -h for help."
+      return
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  # Function to check if no arguments are provided
+  check_no_arguments() {
+    if [ $# -eq 0 ]; then
+      echo "Error: No arguments provided. Use -h for help."
+      return 1
+    fi
+  }
+
+  # Function to check if the file exists
+  check_file_exists() {
+    if [ ! -f "$1" ]; then
+      echo "Error: File not found."
+      return 1
+    fi
+  }
+
+  # Function to create a backup file
+  make_backup() {
+    cp "$1" "$backup_filename" && echo "Backup created: $backup_filename"
+  }
+
+  # Main logic
+  main() {
+    check_no_arguments "$@" || return
+    check_file_exists "$1" || return
+    make_backup "$1"
+  }
+
+  # Call the main function with arguments
+  main "$@"
 }
 
 ################################################################################
 # UP
 ################################################################################
 
-# Describe the up function and its options and usage
+# TODO: create usage function and adjust the getopts section and fix the main logic
 
-# up
-# Description: This function allows you to move up in the directory hierarchy by a specified number of levels.
-# Usage: up [number of levels]
-# Options:
-#   -h    Display this help message
-
-# Example: up 2  ---Moves up 2 levels in the directory hierarchy.
-
-##########
-
-# Function to move up in the directory hierarchy by a specified number of levels.
 up() {
   # Initialize flags with default values
   local clear_terminal=false
@@ -2730,17 +2834,6 @@ odt() {
 # ODS
 ################################################################################
 
-# Describe the ods function and its options and usage
-
-# ods
-# Description: A function to create a .ods file in the current directory and open it
-# Usage: ods [filename]
-# Options:
-#   -h    Display this help message
-
-# Example: ods test  ---Creates a .ods file called test and opens it in the current directory.
-
-# Create ods command to create a .ods file in the current directory and open it
 ods() {
   # Use getopts to handle Options
   OPTIND=1
@@ -2787,6 +2880,10 @@ ods() {
 # Example: filehash -da  ---Runs all hash methods on all files in the current directory.
 
 # Define the filehash function to generate a hash of a file
+
+# TODO: add usage function, fix getopts section, and fix the main logic
+# Additionally, rework the whole function and make it more user-friendly
+
 filehash() {
   if [ "$1" = "-h" ]; then
     # Display help message if -h option is provided
@@ -2951,15 +3048,8 @@ display_info() {
 # UPDATECBC
 ################################################################################
 
-# Create a function to update the custom bash commands script and display the version number
+# TODO: add usage function, fix getopts section, and fix the main logic
 
-# updatecbc
-# Description: A function to update the custom bash commands script and display the version number
-# Usage: updatecbc
-# Options:
-#   -h    Display this help message
-
-# Create a function to update the custom bash commands script and display the version number
 updatecbc() {
   # Initialize OPTIND to 1 since it is a global variable within the script
   OPTIND=1
@@ -3044,6 +3134,8 @@ updatecbc() {
 #   -h    Display this help message
 
 # Create a function to move files to a directory based on file type suffix and named with the suffix without a '.' prefix
+
+# TODO: rework this function
 
 mvfiles() {
   if [ "$1" = "-h" ]; then
@@ -3227,31 +3319,6 @@ if command -v hstr &>/dev/null; then
   # Bind Vim keys
   bind '"\C-r": "\e^ihstr -- \n"'
 fi
-
-###################################################################################################################################################################
-# Create a config file for installing additional software that may not already be installed where commented out software is not installed.
-###################################################################################################################################################################
-
-# Create a default config file to load information for installing additional software
-# Check if the config file exists in the home directory, and if it does not, copy the default config file to the home directory
-
-# Script to install software based on the configuration file
-
-# If .cbcconfig directory does not exist in the home directory, create it
-#if [ ! -d "$HOME/.cbcconfig" ]; then
-#    mkdir "$HOME/.cbcconfig"
-#fi
-
-# set apt_conf to the path of apt_packages.conf in .cbcconfig directory
-# apt_conf="$HOME/.cbcconfig/apt_packages.conf"
-
-#Read the config file and install the software
-#while IFS= read -r line; do
-#    if [[ ! "$line" =~ ^#.*$ ]] && [[ -n "$line" ]]; then
-#        echo "Installing $line..."
-#        sudo apt install "$line"
-#    fi
-#done < "$apt_conf"
 
 ##################################################################################################################################################################
 # Additional Software Installation
