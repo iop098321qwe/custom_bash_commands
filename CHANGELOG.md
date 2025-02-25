@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.33.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.32.0...v2.33.0) (2025-02-25)
+
+
+### Features
+
+* **function:** integrate better logic and Charm Gum into `update` ([1544efe](https://github.com/iop098321qwe/custom_bash_commands/commit/1544efea800b2b1712dda9a3886226d78a270f9a))
+
+
+### Bug Fixes
+
+* **alias:** actually fix `refresh` alias ([f6bd047](https://github.com/iop098321qwe/custom_bash_commands/commit/f6bd047fefd58c3ef00638db6afcb49fbc8db09d))
+* **alias:** fix `refresh` alias for better workability ([d8d1577](https://github.com/iop098321qwe/custom_bash_commands/commit/d8d1577aff9f36e17062530a6c7fa52aff46b99c))
+* **function:** fix logic of the `update` command ([30ce0f1](https://github.com/iop098321qwe/custom_bash_commands/commit/30ce0f184b9637f79a844100b796cb13ce097ad3))
+
 ## [2.32.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.31.0...v2.32.0) (2025-02-24)
 
 
