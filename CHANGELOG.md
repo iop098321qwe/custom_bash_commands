@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.32.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.31.0...v2.32.0) (2025-02-24)
+
+
+### Features
+
+* **function:** change style of `display_info` and `display_version` functions ([7cba59a](https://github.com/iop098321qwe/custom_bash_commands/commit/7cba59afd5148e8263aad69e02e8577508a826cb))
+* **function:** implement the use of `gum` for better interactivity ([eb250ce](https://github.com/iop098321qwe/custom_bash_commands/commit/eb250ce17fc27ce131ccb04bfd97af2958918a20))
+* **function:** remove `sortalpha` function ([38c6de9](https://github.com/iop098321qwe/custom_bash_commands/commit/38c6de9ec8c3af1de52878c1341ee75ec9264976))
+* **remaster:** clean up code and rewrite help flags ([3d2c652](https://github.com/iop098321qwe/custom_bash_commands/commit/3d2c652d385892b3d4136761e3023c0bb2eea86a))
+* **versioning:** update to Epoch SemVer versioning ([6d92a23](https://github.com/iop098321qwe/custom_bash_commands/commit/6d92a23ec4095f090aeaf5faff1fd83ad74414bd))
+
+
+### Bug Fixes
+
+* **alias:** fix eza aliases to show icons ([2849432](https://github.com/iop098321qwe/custom_bash_commands/commit/2849432a2c422ea18be3a9686d1cdb82518389a6))
+* **function:** fix `display_info` function ([9b4530c](https://github.com/iop098321qwe/custom_bash_commands/commit/9b4530c08c8b7c481abaf565da9a932ade2d52a5))
+* **function:** fix backup function ([187b764](https://github.com/iop098321qwe/custom_bash_commands/commit/187b7641d628c40c9dc5a00941a19207c0c8ecd7))
+* **function:** fix wiki command and clean up ([6e2d1d0](https://github.com/iop098321qwe/custom_bash_commands/commit/6e2d1d0083cd1b185a30935ce7a41360dbfa377a))
+* **function:** remove `first_time_setup` function call ([b44a8d4](https://github.com/iop098321qwe/custom_bash_commands/commit/b44a8d49afa3fd53ea62fbb2016384da5334b501))
+* **style:** fix style ([120c975](https://github.com/iop098321qwe/custom_bash_commands/commit/120c9759e23a1b1a20c36e08cf9f44d7af48116e))
+* **style:** remove excess comments from code ([0853809](https://github.com/iop098321qwe/custom_bash_commands/commit/0853809b0d9b6f70beb086ade582f37d1edb270b))
+* **versioning:** fix versioning ([f0b15cc](https://github.com/iop098321qwe/custom_bash_commands/commit/f0b15cc9d3a860a322d8dd4a099e632ad5e5fbdb))
+
 ## [2.31.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v2.30.0...v2.31.0) (2025-02-11)
 
 
