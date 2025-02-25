@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-VERSION="300.0.0"
+VERSION="301.0.0"
+# test
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2416,38 +2417,46 @@ mkdirs() {
 update() {
   OPTIND=1
   local reboot=false
-  shutdown=false
+  local shutdown=false
+  local display_log=false
+  local log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
+
+  usage() {
+    cat <<EOF
+Description: 
+  A function to update the system and reboot if desired
+
+Usage:
+  update [option]
+
+Options:
+  -h    Display this help message
+  -r    Reboot the system after updating
+  -s    Shutdown the system after updating
+  -l    Display the log file path
+
+Example:
+  update -r
+EOF
+  }
 
   while getopts ":hrsl" opt; do
     case $opt in
     h)
-      echo "Description: A function to update the system and reboot if desired"
-      echo "Usage: update [option]"
-      echo "Options:"
-      echo "  -r        Reboot the system after updating"
-      echo "  -s        Shutdown the system after updating"
-      echo "  -h        Display this help message"
-      echo "  -l        Display the log file path"
-      echo " "
-      echo "Example: update -r"
+      usage
       return
       ;;
     r)
       # Reboot the system after updating
-      echo "Rebooting after updates enabled."
-      # reboot=true
-      return
+      reboot=true
       ;;
     s)
       # Shutdown the system after updating
-      echo "Shutting down the system..."
-      # sudo shutdown now
-      return
+      shutdown=true
       ;;
     l)
-      # Display the log file path
-      # echo "Update logs saved to: ~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log"
-      return
+      # Display the log path after updating
+      display_log=true
       ;;
     \?)
       echo "Invalid option: -$OPTARG. Use -h for help."
@@ -2459,10 +2468,12 @@ update() {
   shift $((OPTIND - 1))
 
   # Create the log directory if it doesn't exist
-  mkdir -p ~/Documents/update_logs
+  create_log_directory() {
+    mkdir -p ~/Documents/update_logs
+  }
 
-  # Define the log file path
-  log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
+  # Call the create_log_directory function
+  create_log_directory
 
   # Function to check if ttf-mscorefonts-installer is installed
   check_install_mscorefonts() {
@@ -2495,57 +2506,47 @@ update() {
   }
 
   # Iterate through the list of commands and run them
-  for command in "${commands[@]}"; do
-    run_command "$command"
-  done
+  iterate_commands() {
+    for command in "${commands[@]}"; do
+      run_command "$command"
+    done
+  }
 
-  # Check if the '-r' flag is provided
-  if [[ $1 == "-r" ]]; then
-    # Prompt the user to confirm the reboot
-    read -p "Are you sure you want to reboot the system? (y/n): " confirm
+  main() {
+    read -p "Are you sure you want to update the system? (y/n): " confirm
     if [[ $confirm == "y" || $confirm == "Y" ]]; then
-      # Reboot the system
-      echo -e "\nRebooting the system..."
-      sudo reboot
+      if [ $reboot = true ]; then
+        iterate_commands | tee -a "$log_file"
+        # prompt the user to confirm reboot
+        read -p "Are you sure you want to reboot the system? (y/n): " confirm
+        if [[ $confirm == "y" || $confirm == "Y" ]]; then
+          reboot
+        else
+          echo "Reboot canceled."
+        fi
+      elif [ $shutdown = true ]; then
+        iterate_commands | tee -a "$log_file"
+        # promt the user to confirm shutdown
+        read -p "Are you sure you want to shutdown the system? (y/n): " confirm
+        if [[ $confirm == "y" || $confirm == "Y" ]]; then
+          shutdown now
+        else
+          echo "Shutdown canceled."
+        fi
+      elif [ $display_log = true ]; then
+        iterate_commands | tee -a "$log_file"
+        echo "Update logs saved to: $log_file"
+      else
+        iterate_commands | tee -a "$log_file"
+      fi
     else
-      echo "Reboot canceled."
+      echo "Update canceled."
+      return
     fi
-  fi
+  }
 
-  # Check if the '-s' flag is provided
-  if [[ $1 == "-s" ]]; then
-    # Prompt the user to confirm the shutdown
-    read -p "Are you sure you want to shutdown the system? (y/n): " confirm
-    if [[ $confirm == "y" || $confirm == "Y" ]]; then
-      # Shutdown the system
-      echo -e "\nShutting down the system..."
-      sudo shutdown now
-    else
-      echo "Shutdown canceled."
-    fi
-  fi
-
-  # Check if the '-l' flag is provided
-  if [[ $1 == "-l" ]]; then
-    # Display the log file path
-    echo -e "\n--------------------------------------------------------------------------------"
-    echo -e "\nUpdate logs saved to: $log_file"
-
-    # Display the command to navigate to the log file directory
-    echo -e "\nTo navigate to the log file directory, use the following command:"
-    echo -e "cd ~/Documents/update_logs"
-    echo -e "\n--------------------------------------------------------------------------------\n"
-
-    # Prompt the user if they would like to open the log file
-    read -p "Would you like to open the log directory? (y/n): " open_log
-
-    # Check if the user wants to open the log directory
-    if [[ $open_log == "y" || $open_log == "Y" ]]; then
-      # Open the log file
-      cd ~/Documents/update_logs/ && ls
-    fi
-    return
-  fi
+  # call the main function
+  main
 }
 
 ################################################################################
