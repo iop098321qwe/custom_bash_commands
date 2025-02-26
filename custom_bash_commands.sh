@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v302.0.0"
+VERSION="v302.1.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1226,10 +1226,10 @@ display_version() {
   shift $((OPTIND - 1))
 
   # Display version details in a fancy box
-  gum style --border double --foreground "#00ff00" "Using Custom Bash Commands (by iop098321qwe)"
-  gum style --foreground "#ffff00" "Version: $VERSION 🔹🔹 To see the changes in this version, use the 'changes' command."
+  gum style --border double --foreground "#a6e3a1" "Using Custom Bash Commands (by iop098321qwe)"
+  gum style --foreground "#f9e2af" "Version: $VERSION 🔹🔹 To see the changes in this version, use the 'changes' command."
   gum style \
-    --foreground "#33ccff" \
+    --foreground "#89dceb" \
     "Show available commands with 'cbcs [-h]' or by typing 'commands' ('comm' for shortcut).
       To stop using CBC, remove '.custom_bash_commands.sh' from your '.bashrc' file using 'editbash'.
       Use the 'wiki' command or visit: https://github.com/iop098321qwe/custom_bash_commands/wiki"
