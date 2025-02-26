@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-VERSION="301.0.0"
-# test
+VERSION="v302.0.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1227,10 +1226,10 @@ display_version() {
   shift $((OPTIND - 1))
 
   # Display version details in a fancy box
-  gum style --border double --foreground "#00ff00" "Using Custom Bash Commands (by iop098321qwe)"
-  gum style --foreground "#ffff00" "Version: $VERSION 🔹🔹 To see the changes in this version, use the 'changes' command."
+  gum style --border double --foreground "#a6e3a1" "Using Custom Bash Commands (by iop098321qwe)"
+  gum style --foreground "#f9e2af" "Version: $VERSION 🔹🔹 To see the changes in this version, use the 'changes' command."
   gum style \
-    --foreground "#33ccff" \
+    --foreground "#74c7ec" \
     "Show available commands with 'cbcs [-h]' or by typing 'commands' ('comm' for shortcut).
       To stop using CBC, remove '.custom_bash_commands.sh' from your '.bashrc' file using 'editbash'.
       Use the 'wiki' command or visit: https://github.com/iop098321qwe/custom_bash_commands/wiki"
@@ -2420,6 +2419,7 @@ update() {
   local shutdown=false
   local display_log=false
   local log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
+  local sudo_required=false
 
   usage() {
     cat <<EOF
@@ -2467,6 +2467,29 @@ EOF
 
   shift $((OPTIND - 1))
 
+  # Function to check if sudo password is required
+  check_sudo_requirement() {
+    if sudo -n true 2>/dev/null; then
+      sudo_required=false
+    else
+      sudo_required=true
+      if [ "$sudo_required" = true ]; then
+        sudo_password=$(gum input --password --placeholder "Enter your sudo password: ")
+        if [[ -z "$sudo_password" ]]; then
+          gum style --foreground "#ff0000" --bold "No password provided!"
+          return 1
+        fi
+        # Validate password before proceeding
+        echo "$sudo_password" | sudo -S true 2>/dev/null
+        if [[ $? -ne 0 ]]; then
+          # echo "Incorrect password."
+          gum style --foreground "#ff0000" --bold "Incorrect password!"
+          return 1
+        fi
+      fi
+    fi
+  }
+
   # Create the log directory if it doesn't exist
   create_log_directory() {
     mkdir -p ~/Documents/update_logs
@@ -2513,39 +2536,42 @@ EOF
   }
 
   main() {
-    read -p "Are you sure you want to update the system? (y/n): " confirm
-    if [[ $confirm == "y" || $confirm == "Y" ]]; then
+    # check the sudo password requirement
+    check_sudo_requirement
+    if [[ $? -ne 0 ]]; then
+      gum style --foreground "#ffff00" "Exiting due to authentication failure."
+      return 1 # Stop execution of `main`
+    fi
+    if gum confirm "Are you sure you want to update the system? (y/N):" --default=no; then
       if [ $reboot = true ]; then
         iterate_commands | tee -a "$log_file"
         # prompt the user to confirm reboot
-        read -p "Are you sure you want to reboot the system? (y/n): " confirm
-        if [[ $confirm == "y" || $confirm == "Y" ]]; then
+        if gum confirm "Are you sure you want to reboot the system? (y/N):" --default=no; then
           reboot
         else
-          echo "Reboot canceled."
+          gum style --foreground "#ff0000" --bold "Reboot canceled..."
         fi
       elif [ $shutdown = true ]; then
         iterate_commands | tee -a "$log_file"
         # promt the user to confirm shutdown
-        read -p "Are you sure you want to shutdown the system? (y/n): " confirm
-        if [[ $confirm == "y" || $confirm == "Y" ]]; then
+        if gum confirm "Are you sure you want to shutdown the system? (y/N):" --default=no; then
           shutdown now
         else
-          echo "Shutdown canceled."
+          gum style --foreground "#ff0000" --bold "Shutdown canceled..."
         fi
       elif [ $display_log = true ]; then
         iterate_commands | tee -a "$log_file"
-        echo "Update logs saved to: $log_file"
+        gum style --foreground "#00ffff" --bold "Update logs saved to: $log_file"
       else
         iterate_commands | tee -a "$log_file"
       fi
     else
-      echo "Update canceled."
+      gum style --foreground "#ff0000" --bold "Update canceled."
       return
     fi
   }
 
-  # call the main function
+  # Main logic
   main
 }
 
