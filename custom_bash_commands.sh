@@ -2457,9 +2457,9 @@ incon() {
 
   # 2. Create a new remote public repository on GitHub using the gh tool
   new_remote_repo() {
-    gh repo create "$repo_name" || {
+    gh repo create "$repo_name" --private || {
       echo "Repository creation failed. Exiting"
-      return
+      exit 1
     }
   }
 
