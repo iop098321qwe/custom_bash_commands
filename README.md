@@ -1,3 +1,4 @@
+[!custom_bash_commands_logo_00001.png]
 # Custom Bash Commands Instructions
 
 * [Add to Path](https://github.com/iop098321qwe/custom_bash_commands?tab=readme-ov-file#follow-the-instructions-below-to-add-to-path)
