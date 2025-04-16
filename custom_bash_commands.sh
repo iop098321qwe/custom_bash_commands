@@ -77,10 +77,12 @@ EOF
     [[ -z "$line" ]] && continue
 
     # Attempt to open each URL in the system default browser
-    if command -v xdg-open >/dev/null 2>&1; then
-      xdg-open "$line" &
+    if command -v brave-browser >/dev/null 2>&1; then
+      nohup brave-browser "$line" &
+    elif command -v xdg-open >/dev/null 2>&1; then
+      nohup xdg-open "$line" &
     elif command -v open >/dev/null 2>&1; then
-      open "$line"
+      nohup open "$line"
     else
       echo "No recognized browser open command found. Please open this URL manually:"
       echo "$line"
