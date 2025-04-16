@@ -77,7 +77,9 @@ EOF
     [[ -z "$line" ]] && continue
 
     # Attempt to open each URL in the system default browser
-    if command -v xdg-open >/dev/null 2>&1; then
+    if command -v brave-browser >/dev/null 2>&1; then
+      brave-browser "$line" &
+    elif command -v xdg-open >/dev/null 2>&1; then
       xdg-open "$line" &
     elif command -v open >/dev/null 2>&1; then
       open "$line"
