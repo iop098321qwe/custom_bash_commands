@@ -11,6 +11,83 @@ VERSION="v302.0.0"
 
 # TODO: Find a way to make pron module work with the cbcs command to show help information.
 
+###################################################################################################################################################################
+# BATCHOPEN
+###################################################################################################################################################################
+
+batchopen() {
+  # Reset getopts in case this function is called multiple times
+  OPTIND=1
+  local file=""
+
+  # Usage/help function
+  usage() {
+    cat <<EOF
+Description:
+  Opens a .txt file of URLs and iterates through each line, opening them in the default browser.
+
+Usage:
+  batchopen [options] [file]
+
+Options:
+  -h      Display this help message
+  -f      Specify a file containing URLs (one per line)
+
+Examples:
+  batchopen -f sites.txt
+  batchopen  (will prompt for a file via fzf)
+
+EOF
+  }
+
+  # Parse command-line flags
+  while getopts "hf:" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    f)
+      file="$OPTARG"
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      usage
+      return 1
+      ;;
+    esac
+  done
+  shift $((OPTIND - 1))
+
+  # If no file was specified with -f, let user pick a .txt file via fzf
+  if [ -z "$file" ]; then
+    file="$(find . -maxdepth 1 -type f -name "*.txt" | fzf --prompt="Select a .txt file: ")"
+    [ -z "$file" ] && echo "No file selected. Exiting..." && return 1
+  fi
+
+  # If the file still doesn't exist, exit
+  if [ ! -f "$file" ]; then
+    echo "Error: File '$file' not found."
+    return 1
+  fi
+
+  # For each line in the file, open the URL in the default browser
+  while IFS= read -r line; do
+    # Skip empty lines
+    [[ -z "$line" ]] && continue
+
+    # Attempt to open each URL in the system default browser
+    if command -v xdg-open >/dev/null 2>&1; then
+      xdg-open "$line" &
+    elif command -v open >/dev/null 2>&1; then
+      open "$line"
+    else
+      echo "No recognized browser open command found. Please open this URL manually:"
+      echo "$line"
+    fi
+  done <"$file"
+}
+
 ################################################################################
 # PHOPEN
 ################################################################################
@@ -1291,6 +1368,13 @@ EOF
       echo "backup"
       echo "          Description: Create a backup file of a file"
       echo "          Usage: backup <file>"
+      echo " "
+      echo "batchopen"
+      echo "          Description: Opens a .txt file of URLs line-by-line in the browser"
+      echo "          Usage: batchopen [-h | -f]"
+      echo "          Options:"
+      echo "              -h    Display this help message"
+      echo "              -f    Specify batch file"
       echo " "
       echo "cbcs"
       echo "          Description: Display a list of all available custom commands in this script"
