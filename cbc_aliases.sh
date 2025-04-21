@@ -10,7 +10,7 @@
 
 # Direct alias declarations
 
-dup() {
+function dup() {
   file="$(fzf --prompt='Select URL list file: ')" || return
   awk 'NR==FNR{count[$0]++; next} count[$0]>1{lines[$0]=lines[$0] FNR ", "} END{for (url in lines) printf "%-5s\t%-50s\t%s\n", count[url], url, "lines: " substr(lines[url], 1, length(lines[url])-2)}' "$file" "$file" |
     sort -k1,1nr |
@@ -58,7 +58,7 @@ alias fopenexact='fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
 alias fopen='fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
 alias fzf='fzf -m'
 alias gb='git branch'
-alias gco='git checkout'
+alias gco='git checkout $(git branch --all | grep -vE "HEAD|->" | sed -e "s/^[* ]*//" -e "s@remotes/[^/]*/@@g" | fzf --prompt="Branch: ")'
 alias gcom='git checkout main'
 alias gcomm='git commit'
 alias ga='git add'
@@ -91,9 +91,10 @@ alias ls="eza --icons=always --group-directories-first"
 alias lsf="eza --icons=always --group-directories-first -f"
 alias lsr="eza --icons=always --group-directories-first -r"
 alias lt="eza --icons=always --group-directories-first -T"
-alias lg='lazygit'
 alias ln='ln -i'
 alias line='read -p "Enter line number: " line && file=$(fzf --prompt="Select a file: ") && nvim +$line "$file"'
+alias lzd='lazydocker'
+alias lzg='lazygit'
 alias man='sudo man'
 alias mopen='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
 alias mopenexact='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
@@ -101,6 +102,9 @@ alias mo='mopen'
 alias moe='mopenexact'
 alias mv='mv -i'
 alias myip='curl http://ipecho.net/plain; echo'
+alias naked='find . -maxdepth 1 -type f -name "*.txt" -empty -exec printf "\033[0;31m%s\033[0m\n" {} \;'
+alias nv='files=$(fzf --multi --prompt="Select files/dirs for nvim: " --bind "enter:accept") && [ -n "$files" ] && nvim $files'
+alias please='sudo $(history -p !!)'
 alias pron='fzf --multi=1 < _master_batch.txt | xargs -I {} yt-dlp --config-locations _configs.txt --batch-file {}'
 alias pronfile='cd /media/$USER/T7 Shield/yt-dlp'
 alias pronupdate='pronfile && pron || pron'
@@ -119,6 +123,8 @@ alias rsc='remove_session_id_config'
 alias seebash='batcat ~/.bashrc'
 alias sa='sortalpha'
 alias s='sudo'
+alias selectivebatchopen='file=$(fzf --prompt="Select URL list file: ") || return; fzf -m < "$file" | xargs -r -d "\n" -I {} xdg-open "{}"'
+alias sbo='selectivebatchopen'
 alias so='sopen'
 alias soe='sopenexact'
 alias ssort='smart_sort'
