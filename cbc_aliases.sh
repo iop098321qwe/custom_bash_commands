@@ -9,6 +9,15 @@
 ###################################################################################################################################################################
 
 # Direct alias declarations
+
+dup() {
+  file="$(fzf --prompt='Select URL list file: ')" || return
+  awk 'NR==FNR{count[$0]++; next} count[$0]>1{lines[$0]=lines[$0] FNR ", "} END{for (url in lines) printf "%-5s\t%-50s\t%s\n", count[url], url, "lines: " substr(lines[url], 1, length(lines[url])-2)}' "$file" "$file" |
+    sort -k1,1nr |
+    column -t |
+    GREP_COLORS='mt=1;32' grep --color=always '.*'
+}
+
 alias back='cd .. && ls'
 alias bat='batcat'
 alias batch_open='file=$(cat _master_batch.txt | fzf --prompt="Select a file: "); while IFS= read -r line; do xdg-open "$line"; done < "$file"'
@@ -30,7 +39,6 @@ alias di='display_info'
 alias dl='downloads'
 alias docs='cd ~/Documents && ls'
 alias downloads='cd ~/Downloads && ls'
-alias dup=file="$(fzf --prompt='Select URL list file: ')" && awk 'NR==FNR{count[$0]++; next} count[$0]>1{lines[$0]=lines[$0] FNR ", "} END{for (url in lines) printf "%-5s\t%-50s\t%s\n", count[url], url, "lines: " substr(lines[url], 1, length(lines[url])-2)}' "$file" "$file" | sort -k1,1nr | column -t | GREP_COLORS='mt=1;32' grep --color=always '.*'
 alias dv='display_version'
 alias editbash='$EDITOR ~/.bashrc'
 alias ext='extract'
@@ -85,6 +93,7 @@ alias lsr="eza --icons=always --group-directories-first -r"
 alias lt="eza --icons=always --group-directories-first -T"
 alias lg='lazygit'
 alias ln='ln -i'
+alias line='read -p "Enter line number: " line && file=$(fzf --prompt="Select a file: ") && nvim +$line "$file"'
 alias man='sudo man'
 alias mopen='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
 alias mopenexact='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
