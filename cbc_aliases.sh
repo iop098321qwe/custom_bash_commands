@@ -10,7 +10,7 @@
 
 # Direct alias declarations
 
-dup() {
+function dup() {
   file="$(fzf --prompt='Select URL list file: ')" || return
   awk 'NR==FNR{count[$0]++; next} count[$0]>1{lines[$0]=lines[$0] FNR ", "} END{for (url in lines) printf "%-5s\t%-50s\t%s\n", count[url], url, "lines: " substr(lines[url], 1, length(lines[url])-2)}' "$file" "$file" |
     sort -k1,1nr |
