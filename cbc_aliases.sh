@@ -5,19 +5,11 @@
 # The custom_bash_commands.sh script will source this file to load all of the aliases
 
 ###################################################################################################################################################################
-# DECLARED ALIASES
+# ALIASES
 ###################################################################################################################################################################
 
-# Direct alias declarations
-
-function dup() {
-  file="$(fzf --prompt='Select URL list file: ')" || return
-  awk 'NR==FNR{count[$0]++; next} count[$0]>1{lines[$0]=lines[$0] FNR ", "} END{for (url in lines) printf "%-5s\t%-50s\t%s\n", count[url], url, "lines: " substr(lines[url], 1, length(lines[url])-2)}' "$file" "$file" |
-    sort -k1,1nr |
-    column -t |
-    GREP_COLORS='mt=1;32' grep --color=always '.*'
-}
-
+alias dup='f() { file=$(fzf); [ -n "$file" ] && awk '"'"'!seen[$0]++'"'"' "$file" | sponge "$file"; }; f'
+alias naked='f=$(find . -type f -name "*.txt" -empty) && [ -z "$f" ] && echo "No empty .txt files." || { echo "$f"; read -p "Delete these empty .txt files? [y/N]: " ans; [ "$ans" = y ] && echo "$f" | xargs -d "\n" rm; }'
 alias back='cd .. && ls'
 alias bat='batcat'
 alias batch_open='file=$(cat _master_batch.txt | fzf --prompt="Select a file: "); while IFS= read -r line; do xdg-open "$line"; done < "$file"'
@@ -102,7 +94,6 @@ alias mo='mopen'
 alias moe='mopenexact'
 alias mv='mv -i'
 alias myip='curl http://ipecho.net/plain; echo'
-alias naked='find . -maxdepth 1 -type f -name "*.txt" -empty -exec printf "\033[0;31m%s\033[0m\n" {} \;'
 alias nv='files=$(fzf --multi --prompt="Select files/dirs for nvim: " --bind "enter:accept") && [ -n "$files" ] && nvim $files'
 alias please='sudo $(history -p !!)'
 alias pron='fzf --multi=1 < _master_batch.txt | xargs -I {} yt-dlp --config-locations _configs.txt --batch-file {}'
@@ -111,15 +102,10 @@ alias pronupdate='pronfile && pron || pron'
 alias pu='pronupdate'
 alias py='python3'
 alias python='python3'
-alias racc='remove_all_cbc_configs'
-alias rdvc='remove_display_version_config'
 alias refresh='source ~/.bashrc'
-alias rfc='remove_figlet_config'
 alias rh='regex_help'
 alias rma='rm -rfI'
 alias rm='rm -I'
-alias rnc='remove_neofetch_config'
-alias rsc='remove_session_id_config'
 alias seebash='batcat ~/.bashrc'
 alias sa='sortalpha'
 alias s='sudo'
@@ -127,7 +113,8 @@ alias selectivebatchopen='file=$(fzf --prompt="Select URL list file: ") || retur
 alias sbo='selectivebatchopen'
 alias so='sopen'
 alias soe='sopenexact'
-alias ssort='smart_sort'
+alias ssort='smartsort'
+alias smart_sort='smartsort'
 alias temp='cd ~/Documents/Temporary && ls'
 alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh; source ~/Documents/github_repositories/custom_bash_commands/cbc_aliases.sh'
 alias ucbc='updatecbc'
