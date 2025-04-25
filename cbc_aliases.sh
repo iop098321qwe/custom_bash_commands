@@ -91,9 +91,10 @@ alias ls="eza --icons=always --group-directories-first"
 alias lsf="eza --icons=always --group-directories-first -f"
 alias lsr="eza --icons=always --group-directories-first -r"
 alias lt="eza --icons=always --group-directories-first -T"
-alias lg='lazygit'
 alias ln='ln -i'
 alias line='read -p "Enter line number: " line && file=$(fzf --prompt="Select a file: ") && nvim +$line "$file"'
+alias lzd='lazydocker'
+alias lzg='lazygit'
 alias man='sudo man'
 alias mopen='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
 alias mopenexact='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \) | fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
