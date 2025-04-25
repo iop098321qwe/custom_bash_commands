@@ -1,5 +1,132 @@
 #!/usr/bin/env bash
-VERSION="v303.0.0"
+VERSION="v305.2.0"
+
+###############################################################################
+# Charmbracelet Gum helpers (Catppuccin Mocha palette)
+###############################################################################
+
+CATPPUCCIN_ROSEWATER="#f5e0dc"
+CATPPUCCIN_FLAMINGO="#f2cdcd"
+CATPPUCCIN_PINK="#f5c2e7"
+CATPPUCCIN_MAUVE="#cba6f7"
+CATPPUCCIN_RED="#f38ba8"
+CATPPUCCIN_MAROON="#eba0ac"
+CATPPUCCIN_PEACH="#fab387"
+CATPPUCCIN_YELLOW="#f9e2af"
+CATPPUCCIN_GREEN="#a6e3a1"
+CATPPUCCIN_TEAL="#94e2d5"
+CATPPUCCIN_SKY="#89dceb"
+CATPPUCCIN_SAPPHIRE="#74c7ec"
+CATPPUCCIN_BLUE="#89b4fa"
+CATPPUCCIN_LAVENDER="#b4befe"
+CATPPUCCIN_TEXT="#cdd6f4"
+CATPPUCCIN_SUBTEXT="#a6adc8"
+CATPPUCCIN_OVERLAY="#6c7086"
+CATPPUCCIN_SURFACE0="#313244"
+CATPPUCCIN_SURFACE1="#45475a"
+CATPPUCCIN_SURFACE2="#585b70"
+CATPPUCCIN_BASE="#1e1e2e"
+
+if command -v gum >/dev/null 2>&1; then
+  CBC_HAS_GUM=1
+else
+  CBC_HAS_GUM=0
+fi
+
+cbc_style_box() {
+  local border_color="$1"
+  shift
+  if [ "$CBC_HAS_GUM" -eq 1 ]; then
+    gum style \
+      --border rounded \
+      --border-foreground "$border_color" \
+      --foreground "$CATPPUCCIN_TEXT" \
+      --background "$CATPPUCCIN_SURFACE0" \
+      --padding "0 2" \
+      --margin "0 0 1 0" \
+      "$@"
+  else
+    printf '%s\n' "$@"
+  fi
+}
+
+cbc_style_message() {
+  local color="$1"
+  shift
+  if [ "$CBC_HAS_GUM" -eq 1 ]; then
+    gum style \
+      --foreground "$color" \
+      --background "$CATPPUCCIN_BASE" \
+      "$@"
+  else
+    printf '%s\n' "$*"
+  fi
+}
+
+cbc_style_note() {
+  local title="$1"
+  shift
+  if [ "$CBC_HAS_GUM" -eq 1 ]; then
+    gum style \
+      --border normal \
+      --border-foreground "$CATPPUCCIN_LAVENDER" \
+      --foreground "$CATPPUCCIN_TEXT" \
+      --background "$CATPPUCCIN_SURFACE1" \
+      --padding "0 2" \
+      --margin "0 0 1 0" \
+      "$title" "$@"
+  else
+    printf '%s\n' "$title" "$@"
+  fi
+}
+
+cbc_confirm() {
+  local prompt="$1"
+  shift
+  if [ "$CBC_HAS_GUM" -eq 1 ]; then
+    gum confirm \
+      --prompt.foreground "$CATPPUCCIN_LAVENDER" \
+      --selected.foreground "$CATPPUCCIN_GREEN" \
+      --selected.background "$CATPPUCCIN_SURFACE1" \
+      --unselected.foreground "$CATPPUCCIN_RED" \
+      "$prompt"
+  else
+    local response
+    read -r -p "$prompt [y/N]: " response
+    case "${response,,}" in
+    y | yes) return 0 ;;
+    *) return 1 ;;
+    esac
+  fi
+}
+
+cbc_input() {
+  local prompt="$1"
+  shift
+  local placeholder="$1"
+  shift
+  if [ "$CBC_HAS_GUM" -eq 1 ]; then
+    gum input \
+      --prompt.foreground "$CATPPUCCIN_LAVENDER" \
+      --cursor.foreground "$CATPPUCCIN_GREEN" \
+      --prompt "$prompt" \
+      --placeholder "$placeholder"
+  else
+    local input_value
+    read -r -p "$prompt" input_value
+    printf '%s' "$input_value"
+  fi
+}
+
+cbc_spinner() {
+  local title="$1"
+  shift
+  if [ "$CBC_HAS_GUM" -eq 1 ]; then
+    gum spin --spinner dot --title "$title" --title.foreground "$CATPPUCCIN_MAUVE" -- "$@"
+  else
+    "$@"
+  fi
+}
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -10,6 +137,7 @@ VERSION="v303.0.0"
 ################################################################################################################################################################
 
 # TODO: Find a way to make pron module work with the cbcs command to show help information.
+# this should modularize the code better and allow users to optionally load/unload the pron module.
 
 ###################################################################################################################################################################
 # BATCHOPEN
@@ -22,22 +150,19 @@ batchopen() {
 
   # Usage/help function
   usage() {
-    cat <<EOF
-Description:
-  Opens a .txt file of URLs and iterates through each line, opening them in the default browser.
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Opens a .txt file of URLs and iterates through each line, opening them in the default browser."
 
-Usage:
-  batchopen [options] [file]
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  batchopen [options] [file]"
 
-Options:
-  -h      Display this help message
-  -f      Specify a file containing URLs (one per line)
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h      Display this help message" \
+      "  -f      Specify a file containing URLs (one per line)"
 
-Examples:
-  batchopen -f sites.txt
-  batchopen  (will prompt for a file via fzf)
-
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  batchopen -f sites.txt" \
+      "  batchopen  (will prompt for a file via fzf)"
   }
 
   # Parse command-line flags
@@ -51,7 +176,7 @@ EOF
       file="$OPTARG"
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       usage
       return 1
       ;;
@@ -62,12 +187,15 @@ EOF
   # If no file was specified with -f, let user pick a .txt file via fzf
   if [ -z "$file" ]; then
     file="$(find . -maxdepth 1 -type f -name "*.txt" | fzf --prompt="Select a .txt file: ")"
-    [ -z "$file" ] && echo "No file selected. Exiting..." && return 1
+    if [ -z "$file" ]; then
+      cbc_style_message "$CATPPUCCIN_RED" "No file selected. Exiting..."
+      return 1
+    fi
   fi
 
   # If the file still doesn't exist, exit
   if [ ! -f "$file" ]; then
-    echo "Error: File '$file' not found."
+    cbc_style_message "$CATPPUCCIN_RED" "Error: File '$file' not found."
     return 1
   fi
 
@@ -84,8 +212,7 @@ EOF
     elif command -v open >/dev/null 2>&1; then
       nohup open "$line"
     else
-      echo "No recognized browser open command found. Please open this URL manually:"
-      echo "$line"
+      cbc_style_box "$CATPPUCCIN_RED" "No recognized browser open command found. Please open this URL manually:" "$line"
     fi
   done <"$file"
 }
@@ -101,17 +228,15 @@ phopen() {
   while getopts "h" opt; do
     case "$opt" in
     h)
-      echo "Description: This function opens special .mp4 files in the browser using fzf and"
-      echo "             a predefined URL prefix."
-      echo "Usage: phopen [-h]"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: phopen"
+      cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+        "  Opens special .mp4 files in the browser using fzf and a predefined URL prefix."
+      cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  phopen [-h]"
+      cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+      cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  phopen"
       return 0
       ;;
     *)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -133,8 +258,7 @@ phopen() {
       elif command -v open >/dev/null 2>&1; then
         nohup open "$url"
       else
-        echo "No recognized browser open command found. Please open this URL manually:"
-        echo "$url"
+        cbc_style_box "$CATPPUCCIN_RED" "No recognized browser open command found. Please open this URL manually:" "$url"
       fi
     fi
   done <<<"$selected"
@@ -148,37 +272,17 @@ phsearch() {
   # Function to display usage
   usage() {
     # Description Box
-    gum style \
-      --border double \
-      --margin "1" \
-      --padding "1" \
-      --border-foreground "#dddddd" \
-      "Description:
-        Prompts the user for a search term, constructs a search URL, and opens it in the default browser."
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Prompts the user for a search term, constructs a search URL, and opens it in the default browser."
 
-    gum style \
-      --border double \
-      --margin "1" \
-      --padding "1" \
-      --border-foreground "#aa55dd" \
-      "Usage:
-        phsearch [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  phsearch [-h]"
 
-    gum style \
-      --border double \
-      --margin "1" \
-      --padding "1" \
-      --border-foreground "#ffcc00" \
-      "Options:
-          -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    gum style \
-      --border double \
-      --margin "1" \
-      --padding "1" \
-      --border-foreground "#ff9900" \
-      "Example:
-        phsearch"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  phsearch"
   }
 
   OPTIND=1
@@ -199,11 +303,19 @@ phsearch() {
   shift $((OPTIND - 1))
 
   # Prompt user for a search term using gum input
-  search_term=$(gum input --placeholder "Enter search term...")
+  if [ "$CBC_HAS_GUM" -eq 1 ]; then
+    search_term=$(gum input \
+      --prompt.foreground "$CATPPUCCIN_LAVENDER" \
+      --cursor.foreground "$CATPPUCCIN_GREEN" \
+      --placeholder "Enter search term..." \
+      --prompt "Search Term » ")
+  else
+    read -r -p "Enter search term: " search_term
+  fi
 
   # Exit if no input is given
   if [[ -z "$search_term" ]]; then
-    gum style --foreground "#ff0000" "No search term entered. Exiting..."
+    cbc_style_message "$CATPPUCCIN_RED" "No search term entered. Exiting..."
     return 1
   fi
 
@@ -214,15 +326,15 @@ phsearch() {
   search_url="https://www.pornhub.com/video/search?search=${formatted_term}"
 
   # Show the search URL before opening it
-  gum style --foreground 10 "🔍 Searching for: $search_term"
-  gum style --border normal --padding "1" --border-foreground 4 "URL: $search_url"
+  cbc_style_message "$CATPPUCCIN_SKY" "🔍 Searching for: $search_term"
+  cbc_style_box "$CATPPUCCIN_TEAL" "URL:" "  $search_url"
 
   # Ask for confirmation before opening
-  if gum confirm "Open this search in your browser?"; then
-    gum spin --spinner dot --title "Opening browser..." -- nohup xdg-open "$search_url" >/dev/null 2>&1 &
-    gum style --foreground 2 "✅ Search opened successfully!"
+  if cbc_confirm "Open this search in your browser?"; then
+    cbc_spinner "Opening browser..." nohup xdg-open "$search_url" >/dev/null 2>&1 &
+    cbc_style_message "$CATPPUCCIN_GREEN" "✅ Search opened successfully!"
   else
-    gum style --foreground 9 "❌ Search canceled."
+    cbc_style_message "$CATPPUCCIN_RED" "❌ Search canceled."
   fi
 }
 
@@ -233,29 +345,30 @@ phsearch() {
 pronlist() {
   # Function to display usage information for the script
   usage() {
-    cat <<EOF
-Description:
-  Processes each URL in the selected .txt file and uses yt-dlp with the _configs.txt
-  configuration file to generate a sanitized output file listing the downloaded titles.
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Processes each URL in the selected .txt file and uses yt-dlp with the _configs.txt" \
+      "  configuration file to generate a sanitized output file listing the downloaded titles."
 
-Options:
-  -h    Show this help message and exit
-  -l    Select and process a specific line from the selected .txt file
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  pronlist [-h | -l]"
 
-Example:
-  pronlist
-  pronlist -l 3
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Show this help message and exit" \
+      "  -l    Select and process a specific line from the selected .txt file"
 
-Requires:
-  - _batch.txt: File containing URLs (one per line)
-  - _configs.txt: yt-dlp configuration file
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  pronlist" \
+      "  pronlist -l 3"
+
+    cbc_style_box "$CATPPUCCIN_LAVENDER" "Requires:" \
+      "  - _batch.txt: File containing URLs (one per line)" \
+      "  - _configs.txt: yt-dlp configuration file"
   }
 
   # Function to check the presence of the configuration file
   check_config_file() {
     if [ ! -f "_configs.txt" ]; then
-      echo "Error: _configs.txt not found in the current directory."
+      cbc_style_message "$CATPPUCCIN_RED" "Error: _configs.txt not found in the current directory."
       return 1
     fi
   }
@@ -266,7 +379,7 @@ EOF
     selected_file=$(find . -maxdepth 1 -name "*.txt" 2>/dev/null | fzf --prompt="Select a batch file: ")
 
     if [ -z "$selected_file" ]; then
-      echo "Error: No file selected."
+      cbc_style_message "$CATPPUCCIN_RED" "Error: No file selected."
       return 1
     fi
 
@@ -285,16 +398,11 @@ EOF
   # Function to prompt user whether to overwrite an existing file
   prompt_overwrite() {
     local file="$1"
-    read -p "File '$file' already exists. Overwrite? (y/N): " choice
-    case "$choice" in
-    [Yy]*)
-      return 0 # User chose to overwrite
-      ;;
-    *)
-      echo "Skipping existing file: $file"
-      return 1 # User declined overwrite
-      ;;
-    esac
+    if cbc_confirm "File '$file' already exists. Overwrite?"; then
+      return 0
+    fi
+    cbc_style_message "$CATPPUCCIN_YELLOW" "Skipping existing file: $file"
+    return 1
   }
 
   # Reset variables at the start
@@ -311,7 +419,7 @@ EOF
       use_line_selection=true # Indicate that fzf should be used to select a line
       ;;
     ?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       usage
       return 1
       ;;
@@ -330,7 +438,7 @@ EOF
   if [ "$use_line_selection" = true ]; then
     line=$(cat "$batch_file" | fzf --prompt="Select a URL line: ")
     if [ -z "$line" ]; then
-      echo "Error: No URL selected."
+      cbc_style_message "$CATPPUCCIN_RED" "Error: No URL selected."
       return 1
     fi
 
@@ -342,17 +450,12 @@ EOF
       prompt_overwrite "$output_file" || return 0
     fi
 
-    echo " "
-    echo "################################################################################"
-    echo "Processing selected URL: $line"
-    echo "################################################################################"
-    echo " "
+    cbc_style_box "$CATPPUCCIN_LAVENDER" "Processing selected URL:" "  $line"
 
     # Execute yt-dlp and save the output to the file
     yt-dlp --cookies-from-browser brave -f b "$line" --print "%(title)s" | tee "$output_file"
 
-    echo " "
-    echo "Processing complete."
+    cbc_style_message "$CATPPUCCIN_GREEN" "Processing complete."
     reset_variables # Reset variables after processing
     return 0
   fi
@@ -372,18 +475,13 @@ EOF
       prompt_overwrite "$output_file" || continue
     fi
 
-    echo " "
-    echo "################################################################################"
-    echo "Processing URL: $line"
-    echo "################################################################################"
-    echo " "
+    cbc_style_box "$CATPPUCCIN_LAVENDER" "Processing URL:" "  $line"
 
     # Execute yt-dlp and save the output to the file
     yt-dlp --cookies-from-browser brave -f b "$line" --print "%(title)s" | tee "$output_file"
   done <"$batch_file"
 
-  echo " "
-  echo "Processing complete."
+  cbc_style_message "$CATPPUCCIN_GREEN" "Processing complete."
   reset_variables # Reset variables after all lines are processed
 }
 
@@ -395,20 +493,18 @@ sopen() {
   OPTIND=1
 
   usage() {
-    cat <<EOF
-Description: 
-  Function to open .mp4 files in the current directory that match patterns
-  generated from lines in a selected .txt file.
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Opens .mp4 files in the current directory that match patterns" \
+      "  generated from lines in a selected .txt file."
 
-Usage: 
-  sopen [-h]
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  sopen [-h]"
 
-Options:
-  -h    Display this help message
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-Example:
-  sopen
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  sopen"
   }
 
   while getopts "h" opt; do
@@ -418,7 +514,7 @@ EOF
       return 0
       ;;
     *)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -431,7 +527,10 @@ EOF
   file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf --prompt="Select a .txt file: ")
 
   # If no file is selected, exit the function
-  [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
+  if [ -z "$file" ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "No file selected. Exiting..."
+    return 1
+  fi
 
   # Function to create a regex pattern from a line by:
   # 1) Converting all non-alphanumeric characters to spaces
@@ -470,13 +569,12 @@ EOF
 
     # If matching .mp4 files are found, open them
     if [[ -n "$mp4_files" ]]; then
-      #echo "Opening .mp4 files matching: '$line' (Pattern: $pattern)"
       while IFS= read -r mp4; do
-        #echo "Opening: $mp4"
         xdg-open "./$mp4" &
       done <<<"$mp4_files"
+      cbc_style_message "$CATPPUCCIN_GREEN" "Opened files matching: '$line'"
     else
-      echo "No .mp4 files found matching: '$line'"
+      cbc_style_message "$CATPPUCCIN_YELLOW" "No .mp4 files found matching: '$line'"
     fi
   done <"$file"
 }
@@ -489,20 +587,18 @@ sopenexact() {
   OPTIND=1
 
   usage() {
-    cat <<EOF
-Description: 
-  Function to open .mp4 files in the current directory that match exact
-  patterns generated from lines in a selected .txt file.
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Opens .mp4 files in the current directory that match exact" \
+      "  patterns generated from lines in a selected .txt file."
 
-Usage: 
-  sopenexact [-h]
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  sopenexact [-h]"
 
-Options:
-  -h    Display this help message
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-Example:
-  sopenexact
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  sopenexact"
   }
 
   while getopts "h" opt; do
@@ -512,7 +608,7 @@ EOF
       return 0
       ;;
     *)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -524,7 +620,10 @@ EOF
   file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf -e --prompt="Select a .txt file: ")
 
   # If no file is selected, exit the function
-  [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
+  if [ -z "$file" ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "No file selected. Exiting..."
+    return 1
+  fi
 
   # Function to create a regex pattern from a line by:
   # 1) Converting all non-alphanumeric characters to spaces
@@ -563,13 +662,12 @@ EOF
 
     # If matching .mp4 files are found, open them
     if [[ -n "$mp4_files" ]]; then
-      #echo "Opening .mp4 files matching: '$line' (Pattern: $pattern)"
       while IFS= read -r mp4; do
-        #echo "Opening: $mp4"
         xdg-open "./$mp4" &
       done <<<"$mp4_files"
+      cbc_style_message "$CATPPUCCIN_GREEN" "Opened files matching: '$line'"
     else
-      echo "No .mp4 files found matching: '$line'"
+      cbc_style_message "$CATPPUCCIN_YELLOW" "No .mp4 files found matching: '$line'"
     fi
   done <"$file"
 }
@@ -614,27 +712,25 @@ repeat() {
 
   # Function to display help
   usage() {
-    cat <<EOF
-Description: 
-  Function to repeat any given command a set number of times.
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Repeats any given command a specified number of times."
 
-Usage: 
-  repeat [-h] count [-d delay] [-v] command [arguments...]
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  repeat [-h] count [-d delay] [-v] command [arguments...]"
 
-Options:
-  -h            Display this help message and return
-  -d delay      Delay in seconds between each repetition
-  -v            Enable verbose mode for debugging and tracking runs
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h            Display this help message and return" \
+      "  -d delay      Delay in seconds between each repetition" \
+      "  -v            Enable verbose mode for debugging and tracking runs"
 
-Arguments:
-  count         The number of times to repeat the command
-  command       The command(s) to be executed (use ';' to separate multiple commands)
-  [arguments]   Optional arguments passed to the command(s)
+    cbc_style_box "$CATPPUCCIN_LAVENDER" "Arguments:" \
+      "  count         The number of times to repeat the command" \
+      "  command       The command(s) to be executed (use ';' to separate multiple commands)" \
+      "  [arguments]   Optional arguments passed to the command(s)"
 
-Example:
-  repeat 3 echo "Hello, World!"
-  repeat 5 -d 2 -v echo "Hello, World!"
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  repeat 3 echo \"Hello, World!\"" \
+      "  repeat 5 -d 2 -v echo \"Hello, World!\""
   }
 
   # Parse options first
@@ -647,9 +743,7 @@ EOF
     d)
       delay="$OPTARG"
       if ! echo "$delay" | grep -Eq '^[0-9]+$'; then
-        echo " "
-        echo "Error: DELAY must be a non-negative integer."
-        echo " "
+        cbc_style_message "$CATPPUCCIN_RED" "Error: DELAY must be a non-negative integer."
         return 1
       fi
       ;;
@@ -657,6 +751,7 @@ EOF
       verbose=1
       ;;
     *)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       usage
       return 1
       ;;
@@ -671,9 +766,7 @@ EOF
 
   # Ensure count argument exists
   if [ "$#" -lt 2 ]; then
-    echo " "
-    echo "Error: Missing count and command arguments."
-    echo " "
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Missing count and command arguments."
     usage
     return 1
   fi
@@ -683,18 +776,14 @@ EOF
 
   # Ensure count is a valid positive integer
   if ! echo "$count" | grep -Eq '^[0-9]+$'; then
-    echo " "
-    echo "Error: COUNT must be a positive integer."
-    echo " "
+    cbc_style_message "$CATPPUCCIN_RED" "Error: COUNT must be a positive integer."
     usage
     return 1
   fi
 
   # Ensure a command is provided
   if [ "$#" -lt 1 ]; then
-    echo " "
-    echo "Error: No command provided."
-    echo " "
+    cbc_style_message "$CATPPUCCIN_RED" "Error: No command provided."
     usage
     return 1
   fi
@@ -705,16 +794,12 @@ EOF
   # Repeat the command COUNT times with optional delay
   for i in $(seq 1 "$count"); do
     if [ "$verbose" -eq 1 ]; then
-      echo " "
-      echo "Running iteration $i of $count: $cmd"
-      echo " "
+      cbc_style_message "$CATPPUCCIN_SKY" "Running iteration $i of $count: $cmd"
     fi
     eval "$cmd"
     if [ "$delay" -gt 0 ] && [ "$i" -lt "$count" ]; then
       if [ "$verbose" -eq 1 ]; then
-        echo " "
-        echo "Sleeping for $delay seconds..."
-        echo " "
+        cbc_style_message "$CATPPUCCIN_SUBTEXT" "Sleeping for $delay seconds..."
       fi
       sleep "$delay"
     fi
@@ -722,258 +807,542 @@ EOF
 }
 
 ################################################################################
-# SMART_SORT
+# SMARTSORT
 ################################################################################
 
-smart_sort() {
-  # Local variables initialization
-  local mode=""            # Sorting mode (ext, alpha, time, size)
-  local interactive_mode=0 # Flag for interactive mode (0: off, 1: on)
-  local extension=""       # Holds a specific extension if selected
-  local first_letter=""    # Holds the first letter of filenames during sorting
-  local file=""            # Temporary variable for file iteration
+smartsort() {
+  local mode=""            # Sorting mode (ext, alpha, time, size, type)
+  local interactive_mode=0 # Flag for interactive refinements
+  local target_dir="."     # Destination directory for sorted folders
+  local first_letter=""
+  local file=""
+  local time_grouping="month"
+  local type_granularity="top-level"
+  local small_threshold_bytes=1048576   # 1MB default
+  local medium_threshold_bytes=10485760 # 10MB default
+  local summary_details=""
+  local -a selected_extensions=()
 
-  # Reset getopts index for multiple calls
   OPTIND=1
 
   usage() {
-    cat <<EOF
-Description:
-  This function sorts files in the current directory based on different
-  criteria. 
-  Available sorting modes are:
-  - ext   : Sort by file extension.
-  - alpha : Sort by the first letter of the filename.
-  - time  : Sort by modification time (grouped by YYYY-MM).
-  - size  : Sort by file size into categories (small, medium, large).
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Organises files in the current directory according to the mode you choose." \
+      "  Available modes:" \
+      "    - ext   : Group by file extension (supports multi-selection)." \
+      "    - alpha : Group by the first character of the filename." \
+      "    - time  : Group by modification time (year, month, or day)." \
+      "    - size  : Group by file size buckets (customisable thresholds)." \
+      "    - type  : Group by MIME type (top-level or full type)."
 
-Usage:
-  smart_sort [-h] [-i] [-m mode]
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  smartsort [-h] [-i] [-m mode] [-d directory]"
 
-Options:
-  -h        Display this help message.
-  -i        Enable interactive mode for selection of sorting options.
-            When used alone, interactive mode will prompt for all options via
-            fzf.
-            When combined with other flags, interactive mode is disabled.
-  -m mode   Specify sorting mode directly. Available modes:
-              ext   - Sort by file extension.
-              alpha - Sort by the first letter of the filename.
-              time  - Sort by modification time (YYYY-MM).
-              size  - Sort by file size (small, medium, large).
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h            Display this help message." \
+      "  -i            Enable interactive prompts for advanced configuration." \
+      "  -m mode       Specify the sorting mode directly (ext|alpha|time|size|type)." \
+      "  -d directory  Destination root for sorted folders (defaults to current directory)."
 
-Examples:
-  smart_sort -i
-  smart_sort -m ext
-  smart_sort -i -m size
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  smartsort -i" \
+      "  smartsort -m type -d ./sorted" \
+      "  smartsort -i -m size"
   }
 
-  # Parse command-line options using getopts
-  while getopts ":hm:i" opt; do
+  smartsort_select_mode() {
+    local selection=""
+    if command -v fzf >/dev/null 2>&1; then
+      selection=$(printf "ext\nalpha\ntime\nsize\ntype\n" |
+        fzf --prompt="Select sorting mode: " --header="Choose how to organise files")
+    elif [ "$CBC_HAS_GUM" -eq 1 ]; then
+      selection=$(gum choose --cursor.foreground "$CATPPUCCIN_GREEN" \
+        --selected.foreground "$CATPPUCCIN_GREEN" \
+        --header "Select how to organise files" ext alpha time size type)
+    else
+      cbc_style_message "$CATPPUCCIN_SUBTEXT" "Enter sorting mode (ext/alpha/time/size/type):"
+      read -r selection
+    fi
+    printf '%s' "$selection"
+  }
+
+  smartsort_prompt_target_dir() {
+    local input
+    input=$(cbc_input "Destination directory (blank keeps current): " "$(pwd)/sorted")
+    if [ -n "$input" ]; then
+      target_dir="$input"
+    fi
+  }
+
+  smartsort_unique_extensions() {
+    local -a extensions=()
+    while IFS= read -r path; do
+      local base ext_label
+      base=${path#./}
+      if [[ "$base" == *.* && "$base" != .* ]]; then
+        ext_label=${base##*.}
+      else
+        ext_label="no-extension"
+      fi
+      extensions+=("$ext_label")
+    done < <(find . -maxdepth 1 -type f -print)
+
+    if [ "${#extensions[@]}" -eq 0 ]; then
+      return 1
+    fi
+
+    printf '%s\n' "${extensions[@]}" | sort -u
+    return 0
+  }
+
+  smartsort_choose_extensions() {
+    local -a available=()
+    if ! mapfile -t available < <(smartsort_unique_extensions); then
+      return 1
+    fi
+
+    cbc_style_message "$CATPPUCCIN_SUBTEXT" "Select extensions to include (leave empty to include all)."
+
+    if command -v fzf >/dev/null 2>&1; then
+      mapfile -t selected_extensions < <(printf '%s\n' "${available[@]}" |
+        fzf --multi --prompt="Extensions: " \
+          --header="Tab to toggle multiple extensions. (Esc for all)" \
+          --height=12 --border)
+    elif [ "$CBC_HAS_GUM" -eq 1 ]; then
+      local selection=""
+      if selection=$(gum choose --no-limit \
+        --cursor.foreground "$CATPPUCCIN_GREEN" \
+        --selected.foreground "$CATPPUCCIN_GREEN" \
+        --header "Select one or more extensions (Esc for all)" "${available[@]}"); then
+        if [ -n "$selection" ]; then
+          IFS=$'\n' read -r -a selected_extensions <<<"$selection"
+        else
+          selected_extensions=()
+        fi
+      else
+        local exit_code=$?
+        if [ $exit_code -eq 130 ] || [ -z "$selection" ]; then
+          selected_extensions=()
+        else
+          return $exit_code
+        fi
+      fi
+    else
+      local input
+      input=$(cbc_input "Extensions (space separated, blank for all): " "${available[*]}")
+      if [ -n "$input" ]; then
+        read -r -a selected_extensions <<<"$input"
+      else
+        selected_extensions=()
+      fi
+    fi
+
+    return 0
+  }
+
+  smartsort_get_mod_date() {
+    local path="$1"
+    local format="$2"
+    local mod_date=""
+
+    if mod_date=$(date -r "$path" +"$format" 2>/dev/null); then
+      printf '%s' "$mod_date"
+      return 0
+    fi
+
+    if mod_date=$(stat -f "%Sm" -t "$format" "$path" 2>/dev/null); then
+      printf '%s' "$mod_date"
+      return 0
+    fi
+
+    printf '%s' "unknown"
+    return 0
+  }
+
+  smartsort_get_file_size() {
+    local path="$1"
+    local size=""
+
+    if size=$(stat -c%s "$path" 2>/dev/null); then
+      printf '%s' "$size"
+      return 0
+    fi
+
+    if size=$(stat -f%z "$path" 2>/dev/null); then
+      printf '%s' "$size"
+      return 0
+    fi
+
+    return 1
+  }
+
+  smartsort_prompt_time_grouping() {
+    local selection=""
+    if command -v fzf >/dev/null 2>&1; then
+      selection=$(printf "month\nyear\nday\n" |
+        fzf --prompt="Select time grouping: " --header="Choose modification time grouping granularity")
+    elif [ "$CBC_HAS_GUM" -eq 1 ]; then
+      selection=$(gum choose --cursor.foreground "$CATPPUCCIN_GREEN" \
+        --selected.foreground "$CATPPUCCIN_GREEN" \
+        --header "Choose modification time grouping" month year day)
+    else
+      cbc_style_message "$CATPPUCCIN_SUBTEXT" "Group files by (month/year/day):"
+      read -r selection
+    fi
+
+    case "$selection" in
+    year) time_grouping="year" ;;
+    day) time_grouping="day" ;;
+    month | "") time_grouping="month" ;;
+    *)
+      cbc_style_message "$CATPPUCCIN_YELLOW" "Unknown selection '$selection'. Using month grouping."
+      time_grouping="month"
+      ;;
+    esac
+  }
+
+  smartsort_prompt_size_thresholds() {
+    cbc_style_message "$CATPPUCCIN_SUBTEXT" "Configure size buckets in whole megabytes (press Enter to keep defaults)."
+    local input_small
+    local input_medium
+
+    input_small=$(cbc_input "Max size for 'small' files (MB): " "$((small_threshold_bytes / 1024 / 1024))")
+    input_medium=$(cbc_input "Max size for 'medium' files (MB): " "$((medium_threshold_bytes / 1024 / 1024))")
+
+    if [ -n "$input_small" ]; then
+      if echo "$input_small" | grep -Eq '^[0-9]+$'; then
+        small_threshold_bytes=$((input_small * 1024 * 1024))
+      else
+        cbc_style_message "$CATPPUCCIN_RED" "Invalid value '$input_small'. Keeping default small bucket size."
+        small_threshold_bytes=1048576
+      fi
+    fi
+
+    if [ -n "$input_medium" ]; then
+      if echo "$input_medium" | grep -Eq '^[0-9]+$'; then
+        medium_threshold_bytes=$((input_medium * 1024 * 1024))
+      else
+        cbc_style_message "$CATPPUCCIN_RED" "Invalid value '$input_medium'. Keeping default medium bucket size."
+        medium_threshold_bytes=10485760
+      fi
+    fi
+
+    if [ "$medium_threshold_bytes" -le "$small_threshold_bytes" ]; then
+      cbc_style_message "$CATPPUCCIN_RED" "Medium bucket must be larger than small bucket. Reverting to defaults."
+      small_threshold_bytes=1048576
+      medium_threshold_bytes=10485760
+    fi
+  }
+
+  smartsort_prompt_type_granularity() {
+    local selection=""
+    if command -v fzf >/dev/null 2>&1; then
+      selection=$(printf "top-level\nfull\n" |
+        fzf --prompt="Select MIME grouping: " --header="Choose MIME granularity")
+    elif [ "$CBC_HAS_GUM" -eq 1 ]; then
+      selection=$(gum choose --cursor.foreground "$CATPPUCCIN_GREEN" \
+        --selected.foreground "$CATPPUCCIN_GREEN" \
+        --header "Choose MIME granularity" "top-level" full)
+    else
+      cbc_style_message "$CATPPUCCIN_SUBTEXT" "Group by MIME (top-level/full):"
+      read -r selection
+    fi
+
+    case "$selection" in
+    full) type_granularity="full" ;;
+    top-level | "") type_granularity="top-level" ;;
+    *)
+      cbc_style_message "$CATPPUCCIN_YELLOW" "Unknown selection '$selection'. Using top-level grouping."
+      type_granularity="top-level"
+      ;;
+    esac
+  }
+
+  while getopts ":hm:id:" opt; do
     case $opt in
     h)
       usage
       return 0
       ;;
     i)
-      interactive_mode=1 # Set interactive mode flag
+      interactive_mode=1
       ;;
     m)
-      mode="$OPTARG" # Set the sorting mode
+      mode="$OPTARG"
+      ;;
+    d)
+      target_dir="$OPTARG"
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     :)
-      echo -e "Option -$OPTARG requires an argument you" "\033[031mSTUPID FUCK!\033[0m" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Option -$OPTARG requires an argument."
       return 1
       ;;
     esac
   done
 
-  # Remove processed options from the positional parameters
   shift $((OPTIND - 1))
 
-  #####################################
-  # Default Behavior: Sort by Extension
-  #####################################
-  if [ -z "$mode" ] && [ "$interactive_mode" -eq 0 ]; then
+  if [ -z "$target_dir" ]; then
+    target_dir="."
+  fi
+
+  if [ "$interactive_mode" -eq 1 ]; then
+    if [ -z "$mode" ]; then
+      mode=$(smartsort_select_mode)
+      if [ -z "$mode" ]; then
+        cbc_style_message "$CATPPUCCIN_RED" "No sorting mode selected. Exiting..."
+        return 1
+      fi
+    else
+      cbc_style_message "$CATPPUCCIN_SUBTEXT" "Interactive refinements enabled for mode: $mode"
+    fi
+
+    if [ "$target_dir" = "." ]; then
+      smartsort_prompt_target_dir
+    fi
+  fi
+
+  if [ -z "$mode" ]; then
     mode="ext"
   fi
 
-  #####################################
-  # Process Interactive Mode Logic
-  #####################################
-  if [ "$interactive_mode" -eq 1 ]; then
-    if [ -z "$mode" ]; then
-      # If only -i flag is provided, enforce interactive selection.
-      # Check if fzf is installed.
-      if ! command -v fzf >/dev/null 2>&1; then
-        echo "fzf is not installed. Please install fzf to use interactive mode."
-        return 1
-      fi
-      # Interactive selection for sorting mode via fzf.
-      mode=$(printf "ext\nalpha\ntime\nsize" | fzf --prompt="Select sorting mode: ")
-      # If fzf returns an empty result, exit.
-      if [ -z "$mode" ]; then
-        echo "No sorting mode selected. Exiting..."
-        return 1
-      fi
-    else
-      # If -i flag is used along with -m flag, interactive mode is disabled.
-      echo "Note: Interactive mode (-i) is ignored when combined with other flags. Running non-interactively with mode: $mode"
-      interactive_mode=0
-    fi
-  fi
-
-  # If mode is still empty in non-interactive mode, display error and exit.
-  if [ -z "$mode" ]; then
-    echo "No sorting mode provided. Use -m flag or -i for interactive selection."
-    return 1
-  fi
-
-  #####################################
-  # Confirmation prompt before executing sorting
-  #####################################
-  echo "You have selected the following options:"
-  echo "  Sorting Mode    : $mode"
-  if [ "$interactive_mode" -eq 1 ]; then
-    echo "  Interactive Mode: Enabled"
-  else
-    echo "  Interactive Mode: Disabled"
-  fi
-
-  # Prompt for confirmation with a default of 'n' (cancel)
-  read -r -p "Proceed with sorting? (y/N): " confirm
-  confirm=${confirm:-n}
-  if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-    echo "Sorting operation canceled."
-    return 0
-  fi
-
-  #####################################
-  # Sorting Mode Functions
-  #####################################
-
-  # Function to sort by file extension.
-  sort_by_extension() {
-    # Interactive selection: choose to sort a specific extension or all extensions.
-    local choice
-    choice=$(printf "Select specific extension\nSort all by extension" | fzf --prompt="Choose option for extension sorting: ")
-    if [[ "$choice" == "Select specific extension" ]]; then
-      # List available file extensions interactively.
-      # TODO: Set up multi select for extensions to allow selective sorting
-      extension=$(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u | fzf --no-multi --prompt="Select an extension: ")
-      if [ -z "$extension" ]; then
-        echo "No extension selected. Exiting..."
-        return 1
-      fi
-      echo -e "\nSorting files with extension: .$extension"
-      mkdir -p "$extension"
-      for file in *."$extension"; do
-        [ -f "$file" ] && mv "$file" "$extension"/ # Move each matching file
-      done
-      echo "Files with extension .$extension have been moved to directory: $extension"
-    elif [[ "$choice" == "Sort all by extension" ]]; then
-      local ext
-      for ext in $(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u); do
-        mkdir -p "$ext"
-        for file in *."$ext"; do
-          [ -f "$file" ] && mv "$file" "$ext"/
-        done
-        echo "Files with extension .$ext have been moved to directory: $ext"
-      done
-    else
-      echo "Invalid selection."
-      return 1
-    fi
-  }
-
-  # Function to sort files alphabetically by the first letter of the filename.
-  sort_by_alpha() {
-    echo "Sorting files alphabetically by the first letter..."
-    for file in *; do
-      if [ -f "$file" ]; then
-        # Extract the first letter and convert it to lowercase.
-        first_letter=$(echo "$file" | cut -c1 | tr '[:upper:]' '[:lower:]')
-        mkdir -p "$first_letter"
-        mv "$file" "$first_letter"/
-      fi
-    done
-    echo "Files have been sorted into directories based on the first letter."
-  }
-
-  # TODO: Implement selecting the time format/grouping interactively, and default to the current implementation. (Using fzf)
-  #
-  # Function to sort files by modification time (grouped by year-month).
-  sort_by_time() {
-    echo "Sorting files by modification time (grouped as YYYY-MM)..."
-    for file in *; do
-      if [ -f "$file" ]; then
-        # Retrieve the file's modification date in YYYY-MM format.
-        local mod_date
-        mod_date=$(date -r "$file" +"%Y-%m")
-        mkdir -p "$mod_date"
-        mv "$file" "$mod_date"/
-      fi
-    done
-    echo "Files have been sorted into directories based on modification date."
-  }
-
-  # TODO: Implement selecting the size categories interactively, and defaulting to the current implementation. (Using fzf)
-  #
-  # Function to sort files by file size into categories:
-  #   - small:  < 1MB
-  #   - medium: 1MB to 10MB
-  #   - large:  > 10MB
-  sort_by_size() {
-    echo "Sorting files by size into categories: small (<1MB), medium (1MB-10MB), large (>10MB)..."
-    for file in *; do
-      if [ -f "$file" ]; then
-        # Get the file size in bytes.
-        local size
-        size=$(stat -c%s "$file")
-        local category=""
-        if [ "$size" -lt 1048576 ]; then
-          category="small"
-        elif [ "$size" -lt 10485760 ]; then
-          category="medium"
-        else
-          category="large"
-        fi
-        mkdir -p "$category"
-        mv "$file" "$category"/
-      fi
-    done
-    echo "Files have been sorted into size categories: small, medium, and large."
-  }
-
-  #####################################
-  # Main Logic: Execute Selected Sorting Mode
-  #####################################
   case "$mode" in
-  ext)
-    sort_by_extension || return 1
-    ;;
-  alpha)
-    sort_by_alpha || return 1
-    ;;
-  time)
-    sort_by_time || return 1
-    ;;
-  size)
-    sort_by_size || return 1
-    ;;
+  ext | alpha | time | size | type) ;;
   *)
-    echo "Invalid sorting mode: $mode"
+    cbc_style_message "$CATPPUCCIN_RED" "Invalid sorting mode: $mode"
     return 1
     ;;
   esac
 
-  echo "Sorting operation completed successfully."
-  echo "There is no way to undo what you just did. Stay tuned for possible undo in the future."
+  if [ "$target_dir" != "." ]; then
+    if ! mkdir -p "$target_dir"; then
+      cbc_style_message "$CATPPUCCIN_RED" "Failed to create destination directory: $target_dir"
+      return 1
+    fi
+  fi
+
+  local absolute_target
+  absolute_target=$(cd "$target_dir" 2>/dev/null && pwd)
+  if [ -z "$absolute_target" ]; then
+    absolute_target="$target_dir"
+  fi
+
+  if [ -z "$(find . -maxdepth 1 -type f -print -quit)" ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" "No files found in the current directory to sort."
+    return 0
+  fi
+
+  if [ "$mode" = "ext" ] && [ "$interactive_mode" -eq 1 ]; then
+    if ! smartsort_choose_extensions; then
+      cbc_style_message "$CATPPUCCIN_YELLOW" "No files with extensions found for sorting."
+      return 0
+    fi
+  fi
+
+  if [ "$mode" = "time" ] && [ "$interactive_mode" -eq 1 ]; then
+    smartsort_prompt_time_grouping
+  fi
+
+  if [ "$mode" = "size" ] && [ "$interactive_mode" -eq 1 ]; then
+    smartsort_prompt_size_thresholds
+  fi
+
+  if [ "$mode" = "type" ] && [ "$interactive_mode" -eq 1 ]; then
+    smartsort_prompt_type_granularity
+  fi
+
+  case "$mode" in
+  ext)
+    if [ "${#selected_extensions[@]}" -gt 0 ]; then
+      summary_details="Extensions: ${selected_extensions[*]}"
+    else
+      summary_details="Extensions: all"
+    fi
+    ;;
+  time)
+    summary_details="Time grouping: $time_grouping"
+    ;;
+  size)
+    summary_details="Size buckets (MB): small≤$((small_threshold_bytes / 1024 / 1024)), medium≤$((medium_threshold_bytes / 1024 / 1024)), large>medium"
+    ;;
+  type)
+    summary_details="MIME grouping: $type_granularity"
+    ;;
+  *)
+    summary_details=""
+    ;;
+  esac
+
+  local -a summary_lines=(
+    "  Sorting Mode    : $mode"
+    "  Interactive Mode: $([[ "$interactive_mode" -eq 1 ]] && echo Enabled || echo Disabled)"
+    "  Target Directory: $absolute_target"
+  )
+
+  if [ -n "$summary_details" ]; then
+    summary_lines+=("  Details         : $summary_details")
+  fi
+
+  cbc_style_box "$CATPPUCCIN_LAVENDER" "Selected Options:" "${summary_lines[@]}"
+
+  if ! cbc_confirm "Proceed with sorting?"; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" "Sorting operation canceled."
+    return 0
+  fi
+
+  sort_by_extension() {
+    local include_all=1
+    local path=""
+
+    if [ "${#selected_extensions[@]}" -gt 0 ]; then
+      include_all=0
+    fi
+
+    cbc_style_message "$CATPPUCCIN_BLUE" "Sorting files by extension..."
+
+    while IFS= read -r path; do
+      [ -f "$path" ] || continue
+      local base ext_label target_subdir matched=0
+      base=${path#./}
+      if [[ "$base" == *.* && "$base" != .* ]]; then
+        ext_label=${base##*.}
+      else
+        ext_label="no-extension"
+      fi
+
+      if [ "$include_all" -eq 0 ]; then
+        for selected in "${selected_extensions[@]}"; do
+          if [ "$selected" = "$ext_label" ]; then
+            matched=1
+            break
+          fi
+        done
+        if [ "$matched" -eq 0 ]; then
+          continue
+        fi
+      fi
+
+      target_subdir="$target_dir/$ext_label"
+      mkdir -p "$target_subdir"
+      mv "$path" "$target_subdir/"
+    done < <(find . -maxdepth 1 -type f -print)
+
+    cbc_style_message "$CATPPUCCIN_GREEN" "Files have been sorted into extension-based directories."
+  }
+
+  sort_by_alpha() {
+    cbc_style_message "$CATPPUCCIN_BLUE" "Sorting files alphabetically by the first letter..."
+
+    while IFS= read -r path; do
+      [ -f "$path" ] || continue
+      local base letter target_subdir
+      base=${path#./}
+      letter=$(printf '%s' "$base" | cut -c1 | tr '[:upper:]' '[:lower:]')
+      if [ -z "$letter" ]; then
+        letter="misc"
+      fi
+      target_subdir="$target_dir/$letter"
+      mkdir -p "$target_subdir"
+      mv "$path" "$target_subdir/"
+    done < <(find . -maxdepth 1 -type f -print)
+
+    cbc_style_message "$CATPPUCCIN_GREEN" "Files have been sorted into directories based on their first letter."
+  }
+
+  sort_by_time() {
+    local date_format="%Y-%m"
+    case "$time_grouping" in
+    year) date_format="%Y" ;;
+    day) date_format="%Y-%m-%d" ;;
+    *) date_format="%Y-%m" ;;
+    esac
+
+    cbc_style_message "$CATPPUCCIN_BLUE" "Sorting files by modification time..."
+
+    while IFS= read -r path; do
+      [ -f "$path" ] || continue
+      local mod_date target_subdir
+      mod_date=$(smartsort_get_mod_date "$path" "$date_format")
+      if [ -z "$mod_date" ]; then
+        mod_date="unknown"
+      fi
+      target_subdir="$target_dir/$mod_date"
+      mkdir -p "$target_subdir"
+      mv "$path" "$target_subdir/"
+    done < <(find . -maxdepth 1 -type f -print)
+
+    cbc_style_message "$CATPPUCCIN_GREEN" "Files have been sorted into date-based directories."
+  }
+
+  sort_by_size() {
+    cbc_style_message "$CATPPUCCIN_BLUE" "Sorting files by size into categories..."
+
+    while IFS= read -r path; do
+      [ -f "$path" ] || continue
+      local size category="unknown" target_subdir
+      if ! size=$(smartsort_get_file_size "$path"); then
+        cbc_style_message "$CATPPUCCIN_YELLOW" "Unable to determine size for $path. Skipping."
+        continue
+      fi
+
+      if [ "$size" -lt "$small_threshold_bytes" ]; then
+        category="small"
+      elif [ "$size" -lt "$medium_threshold_bytes" ]; then
+        category="medium"
+      else
+        category="large"
+      fi
+
+      target_subdir="$target_dir/$category"
+      mkdir -p "$target_subdir"
+      mv "$path" "$target_subdir/"
+    done < <(find . -maxdepth 1 -type f -print)
+
+    cbc_style_message "$CATPPUCCIN_GREEN" "Files have been sorted into size-based directories."
+  }
+
+  sort_by_type() {
+    if ! command -v file >/dev/null 2>&1; then
+      cbc_style_message "$CATPPUCCIN_RED" "The 'file' command is required for type sorting."
+      return 1
+    fi
+
+    cbc_style_message "$CATPPUCCIN_BLUE" "Sorting files by MIME type..."
+
+    while IFS= read -r path; do
+      [ -f "$path" ] || continue
+      local mime category target_subdir
+      mime=$(file --brief --mime-type "$path")
+      if [ "$type_granularity" = "full" ]; then
+        category=${mime//\//_}
+      else
+        category=${mime%%/*}
+      fi
+      if [ -z "$category" ]; then
+        category="unknown"
+      fi
+      target_subdir="$target_dir/$category"
+      mkdir -p "$target_subdir"
+      mv "$path" "$target_subdir/"
+    done < <(find . -maxdepth 1 -type f -print)
+
+    cbc_style_message "$CATPPUCCIN_GREEN" "Files have been sorted into MIME type directories."
+  }
+
+  case "$mode" in
+  ext) sort_by_extension || return 1 ;;
+  alpha) sort_by_alpha || return 1 ;;
+  time) sort_by_time || return 1 ;;
+  size) sort_by_size || return 1 ;;
+  type) sort_by_type || return 1 ;;
+  esac
+
+  cbc_style_message "$CATPPUCCIN_GREEN" "Sorting operation completed successfully."
+  cbc_style_message "$CATPPUCCIN_SUBTEXT" "There is no way to undo what you just did. Stay tuned for possible undo in the future."
 }
 
 ################################################################################
@@ -985,19 +1354,17 @@ random() {
 
   # Function to display help message
   usage() {
-    cat <<EOF
-Description: 
-  Function to open a random .mp4 file in the current directory.
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Function to open a random .mp4 file in the current directory."
 
-Usage: 
-  random [-h]
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  random [-h]"
 
-Options:
-  -h    Display this help message
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-Example:
-  random
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  random"
   }
 
   while getopts ":h" opt; do
@@ -1007,7 +1374,7 @@ EOF
       return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       usage
       return 1
       ;;
@@ -1021,7 +1388,7 @@ EOF
 
   # Check if there are any mp4 files
   if [ ${#mp4_files[@]} -eq 0 ] || [ ! -e "${mp4_files[0]}" ]; then
-    echo "No mp4 files found in the current directory."
+    cbc_style_message "$CATPPUCCIN_RED" "No mp4 files found in the current directory."
     return 1
   fi
 
@@ -1033,11 +1400,11 @@ EOF
 
   # Check if the file was opened successfully
   if [ $? -ne 0 ]; then
-    echo "Failed to open the file: $random_file"
+    cbc_style_message "$CATPPUCCIN_RED" "Failed to open the file: $random_file"
     return 1
   fi
 
-  echo "Opened: $random_file"
+  cbc_style_message "$CATPPUCCIN_GREEN" "Opened: $random_file"
 }
 
 ################################################################################
@@ -1051,25 +1418,22 @@ wiki() {
   wiki_url="https://github.com/iop098321qwe/custom_bash_commands/wiki"
 
   usage() {
-    cat <<EOF
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the Custom Bash Commands wiki in your default browser."
 
-Description: 
-  Function to open the CBC wiki in the default browser
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  wiki [-h|-c|-C|-A|-F]"
 
-Usage: 
-  wiki
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -c    Copy the wiki URL to the clipboard" \
+      "  -C    Open the wiki to the commands section" \
+      "  -A    Open the wiki to the aliases section" \
+      "  -F    Open the wiki to the functions section"
 
-Options:
-  -h    Display this help message
-  -c    Copy the wiki URL to the clipboard
-  -C    Open the wiki to the CBC commands section
-  -A    Open the wiki to the CBC aliases section
-  -F    Open the wiki to the CBC functions section
-
-Example: 
-  wiki
-  wiki -A
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  wiki" \
+      "  wiki -A"
   }
 
   while getopts ":hcCAF" opt; do
@@ -1080,27 +1444,31 @@ EOF
       ;;
     c)
       echo "$wiki_url" | xclip -selection clipboard
-      echo "Wiki URL copied to clipboard."
+      cbc_style_message "$CATPPUCCIN_GREEN" "Wiki URL copied to clipboard."
       return 0
       ;;
     C)
-      nohup xdg-open "$wiki_url/Commands"
+      cbc_style_message "$CATPPUCCIN_SKY" "Opening Commands documentation..."
+      nohup xdg-open "$wiki_url/Commands" >/dev/null 2>&1 &
       return 0
       ;;
     A)
-      nohup xdg-open "$wiki_url/Aliases"
+      cbc_style_message "$CATPPUCCIN_SKY" "Opening Aliases documentation..."
+      nohup xdg-open "$wiki_url/Aliases" >/dev/null 2>&1 &
       return 0
       ;;
     F)
-      nohup xdg-open "$wiki_url/Functions"
+      cbc_style_message "$CATPPUCCIN_SKY" "Opening Functions documentation..."
+      nohup xdg-open "$wiki_url/Functions" >/dev/null 2>&1 &
       return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     *)
-      nohup xdg-open "$wiki_url"
+      cbc_style_message "$CATPPUCCIN_SKY" "Opening CBC wiki..."
+      nohup xdg-open "$wiki_url" >/dev/null 2>&1 &
       return 0
       ;;
     esac
@@ -1120,20 +1488,18 @@ changes() {
   local changelog_url="https://github.com/iop098321qwe/custom_bash_commands/blob/main/CHANGELOG.md"
 
   usage() {
-    cat <<EOF
-Description:
-  Function to open the CBC changelog in the default browser.
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the Custom Bash Commands changelog in your default browser."
 
-Usage:
-  changes
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  changes [-h|-c]"
 
-Options:
-  -h    Display this help message
-  -c    Copy the changelog URL to the clipboard
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -c    Copy the changelog URL to the clipboard"
 
-Example:
-  changes
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  changes"
   }
 
   while getopts ":hc" opt; do
@@ -1144,12 +1510,12 @@ EOF
       ;;
     c)
       echo "$changelog_url" | xclip -selection clipboard
-      echo "Changelog URL copied to clipboard."
+      cbc_style_message "$CATPPUCCIN_GREEN" "Changelog URL copied to clipboard."
       return 0
       ;;
     *)
       # invalid options
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -1171,19 +1537,28 @@ EOF
 dotfiles() {
   OPTIND=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the dotfiles repository in your default browser."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  dotfiles [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  dotfiles"
+  }
+
   while getopts ":h" opt; do
     case $opt in
     h)
-      echo "Description: Function to open the dotfiles repository in the default browser"
-      echo "Usage: dotfiles"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: dotfiles"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -1206,19 +1581,28 @@ dotfiles() {
 setup_directories() {
   OPTIND=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Create commonly used directories (Temporary, GitHub Repositories, Grymm's Grimoires)."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  setup_directories [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  setup_directories"
+  }
+
   while getopts ":h" opt; do
     case $opt in
     h)
-      echo "Description: Function to set up directories (Temporary, GitHub Repositories, Grymm's Grimoires)"
-      echo "Usage: setup_directories"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: setup_directories"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -1226,18 +1610,176 @@ setup_directories() {
 
   shift $((OPTIND - 1))
 
-  # Create the Temporary directory if it does not exist
+  # Create the 'screenshots' directory if it does not exist
   mkdir -p ~/Documents/Temporary/screenshots/
 
-  # Create the GitHub Repositories directory if it does not exist
+  # Create the 'recordings/raw' directory if it does not exist
+  mkdir -p ~/Documents/Temporary/recordings/raw/
+
+  # Create the 'recordings/edited' directory if it does not exist
+  mkdir -p ~/Documents/Temporary/recordings/edited/
+
+  # Create the 'github_repositories' directory if it does not exist
   mkdir -p ~/Documents/github_repositories
 
-  # Create the Grymm's Grimoires directory if it does not exist
+  # Create the 'grymms_grimoires' directory if it does not exist
   mkdir -p ~/Documents/grymms_grimoires/
 }
 
 # Call the setup_directories function
 setup_directories
+
+###############################################################################
+# CHECK FOR CBC UPDATES
+###############################################################################
+
+cbc_version_is_newer() {
+  local current="$1"
+  local candidate="$2"
+
+  [[ -z "$candidate" ]] && return 1
+  [[ -z "$current" ]] && return 0
+
+  local newest
+  newest=$(printf '%s\n' "$current" "$candidate" | sort -V | tail -n1)
+  [[ "$newest" == "$candidate" && "$candidate" != "$current" ]]
+}
+
+# Check GitHub release for newer version of the script
+check_cbc_update() {
+  local current_version="$VERSION"
+  local release_api_url="https://api.github.com/repos/iop098321qwe/custom_bash_commands/releases/latest"
+  local now check_interval notify_interval
+
+  # Allow opt-in overrides while keeping sane defaults
+  check_interval=${CBC_UPDATE_CHECK_INTERVAL:-43200}
+  notify_interval=${CBC_UPDATE_NOTIFY_INTERVAL:-21600}
+  [[ "$check_interval" =~ ^[0-9]+$ ]] || check_interval=43200
+  [[ "$notify_interval" =~ ^[0-9]+$ ]] || notify_interval=21600
+
+  local cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/custom_bash_commands"
+  local cache_file="$cache_dir/update_check"
+  local cache_timestamp="0" cached_version="" cached_name="" cached_summary="" cached_url="" last_notified="0"
+
+  if [[ -r "$cache_file" ]]; then
+    mapfile -t _cbc_cache_data <"$cache_file"
+    cache_timestamp="${_cbc_cache_data[0]:-0}"
+    cached_version="${_cbc_cache_data[1]}"
+    cached_name="${_cbc_cache_data[2]}"
+    cached_summary="${_cbc_cache_data[3]}"
+    cached_url="${_cbc_cache_data[4]}"
+    last_notified="${_cbc_cache_data[5]:-0}"
+  fi
+
+  now=$(date +%s)
+  local should_refresh=1
+
+  if [[ "$cache_timestamp" =~ ^[0-9]+$ ]] && ((now - cache_timestamp < check_interval)); then
+    should_refresh=0
+  fi
+
+  if [[ -z "$cached_version" ]]; then
+    should_refresh=1
+  fi
+
+  if ((should_refresh)); then
+    local response status body
+    response=$(curl -sSL -w "\n%{http_code}" "$release_api_url" 2>/dev/null || true)
+    status=$(printf '%s\n' "$response" | tail -n1)
+    body=$(printf '%s\n' "$response" | sed '$d')
+
+    if [[ "$status" == "200" && -n "$body" ]]; then
+      mapfile -t _cbc_parsed_release < <(
+        python - <<'PY_HELPER'
+import json
+import re
+import sys
+
+try:
+    data = json.load(sys.stdin)
+except Exception:
+    sys.exit(1)
+
+def clean(value: str) -> str:
+    if not value:
+        return ""
+    # Normalize whitespace to keep everything on one line
+    return re.sub(r"\s+", " ", value.strip())[:200]
+
+tag = clean(data.get("tag_name") or "")
+name = clean(data.get("name") or "")
+
+summary = ""
+for line in (data.get("body") or "").splitlines():
+    stripped = line.strip()
+    if stripped:
+        summary = stripped
+        break
+summary = clean(summary)
+
+url = data.get("html_url") or ""
+
+print(tag)
+print(name)
+print(summary)
+print(url)
+PY_HELPER
+        <<<"$body"
+      )
+
+      if ((${#_cbc_parsed_release[@]} >= 1)) && [[ -n "${_cbc_parsed_release[0]}" ]]; then
+        cache_timestamp=$now
+        cached_version="${_cbc_parsed_release[0]}"
+        cached_name="${_cbc_parsed_release[1]}"
+        cached_summary="${_cbc_parsed_release[2]}"
+        cached_url="${_cbc_parsed_release[3]}"
+      fi
+    elif [[ "$status" =~ ^[0-9]+$ ]]; then
+      cache_timestamp=$now
+    fi
+  fi
+
+  local should_notify=0
+  if cbc_version_is_newer "$current_version" "$cached_version"; then
+    [[ "$last_notified" =~ ^[0-9]+$ ]] || last_notified=0
+    if ((now - last_notified >= notify_interval)); then
+      should_notify=1
+    fi
+  fi
+
+  if ((should_notify)); then
+    local notification_lines=(
+      "Custom Bash Commands update available!"
+      "  Current: $current_version"
+      "  Latest:  $cached_version${cached_name:+ ($cached_name)}"
+    )
+    [[ -n "$cached_summary" ]] && notification_lines+=("  Summary: $cached_summary")
+    notification_lines+=("  Update with: updatecbc")
+    [[ -n "$cached_url" ]] && notification_lines+=("  Release: $cached_url")
+
+    if [[ "$CBC_HAS_GUM" -eq 1 ]]; then
+      cbc_style_box "$CATPPUCCIN_SKY" "${notification_lines[@]}"
+    else
+      printf '%s\n' "${notification_lines[@]}"
+    fi
+
+    last_notified=$now
+  fi
+
+  if [[ -n "$cached_version" ]]; then
+    mkdir -p "$cache_dir"
+    printf '%s\n' \
+      "$cache_timestamp" \
+      "$cached_version" \
+      "$cached_name" \
+      "$cached_summary" \
+      "$cached_url" \
+      "$last_notified" \
+      >"$cache_file"
+  fi
+}
+# Automatically check for updates when the script is sourced
+check_cbc_update
 
 ################################################################################
 # DISPLAY VERSION
@@ -1246,45 +1788,20 @@ setup_directories
 display_version() {
   # Function to display usage
   usage() {
-    gum style \
-      --border double \
-      --margin "1" \
-      --padding "1" \
-      --border-foreground "#dddddd" \
-      "Description:
-        This function displays the version number from the .custom_bash_commands file in the local repository."
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Displays the version number from the .custom_bash_commands file in the local repository."
 
-    gum style \
-      --border double \
-      --margin "1" \
-      --padding "1" \
-      --border-foreground "#aa55dd" \
-      "Alias:
-        dv"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Alias:" \
+      "  dv"
 
-    gum style \
-      --border double \
-      --margin "1" \
-      --padding "1" \
-      --border-foreground "#ffcc00" \
-      "Usage:
-        display_version"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  display_version"
 
-    gum style \
-      --border double \
-      --margin "1" \
-      --padding "1" \
-      --border-foreground "#ff9900" \
-      "Options:
-          -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Options:" \
+      "  -h    Display this help message"
 
-    gum style \
-      --border double \
-      --margin "1" \
-      --padding "1" \
-      --border-foreground "#ff6600" \
-      "Example:
-        display_version"
+    cbc_style_box "$CATPPUCCIN_LAVENDER" "Example:" \
+      "  display_version"
   }
 
   OPTIND=1
@@ -1296,7 +1813,7 @@ display_version() {
       return 0
       ;;
     *)
-      gum style --foreground "#ff0000" "Invalid option: -$OPTARG"
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -1305,13 +1822,11 @@ display_version() {
   shift $((OPTIND - 1))
 
   # Display version details in a fancy box
-  gum style --border double --foreground "#a6e3a1" "Using Custom Bash Commands (by iop098321qwe)"
-  gum style --foreground "#f9e2af" "Version: $VERSION 🔹🔹 To see the changes in this version, use the 'changes' command."
-  gum style \
-    --foreground "#74c7ec" \
-    "Show available commands with 'cbcs [-h]' or by typing 'commands' ('comm' for shortcut).
-      To stop using CBC, remove '.custom_bash_commands.sh' from your '.bashrc' file using 'editbash'.
-      Use the 'wiki' command or visit: https://github.com/iop098321qwe/custom_bash_commands/wiki"
+  cbc_style_box "$CATPPUCCIN_GREEN" "Using Custom Bash Commands (by iop098321qwe)"
+  cbc_style_message "$CATPPUCCIN_YELLOW" "Version: $VERSION 🔹🔹 To see the changes in this version, use the 'changes' command."
+  cbc_style_message "$CATPPUCCIN_SKY" "Show available commands with 'cbcs [-h]' or by typing 'commands' ('comm' for shortcut)."
+  cbc_style_message "$CATPPUCCIN_SUBTEXT" "To stop using CBC, remove '.custom_bash_commands.sh' from your '.bashrc' file using 'editbash'."
+  cbc_style_message "$CATPPUCCIN_PINK" "Use the 'wiki' command or visit: https://github.com/iop098321qwe/custom_bash_commands/wiki"
 }
 
 ################################################################################
@@ -1323,21 +1838,19 @@ cbcs() {
   all_info=false
 
   usage() {
-    cat <<EOF
-Description: 
-  This function allows you to display a list of all available custom commands in this script
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Display a list of available custom commands in this script."
 
-Usage: 
-  cbcs [-h | -a]
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbcs [-h|-a]"
 
-Options:
-  -h    Display this help message
-  -a    Display all available custom commands with descriptions
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -a    Display all available commands with descriptions"
 
-Example: 
-  cbcs
-  cbcs -a
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbcs" \
+      "  cbcs -a"
   }
 
   while getopts ":ha" opt; do
@@ -1350,7 +1863,7 @@ EOF
       all_info=true
       ;;
     *)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -1405,7 +1918,7 @@ EOF
       echo "          Aliases: 'di'"
       echo " "
       echo "display_version"
-      echo "          Description: Display the version number from the .version file"
+      echo "          Description: Display the version number from the custom_bash_commands file"
       echo "          Usage: display_version"
       echo "          Aliases: 'dv'"
       echo " "
@@ -1416,10 +1929,6 @@ EOF
       echo "extract"
       echo "         Description: Extract compressed files"
       echo "         Usage: extract [file]"
-      echo " "
-      echo "incon"
-      echo "         Description: Initialize a local git repo, create/connect it to a GitHub repo, and set up files"
-      echo "         Usage: incon [repo_name]"
       echo " "
       echo "mkdirs"
       echo "         Description: Create a directory and switch into it"
@@ -1437,10 +1946,6 @@ EOF
       echo "myip"
       echo "         Description: Display the IP address of the current machine"
       echo "         Usage: myip"
-      echo " "
-      echo "mvfiles"
-      echo "         Description: Move all files in a directory to subdirectories based on file type"
-      echo "         Usage: mvfiles"
       echo " "
       echo "pronlist"
       echo "          Description: List files downloaded from _batch.txt per URL"
@@ -1744,8 +2249,9 @@ EOF
       echo "         Usage: pu"
       echo " "
       echo "regex_help"
-      echo "         Description: Display help for regular expressions"
-      echo "         Usage: regex_help [-f|--flavor <flavor>] [-h|--help]"
+      echo "         Description: Display regex cheat-sheets with flavor selection"
+      echo "         Default: PCRE output with -i/-f to explore other engines"
+      echo "         Usage: regex_help [-f <flavor>] [-i] [-l] [-h]"
       echo " "
       echo "updatecbc, (alias: ucbc)"
       echo "         Description: Update the custom bash commands script"
@@ -1992,7 +2498,6 @@ EOF
       echo "extract"
       echo "makeman"
       echo "mkdirs"
-      echo "mvfiles"
       echo "myip"
       echo "pronlist"
       echo "random"
@@ -2065,7 +2570,6 @@ EOF
       echo "hse"
       echo "hsearch"
       echo "i"
-      echo "incon"
       echo "iopen"
       echo "iopenexact"
       echo "io"
@@ -2096,8 +2600,6 @@ EOF
       echo "pronupdate"
       echo "pu"
       echo "regex_help"
-      echo "remove_all_cbc_configs"
-      echo "remove_session_id_config"
       echo "rm"
       echo "rma"
       echo "s"
@@ -2140,19 +2642,17 @@ backup() {
   local backup_filename="${filename}_backup_${timestamp}.bak" # Create the backup file name
 
   usage() {
-    cat <<EOF
-Description: 
-  This function allows you to create a backup file of a file.
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Create a timestamped backup of a specified file."
 
-Usage: 
-  backup [file]
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  backup [file] [-h]"
 
-Options:
-  -h    Display this help message
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-Example: 
-  backup test.txt
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  backup test.txt"
   }
 
   while getopts ":h" opt; do
@@ -2162,7 +2662,7 @@ EOF
       return
       ;;
     \?)
-      echo "Invalid option: -$OPTARG. Use -h for help."
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG. Use -h for help."
       return
       ;;
     esac
@@ -2173,7 +2673,7 @@ EOF
   # Function to check if no arguments are provided
   check_no_arguments() {
     if [ $# -eq 0 ]; then
-      echo "Error: No arguments provided. Use -h for help."
+      cbc_style_message "$CATPPUCCIN_RED" "Error: No arguments provided. Use -h for help."
       return 1
     fi
   }
@@ -2181,14 +2681,19 @@ EOF
   # Function to check if the file exists
   check_file_exists() {
     if [ ! -f "$1" ]; then
-      echo "Error: File not found."
+      cbc_style_message "$CATPPUCCIN_RED" "Error: File not found."
       return 1
     fi
   }
 
   # Function to create a backup file
   make_backup() {
-    cp "$1" "$backup_filename" && echo "Backup created: $backup_filename"
+    if cp "$1" "$backup_filename"; then
+      cbc_style_message "$CATPPUCCIN_GREEN" "Backup created: $backup_filename"
+    else
+      cbc_style_message "$CATPPUCCIN_RED" "Failed to create backup."
+      return 1
+    fi
   }
 
   # Main logic
@@ -2200,465 +2705,6 @@ EOF
 
   # Call the main function with arguments
   main "$@"
-}
-
-################################################################################
-# UP
-################################################################################
-
-# TODO: create usage function and adjust the getopts section and fix the main logic
-
-up() {
-  # Initialize flags with default values
-  local clear_terminal=false
-  local print_directory=false
-  local quiet_mode=false
-  local detailed_listing=false
-  local times=1
-
-  # Parse command-line arguments
-  while [[ $# -gt 0 ]]; do
-    case "$1" in
-    -h)
-      # Display help message and return
-      echo "Description: This function allows you to move up in the directory hierarchy by a specified number of levels."
-      echo "Usage: up [options] [number of levels]"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo "  -a    Return to the home directory"
-      echo "  -r    Go to the root directory"
-      echo "  -c    Clear the terminal after moving"
-      echo "  -p    Print the current directory after moving"
-      echo "  -q    Suppress the ls output"
-      echo "  -l    Use ls -l for a detailed listing after changing directories"
-      return
-      ;;
-    -a)
-      # Change to home directory
-      cd ~ || {
-        echo "Error: Failed to return to home directory."
-        return 1
-      }
-      # List contents if quiet mode is not enabled
-      if [ "$quiet_mode" = false ]; then
-        if [ "$detailed_listing" = true ]; then
-          ls -l
-        else
-          ls
-        fi
-      fi
-      return
-      ;;
-    -r)
-      # Change to root directory
-      cd / || {
-        echo "Error: Failed to change to root directory."
-        return 1
-      }
-      # List contents if quiet mode is not enabled
-      if [ "$quiet_mode" = false ]; then
-        if [ "$detailed_listing" = true ]; then
-          ls -l
-        else
-          ls
-        fi
-      fi
-      return
-      ;;
-    -c)
-      # Set flag to clear terminal after moving
-      clear_terminal=true
-      ;;
-    -p)
-      # Set flag to print the current directory after moving
-      print_directory=true
-      ;;
-    -q)
-      # Set flag to suppress ls output
-      quiet_mode=true
-      ;;
-    -l)
-      # Set flag to use detailed listing (ls -l)
-      detailed_listing=true
-      ;;
-    [1-9][0-9]*)
-      # Set the number of levels to move up
-      times=$1
-      ;;
-    *)
-      # Handle invalid arguments
-      echo "Error: Invalid argument. Use -h for help."
-      return 1
-      ;;
-    esac
-    shift
-  done
-
-  # Construct the path to move up the specified number of levels
-  local up=()
-  while [ "$times" -gt 0 ]; do
-    up+=("..")
-    times=$((times - 1))
-  done
-
-  # Function to join array elements with a delimiter
-  join_by() {
-    local IFS="$1"
-    shift
-    echo "$*"
-  }
-
-  # Join the array to create the path
-  local path="$(join_by / "${up[@]}")"
-
-  # Change directory to the constructed path
-  if ! cd "$path"; then
-    echo "Error: Failed to change directory."
-    return 1
-  fi
-
-  # Clear terminal if the flag is set
-  if [ "$clear_terminal" = true ]; then
-    clear
-  fi
-
-  # Print the current directory if the flag is set
-  if [ "$print_directory" = true ]; then
-    pwd
-  fi
-
-  # List directory contents unless quiet mode is enabled
-  if [ "$quiet_mode" = false ]; then
-    if [ "$detailed_listing" = true ]; then
-      ls -l
-    else
-      ls
-    fi
-  fi
-}
-
-################################################################################
-# REMOVE ALL CBC CONFIGS - BOOKMARK
-################################################################################
-
-remove_all_cbc_configs() {
-  OPTIND=1
-
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      echo "Description: A function to remove all configuration files associated with CBC"
-      echo "Usage: remove_all_cbc_configs"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: remove_all_cbc_configs"
-      return
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG. Use -h for help."
-      return
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  # Alias for the remove_all_cbc_configs function
-  # Alias: remove_all_cbc_configs="racc"
-  # Call the rnc, rsc, and rdvc functions
-  remove_session_id_config
-}
-
-################################################################################
-# INCON - BOOKMARK
-################################################################################
-
-incon() {
-  OPTIND=1
-
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      echo "Description: A function to initialize a local git repo, create/connect it to a GitHub repo, and set up files"
-      echo "Usage: incon"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: incon"
-      return
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG. Use -h for help."
-      return
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  # Ensure the gh tool is installed.
-  if ! command -v gh &>/dev/null; then
-    echo "gh (GitHub CLI) not found. Please install it to proceed."
-    return
-  fi
-
-  # Check if the current directory already contains a git repository
-  if [ -d ".git" ]; then
-    echo "This directory is already initialized as a git repository."
-    return
-  fi
-
-  # 1. Initialize a new local Git repository
-  function init_git() {
-    git init
-    touch .gitignore
-    touch README.md
-    repo_name=$(basename $(pwd) | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
-    formatted_name=$(echo $repo_name | tr '_' ' ' | sed -e "s/\b\(.\)/\u\1/g")
-    echo "# $formatted_name" >README.md
-    echo "* Not started" >>README.md
-  }
-
-  # Call the init_git function
-  init_git
-
-  # 2. Create a new remote public repository on GitHub using the gh tool
-  new_remote_repo() {
-    gh repo create "$repo_name" || {
-      echo "Repository creation failed. Exiting"
-      return
-    }
-  }
-
-  # Call the new_remote_repo function
-  new_remote_repo
-
-  # 3. Connect the local repository to the newly created remote repository on GitHub
-  connect_to_remote() {
-    git remote add origin "https://github.com/$(gh api user | jq -r '.login')/$repo_name.git"
-  }
-
-  # Call the connect_to_remote function
-  connect_to_remote
-
-  # 4. Add all files, commit, and push
-  add_commit_push() {
-    git add .
-    git commit -m "Initial commit"
-    git push -u origin main || {
-      echo "Push to main failed. Exiting."
-      return
-    }
-  }
-
-  # Call the add_commit_push function
-  add_commit_push
-
-  echo "Local and remote repositories have successfully initialized."
-}
-
-################################################################################
-# MKDIRS
-################################################################################
-
-mkdirs() {
-  OPTIND=1
-
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      echo "Description: A function to create a directory then switch into it"
-      echo "Usage: mkdirs [directory]"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: mkdirs test"
-      return
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG. Use -h for help."
-      return
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  # Check if the directory name is provided
-  if [ -z "$1" ]; then
-    echo "Error: Directory name is not provided."
-    return 1
-  else
-    # Create the directory and switch into it
-    mkdir -p "$1" && cd "$1" || return 1
-  fi
-}
-
-################################################################################
-# UPDATE
-################################################################################
-
-update() {
-  OPTIND=1
-  local reboot=false
-  local shutdown=false
-  local display_log=false
-  local log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
-  local sudo_required=false
-
-  usage() {
-    cat <<EOF
-Description: 
-  A function to update the system and reboot if desired
-
-Usage:
-  update [option]
-
-Options:
-  -h    Display this help message
-  -r    Reboot the system after updating
-  -s    Shutdown the system after updating
-  -l    Display the log file path
-
-Example:
-  update -r
-EOF
-  }
-
-  while getopts ":hrsl" opt; do
-    case $opt in
-    h)
-      usage
-      return
-      ;;
-    r)
-      # Reboot the system after updating
-      reboot=true
-      ;;
-    s)
-      # Shutdown the system after updating
-      shutdown=true
-      ;;
-    l)
-      # Display the log path after updating
-      display_log=true
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG. Use -h for help."
-      return
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  # Function to check if sudo password is required
-  check_sudo_requirement() {
-    if sudo -n true 2>/dev/null; then
-      sudo_required=false
-    else
-      sudo_required=true
-      if [ "$sudo_required" = true ]; then
-        sudo_password=$(gum input --password --placeholder "Enter your sudo password: ")
-        if [[ -z "$sudo_password" ]]; then
-          gum style --foreground "#ff0000" --bold "No password provided!"
-          return 1
-        fi
-        # Validate password before proceeding
-        echo "$sudo_password" | sudo -S true 2>/dev/null
-        if [[ $? -ne 0 ]]; then
-          # echo "Incorrect password."
-          gum style --foreground "#ff0000" --bold "Incorrect password!"
-          return 1
-        fi
-      fi
-    fi
-  }
-
-  # Create the log directory if it doesn't exist
-  create_log_directory() {
-    mkdir -p ~/Documents/update_logs
-  }
-
-  # Call the create_log_directory function
-  create_log_directory
-
-  # Function to check if ttf-mscorefonts-installer is installed
-  check_install_mscorefonts() {
-    # Check if the package is installed
-    if dpkg-query -W -f='${Status}' ttf-mscorefonts-installer 2>/dev/null | grep -q "install ok installed"; then
-      echo "ttf-mscorefonts-installer is already installed."
-    else
-      echo "ttf-mscorefonts-installer is not installed. Please run 'i ttf-mscorefonts-installer' to install it."
-    fi
-  }
-
-  # Run update commands with sudo, tee to output to terminal and append to log file
-  # Define an array of commands to run
-  commands=(
-    "sudo apt update"
-    "sudo apt autoremove -y"
-    "sudo flatpak update -y"
-    "sudo snap refresh"
-    "pip install --upgrade yt-dlp"
-    "check_install_mscorefonts"
-  )
-
-  # Function to run a command and log the output
-  run_command() {
-    local command="$1"
-    echo -e "\n================================================================================"
-    echo "Running command: $command" | tee -a "$log_file"
-    echo "================================================================================"
-    eval "$command" | tee -a "$log_file"
-  }
-
-  # Iterate through the list of commands and run them
-  iterate_commands() {
-    for command in "${commands[@]}"; do
-      run_command "$command"
-    done
-  }
-
-  main() {
-    # check the sudo password requirement
-    check_sudo_requirement
-    if [[ $? -ne 0 ]]; then
-      gum style --foreground "#ffff00" "Exiting due to authentication failure."
-      return 1 # Stop execution of `main`
-    fi
-    if gum confirm "Are you sure you want to update the system? (y/N):" --default=no; then
-      if [ $reboot = true ]; then
-        iterate_commands | tee -a "$log_file"
-        # prompt the user to confirm reboot
-        if gum confirm "Are you sure you want to reboot the system? (y/N):" --default=no; then
-          reboot
-        else
-          gum style --foreground "#ff0000" --bold "Reboot canceled..."
-        fi
-      elif [ $shutdown = true ]; then
-        iterate_commands | tee -a "$log_file"
-        # promt the user to confirm shutdown
-        if gum confirm "Are you sure you want to shutdown the system? (y/N):" --default=no; then
-          shutdown now
-        else
-          gum style --foreground "#ff0000" --bold "Shutdown canceled..."
-        fi
-      elif [ $display_log = true ]; then
-        iterate_commands | tee -a "$log_file"
-        gum style --foreground "#00ffff" --bold "Update logs saved to: $log_file"
-      else
-        iterate_commands | tee -a "$log_file"
-      fi
-    else
-      gum style --foreground "#ff0000" --bold "Update canceled."
-      return
-    fi
-  }
-
-  # Main logic
-  main
 }
 
 ################################################################################
@@ -2675,19 +2721,28 @@ makeman() {
   OPTIND=1
 
   # Parse options
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Generate PDF manuals from man pages, optionally from a list."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  makeman [-h] [-f <file>] [-o <dir>] [-r] <command>"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h           Display this help message" \
+      "  -f <file>    Specify a file with a list of commands" \
+      "  -o <dir>     Specify an output directory" \
+      "  -r           Remove unlisted files from the output directory"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  makeman ls" \
+      "  makeman -f commands.txt -r"
+  }
+
   while getopts ":hf:o:r" opt; do
     case ${opt} in
     h)
-      echo "Description: Function to generate a PDF file from a man page"
-      echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
-      echo "Options:"
-      echo "  -h           Display this help message"
-      echo "  -f <file>    Specify a file with a list of commands"
-      echo "  -o <dir>     Specify an output directory (default: ~/Documents/grymms_grimoires/command_manuals)"
-      echo "  -r           Remove existing files in the output directory that are not listed in the specified file"
-      echo " "
-      echo "Example: makeman ls"
-      echo "Example: makeman -f commands.txt -r"
+      usage
       return 0
       ;;
     f)
@@ -2700,13 +2755,13 @@ makeman() {
       remove_unlisted=true
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
-      echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      usage
       return 1
       ;;
     :)
-      echo "Option -$OPTARG requires an argument." >&2
-      echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
+      cbc_style_message "$CATPPUCCIN_RED" "Option -$OPTARG requires an argument."
+      usage
       return 1
       ;;
     esac
@@ -2717,7 +2772,7 @@ makeman() {
   # Process remaining arguments as the command
   if [ -z "$file" ]; then
     if [ $# -eq 0 ]; then
-      echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
+      usage
       return 1
     fi
     command=$1
@@ -2768,93 +2823,553 @@ makeman() {
 }
 
 ################################################################################
-# REGEX HELP (REWRITE)
+# REGEX HELP
 ################################################################################
 
 regex_help() {
-  # Default flavor
-  local flavor="POSIX-extended"
+  OPTIND=1
 
-  # Check for arguments
-  while (("$#")); do
-    case "$1" in
-    -f | --flavor) # Option for specifying the regex flavor
-      if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
-        flavor=$2
-        shift 2
-      else
-        echo "Error: Argument for $1 is missing" >&2
-        return 1
-      fi
-      ;;
-    -h | --help) # Help flag
-      echo "Description: A function to display help for regular expressions"
-      echo "Usage: regex_help [-f|--flavor <flavor>] [-h|--help]"
-      echo "Options:"
-      echo "  -f|--flavor <flavor>    Specify the regex flavor (e.g., POSIX-extended, POSIX-basic, PCRE)"
-      echo "  -h|--help               Display this help message"
-      echo "  --example(?)               Display an example of the regex flavor"
-      echo " "
-      echo "Example: regex_help -f PCRE"
+  local default_flavor="pcre"
+  local requested_flavor=""
+  local interactive=false
+  local list_only=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Display regex cheat-sheets for popular flavors with rich examples."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  regex_help [-f <flavor>] [-i] [-l] [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -f <flavor>    Show the cheat-sheet for a specific regex flavor" \
+      "  -i             Interactively choose a flavor (gum, fzf, or select)" \
+      "  -l             List the available flavors and their typical tools" \
+      "  -h             Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  regex_help                    # Defaults to PCRE" \
+      "  regex_help -i                 # Pick a flavor interactively" \
+      "  regex_help -f posix-basic     # Show the POSIX Basic overview"
+  }
+
+  while getopts ":hf:il" opt; do
+    case "$opt" in
+    h)
+      usage
       return 0
       ;;
-    *) # Handle unexpected options
-      echo "Error: Unsupported flag $1" >&2
+    f)
+      requested_flavor="$OPTARG"
+      ;;
+    i)
+      interactive=true
+      ;;
+    l)
+      list_only=true
+      ;;
+    :) # Missing argument
+      cbc_style_message "$CATPPUCCIN_RED" "Error: -$OPTARG requires a value"
+      return 1
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Error: Unsupported flag -$OPTARG"
+      usage
       return 1
       ;;
     esac
   done
 
-  # Displaying regex information based on the chosen flavor
-  case "$flavor" in
-  # POSIX-extended regex
-  "POSIX-extended")
-    echo "POSIX-extended regex selected."
-    echo "Syntax and common patterns:"
-    echo "  - .: Matches any single character"
-    echo "  - ^: Matches the start of a line"
-    echo "  - $: Matches the end of a line"
-    echo "  - *: Matches zero or more occurrences"
-    echo "  - +: Matches one or more occurrences"
-    echo "  - ?: Matches zero or one occurrence"
-    echo "  - [abc]: Matches any one of the characters a, b, or c"
-    echo "  - [^abc]: Matches any character not in the set a, b, or c"
-    echo "  - (ab|cd): Matches either the sequence 'ab' or 'cd'"
-    ;;
-  # POSIX-basic regex
-  "POSIX-basic")
-    echo "POSIX-basic regex selected."
-    echo "Syntax and common patterns:"
-    echo "  - .: Matches any single character except newline"
-    echo "  - ^: Matches the start of a line"
-    echo "  - $: Matches the end of a line"
-    echo "  - *: Matches zero or more occurrences of the preceding element"
-    echo "  - [abc]: Matches any one of the characters a, b, or c"
-    echo "  - [^abc]: Matches any character not in the set a, b, or c"
-    echo "  - \\(ab\\|cd\\): Backslashes are used to escape special characters"
-    ;;
-  # PCRE regex
-  "PCRE")
-    echo "Perl-compatible regex (PCRE) selected."
-    echo "Syntax and common patterns:"
-    echo "  - .: Matches any character except newline"
-    echo "  - ^: Matches the start of the string"
-    echo "  - $: Matches the end of the string"
-    echo "  - *: Matches 0 or more of the preceding element"
-    echo "  - +: Matches 1 or more of the preceding element"
-    echo "  - ?: Makes the preceding quantifier lazy"
-    echo "  - \\d: Matches any digit character"
-    echo "  - \\D: Matches any non-digit character"
-    echo "  - \\w: Matches any word character (alphanumeric plus '_')"
-    echo "  - \\W: Matches any non-word character"
-    echo "  - (abc|def): Matches either 'abc' or 'def'"
-    ;;
-  *)
-    # Handle unexpected flavors
-    echo "Error: Unsupported flavor $flavor" >&2
+  shift $((OPTIND - 1))
+
+  if [ $# -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
     return 1
-    ;;
-  esac
+  fi
+
+  local -a flavor_order=(
+    pcre
+    python
+    javascript
+    posix-extended
+    posix-basic
+  )
+
+  local -A flavor_names=(
+    [pcre]="PCRE (Perl compatible regular expressions)"
+    [python]="Python (re module)"
+    [javascript]="JavaScript / ECMAScript"
+    [posix - extended]="POSIX Extended (ERE)"
+    [posix - basic]="POSIX Basic (BRE)"
+  )
+
+  local -A flavor_tools=(
+    [pcre]="ripgrep, grep -P, Perl, PHP, VS Code, most editors"
+    [python]="Python's re module, Django URL routing, pytest"
+    [javascript]="Browsers, Node.js, frontend build tools"
+    [posix - extended]="egrep, awk, modern sed -E"
+    [posix - basic]="grep, traditional sed, legacy Unix utilities"
+  )
+
+  regex_normalize_flavor() {
+    local raw="${1,,}"
+    raw=${raw// /}
+    raw=${raw//_/}
+    raw=${raw//-/}
+    case "$raw" in
+    "") return 1 ;;
+    pcre | perl | perlcompatible | perlregex | perlcompatibleregex)
+      printf '%s' "pcre"
+      ;;
+    python | py)
+      printf '%s' "python"
+      ;;
+    javascript | js | ecmascript | node | nodejs)
+      printf '%s' "javascript"
+      ;;
+    posixextended | extended | ere)
+      printf '%s' "posix-extended"
+      ;;
+    posixbasic | basic | bre)
+      printf '%s' "posix-basic"
+      ;;
+    *)
+      return 1
+      ;;
+    esac
+  }
+
+  regex_print_section() {
+    local title="$1"
+    shift
+    cbc_style_box "$CATPPUCCIN_TEAL" "$title" "$@"
+  }
+
+  regex_select_flavor() {
+    local selection=""
+    local -a options=()
+    local entry
+
+    for entry in "${flavor_order[@]}"; do
+      options+=("$entry|${flavor_names[$entry]} — ${flavor_tools[$entry]}")
+    done
+
+    if [ "$CBC_HAS_GUM" -eq 1 ]; then
+      selection=$(printf '%s\n' "${options[@]}" |
+        gum choose --header "Select a regex flavor" --limit 1 2>/dev/null)
+    elif command -v fzf >/dev/null 2>&1; then
+      selection=$(printf '%s\n' "${options[@]}" |
+        fzf --prompt="Regex flavor > " \
+          --header="TAB or arrows to move, ENTER to confirm" \
+          --delimiter='|' --with-nth=2.. 2>/dev/null)
+    fi
+
+    if [ -z "$selection" ] && [ -t 0 ] && [ -t 1 ]; then
+      local PS3="Choose a regex flavor (default ${flavor_names[$default_flavor]}): "
+      select selection in "${options[@]}"; do
+        if [ -n "$selection" ]; then
+          break
+        fi
+      done
+    fi
+
+    if [ -z "$selection" ]; then
+      return 1
+    fi
+
+    printf '%s\n' "${selection%%|*}"
+  }
+
+  regex_show_flavor() {
+    local flavor="$1"
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "${flavor_names[$flavor]}" \
+      "  Typical tools: ${flavor_tools[$flavor]}" \
+      "  Tip: Use 'regex_help -l' to explore every option."
+
+    case "$flavor" in
+    pcre)
+      regex_print_section "Anchors" \
+        "  ^  Start of string (or line with (?m))" \
+        "  $  End of string (or line with (?m))" \
+        "  \\A  Absolute start of string" \
+        "  \\z  Absolute end of string" \
+        "  \\b  Word boundary" \
+        "  \\B  Non-word boundary"
+
+      regex_print_section "Quantifiers" \
+        "  *   Zero or more" \
+        "  +   One or more" \
+        "  ?   Zero or one" \
+        "  {m,n}  Between m and n (omit n for open range)" \
+        "  *?, +?, ??  Lazy versions" \
+        "  {m,n}?  Lazy bounded quantifier"
+
+      regex_print_section "Character classes" \
+        "  .        Any char except newline (use (?s) for dotall)" \
+        "  \\d / \\D  Digit / not digit" \
+        "  \\w / \\W  Word / not word" \
+        "  \\s / \\S  Whitespace / not whitespace" \
+        "  \\h / \\v  Horizontal / vertical whitespace" \
+        "  \\p{L}    Unicode property (letters, numbers, etc.)"
+
+      regex_print_section "Grouping & references" \
+        "  (...)        Capturing group" \
+        "  (?:...)      Non-capturing group" \
+        "  (?<name>...) Named capturing group" \
+        "  \\1, \\g<name>  Backreferences" \
+        "  (?=...), (?!...)  Lookahead" \
+        "  (?<=...), (?<!...) Lookbehind"
+
+      regex_print_section "Flags" \
+        "  (?i) case-insensitive   (?m) multiline ^/$" \
+        "  (?s) dotall             (?x) verbose mode" \
+        "  (?U) swap greedy/lazy   (?J) duplicate names"
+
+      cbc_style_note "Example:" \
+        "  (?i)^(?<user>[\\w.-]+)@(?<domain>[\\w.-]+\\.[A-Za-z]{2,})$" \
+        "  • Captures case-insensitive emails with named groups."
+      ;;
+    python)
+      regex_print_section "Anchors" \
+        "  ^ / $    Start or end of string (line with re.MULTILINE)" \
+        "  \\A / \\Z  Start / end of string regardless of flags" \
+        "  \\b / \\B  Word boundary / non-boundary"
+
+      regex_print_section "Quantifiers" \
+        "  * 0+   + 1+   ? 0 or 1   {m,n} bounded" \
+        "  Append ? for lazy variants (e.g., *?, +?, {m,n}?)"
+
+      regex_print_section "Character classes" \
+        "  . matches any char except newline (unless re.DOTALL)" \
+        "  \\d, \\w, \\s mirror Unicode sets with re.UNICODE (default)" \
+        "  \\N matches any char except newline" \
+        "  Classes like [[:alpha:]] need re module's re.ASCII flag"
+
+      regex_print_section "Grouping & references" \
+        "  (?P<name>...)    Named capture" \
+        "  (?P=name)        Named backreference" \
+        "  (?=...), (?!...) Lookahead" \
+        "  (?<=...), (?<!...) Lookbehind (fixed-width)" \
+        "  (?(id)yes|no)    Conditional on group matched"
+
+      regex_print_section "Flags" \
+        "  re.I / (?i) ignore case    re.M / (?m) multiline" \
+        "  re.S / (?s) dotall        re.X / (?x) verbose" \
+        "  re.A / (?a) ASCII classes  re.U legacy alias"
+
+      cbc_style_note "Example:" \
+        "  (?P<slug>[a-z0-9-]+)(?:/(?P<page>\\d+))?$" \
+        "  • Django-friendly URL slug with optional page number."
+      ;;
+    javascript)
+      regex_print_section "Anchors" \
+        "  ^ / $  Start / end of string" \
+        "  \\b / \\B  Word boundary / non-boundary" \
+        "  (?<=^|\\s) simulate start-of-word when \\b is insufficient"
+
+      regex_print_section "Quantifiers" \
+        "  * 0+   + 1+   ? 0 or 1   {m,n} bounded" \
+        "  Lazy versions use ? (e.g., .*?)" \
+        "  Possessive quantifiers x*+ available in modern engines"
+
+      regex_print_section "Character classes" \
+        "  . matches any char except newline (use [\\s\\S] for dotall)" \
+        "  \\d, \\w, \\s follow ECMAScript definitions" \
+        "  \\p{Letter} requires the /u flag for Unicode sets" \
+        "  Character class escapes like [\u{1F4A9}] need /u"
+
+      regex_print_section "Grouping & references" \
+        "  (?<name>...) Named capture (ES2018+)" \
+        "  \\1 or \\k<name> Backreferences" \
+        "  (?=...), (?!...) Lookahead" \
+        "  (?<=...), (?<!...) Lookbehind (modern runtimes only)"
+
+      regex_print_section "Flags" \
+        "  /i ignore case   /m multiline ^/$" \
+        "  /s dotall        /u Unicode" \
+        "  /g global match  /y sticky (anchor to lastIndex)"
+
+      cbc_style_note "Example:" \
+        "  const rx = /^(?<tag>[a-z]+)(?:-(?<variant>\\w+))?$/i;" \
+        "  // Capture <tag>-<variant> attributes case-insensitively."
+      ;;
+    posix-extended)
+      regex_print_section "Anchors" \
+        "  ^ start of line    $ end of line" \
+        "  Use \\b inside character classes (e.g., [[:<:]]) for words"
+
+      regex_print_section "Quantifiers" \
+        "  * 0+   + 1+   ? 0 or 1   {m,n} bounded" \
+        "  No lazy or possessive variants"
+
+      regex_print_section "Character classes" \
+        "  . matches any char except newline" \
+        "  [:class:] named classes: [:alpha:], [:digit:], [:alnum:], [:space:]" \
+        "  Bracket expressions like [^abc] negate character sets" \
+        "  No \\d / \\w shortcuts—use [:digit:], [:alnum:], etc."
+
+      regex_print_section "Grouping & alternation" \
+        "  (...) capture group    (?:...) unavailable" \
+        "  | alternation          Backreferences with \\1, \\2" \
+        "  No lookaround or named groups"
+
+      regex_print_section "Usage notes" \
+        "  Works with egrep, awk, and sed -E" \
+        "  Portable across most Unix-like systems" \
+        "  Ideal when scripting with POSIX tools that support ERE"
+
+      cbc_style_note "Example:" \
+        "  egrep '^[[:alnum:]_]+@[[:alnum:].-]+\\.[[:alpha:]]{2,}$' file" \
+        "  • Email validation using portable character classes."
+      ;;
+    posix-basic)
+      regex_print_section "Anchors" \
+        "  ^ start of line    $ end of line" \
+        "  [[:<:]] and [[:>:]] for word boundaries (GNU extensions)"
+
+      regex_print_section "Quantifiers" \
+        "  * 0+   \{m,n\} bounded" \
+        "  +, ?, |, () are literals unless escaped" \
+        "  Use \+, \?, \|, \(, \) for regex operators"
+
+      regex_print_section "Character classes" \
+        "  . matches any char except newline" \
+        "  [:class:] works inside [] just like ERE" \
+        "  Escapes like \\d or \\w are not supported"
+
+      regex_print_section "Grouping & references" \
+        "  \( ... \) capture group" \
+        "  \{m\} literal braces require escaping: \\{" \
+        "  Backreferences: \\1, \\2" \
+        "  No alternation without \| and no non-capturing groups"
+
+      regex_print_section "Usage notes" \
+        "  Default for grep and sed without -E" \
+        "  Preferred when targeting the most portable scripts" \
+        "  Escaping operators is the most common pitfall"
+
+      cbc_style_note "Example:" \
+        "  grep '\\<[[:digit:]]\\{3\\}\\>' numbers.txt" \
+        "  • Find three-digit numbers in GNU grep (word boundaries)."
+      ;;
+    esac
+  }
+
+  if $list_only; then
+    local -a lines=("  Available regex flavors:")
+    local key
+    for key in "${flavor_order[@]}"; do
+      lines+=("    - ${flavor_names[$key]} [${key}] — ${flavor_tools[$key]}")
+    done
+    cbc_style_box "$CATPPUCCIN_BLUE" "Regex flavors" "${lines[@]}"
+    return 0
+  fi
+
+  local normalized=""
+
+  if [ -n "$requested_flavor" ]; then
+    if ! normalized=$(regex_normalize_flavor "$requested_flavor"); then
+      cbc_style_message "$CATPPUCCIN_RED" \
+        "Error: Unknown regex flavor '$requested_flavor'"
+      cbc_style_note "Hint:" \
+        "  Use 'regex_help -l' to see supported flavors." \
+        "  Examples: pcre, python, javascript, posix-extended, posix-basic."
+      return 1
+    fi
+  elif $interactive; then
+    if ! normalized=$(regex_select_flavor); then
+      cbc_style_message "$CATPPUCCIN_RED" "No selection made; showing default."
+      normalized="$default_flavor"
+    fi
+  else
+    normalized="$default_flavor"
+  fi
+
+  regex_show_flavor "$normalized"
+
+  cbc_style_note "Need more?" \
+    "  Combine 'rg --pcre2', 'python -m re', or 'node --eval' with these" \
+    "  snippets to test patterns quickly in your favorite environment."
+}
+
+################################################################################
+# UPDATE
+################################################################################
+
+update() {
+  OPTIND=1
+  local reboot=false
+  local shutdown=false
+  local display_log=false
+  local log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
+  local sudo_required=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Update the system with optional reboot, shutdown, or log display."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  update [-h|-r|-s|-l]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -r    Reboot the system after updating" \
+      "  -s    Shutdown the system after updating" \
+      "  -l    Display the log file path"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  update -r"
+  }
+
+  while getopts ":hrsl" opt; do
+    case $opt in
+    h)
+      usage
+      return
+      ;;
+    r)
+      # Reboot the system after updating
+      reboot=true
+      ;;
+    s)
+      # Shutdown the system after updating
+      shutdown=true
+      ;;
+    l)
+      # Display the log path after updating
+      display_log=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG. Use -h for help."
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  # Function to check if sudo password is required
+  check_sudo_requirement() {
+    if sudo -n true 2>/dev/null; then
+      sudo_required=false
+    else
+      sudo_required=true
+      if [ "$sudo_required" = true ]; then
+        sudo_password=$(gum input --password --placeholder "Enter your sudo password: ")
+        if [[ -z "$sudo_password" ]]; then
+          gum style --foreground "$CATPPUCCIN_RED" --bold "No password provided!"
+          return 1
+        fi
+        # Validate password before proceeding
+        echo "$sudo_password" | sudo -S true 2>/dev/null
+        if [[ $? -ne 0 ]]; then
+          # echo "Incorrect password."
+          gum style --foreground "$CATPPUCCIN_RED" --bold "Incorrect password!"
+          return 1
+        fi
+      fi
+    fi
+  }
+
+  # Create the log directory if it doesn't exist
+  create_log_directory() {
+    mkdir -p ~/Documents/update_logs
+  }
+
+  # Call the create_log_directory function
+  create_log_directory
+
+  # Function to check if ttf-mscorefonts-installer is installed
+  check_install_mscorefonts() {
+    # Check if the package is installed
+    if dpkg-query -W -f='${Status}' ttf-mscorefonts-installer 2>/dev/null | grep -q "install ok installed"; then
+      echo "ttf-mscorefonts-installer is already installed."
+    else
+      echo "ttf-mscorefonts-installer is not installed. Please run 'i ttf-mscorefonts-installer' to install it."
+    fi
+  }
+
+  # Run update commands with sudo, tee to output to terminal and append to log file
+  # Define an array of commands to run
+  commands=(
+    "sudo apt update"
+    "sudo apt autoremove -y"
+    "sudo apt upgrade -y"
+    "atuin update"
+    ""
+    "sudo flatpak update -y"
+    "sudo snap refresh"
+    "pip install --upgrade yt-dlp --break-system-packages"
+    "check_install_mscorefonts"
+    "sudo apt clean"
+  )
+
+  # Function to print completion message using gum
+  print_completion_message() {
+    echo " "
+    gum style --foreground "#a6e3a1" --bold "Updates completed!"
+  }
+
+  # Function to run a command and log the output
+  run_command() {
+    local command="$1"
+    echo " "
+    gum style --foreground "#f9e2af" --bold "================================================================================"
+    gum style --foreground "#f9e2af" --bold "Running command: $command" | tee -a "$log_file"
+    gum style --foreground "#f9e2af" --bold "================================================================================"
+    eval "$command" | tee -a "$log_file"
+  }
+
+  # Iterate through the list of commands and run them
+  iterate_commands() {
+    for command in "${commands[@]}"; do
+      run_command "$command"
+    done
+  }
+
+  main() {
+    # check the sudo password requirement
+    check_sudo_requirement
+    if [[ $? -ne 0 ]]; then
+      gum style --foreground "#f9e2af" "Exiting due to authentication failure."
+      return 1 # Stop execution of `main`
+    fi
+    if gum confirm "Are you sure you want to update the system? (y/N):" --default=no; then
+      if [ $reboot = true ]; then
+        iterate_commands | tee -a "$log_file"
+        # prompt the user to confirm reboot
+        if gum confirm "Are you sure you want to reboot the system? (y/N):" --default=no; then
+          reboot
+        else
+          gum style --foreground "$CATPPUCCIN_RED" --bold "Reboot canceled..."
+        fi
+      elif [ $shutdown = true ]; then
+        iterate_commands | tee -a "$log_file"
+        # promt the user to confirm shutdown
+        if gum confirm "Are you sure you want to shutdown the system? (y/N):" --default=no; then
+          shutdown now
+        else
+          gum style --foreground "$CATPPUCCIN_RED" --bold "Shutdown canceled..."
+        fi
+      elif [ $display_log = true ]; then
+        iterate_commands | tee -a "$log_file"
+        gum style --foreground "#89dceb" --bold "Update logs saved to: $log_file"
+      else
+        iterate_commands | tee -a "$log_file"
+      fi
+    else
+      gum style --foreground "$CATPPUCCIN_RED" --bold "Update canceled."
+      return
+    fi
+    ###########################################################################
+    echo " "
+    gum style --foreground "#a6e3a1" --bold "Please run 'cargo install-update -a' to update Cargo packages."
+    print_completion_message
+  }
+
+  # Main logic
+  main
 }
 
 ################################################################################
@@ -2864,19 +3379,28 @@ regex_help() {
 extract() {
   OPTIND=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Extract a variety of compressed archive formats."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  extract [file] [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  extract file.tar.gz"
+  }
+
   while getopts ":h" opt; do
     case ${opt} in
     h)
-      echo "Description: A function to extract compressed files"
-      echo "Usage: extract [file]"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: extract file.tar.gz"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -2885,12 +3409,12 @@ extract() {
   shift $((OPTIND - 1))
 
   if [ -z "$1" ]; then
-    echo "Error: No file specified"
+    cbc_style_message "$CATPPUCCIN_RED" "Error: No file specified"
     return 1
   fi
 
   if [ ! -f "$1" ]; then
-    echo "Error: File not found"
+    cbc_style_message "$CATPPUCCIN_RED" "Error: File not found"
     return 1
   fi
 
@@ -2909,7 +3433,7 @@ extract() {
   *.deb) ar x "$1" ;;
   *.tar.xz) tar xf "$1" ;;
   *.tar.zst) unzstd "$1" ;;
-  *) echo "'$1' cannot be extracted using extract()" ;;
+  *) cbc_style_message "$CATPPUCCIN_RED" "'$1' cannot be extracted using extract()" ;;
   esac
 }
 
@@ -2920,19 +3444,28 @@ extract() {
 odt() {
   OPTIND=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Create an .odt document in the current directory and open it with LibreOffice."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  odt [filename] [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  odt meeting-notes"
+  }
+
   while getopts ":h" opt; do
     case $opt in
     h)
-      echo "Description: A function to create a .odt file in the current directory and open it"
-      echo "Usage: odt [filename]"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: odt test"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       ;;
     esac
   done
@@ -2951,17 +3484,28 @@ ods() {
   # Use getopts to handle Options
   OPTIND=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Create an .ods spreadsheet in the current directory and open it with LibreOffice."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  ods [filename] [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  ods budget"
+  }
+
   while getopts ":h" opt; do
     case $opt in
     h)
-      echo "Description: A function to create a .ods file in the current directory and open it"
-      echo "Usage: ods [filename]"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       ;;
     esac
   done
@@ -2976,39 +3520,30 @@ ods() {
 # FILEHASH
 ################################################################################
 
-# Describe the filehash function and its options and usage
-
-# filehash
-# Description: A function to generate a hash of a file
-# Usage: filehash [file] [method]
-# Options:
-#   -h    Display this help message
-#   -d    Iterate through the current directory and run the specified hash method on each file
-#   -a    Run all hash methods on the file
-#   -da   Run all hash methods on all files in the current directory
-
-# Example: filehash test.txt sha256  ---Generates a sha256 hash of test.txt.
-# Example: filehash -d sha256  ---Generates a sha256 hash of each file in the current directory.
-# Example: filehash -a test.txt  ---Runs all hash methods on test.txt.
-# Example: filehash -da  ---Runs all hash methods on all files in the current directory.
-
-# Define the filehash function to generate a hash of a file
-
-# TODO: add usage function, fix getopts section, and fix the main logic
-# Additionally, rework the whole function and make it more user-friendly
-
 filehash() {
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Generate hashes for files with various algorithms."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  filehash [options] [file] [method]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -m    Display available hash methods" \
+      "  -a    Run all hash methods on the file" \
+      "  -d    Run the specified method on each file in the current directory" \
+      "  -da   Run all methods on every file in the current directory"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  filehash test.txt sha256" \
+      "  filehash -d sha256"
+  }
+
   if [ "$1" = "-h" ]; then
     # Display help message if -h option is provided
-    echo "Description: A function to generate a hash of a file"
-    echo "Usage: filehash [file] [method]"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    echo "  -m    Display available hash methods"
-    echo "  -a    Run all hash methods on the file"
-    echo "  -d    Iterate through the current directory and run the specified hash method on each file"
-    echo "  -da   Run all hash methods on all files in the current directory"
-    return
+    usage
+    return 0
   fi
   # Alias for the filehash function
   # alias fh="filehash"
@@ -3137,19 +3672,28 @@ filehash() {
 ################################################################################
 
 display_info() {
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Display key information about the Custom Bash Commands setup."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  display_info [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  display_info"
+  }
+
   while getopts ":h" opt; do
     case ${opt} in
     h)
-      echo "Description: A function to display information"
-      echo "Usage: display_info"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: display_info"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       ;;
     esac
   done
@@ -3161,24 +3705,33 @@ display_info() {
 # UPDATECBC
 ################################################################################
 
-# TODO: add usage function, fix getopts section, and fix the main logic
-
 updatecbc() {
   # Initialize OPTIND to 1 since it is a global variable within the script
   OPTIND=1
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Update the Custom Bash Commands repository and reload configuration."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  updatecbc [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  updatecbc"
+  }
 
   # Parse options using getopts
   while getopts ":h" opt; do
     case ${opt} in
     h)
-      echo "Description: A function to update the custom bash commands"
-      echo "Usage: updatecbc"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       ;;
     esac
   done
@@ -3194,7 +3747,6 @@ updatecbc() {
   # List of file paths to download and move
   FILE_PATHS=(
     custom_bash_commands.sh
-    .version
     cbc_aliases.sh
   )
 
@@ -3234,2215 +3786,23 @@ updatecbc() {
   source ~/.custom_bash_commands.sh
 }
 
-################################################################################
-# MVFILES
-################################################################################
-
-# Create a function to move files to a directory based on file type
-
-# mvfiles
-# Description: A function to move all files in a directory to a subdirectory based on file type
-# Usage: mvfiles
-# Options:
-#   -h    Display this help message
-
-# Create a function to move files to a directory based on file type suffix and named with the suffix without a '.' prefix
-
-# TODO: rework this function
-
-mvfiles() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: A function to move all files in a directory to a subdirectory based on file type"
-    echo "Usage: mvfiles"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
-  # Create an array of unique file extensions in the current directory
-  extensions=($(find . -maxdepth 1 -type f | sed 's/.*\.//' | tr '[:upper:]' '[:lower:]' | sort -u))
-
-  # Create a subdirectory for each unique file extension
-  for ext in "${extensions[@]}"; do
-    # Create the subdirectory if it does not exist
-    mkdir -p $ext
-
-    # Move files with the extension to the subdirectory
-    mv *.$ext $ext 2>/dev/null
-
-    # Move files with upper case extension to the subdirectory
-    mv *.$(echo $ext | tr '[:lower:]' '[:upper:]') $ext 2>/dev/null
-  done
-}
-
-###################################################################################################################################################################
-
+###############################################################################
 # Call the function to display information
+###############################################################################
+
 display_info
 
-###################################################################################################################################################################
-###################################################################################################################################################################
+###############################################################################
+# Source the aliases file if it exists
+###############################################################################
 
-# The following lines allows previously defined aliases and functions to be used in the terminal after the custom_bash_commands.sh script is run
-# This allows the script to not overwrite previously defined aliases and functions by the user
-# This command must remain at the end of the custom_bash_commands.sh script
+# The following lines allows previously defined aliases and functions to be
+# used in the terminal after the custom_bash_commands.sh script is run. This
+# allows the script to not overwrite previously defined aliases and functions
+# by the user. This command must remain at the end of the
+# custom_bash_commands.sh script.
 
 # If the .bash_aliases file exists, source it
 if [ -f ~/.bash_aliases ]; then
   . ~/.bash_aliases
 fi
-
-###################################################################################################################################################################
-# Ensure zoxide is installed, and if not install it.
-###################################################################################################################################################################
-
-# Function to check if zoxide is installed and install it if necessary
-# check_install_zoxide() {
-#   # Check if zoxide is installed, and if it is, source the zoxide init script
-#   if command -v zoxide &>/dev/null; then
-#     # eval "$(zoxide init --cmd cd bash)"
-#   # If zoxide is not installed, install it
-#   else
-#     echo "zoxide not found. Install with chezmoi"
-#   fi
-# }
-
-###################################################################################################################################################################
-# Ensure that ranger is installed, and if not install it.
-###################################################################################################################################################################
-
-# Function to check if ranger is installed and install it if necessary
-check_install_ranger() {
-  if ! command -v ranger &>/dev/null; then
-    echo "ranger not found. Install with chezmoi"
-  fi
-}
-
-###################################################################################################################################################################
-# Ensure thefuck is installed, and if not install it.
-###################################################################################################################################################################
-
-# Function to check if thefuck is installed and install it if necessary
-check_install_thefuck() {
-  if ! command -v thefuck &>/dev/null; then
-    echo "thefuck not found. Install using thefuck documentation as it is currently not updated"
-  fi
-}
-
-###################################################################################################################################################################
-# Ensure obsidian is installed, and if not install it.
-###################################################################################################################################################################
-
-# Function to check if obsidian is installed and install it if necessary
-check_install_obsidian() {
-  if ! command -v obsidian &>/dev/null; then
-    echo "obsidian not found. Install with chezmoi."
-  fi
-}
-
-###################################################################################################################################################################
-# Ensure fzf is installed, and if not install it.
-###################################################################################################################################################################
-
-# Function to check if fzf is installed and install it if necessary
-check_install_fzf() {
-  if ! command -v fzf &>/dev/null; then
-    echo "fzf not found. Install with chezmoi."
-  fi
-}
-
-# Change so that each piece of software is installed using a function to modularize the code.
-# If zoxide is installed, source the zoxide init script
-# If not installed, do nothing.
-# Create a command to install zoxide if it is not installed.
-# Create a command to install fzf if it is not installed.
-# Echo a message to inform the user that they need to refresh the terminal after installing zoxide and fzf.
-# Create a function to check for additional software, and if it is not installed, create options for the user to select if they would like to install any.
-# This allows full customization of the additional software.
-# This can be part of a separate set up script that can be run for an initial installation.
-# The set up script should set up the .bashrc file, install additional software, and set up the custom bash commands in the correct directories.
-
-###################################################################################################################################################################
-# Check if bat is installed, and if not, install it.
-###################################################################################################################################################################
-
-# Function to check and install bat if not already installed
-check_install_bat() {
-  if ! command -v batcat &>/dev/null; then
-    echo "bat not found. Install with chezmoi."
-  fi
-}
-
-###################################################################################################################################################################
-# Check if neovim is installed, and if it is, add it to PATH.
-###################################################################################################################################################################
-
-# Function to check if neovim is installed and add it to PATH
-check_install_neovim() {
-  if command -v nvim &>/dev/null; then
-    export PATH="$PATH:/opt/nvim-linux64/bin"
-    # If neovim is not installed, install it using "sudo apt install neovim"
-  else
-    echo "Neovim not found. Please install from https://github.com/neovim/neovim/releases"
-    echo "Download the nvim.appimage file, use 'chmod +x nvim.appimage' to make it executable, and run 'sudo mv nvim.appimage /bin/nvim' to install."
-
-    # Download the neovim appimage file
-    wget https://github.com/neovim/neovim/releases/download/v0.10.0/nvim.appimage
-
-    # Make the appimage file executable
-    chmod +x nvim.appimage
-
-    # Move the appimage file to /bin/nvim
-    sudo mv nvim.appimage /bin/nvim
-  fi
-}
-
-###################################################################################################################################################################
-# Check if hstr is installed, and if not, install it.
-###################################################################################################################################################################
-
-# Function to check if hstr is installed and install it if not
-check_install_hstr() {
-  if ! command -v hstr &>/dev/null; then
-    echo "Hstr not found. Installing..."
-    sudo apt install hstr
-    echo "hstr has been installed."
-  fi
-}
-
-# If hstr is installed, set configs for hstr
-if command -v hstr &>/dev/null; then
-  # Set alias for hstr
-  alias hh=hstr
-  # Configure hstr with colors and prompt at the bottom
-  export HSTR_CONFIG=hicolor,prompt-bottom,blacklist
-  # Append new history items to .bash_history
-  shopt -s histappend
-  # Ignore commands starting with a space in history
-  export HISTCONTROL=ignorespace
-  # Increase history file size
-  export HISTFILESIZE=10000
-  # Increase history size
-  export HISTSIZE=${HISTFILESIZE}
-  # ensure synchronization between bash memory and history file
-  export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"
-  # if this is interactive shell, then bind hstr to Ctrl-r (for Vi mode check doc)
-  if [[ $- =~ .*i.* ]]; then bind '"\C-r": "\C-a hstr -- \C-j"'; fi
-  # if this is interactive shell, then bind 'kill last command' to Ctrl-x k
-  if [[ $- =~ .*i.* ]]; then bind '"\C-xk": "\C-a hstr -k \C-j"'; fi
-  # Bind Vim keys
-  bind '"\C-r": "\e^ihstr -- \n"'
-fi
-
-##################################################################################################################################################################
-# Additional Software Installation
-###################################################################################################################################################################
-
-# Read the configuration file and check if NEOVIM=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${NEOVIM:=true}" == "true" ]]; then
-    # Call the function to check neovim installation and install neovim
-    check_install_neovim
-  fi
-fi
-
-# Read the configuration file and check if OBSIDIAN=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${OBSIDIAN:=false}" == "true" ]]; then
-    # Call the function to check obsidian installation and install obsidian
-    check_install_obsidian
-  fi
-fi
-
-# Read the configuration file and check if BAT=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${BAT:=false}" == "true" ]]; then
-    # Call the function to check bat installation and install bat
-    check_install_bat
-  fi
-fi
-
-# Read the configuration file and check if RANGER=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${RANGER:=true}" == "true" ]]; then
-    # Call the function to check ranger installation and install ranger
-    check_install_ranger
-  fi
-fi
-
-# Read the configuration file and check if ZOXIDE=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${ZOXIDE:=false}" == "true" ]]; then
-    # Call the function to check zoxide installation and install zoxide
-    check_install_zoxide
-  fi
-fi
-
-# Read the configuration file and check if FZF=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${FZF:=false}" == "true" ]]; then
-    # Call the function to check fzf installation and install fzf
-    check_install_fzf
-  fi
-fi
-
-# Check if zoxide is installed, and if it is, source the zoxide init script
-if command -v zoxide &>/dev/null; then
-  eval "$(zoxide init --cmd cd bash)"
-fi
-
-# Read the configuration file and check if THEFUCK=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "$THEFUCK" = "true" ]]; then
-    # Call the function to check thefuck installation and install thefuck
-    check_install_thefuck
-  fi
-fi
-
-# Read the configuration file and check if HSTR=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${HSTR:=true}" == "true" ]]; then
-    # Call the function to check hstr installation and install hstr
-    check_install_hstr
-  fi
-fi
-
-###################################################################################################################################################################
-###################################################################################################################################################################
-# EXPORTS
-###################################################################################################################################################################
-###################################################################################################################################################################
-
-# Remove history duplications
-export HISTCONTROL=ignoredups:erasedups
-
-# Set terminal behavior to mimic vim
-set -o vi
-
-# Set the default editor to neovim if and only if neovim is installed and set manpager as neovim
-if command -v nvim &>/dev/null; then
-  export EDITOR=nvim
-  export MANPAGER="nvim +Man!"
-fi
-
-###################################################################################################################################################################
-###################################################################################################################################################################
-# ZELLIJ COMPLETION
-###################################################################################################################################################################
-###################################################################################################################################################################
-
-_zellij() {
-  local i cur prev opts cmds
-  COMPREPLY=()
-  cur="${COMP_WORDS[COMP_CWORD]}"
-  prev="${COMP_WORDS[COMP_CWORD - 1]}"
-  cmd=""
-  opts=""
-
-  for i in ${COMP_WORDS[@]}; do
-    case "${i}" in
-    "$1")
-      cmd="zellij"
-      ;;
-    action)
-      cmd+="__action"
-      ;;
-    attach)
-      cmd+="__attach"
-      ;;
-    clear)
-      cmd+="__clear"
-      ;;
-    close-pane)
-      cmd+="__close__pane"
-      ;;
-    close-tab)
-      cmd+="__close__tab"
-      ;;
-    convert-config)
-      cmd+="__convert__config"
-      ;;
-    convert-layout)
-      cmd+="__convert__layout"
-      ;;
-    convert-theme)
-      cmd+="__convert__theme"
-      ;;
-    delete-all-sessions)
-      cmd+="__delete__all__sessions"
-      ;;
-    delete-session)
-      cmd+="__delete__session"
-      ;;
-    dump-layout)
-      cmd+="__dump__layout"
-      ;;
-    dump-screen)
-      cmd+="__dump__screen"
-      ;;
-    edit)
-      cmd+="__edit"
-      ;;
-    edit-scrollback)
-      cmd+="__edit__scrollback"
-      ;;
-    focus-next-pane)
-      cmd+="__focus__next__pane"
-      ;;
-    focus-previous-pane)
-      cmd+="__focus__previous__pane"
-      ;;
-    go-to-next-tab)
-      cmd+="__go__to__next__tab"
-      ;;
-    go-to-previous-tab)
-      cmd+="__go__to__previous__tab"
-      ;;
-    go-to-tab)
-      cmd+="__go__to__tab"
-      ;;
-    go-to-tab-name)
-      cmd+="__go__to__tab__name"
-      ;;
-    half-page-scroll-down)
-      cmd+="__half__page__scroll__down"
-      ;;
-    half-page-scroll-up)
-      cmd+="__half__page__scroll__up"
-      ;;
-    help)
-      cmd+="__help"
-      ;;
-    kill-all-sessions)
-      cmd+="__kill__all__sessions"
-      ;;
-    kill-session)
-      cmd+="__kill__session"
-      ;;
-    launch-or-focus-plugin)
-      cmd+="__launch__or__focus__plugin"
-      ;;
-    launch-plugin)
-      cmd+="__launch__plugin"
-      ;;
-    list-aliases)
-      cmd+="__list__aliases"
-      ;;
-    list-clients)
-      cmd+="__list__clients"
-      ;;
-    list-sessions)
-      cmd+="__list__sessions"
-      ;;
-    move-focus)
-      cmd+="__move__focus"
-      ;;
-    move-focus-or-tab)
-      cmd+="__move__focus__or__tab"
-      ;;
-    move-pane)
-      cmd+="__move__pane"
-      ;;
-    move-pane-backwards)
-      cmd+="__move__pane__backwards"
-      ;;
-    move-tab)
-      cmd+="__move__tab"
-      ;;
-    new-pane)
-      cmd+="__new__pane"
-      ;;
-    new-tab)
-      cmd+="__new__tab"
-      ;;
-    next-swap-layout)
-      cmd+="__next__swap__layout"
-      ;;
-    options)
-      cmd+="__options"
-      ;;
-    page-scroll-down)
-      cmd+="__page__scroll__down"
-      ;;
-    page-scroll-up)
-      cmd+="__page__scroll__up"
-      ;;
-    pipe)
-      cmd+="__pipe"
-      ;;
-    plugin)
-      cmd+="__plugin"
-      ;;
-    previous-swap-layout)
-      cmd+="__previous__swap__layout"
-      ;;
-    query-tab-names)
-      cmd+="__query__tab__names"
-      ;;
-    rename-pane)
-      cmd+="__rename__pane"
-      ;;
-    rename-session)
-      cmd+="__rename__session"
-      ;;
-    rename-tab)
-      cmd+="__rename__tab"
-      ;;
-    resize)
-      cmd+="__resize"
-      ;;
-    run)
-      cmd+="__run"
-      ;;
-    scroll-down)
-      cmd+="__scroll__down"
-      ;;
-    scroll-to-bottom)
-      cmd+="__scroll__to__bottom"
-      ;;
-    scroll-to-top)
-      cmd+="__scroll__to__top"
-      ;;
-    scroll-up)
-      cmd+="__scroll__up"
-      ;;
-    setup)
-      cmd+="__setup"
-      ;;
-    start-or-reload-plugin)
-      cmd+="__start__or__reload__plugin"
-      ;;
-    switch-mode)
-      cmd+="__switch__mode"
-      ;;
-    toggle-active-sync-tab)
-      cmd+="__toggle__active__sync__tab"
-      ;;
-    toggle-floating-panes)
-      cmd+="__toggle__floating__panes"
-      ;;
-    toggle-fullscreen)
-      cmd+="__toggle__fullscreen"
-      ;;
-    toggle-pane-embed-or-floating)
-      cmd+="__toggle__pane__embed__or__floating"
-      ;;
-    toggle-pane-frames)
-      cmd+="__toggle__pane__frames"
-      ;;
-    undo-rename-pane)
-      cmd+="__undo__rename__pane"
-      ;;
-    undo-rename-tab)
-      cmd+="__undo__rename__tab"
-      ;;
-    write)
-      cmd+="__write"
-      ;;
-    write-chars)
-      cmd+="__write__chars"
-      ;;
-    *) ;;
-    esac
-  done
-
-  case "${cmd}" in
-  zellij)
-    opts="-h -V -s -l -c -d --help --version --max-panes --data-dir --server --session --layout --config --config-dir --debug options setup list-sessions list-aliases attach kill-session delete-session kill-all-sessions delete-all-sessions action run plugin edit convert-config convert-layout convert-theme pipe help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --max-panes)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --data-dir)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --server)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --session)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -s)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --layout)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -l)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --config)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -c)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --config-dir)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action)
-    opts="-h --help write write-chars resize focus-next-pane focus-previous-pane move-focus move-focus-or-tab move-pane move-pane-backwards clear dump-screen dump-layout edit-scrollback scroll-up scroll-down scroll-to-bottom scroll-to-top page-scroll-up page-scroll-down half-page-scroll-up half-page-scroll-down toggle-fullscreen toggle-pane-frames toggle-active-sync-tab new-pane edit switch-mode toggle-pane-embed-or-floating toggle-floating-panes close-pane rename-pane undo-rename-pane go-to-next-tab go-to-previous-tab close-tab go-to-tab go-to-tab-name rename-tab undo-rename-tab new-tab move-tab previous-swap-layout next-swap-layout query-tab-names start-or-reload-plugin launch-or-focus-plugin launch-plugin rename-session pipe list-clients help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__clear)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__close__pane)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__close__tab)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__dump__layout)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__dump__screen)
-    opts="-f -h --full --help <PATH>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__edit)
-    opts="-d -l -f -i -x -y -h --direction --line-number --floating --in-place --cwd --x --y --width --height --help <FILE>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --direction)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -d)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --line-number)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -l)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --cwd)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --x)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -x)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --y)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -y)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --width)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --height)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__edit__scrollback)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__focus__next__pane)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__focus__previous__pane)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__go__to__next__tab)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__go__to__previous__tab)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__go__to__tab)
-    opts="-h --help <INDEX>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__go__to__tab__name)
-    opts="-c -h --create --help <NAME>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__half__page__scroll__down)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__half__page__scroll__up)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__help)
-    opts="<SUBCOMMAND>..."
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__launch__or__focus__plugin)
-    opts="-f -i -m -c -s -h --floating --in-place --move-to-focused-tab --configuration --skip-plugin-cache --help <URL>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --configuration)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -c)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__launch__plugin)
-    opts="-f -i -c -s -h --floating --in-place --configuration --skip-plugin-cache --help <URL>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --configuration)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -c)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__list__clients)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__move__focus)
-    opts="-h --help <DIRECTION>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__move__focus__or__tab)
-    opts="-h --help <DIRECTION>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__move__pane)
-    opts="-h --help <DIRECTION>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__move__pane__backwards)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__move__tab)
-    opts="-h --help <DIRECTION>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__new__pane)
-    opts="-d -p -f -i -n -c -s -x -y -h --direction --plugin --cwd --floating --in-place --name --close-on-exit --start-suspended --configuration --skip-plugin-cache --x --y --width --height --help <COMMAND>..."
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --direction)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -d)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --plugin)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -p)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --cwd)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --name)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -n)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --configuration)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --x)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -x)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --y)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -y)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --width)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --height)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__new__tab)
-    opts="-l -n -c -h --layout --layout-dir --name --cwd --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --layout)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -l)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --layout-dir)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --name)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -n)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --cwd)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -c)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__next__swap__layout)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__page__scroll__down)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__page__scroll__up)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__pipe)
-    opts="-n -a -p -c -l -s -f -i -w -t -h --name --args --plugin --plugin-configuration --force-launch-plugin --skip-plugin-cache --floating-plugin --in-place-plugin --plugin-cwd --plugin-title --help <PAYLOAD>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --name)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -n)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --args)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -a)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --plugin)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -p)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --plugin-configuration)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -c)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --floating-plugin)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    -f)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --in-place-plugin)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    -i)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --plugin-cwd)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -w)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --plugin-title)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -t)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__previous__swap__layout)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__query__tab__names)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__rename__pane)
-    opts="-h --help <NAME>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__rename__session)
-    opts="-h --help <NAME>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__rename__tab)
-    opts="-h --help <NAME>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__resize)
-    opts="-h --help <RESIZE> <DIRECTION>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__scroll__down)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__scroll__to__bottom)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__scroll__to__top)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__scroll__up)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__start__or__reload__plugin)
-    opts="-c -h --configuration --help <URL>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --configuration)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -c)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__switch__mode)
-    opts="-h --help <INPUT_MODE>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__toggle__active__sync__tab)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__toggle__floating__panes)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__toggle__fullscreen)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__toggle__pane__embed__or__floating)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__toggle__pane__frames)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__undo__rename__pane)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__undo__rename__tab)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__write)
-    opts="-h --help <BYTES>..."
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__action__write__chars)
-    opts="-h --help <CHARS>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__attach)
-    opts="-c -b -f -h --create --create-background --index --force-run-commands --help <SESSION_NAME> options help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --index)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__attach__help)
-    opts="<SUBCOMMAND>..."
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__attach__options)
-    opts="-h --disable-mouse-mode --no-pane-frames --simplified-ui --theme --default-mode --default-shell --default-cwd --default-layout --layout-dir --theme-dir --mouse-mode --pane-frames --mirror-session --on-force-close --scroll-buffer-size --copy-command --copy-clipboard --copy-on-select --scrollback-editor --session-name --attach-to-session --auto-layout --session-serialization --serialize-pane-viewport --scrollback-lines-to-serialize --styled-underlines --serialization-interval --disable-session-metadata --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --simplified-ui)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --theme)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --default-mode)
-      COMPREPLY=($(compgen -W "normal locked resize pane tab scroll enter-search search rename-tab rename-pane session move prompt tmux" -- "${cur}"))
-      return 0
-      ;;
-    --default-shell)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --default-cwd)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --default-layout)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --layout-dir)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --theme-dir)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --mouse-mode)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --pane-frames)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --mirror-session)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --on-force-close)
-      COMPREPLY=($(compgen -W "quit detach" -- "${cur}"))
-      return 0
-      ;;
-    --scroll-buffer-size)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --copy-command)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --copy-clipboard)
-      COMPREPLY=($(compgen -W "system primary" -- "${cur}"))
-      return 0
-      ;;
-    --copy-on-select)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --scrollback-editor)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --session-name)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --attach-to-session)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --auto-layout)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --session-serialization)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --serialize-pane-viewport)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --scrollback-lines-to-serialize)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --styled-underlines)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --serialization-interval)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --disable-session-metadata)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__convert__config)
-    opts="-h --help <OLD_CONFIG_FILE>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__convert__layout)
-    opts="-h --help <OLD_LAYOUT_FILE>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__convert__theme)
-    opts="-h --help <OLD_THEME_FILE>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__delete__all__sessions)
-    opts="-y -f -h --yes --force --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__delete__session)
-    opts="-f -h --force --help <TARGET_SESSION>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__edit)
-    opts="-l -d -i -f -x -y -h --line-number --direction --in-place --floating --cwd --x --y --width --height --help <FILE>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --line-number)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -l)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --direction)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -d)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --cwd)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --x)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -x)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --y)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -y)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --width)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --height)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__help)
-    opts="<SUBCOMMAND>..."
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__kill__all__sessions)
-    opts="-y -h --yes --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__kill__session)
-    opts="-h --help <TARGET_SESSION>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__list__aliases)
-    opts="-h --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__list__sessions)
-    opts="-n -s -r -h --no-formatting --short --reverse --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__options)
-    opts="-h --disable-mouse-mode --no-pane-frames --simplified-ui --theme --default-mode --default-shell --default-cwd --default-layout --layout-dir --theme-dir --mouse-mode --pane-frames --mirror-session --on-force-close --scroll-buffer-size --copy-command --copy-clipboard --copy-on-select --scrollback-editor --session-name --attach-to-session --auto-layout --session-serialization --serialize-pane-viewport --scrollback-lines-to-serialize --styled-underlines --serialization-interval --disable-session-metadata --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --simplified-ui)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --theme)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --default-mode)
-      COMPREPLY=($(compgen -W "normal locked resize pane tab scroll enter-search search rename-tab rename-pane session move prompt tmux" -- "${cur}"))
-      return 0
-      ;;
-    --default-shell)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --default-cwd)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --default-layout)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --layout-dir)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --theme-dir)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --mouse-mode)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --pane-frames)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --mirror-session)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --on-force-close)
-      COMPREPLY=($(compgen -W "quit detach" -- "${cur}"))
-      return 0
-      ;;
-    --scroll-buffer-size)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --copy-command)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --copy-clipboard)
-      COMPREPLY=($(compgen -W "system primary" -- "${cur}"))
-      return 0
-      ;;
-    --copy-on-select)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --scrollback-editor)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --session-name)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --attach-to-session)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --auto-layout)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --session-serialization)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --serialize-pane-viewport)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --scrollback-lines-to-serialize)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --styled-underlines)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    --serialization-interval)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --disable-session-metadata)
-      COMPREPLY=($(compgen -W "true false" -- "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__pipe)
-    opts="-n -a -p -c -h --name --args --plugin --plugin-configuration --help <PAYLOAD>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --name)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -n)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --args)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -a)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --plugin)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -p)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --plugin-configuration)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -c)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__plugin)
-    opts="-c -f -i -s -x -y -h --configuration --floating --in-place --skip-plugin-cache --x --y --width --height --help <URL>"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --configuration)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -c)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --x)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -x)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --y)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -y)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --width)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --height)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__run)
-    opts="-d -f -i -n -c -s -x -y -h --direction --cwd --floating --in-place --name --close-on-exit --start-suspended --x --y --width --height --help <COMMAND>..."
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --direction)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -d)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --cwd)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --name)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -n)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --x)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -x)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --y)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    -y)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --width)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --height)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  zellij__setup)
-    opts="-h --dump-config --clean --check --dump-layout --dump-swap-layout --dump-plugins --generate-completion --generate-auto-start --help"
-    if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-      return 0
-    fi
-    case "${prev}" in
-    --dump-layout)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --dump-swap-layout)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --dump-plugins)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --generate-completion)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    --generate-auto-start)
-      COMPREPLY=($(compgen -f "${cur}"))
-      return 0
-      ;;
-    *)
-      COMPREPLY=()
-      ;;
-    esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-    return 0
-    ;;
-  esac
-}
-
-complete -F _zellij -o bashdefault -o default zellij
-function zr() { zellij run --name "$*" -- bash -ic "$*"; }
-function zrf() { zellij run --name "$*" --floating -- bash -ic "$*"; }
-function zri() { zellij run --name "$*" --in-place -- bash -ic "$*"; }
-function ze() { zellij edit "$*"; }
-function zef() { zellij edit --floating "$*"; }
-function zei() { zellij edit --in-place "$*"; }
-function zpipe() {
-  if [ -z "$1" ]; then
-    zellij pipe
-  else
-    zellij pipe -p $1
-  fi
-}
-
-###################################################################################################################################################################
-###################################################################################################################################################################
-###################################################################################################################################################################
-###################################################################################################################################################################
-
-# cht.sh autocomplete
-_cht_complete() {
-  local cur prev opts
-  _get_comp_words_by_ref -n : cur
-
-  COMPREPLY=()
-  cur="${COMP_WORDS[COMP_CWORD]}"
-  prev="${COMP_WORDS[COMP_CWORD - 1]}"
-  opts="$(curl -s cheat.sh/:list)"
-
-  if [ ${COMP_CWORD} = 1 ]; then
-    COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
-    __ltrim_colon_completions "$cur"
-  fi
-  return 0
-}
-complete -F _cht_complete cht.sh
-###################################################################################################################################################################
-###################################################################################################################################################################
-###################################################################################################################################################################
-###################################################################################################################################################################
