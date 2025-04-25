@@ -10,13 +10,16 @@
 
 # Direct alias declarations
 
-function dup() {
-  file="$(fzf --prompt='Select URL list file: ')" || return
-  awk 'NR==FNR{count[$0]++; next} count[$0]>1{lines[$0]=lines[$0] FNR ", "} END{for (url in lines) printf "%-5s\t%-50s\t%s\n", count[url], url, "lines: " substr(lines[url], 1, length(lines[url])-2)}' "$file" "$file" |
-    sort -k1,1nr |
-    column -t |
-    GREP_COLORS='mt=1;32' grep --color=always '.*'
-}
+# function dup() {
+#   file="$(fzf --prompt='Select URL list file: ')" || return
+#   awk 'NR==FNR{count[$0]++; next} count[$0]>1{lines[$0]=lines[$0] FNR ", "} END{for (url in lines) printf "%-5s\t%-50s\t%s\n", count[url], url, "lines: " substr(lines[url], 1, length(lines[url])-2)}' "$file" "$file" |
+#     sort -k1,1nr |
+#     column -t |
+#     GREP_COLORS='mt=1;32' grep --color=always '.*'
+# }
+
+alias dup='f() { file=$(fzf); [ -n "$file" ] && awk '"'"'!seen[$0]++'"'"' "$file" | sponge "$file"; }; f'
+alias naked='f=$(find . -type f -name "*.txt" -empty) && [ -z "$f" ] && echo "No empty .txt files." || { echo "$f"; read -p "Delete these empty .txt files? [y/N]: " ans; [ "$ans" = y ] && echo "$f" | xargs -d "\n" rm; }'
 
 alias back='cd .. && ls'
 alias bat='batcat'
@@ -102,7 +105,6 @@ alias mo='mopen'
 alias moe='mopenexact'
 alias mv='mv -i'
 alias myip='curl http://ipecho.net/plain; echo'
-alias naked='find . -maxdepth 1 -type f -name "*.txt" -empty -exec printf "\033[0;31m%s\033[0m\n" {} \;'
 alias nv='files=$(fzf --multi --prompt="Select files/dirs for nvim: " --bind "enter:accept") && [ -n "$files" ] && nvim $files'
 alias please='sudo $(history -p !!)'
 alias pron='fzf --multi=1 < _master_batch.txt | xargs -I {} yt-dlp --config-locations _configs.txt --batch-file {}'
