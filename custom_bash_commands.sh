@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v303.0.0"
+VERSION="v304.0.1"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1238,6 +1238,38 @@ setup_directories() {
 
 # Call the setup_directories function
 setup_directories
+
+###################################################################################################################################################################
+# CHECK FOR CBC UPDATES
+###################################################################################################################################################################
+
+# Check GitHub release for newer version of the script
+check_cbc_update() {
+  local latest_version current_version msg release_url
+
+  current_version="$VERSION"
+  release_url="https://api.github.com/repos/iop098321qwe/custom_bash_commands/releases/latest"
+
+  latest_version=$(curl -fsSL "$release_url" |
+    grep -m1 '"tag_name"' |
+    sed -E 's/.*"tag_name":\s*"([^"]+)".*/\1/')
+
+  [[ -z "$latest_version" ]] && return
+
+  # Compare semantic versions
+  if [[ "$current_version" != "$latest_version" ]] &&
+    [[ "$(printf '%s\n' "$current_version" "$latest_version" | sort -V | head -n1)" = "$current_version" ]]; then
+    msg="A newer version ($latest_version) of Custom Bash Commands is available. Use 'updatecbc' to update."
+    if command -v gum >/dev/null 2>&1; then
+      gum style --border normal --border-foreground "#89dceb" --padding "1" "$msg"
+    else
+      echo "$msg"
+    fi
+  fi
+}
+
+# Automatically check for updates when the script is sourced
+check_cbc_update
 
 ################################################################################
 # DISPLAY VERSION
@@ -2599,18 +2631,27 @@ EOF
   commands=(
     "sudo apt update"
     "sudo apt autoremove -y"
+    "sudo apt upgrade -y"
     "sudo flatpak update -y"
     "sudo snap refresh"
-    "pip install --upgrade yt-dlp"
+    "pip install --upgrade yt-dlp --break-system-packages"
     "check_install_mscorefonts"
+    "sudo apt clean"
   )
+
+  # Function to print completion message using gum
+  print_completion_message() {
+    echo " "
+    gum style --foreground "#a6e3a1" --bold "Updates completed!"
+  }
 
   # Function to run a command and log the output
   run_command() {
     local command="$1"
-    echo -e "\n================================================================================"
-    echo "Running command: $command" | tee -a "$log_file"
-    echo "================================================================================"
+    echo " "
+    gum style --foreground "#f9e2af" --bold "================================================================================"
+    gum style --foreground "#f9e2af" --bold "Running command: $command" | tee -a "$log_file"
+    gum style --foreground "#f9e2af" --bold "================================================================================"
     eval "$command" | tee -a "$log_file"
   }
 
@@ -2625,7 +2666,7 @@ EOF
     # check the sudo password requirement
     check_sudo_requirement
     if [[ $? -ne 0 ]]; then
-      gum style --foreground "#ffff00" "Exiting due to authentication failure."
+      gum style --foreground "#f9e2af" "Exiting due to authentication failure."
       return 1 # Stop execution of `main`
     fi
     if gum confirm "Are you sure you want to update the system? (y/N):" --default=no; then
@@ -2647,7 +2688,7 @@ EOF
         fi
       elif [ $display_log = true ]; then
         iterate_commands | tee -a "$log_file"
-        gum style --foreground "#00ffff" --bold "Update logs saved to: $log_file"
+        gum style --foreground "#89dceb" --bold "Update logs saved to: $log_file"
       else
         iterate_commands | tee -a "$log_file"
       fi
@@ -2655,6 +2696,7 @@ EOF
       gum style --foreground "#ff0000" --bold "Update canceled."
       return
     fi
+    print_completion_message
   }
 
   # Main logic
