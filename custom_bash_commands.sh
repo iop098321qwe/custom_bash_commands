@@ -2609,16 +2609,16 @@ EOF
   # Function to print completion message using gum
   print_completion_message() {
     echo " "
-    gum style --foreground "#00ff00" --bold "Updates completed!"
+    gum style --foreground "#a6e3a1" --bold "Updates completed!"
   }
 
   # Function to run a command and log the output
   run_command() {
     local command="$1"
     echo " "
-    gum style --foreground "#ffff99" --bold "================================================================================"
-    gum style --foreground "#ffff99" --bold "Running command: $command" | tee -a "$log_file"
-    gum style --foreground "#ffff99" --bold "================================================================================"
+    gum style --foreground "#f9e2af" --bold "================================================================================"
+    gum style --foreground "#f9e2af" --bold "Running command: $command" | tee -a "$log_file"
+    gum style --foreground "#f9e2af" --bold "================================================================================"
     eval "$command" | tee -a "$log_file"
   }
 
@@ -2633,7 +2633,7 @@ EOF
     # check the sudo password requirement
     check_sudo_requirement
     if [[ $? -ne 0 ]]; then
-      gum style --foreground "#ffff00" "Exiting due to authentication failure."
+      gum style --foreground "#f9e2af" "Exiting due to authentication failure."
       return 1 # Stop execution of `main`
     fi
     if gum confirm "Are you sure you want to update the system? (y/N):" --default=no; then
@@ -2655,7 +2655,7 @@ EOF
         fi
       elif [ $display_log = true ]; then
         iterate_commands | tee -a "$log_file"
-        gum style --foreground "#00ffff" --bold "Update logs saved to: $log_file"
+        gum style --foreground "#89dceb" --bold "Update logs saved to: $log_file"
       else
         iterate_commands | tee -a "$log_file"
       fi
