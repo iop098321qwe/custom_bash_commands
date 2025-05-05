@@ -2606,12 +2606,19 @@ EOF
     "sudo apt clean"
   )
 
+  # Function to print completion message using gum
+  print_completion_message() {
+    echo " "
+    gum style --foreground "#00ff00" --bold "Updates completed!"
+  }
+
   # Function to run a command and log the output
   run_command() {
     local command="$1"
-    echo -e "\n================================================================================"
-    echo "Running command: $command" | tee -a "$log_file"
-    echo "================================================================================"
+    echo " "
+    gum style --foreground "#ffff99" --bold "================================================================================"
+    gum style --foreground "#ffff99" --bold "Running command: $command" | tee -a "$log_file"
+    gum style --foreground "#ffff99" --bold "================================================================================"
     eval "$command" | tee -a "$log_file"
   }
 
@@ -2656,6 +2663,7 @@ EOF
       gum style --foreground "#ff0000" --bold "Update canceled."
       return
     fi
+    print_completion_message
   }
 
   # Main logic
