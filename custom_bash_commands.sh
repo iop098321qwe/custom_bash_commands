@@ -2603,6 +2603,7 @@ EOF
     "sudo snap refresh"
     "pip install --upgrade yt-dlp"
     "check_install_mscorefonts"
+    "sudo apt clean"
   )
 
   # Function to run a command and log the output
