@@ -2601,7 +2601,7 @@ EOF
     "sudo apt autoremove -y"
     "sudo flatpak update -y"
     "sudo snap refresh"
-    "pip install --upgrade yt-dlp"
+    "pip install --upgrade yt-dlp --break-system-packages"
     "check_install_mscorefonts"
     "sudo apt clean"
   )
