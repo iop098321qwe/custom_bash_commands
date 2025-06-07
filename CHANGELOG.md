@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [302.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.1.0...v302.2.0) (2025-06-07)
+
+
+### Features
+
+* **alias:** add dup alias and remove dup function ([0eb56cd](https://github.com/iop098321qwe/custom_bash_commands/commit/0eb56cd9d1b79bbf7d3f08741b7722d268f0abb4))
+* **license:** add gpl-3.0 license ([409fc61](https://github.com/iop098321qwe/custom_bash_commands/commit/409fc619c2daacfac71a16aae0339a703ecf59ec))
+* **update notifications:** add update notifications ([030ac24](https://github.com/iop098321qwe/custom_bash_commands/commit/030ac248d67777adb404c7b006b973165713ab45))
+
+
+### Bug Fixes
+
+* **alias:** update `naked` alias ([8591a5c](https://github.com/iop098321qwe/custom_bash_commands/commit/8591a5c10612f08d3485124bb97f1a0ab7908c65))
+
 ## [302.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.0.0...v302.1.0) (2025-05-19)
 
 
