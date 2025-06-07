@@ -1240,6 +1240,42 @@ setup_directories() {
 setup_directories
 
 ################################################################################
+################################################################################
+###
+# CHECK FOR CBC UPDATES
+################################################################################
+################################################################################
+###
+
+# Check GitHub release for newer version of the script
+check_cbc_update() {
+  local latest_version current_version msg release_url
+
+  current_version="$VERSION"
+  release_url="https://api.github.com/repos/iop098321qwe/custom_bash_commands/releases/latest"
+
+  latest_version=$(curl -fsSL "$release_url" | \
+    grep -m1 '"tag_name"' | \
+    sed -E 's/.*"tag_name":\s*"([^"]+)".*/\1/')
+
+  [[ -z "$latest_version" ]] && return
+
+  # Compare semantic versions
+  if [[ "$current_version" != "$latest_version" ]] && \
+     [[ "$(printf '%s\n' "$current_version" "$latest_version" | sort -V | head -n1)" = "$current_version" ]]; then
+    msg="A newer version ($latest_version) of Custom Bash Commands is available. Use 'updatecbc' to update."
+    if command -v gum >/dev/null 2>&1; then
+      gum style --border normal --border-foreground "#89dceb" --padding "1" "$msg"
+    else
+      echo "$msg"
+    fi
+  fi
+}
+
+# Automatically check for updates when the script is sourced
+check_cbc_update
+
+################################################################################
 # DISPLAY VERSION
 ################################################################################
 
