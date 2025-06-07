@@ -1240,6 +1240,42 @@ setup_directories() {
 setup_directories
 
 ################################################################################
+################################################################################
+###
+# CHECK FOR CBC UPDATES
+################################################################################
+################################################################################
+###
+
+# Hash based update check to catch changes even if VERSION doesn't change
+check_cbc_update() {
+  local remote_hash local_hash script_path msg
+
+  script_path="${BASH_SOURCE[0]}"
+  [[ -f "$script_path" ]] || return
+
+  # Calculate local script hash
+  local_hash=$(sha256sum "$script_path" | awk '{print $1}')
+
+  # Fetch the remote script and calculate its hash
+  remote_hash=$(curl -fsSL https://raw.githubusercontent.com/iop098321qwe/custom_bash_commands/main/custom_bash_commands.sh 2>/dev/null | sha256sum | awk '{print $1}')
+
+  [[ -z "$remote_hash" ]] && return
+
+  if [[ "$remote_hash" != "$local_hash" ]]; then
+    msg="A newer version of Custom Bash Commands is available. Use 'updatecbc' to update."
+    if command -v gum >/dev/null 2>&1; then
+      gum style --border normal --border-foreground "#89dceb" --padding "1" "$msg"
+    else
+      echo "$msg"
+    fi
+  fi
+}
+
+# Automatically check for updates when the script is sourced
+check_cbc_update
+
+################################################################################
 # DISPLAY VERSION
 ################################################################################
 
