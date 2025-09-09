@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [302.3.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.2.0...v302.3.0) (2025-09-09)
+
+
+### Features
+
+* **function:** add `upgrade` to update function ([d72ad39](https://github.com/iop098321qwe/custom_bash_commands/commit/d72ad399604e8ee372a6f3102ad58caf70935027))
+
 ## [302.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.1.0...v302.2.0) (2025-06-07)
 
 
