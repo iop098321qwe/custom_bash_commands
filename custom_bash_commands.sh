@@ -2531,17 +2531,53 @@ mkdirs() {
 # UPDATE
 ################################################################################
 
+update_profile_manager() {
+  local PROFILE_DIR=~/Documents/update_profiles
+  mkdir -p "$PROFILE_DIR"
+  while true; do
+    local action=$(gum choose "list" "create" "edit" "delete" "back" --no-limit=false)
+    case "$action" in
+    list)
+      ls "$PROFILE_DIR"
+      ;;
+    create)
+      local name=$(gum input --placeholder "Profile name:")
+      [ -z "$name" ] && continue
+      gum write --placeholder "Enter update commands, one per line." >"$PROFILE_DIR/$name"
+      ;;
+    edit)
+      local file=$(ls "$PROFILE_DIR" 2>/dev/null | gum choose --no-limit=false --placeholder "Select profile to edit")
+      [ -z "$file" ] && continue
+      gum write --value "$(cat "$PROFILE_DIR/$file" 2>/dev/null)" --placeholder "Edit commands" >"$PROFILE_DIR/$file"
+      ;;
+    delete)
+      local file=$(ls "$PROFILE_DIR" 2>/dev/null | gum choose --no-limit=false --placeholder "Select profile to delete")
+      [ -z "$file" ] && continue
+      rm -f "$PROFILE_DIR/$file"
+      ;;
+    back)
+      break
+      ;;
+    esac
+  done
+}
+
 update() {
   OPTIND=1
   local reboot=false
   local shutdown=false
   local display_log=false
+  local profile=""
+  local manage_profiles=false
   local log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
   local sudo_required=false
+  local PROFILE_DIR=~/Documents/update_profiles
+  local commands=()
+  mkdir -p "$PROFILE_DIR"
 
   usage() {
     cat <<EOF
-Description: 
+Description:
   A function to update the system and reboot if desired
 
 Usage:
@@ -2552,13 +2588,15 @@ Options:
   -r    Reboot the system after updating
   -s    Shutdown the system after updating
   -l    Display the log file path
+  -p    Specify update profile
+  -m    Open the profile manager
 
 Example:
-  update -r
+  update -p full
 EOF
   }
 
-  while getopts ":hrsl" opt; do
+  while getopts ":hrslmp:" opt; do
     case $opt in
     h)
       usage
@@ -2576,6 +2614,12 @@ EOF
       # Display the log path after updating
       display_log=true
       ;;
+    p)
+      profile="$OPTARG"
+      ;;
+    m)
+      manage_profiles=true
+      ;;
     \?)
       echo "Invalid option: -$OPTARG. Use -h for help."
       return
@@ -2584,6 +2628,11 @@ EOF
   done
 
   shift $((OPTIND - 1))
+
+  if [ "$manage_profiles" = true ]; then
+    update_profile_manager
+    return
+  fi
 
   # Function to check if sudo password is required
   check_sudo_requirement() {
@@ -2626,18 +2675,23 @@ EOF
     fi
   }
 
-  # Run update commands with sudo, tee to output to terminal and append to log file
-  # Define an array of commands to run
-  commands=(
-    "sudo apt update"
-    "sudo apt autoremove -y"
-    "sudo apt upgrade -y"
-    "sudo flatpak update -y"
-    "sudo snap refresh"
-    "pip install --upgrade yt-dlp --break-system-packages"
-    "check_install_mscorefonts"
-    "sudo apt clean"
-  )
+  select_profile() {
+    if [ -z "$profile" ]; then
+      local available=$(ls "$PROFILE_DIR" 2>/dev/null)
+      if [ -z "$available" ]; then
+        gum style --foreground "#ff0000" --bold "No update profiles found. Use 'update -m' to create one."
+        return 1
+      fi
+      profile=$(printf "%s\n" $available | gum choose --no-limit=false --placeholder "Select update profile")
+      [ -z "$profile" ] && return 1
+    fi
+    local profile_file="$PROFILE_DIR/$profile"
+    if [ ! -f "$profile_file" ]; then
+      gum style --foreground "#ff0000" --bold "Profile '$profile' not found."
+      return 1
+    fi
+    mapfile -t commands <"$profile_file"
+  }
 
   # Function to print completion message using gum
   print_completion_message() {
@@ -2663,6 +2717,7 @@ EOF
   }
 
   main() {
+    select_profile || return
     # check the sudo password requirement
     check_sudo_requirement
     if [[ $? -ne 0 ]]; then

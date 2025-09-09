@@ -79,6 +79,13 @@ A full list of aliases will be added here for reference of what the script offer
 - Run the terminal and verify the testing works by opening the .custom_bash_commands.sh in the user directory.
 - Change the `.bashrc` file to read `source ~/.update_commands.sh` if it is not working.
 
+# Update Profiles
+
+The `update` function now supports profiles for different update strategies.
+- Use `update -p <profile>` to run a specific profile such as `quick` or `full`.
+- Use `update -m` to open the profile manager to list, create, edit, or delete profiles.
+Profiles are stored in `~/Documents/update_profiles`.
+
 # Useful Commands to Remember
 
 - `neofetch`: graphically shows system information with a beautiful output and ASCII Art of the Desktop Environment installed on Linux.
