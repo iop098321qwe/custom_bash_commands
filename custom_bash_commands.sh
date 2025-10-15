@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v304.0.1"
+VERSION="v302.4.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -2632,6 +2632,7 @@ EOF
     "sudo apt update"
     "sudo apt autoremove -y"
     "sudo apt upgrade -y"
+    "atuin update"
     "sudo flatpak update -y"
     "sudo snap refresh"
     "pip install --upgrade yt-dlp --break-system-packages"
