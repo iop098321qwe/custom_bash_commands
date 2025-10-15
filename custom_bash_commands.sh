@@ -1466,10 +1466,6 @@ EOF
       echo "         Description: Display the IP address of the current machine"
       echo "         Usage: myip"
       echo " "
-      echo "mvfiles"
-      echo "         Description: Move all files in a directory to subdirectories based on file type"
-      echo "         Usage: mvfiles"
-      echo " "
       echo "pronlist"
       echo "          Description: List files downloaded from _batch.txt per URL"
       echo "          Usage: pronlist"
@@ -2020,7 +2016,6 @@ EOF
       echo "extract"
       echo "makeman"
       echo "mkdirs"
-      echo "mvfiles"
       echo "myip"
       echo "pronlist"
       echo "random"
@@ -3185,46 +3180,6 @@ updatecbc() {
 
   # Source the updated commands
   source ~/.custom_bash_commands.sh
-}
-
-################################################################################
-# MVFILES
-################################################################################
-
-# Create a function to move files to a directory based on file type
-
-# mvfiles
-# Description: A function to move all files in a directory to a subdirectory based on file type
-# Usage: mvfiles
-# Options:
-#   -h    Display this help message
-
-# Create a function to move files to a directory based on file type suffix and named with the suffix without a '.' prefix
-
-# TODO: rework this function
-
-mvfiles() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: A function to move all files in a directory to a subdirectory based on file type"
-    echo "Usage: mvfiles"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
-  # Create an array of unique file extensions in the current directory
-  extensions=($(find . -maxdepth 1 -type f | sed 's/.*\.//' | tr '[:upper:]' '[:lower:]' | sort -u))
-
-  # Create a subdirectory for each unique file extension
-  for ext in "${extensions[@]}"; do
-    # Create the subdirectory if it does not exist
-    mkdir -p $ext
-
-    # Move files with the extension to the subdirectory
-    mv *.$ext $ext 2>/dev/null
-
-    # Move files with upper case extension to the subdirectory
-    mv *.$(echo $ext | tr '[:lower:]' '[:upper:]') $ext 2>/dev/null
-  done
 }
 
 ###################################################################################################################################################################
