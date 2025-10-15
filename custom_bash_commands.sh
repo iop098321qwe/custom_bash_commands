@@ -2632,6 +2632,7 @@ EOF
     "sudo apt update"
     "sudo apt autoremove -y"
     "sudo apt upgrade -y"
+    "atuin update"
     "sudo flatpak update -y"
     "sudo snap refresh"
     "pip install --upgrade yt-dlp --break-system-packages"
