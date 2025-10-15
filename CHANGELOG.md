@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [302.5.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.5.2...v302.5.3) (2025-10-15)
+
+
+### Bug Fixes
+
+* **versioning:** fix versioning number ([b5a0020](https://github.com/iop098321qwe/custom_bash_commands/commit/b5a0020b5102fc5dc29418edc0032c15255679f2))
+
 ## [302.5.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.5.1...v302.5.2) (2025-10-15)
 
 
