@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [302.4.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.3.0...v302.4.0) (2025-10-15)
+
+
+### Features
+
+* **function:** add atuin to update function ([c50fd8d](https://github.com/iop098321qwe/custom_bash_commands/commit/c50fd8da42fcd4570669e3c8f53eaf674bfaa2be))
+
 ## [302.3.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.2.0...v302.3.0) (2025-09-09)
 
 
