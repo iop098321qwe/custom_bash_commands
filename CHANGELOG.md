@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [302.6.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.5.3...v302.6.0) (2025-10-15)
+
+
+### Features
+
+* **autocomplete:** add atuin autocomplete ([704e7dc](https://github.com/iop098321qwe/custom_bash_commands/commit/704e7dc509628fa40761069024b79632c20f2e48))
+
 ## [302.5.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.5.2...v302.5.3) (2025-10-15)
 
 
