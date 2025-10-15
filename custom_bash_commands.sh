@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v302.6.0"
+VERSION="v303.0.0"
 
 ###################################################################################################################################################################
 # CUSTOM BASH COMMANDS
@@ -1449,10 +1449,6 @@ EOF
       echo "         Description: Extract compressed files"
       echo "         Usage: extract [file]"
       echo " "
-      echo "incon"
-      echo "         Description: Initialize a local git repo, create/connect it to a GitHub repo, and set up files"
-      echo "         Usage: incon [repo_name]"
-      echo " "
       echo "mkdirs"
       echo "         Description: Create a directory and switch into it"
       echo "         Usage: mkdirs [directory]"
@@ -1469,10 +1465,6 @@ EOF
       echo "myip"
       echo "         Description: Display the IP address of the current machine"
       echo "         Usage: myip"
-      echo " "
-      echo "mvfiles"
-      echo "         Description: Move all files in a directory to subdirectories based on file type"
-      echo "         Usage: mvfiles"
       echo " "
       echo "pronlist"
       echo "          Description: List files downloaded from _batch.txt per URL"
@@ -2024,7 +2016,6 @@ EOF
       echo "extract"
       echo "makeman"
       echo "mkdirs"
-      echo "mvfiles"
       echo "myip"
       echo "pronlist"
       echo "random"
@@ -2097,7 +2088,6 @@ EOF
       echo "hse"
       echo "hsearch"
       echo "i"
-      echo "incon"
       echo "iopen"
       echo "iopenexact"
       echo "io"
@@ -2400,94 +2390,6 @@ remove_all_cbc_configs() {
   # Alias: remove_all_cbc_configs="racc"
   # Call the rnc, rsc, and rdvc functions
   remove_session_id_config
-}
-
-################################################################################
-# INCON - BOOKMARK
-################################################################################
-
-incon() {
-  OPTIND=1
-
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      echo "Description: A function to initialize a local git repo, create/connect it to a GitHub repo, and set up files"
-      echo "Usage: incon"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: incon"
-      return
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG. Use -h for help."
-      return
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  # Ensure the gh tool is installed.
-  if ! command -v gh &>/dev/null; then
-    echo "gh (GitHub CLI) not found. Please install it to proceed."
-    return
-  fi
-
-  # Check if the current directory already contains a git repository
-  if [ -d ".git" ]; then
-    echo "This directory is already initialized as a git repository."
-    return
-  fi
-
-  # 1. Initialize a new local Git repository
-  function init_git() {
-    git init
-    touch .gitignore
-    touch README.md
-    repo_name=$(basename $(pwd) | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
-    formatted_name=$(echo $repo_name | tr '_' ' ' | sed -e "s/\b\(.\)/\u\1/g")
-    echo "# $formatted_name" >README.md
-    echo "* Not started" >>README.md
-  }
-
-  # Call the init_git function
-  init_git
-
-  # 2. Create a new remote public repository on GitHub using the gh tool
-  new_remote_repo() {
-    gh repo create "$repo_name" || {
-      echo "Repository creation failed. Exiting"
-      return
-    }
-  }
-
-  # Call the new_remote_repo function
-  new_remote_repo
-
-  # 3. Connect the local repository to the newly created remote repository on GitHub
-  connect_to_remote() {
-    git remote add origin "https://github.com/$(gh api user | jq -r '.login')/$repo_name.git"
-  }
-
-  # Call the connect_to_remote function
-  connect_to_remote
-
-  # 4. Add all files, commit, and push
-  add_commit_push() {
-    git add .
-    git commit -m "Initial commit"
-    git push -u origin main || {
-      echo "Push to main failed. Exiting."
-      return
-    }
-  }
-
-  # Call the add_commit_push function
-  add_commit_push
-
-  echo "Local and remote repositories have successfully initialized."
 }
 
 ################################################################################
@@ -3278,46 +3180,6 @@ updatecbc() {
 
   # Source the updated commands
   source ~/.custom_bash_commands.sh
-}
-
-################################################################################
-# MVFILES
-################################################################################
-
-# Create a function to move files to a directory based on file type
-
-# mvfiles
-# Description: A function to move all files in a directory to a subdirectory based on file type
-# Usage: mvfiles
-# Options:
-#   -h    Display this help message
-
-# Create a function to move files to a directory based on file type suffix and named with the suffix without a '.' prefix
-
-# TODO: rework this function
-
-mvfiles() {
-  if [ "$1" = "-h" ]; then
-    echo "Description: A function to move all files in a directory to a subdirectory based on file type"
-    echo "Usage: mvfiles"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    return
-  fi
-  # Create an array of unique file extensions in the current directory
-  extensions=($(find . -maxdepth 1 -type f | sed 's/.*\.//' | tr '[:upper:]' '[:lower:]' | sort -u))
-
-  # Create a subdirectory for each unique file extension
-  for ext in "${extensions[@]}"; do
-    # Create the subdirectory if it does not exist
-    mkdir -p $ext
-
-    # Move files with the extension to the subdirectory
-    mv *.$ext $ext 2>/dev/null
-
-    # Move files with upper case extension to the subdirectory
-    mv *.$(echo $ext | tr '[:lower:]' '[:upper:]') $ext 2>/dev/null
-  done
 }
 
 ###################################################################################################################################################################
