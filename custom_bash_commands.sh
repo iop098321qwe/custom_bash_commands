@@ -2645,6 +2645,8 @@ EOF
   print_completion_message() {
     echo " "
     gum style --foreground "#a6e3a1" --bold "Updates completed!"
+    echo " "
+    gum style --foreground "#a6e3a1" --bold "Please run 'cargo install-update -a' to update Cargo packages."
   }
 
   # Function to run a command and log the output
