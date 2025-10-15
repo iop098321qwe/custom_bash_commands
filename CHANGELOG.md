@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [303.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.6.0...v303.0.0) (2025-10-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **versioning:** adjust versioning
+
+* **versioning:** increment versioning number ([8938489](https://github.com/iop098321qwe/custom_bash_commands/commit/8938489de7efffef8abd234ed6677fcd90186144))
+
+
+### Features
+
+* **function:** remove `mvfiles` function ([af820e8](https://github.com/iop098321qwe/custom_bash_commands/commit/af820e875b35e90a96da19170cbb39fb8c16b8b4))
+* **function:** remove incon function ([d1a54ab](https://github.com/iop098321qwe/custom_bash_commands/commit/d1a54ab497f49c3ab37972d9d2a33735c77dffa4))
+
+
+### Bug Fixes
+
+* **function:** fix gh cli issue in the `incon` function ([370b984](https://github.com/iop098321qwe/custom_bash_commands/commit/370b9845f1a984cc181bbea9e0df685561fcb2e7))
+
 ## [302.6.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.5.3...v302.6.0) (2025-10-15)
 
 
