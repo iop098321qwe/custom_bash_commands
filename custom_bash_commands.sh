@@ -2633,7 +2633,7 @@ EOF
     "sudo apt autoremove -y"
     "sudo apt upgrade -y"
     "atuin update"
-    "cargo install-update -a"
+    ""
     "sudo flatpak update -y"
     "sudo snap refresh"
     "pip install --upgrade yt-dlp --break-system-packages"
@@ -2645,6 +2645,8 @@ EOF
   print_completion_message() {
     echo " "
     gum style --foreground "#a6e3a1" --bold "Updates completed!"
+    echo " "
+    gum style --foreground "#a6e3a1" --bold "Please run 'cargo install-update -a' to update Cargo packages."
   }
 
   # Function to run a command and log the output
