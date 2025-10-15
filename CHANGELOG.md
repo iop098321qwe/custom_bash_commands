@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [302.5.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.5.1...v302.5.2) (2025-10-15)
+
+
+### Bug Fixes
+
+* **function:** add cargo update message to update function ([7f4414c](https://github.com/iop098321qwe/custom_bash_commands/commit/7f4414c71d91df53309f78f5894cbe3bcb4c61f7))
+* **function:** remove cargo updates from update function ([959dfb5](https://github.com/iop098321qwe/custom_bash_commands/commit/959dfb5f75bf9a7d9aa0c253c4f48a3375293339))
+
 ## [302.5.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.5.0...v302.5.1) (2025-10-15)
 
 
