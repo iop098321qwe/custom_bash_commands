@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [304.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v303.0.1...v304.0.0) (2025-10-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* **versioning:** this will reset to 304.0.0
+
+* **versioning:** increment the versioning number ([054f0ac](https://github.com/iop098321qwe/custom_bash_commands/commit/054f0ac293cedbb48bab4a420c67f92d792e7ad1))
+
 ## [303.0.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v303.0.0...v303.0.1) (2025-10-16)
 
 ## [303.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.6.0...v303.0.0) (2025-10-15)
