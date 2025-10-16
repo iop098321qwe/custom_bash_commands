@@ -137,24 +137,147 @@ cbc_spinner() {
 
 helpme() {
   OPTIND=1
+  local interactive=0
+  local script_file="${BASH_SOURCE[0]}"
+  if [ ! -f "$script_file" ] && [ -n "${BASH_SOURCE[1]}" ] && [ -f "${BASH_SOURCE[1]}" ]; then
+    script_file="${BASH_SOURCE[1]}"
+  fi
 
   # Function to display usage information for the script
   usage() {
-    cat <<EOF
-Description: 
-  This function provides interactive help for the Custom Bash Commands (CBC)
-  script.
+    if [ "$CBC_HAS_GUM" -eq 1 ]; then
+      cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+        "  Provides interactive help for the Custom Bash Commands (CBC) script."
+      cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  helpme [-h | -i] [function_name]"
+      cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+        "  -h    Display this help message and exit" \
+        "  -i    Enable interactive mode for selecting a function"
+      cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  helpme comm"
+    else
+      cat <<EOF
+Description:
+  Provides interactive help for the Custom Bash Commands (CBC) script.
 
 Usage:
   helpme [-h | -i] [function_name]
 
 Options:
   -h    Display this help message and exit
-  -i    Enable interactive mode for selecting a function to display help for
+  -i    Enable interactive mode for selecting a function
 
 Example:
-  helpme "comm"
+  helpme comm
 EOF
+    fi
+  }
+
+  # Extract the function list (name|line_number) from the source file
+  build_function_index() {
+    local line function_spec function_name
+    declare -g -A __cbc_helpme_lines=()
+    declare -g -a __cbc_helpme_functions=()
+
+    while IFS='|' read -r line function_name; do
+      [ -z "$function_name" ] && continue
+      __cbc_helpme_lines["$function_name"]="$line"
+      __cbc_helpme_functions+=("$function_name")
+    done < <(awk '
+      /^[[:space:]]*(function[[:space:]]+)?[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*\(\)[[:space:]]*\{/ {
+        if ($0 ~ /^[[:space:]]+/) {
+          next
+        }
+        line=$0
+        sub(/^[[:space:]]*/, "", line)
+        if (line ~ /^function[[:space:]]+/) {
+          sub(/^function[[:space:]]+/, "", line)
+        }
+        name=line
+        sub(/\(.*/, "", name)
+        gsub(/[[:space:]]/, "", name)
+        if (name !~ /^_/) {
+          printf "%d|%s\n", NR, name
+        }
+      }
+    ' "$script_file" | sort -u)
+  }
+
+  # Retrieve comment block immediately above the function definition
+  extract_description() {
+    local target_line="$1"
+    [ -z "$target_line" ] && return 0
+    awk -v target_line="$target_line" '
+      NR == target_line { exit }
+      { lines[NR] = $0 }
+      END {
+        comment_count = 0
+        for (i = target_line - 1; i >= 1; i--) {
+          line = lines[i]
+          if (line ~ /^[[:space:]]*#/) {
+            sub(/^[[:space:]]*#[[:space:]]?/, "", line)
+            stripped = line
+            gsub(/[[:space:]]/, "", stripped)
+            if (stripped ~ /^#+$/) {
+              break
+            }
+            comment_count++
+            comments[comment_count] = line
+          } else if (line ~ /^[[:space:]]*$/) {
+            if (comment_count == 0) {
+              continue
+            }
+            comment_count++
+            comments[comment_count] = ""
+          } else {
+            break
+          }
+        }
+        for (j = comment_count; j >= 1; j--) {
+          printf "%s", comments[j]
+          if (j > 1) {
+            printf "\n"
+          }
+        }
+      }
+    ' "$script_file"
+  }
+
+  show_function_help() {
+    local function_name="$1"
+    if ! declare -F "$function_name" >/dev/null 2>&1; then
+      cbc_style_message "$CATPPUCCIN_RED" "Function '$function_name' was not found in CBC."
+      return 1
+    fi
+
+    local function_def
+    function_def="$(declare -f "$function_name")"
+    local definition_line="${__cbc_helpme_lines[$function_name]}"
+    local description="$(extract_description "$definition_line")"
+
+    if [ "$CBC_HAS_GUM" -eq 1 ]; then
+      cbc_style_box "$CATPPUCCIN_MAUVE" "Help for function: $function_name"
+      if [ -n "$description" ]; then
+        cbc_style_box "$CATPPUCCIN_GREEN" "Description:" "$description"
+      fi
+      if [ -n "$definition_line" ]; then
+        cbc_style_box "$CATPPUCCIN_SAPPHIRE" "Location:" "  ${script_file##*/}:$definition_line"
+      fi
+      gum style \
+        --border rounded \
+        --border-foreground "$CATPPUCCIN_PINK" \
+        --foreground "$CATPPUCCIN_TEXT" \
+        --background "$CATPPUCCIN_SURFACE2" \
+        --padding "1 2" \
+        "$function_def"
+    else
+      printf "Help for function: %s\n" "$function_name"
+      if [ -n "$description" ]; then
+        printf "Description:\n%s\n" "$description"
+      fi
+      if [ -n "$definition_line" ]; then
+        printf "Location: %s:%s\n" "${script_file##*/}" "$definition_line"
+      fi
+      printf '%s\n' "$function_def"
+    fi
   }
 
   while getopts "hi" opt; do
@@ -164,19 +287,7 @@ EOF
       return 0
       ;;
     i)
-      # Interactive mode to select a function to display help for
-      # TODO: Implement interactive mode for helpme function
-      #
-      # local function
-      # function=$(gum list --prompt="Select a function to display help for: " --query="cbc" | fzf)
-      # if [ -n "$function" ]; then
-      # gum style --border double --padding "1" --border-foreground "#ffcc00" "Help for function: $function"
-      # gum style --border double --padding "1" --border-foreground "#ff9900" "$(type "$function")"
-      # gum style --border double --padding "1" --border-foreground "#ff9900" "$(help "$function")"
-      # else
-      # gum style --foreground "#ff0000" "No function selected. Exiting..."
-      # return 1
-      # fi
+      interactive=1
       ;;
     *)
       usage
@@ -187,8 +298,56 @@ EOF
 
   shift $((OPTIND - 1))
 
-  # Display help for the specified function
-  # TODO: Complete the implementation of the helpme function
+  build_function_index
+
+  local function_name="$1"
+  if [ -z "$function_name" ]; then
+    interactive=1
+  fi
+
+  if [ "$interactive" -eq 1 ]; then
+    if [ "$CBC_HAS_GUM" -ne 1 ]; then
+      cbc_style_message "$CATPPUCCIN_RED" "Interactive mode requires Charmbracelet Gum."
+      if [ ${#__cbc_helpme_functions[@]} -gt 0 ]; then
+        cbc_style_box "$CATPPUCCIN_BLUE" "Available functions:" "  ${__cbc_helpme_functions[*]}"
+      fi
+      return 1
+    fi
+
+    if [ ${#__cbc_helpme_functions[@]} -eq 0 ]; then
+      cbc_style_message "$CATPPUCCIN_RED" "No CBC functions were detected."
+      return 1
+    fi
+
+    function_name="$(printf '%s\n' "${__cbc_helpme_functions[@]}" |
+      gum filter \
+        --prompt " " \
+        --prompt.foreground "$CATPPUCCIN_MAUVE" \
+        --match.foreground "$CATPPUCCIN_GREEN" \
+        --text.foreground "$CATPPUCCIN_TEXT" \
+        --header "Select a CBC function" \
+        --header.foreground "$CATPPUCCIN_BLUE" \
+        --placeholder "Search for a function...")"
+
+    if [ -z "$function_name" ]; then
+      cbc_style_message "$CATPPUCCIN_RED" "No function selected."
+      return 1
+    fi
+  fi
+
+  if [ -z "$function_name" ]; then
+    usage
+    return 1
+  fi
+
+  local help_status
+  show_function_help "$function_name"
+  help_status=$?
+
+  unset __cbc_helpme_lines __cbc_helpme_functions
+  unset -f build_function_index extract_description show_function_help
+
+  return "$help_status"
 }
 
 ################################################################################################################################################################
