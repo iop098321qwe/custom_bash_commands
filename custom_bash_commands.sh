@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v303.0.0"
+VERSION="v304.0.0"
 
 # -------------------------------------------------------------------------------------------------
 # Charmbracelet Gum helpers (Catppuccin Mocha palette)
@@ -1390,7 +1390,7 @@ PY_HELPER
         <<<"$body"
       )
 
-      if (( ${#_cbc_parsed_release[@]} >= 1 )) && [[ -n "${_cbc_parsed_release[0]}" ]]; then
+      if ((${#_cbc_parsed_release[@]} >= 1)) && [[ -n "${_cbc_parsed_release[0]}" ]]; then
         cache_timestamp=$now
         cached_version="${_cbc_parsed_release[0]}"
         cached_name="${_cbc_parsed_release[1]}"
