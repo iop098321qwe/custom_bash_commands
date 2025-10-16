@@ -2,6 +2,91 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [305.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.1.1...v305.2.0) (2025-10-30)
+
+
+### Features
+
+* **function:** recreate update function ([4f71576](https://github.com/iop098321qwe/custom_bash_commands/commit/4f71576b288a08cd3f1746ce6677dbacc484f13f))
+
+
+### Bug Fixes
+
+* **alias:** remove `smart_sort` alias for `smartsort` ([b512a47](https://github.com/iop098321qwe/custom_bash_commands/commit/b512a472503815068c346a4bb946ff917f33d391))
+
+## [305.1.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.1.0...v305.1.1) (2025-10-26)
+
+## [305.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.0.0...v305.1.0) (2025-10-26)
+
+
+### Features
+
+* **regex_help:** overhaul regex cheat-sheet ([5a3ca1f](https://github.com/iop098321qwe/custom_bash_commands/commit/5a3ca1f002e9b4544158011dccd2eeddad59b17c))
+
+## [305.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.2.0...v305.0.0) (2025-10-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **versioning:** hard reset with clean codebase
+
+* **versioning:** adjust version number ([c014918](https://github.com/iop098321qwe/custom_bash_commands/commit/c014918e9b1e000eeeaaf23c548f17045ff0fe03))
+
+
+### Features
+
+* **aliases:** remove unused aliases ([f59e360](https://github.com/iop098321qwe/custom_bash_commands/commit/f59e3600b81ecca1c234b8da95edefba23a109e9))
+* **autocomplete:** remove cht.sh autocomplete ([bda21c3](https://github.com/iop098321qwe/custom_bash_commands/commit/bda21c361fc2dd22320c9691e53727616050f71b))
+* **function:** add more directories to setup_directories function ([27654ff](https://github.com/iop098321qwe/custom_bash_commands/commit/27654ffa532726762150749ff076139de6ba9d59))
+* **function:** remove `up` function ([0f581db](https://github.com/iop098321qwe/custom_bash_commands/commit/0f581dbd3f5611e7c7cf809fbdfbb371d3a4f253))
+* **function:** remove check_install functions ([fe633d1](https://github.com/iop098321qwe/custom_bash_commands/commit/fe633d197d242297e0745bdce53173b144d4d932))
+* **terminal settings:** move terminal settings to .bashrc ([b8e97e1](https://github.com/iop098321qwe/custom_bash_commands/commit/b8e97e13a46dcb05401f8d14a4ca1a16d42cd2db))
+
+
+### Bug Fixes
+
+* **file:** remove any references to deprecated .version file ([8fdbaba](https://github.com/iop098321qwe/custom_bash_commands/commit/8fdbaba462188e1d39ba077e2ad3d43f103c75aa))
+
+## [304.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.1.0...v304.2.0) (2025-10-21)
+
+
+### Features
+
+* **smartsort:** expand interactive sorting options ([69d7327](https://github.com/iop098321qwe/custom_bash_commands/commit/69d7327e7439f358bb2e3419cdca01c448218836))
+
+
+### Bug Fixes
+
+* **function:** fix wording in smartsort interactive ([a0db78f](https://github.com/iop098321qwe/custom_bash_commands/commit/a0db78fe6992d2d6fcda43b058e86e97b3667ecb))
+* **function:** remove message for smart_sort ([7c5a9bc](https://github.com/iop098321qwe/custom_bash_commands/commit/7c5a9bc1311c084db99dd6a3635c1e10a74236d1))
+* **smartsort:** allow empty gum selection ([3d5950c](https://github.com/iop098321qwe/custom_bash_commands/commit/3d5950c709f25767b8f06c70456884006c4fddfe))
+
+## [304.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.0.1...v304.1.0) (2025-10-19)
+
+
+### Features
+
+* **agents file:** add agents file ([186b833](https://github.com/iop098321qwe/custom_bash_commands/commit/186b833713e4eabcb02910e986f8add882061029))
+
+## [304.0.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.0.0...v304.0.1) (2025-10-18)
+
+
+### Bug Fixes
+
+* **function name:** fix show_help function to be usage function ([06cdc8b](https://github.com/iop098321qwe/custom_bash_commands/commit/06cdc8b810dd39000bfff638b428b0820c96a50a))
+* **message:** move cargo update message ([ec63117](https://github.com/iop098321qwe/custom_bash_commands/commit/ec631175d58ef1759709be8f3c831a4bc8d0a27a))
+
+## [304.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v303.0.1...v304.0.0) (2025-10-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* **versioning:** this will reset to 304.0.0
+
+* **versioning:** increment the versioning number ([054f0ac](https://github.com/iop098321qwe/custom_bash_commands/commit/054f0ac293cedbb48bab4a420c67f92d792e7ad1))
+
+## [303.0.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v303.0.0...v303.0.1) (2025-10-16)
+
 ## [303.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v302.6.0...v303.0.0) (2025-10-15)
 
 
