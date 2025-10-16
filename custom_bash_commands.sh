@@ -94,7 +94,7 @@ cbc_confirm() {
     local response
     read -r -p "$prompt [y/N]: " response
     case "${response,,}" in
-    y|yes) return 0 ;;
+    y | yes) return 0 ;;
     *) return 1 ;;
     esac
   fi
