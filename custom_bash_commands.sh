@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v303.0.0"
+VERSION="v304.0.0"
 
 # -------------------------------------------------------------------------------------------------
 # Charmbracelet Gum helpers (Catppuccin Mocha palette)
@@ -1290,35 +1290,157 @@ setup_directories() {
 # Call the setup_directories function
 setup_directories
 
-###################################################################################################################################################################
+################################################################################################################################
+###################################
 # CHECK FOR CBC UPDATES
-###################################################################################################################################################################
+################################################################################################################################
+###################################
+
+cbc_version_is_newer() {
+  local current="$1"
+  local candidate="$2"
+
+  [[ -z "$candidate" ]] && return 1
+  [[ -z "$current" ]] && return 0
+
+  local newest
+  newest=$(printf '%s\n' "$current" "$candidate" | sort -V | tail -n1)
+  [[ "$newest" == "$candidate" && "$candidate" != "$current" ]]
+}
 
 # Check GitHub release for newer version of the script
 check_cbc_update() {
-  local latest_version current_version msg release_url
+  local current_version="$VERSION"
+  local release_api_url="https://api.github.com/repos/iop098321qwe/custom_bash_commands/releases/latest"
+  local now check_interval notify_interval
 
-  current_version="$VERSION"
-  release_url="https://api.github.com/repos/iop098321qwe/custom_bash_commands/releases/latest"
+  # Allow opt-in overrides while keeping sane defaults
+  check_interval=${CBC_UPDATE_CHECK_INTERVAL:-43200}
+  notify_interval=${CBC_UPDATE_NOTIFY_INTERVAL:-21600}
+  [[ "$check_interval" =~ ^[0-9]+$ ]] || check_interval=43200
+  [[ "$notify_interval" =~ ^[0-9]+$ ]] || notify_interval=21600
 
-  latest_version=$(curl -fsSL "$release_url" |
-    grep -m1 '"tag_name"' |
-    sed -E 's/.*"tag_name":\s*"([^"]+)".*/\1/')
+  local cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/custom_bash_commands"
+  local cache_file="$cache_dir/update_check"
+  local cache_timestamp="0" cached_version="" cached_name="" cached_summary="" cached_url="" last_notified="0"
 
-  [[ -z "$latest_version" ]] && return
+  if [[ -r "$cache_file" ]]; then
+    mapfile -t _cbc_cache_data <"$cache_file"
+    cache_timestamp="${_cbc_cache_data[0]:-0}"
+    cached_version="${_cbc_cache_data[1]}"
+    cached_name="${_cbc_cache_data[2]}"
+    cached_summary="${_cbc_cache_data[3]}"
+    cached_url="${_cbc_cache_data[4]}"
+    last_notified="${_cbc_cache_data[5]:-0}"
+  fi
 
-  # Compare semantic versions
-  if [[ "$current_version" != "$latest_version" ]] &&
-    [[ "$(printf '%s\n' "$current_version" "$latest_version" | sort -V | head -n1)" = "$current_version" ]]; then
-    msg="A newer version ($latest_version) of Custom Bash Commands is available. Use 'updatecbc' to update."
-    if [ "$CBC_HAS_GUM" -eq 1 ]; then
-      cbc_style_box "$CATPPUCCIN_SKY" "$msg"
-    else
-      echo "$msg"
+  now=$(date +%s)
+  local should_refresh=1
+
+  if [[ "$cache_timestamp" =~ ^[0-9]+$ ]] && ((now - cache_timestamp < check_interval)); then
+    should_refresh=0
+  fi
+
+  if [[ -z "$cached_version" ]]; then
+    should_refresh=1
+  fi
+
+  if ((should_refresh)); then
+    local response status body
+    response=$(curl -sSL -w "\n%{http_code}" "$release_api_url" 2>/dev/null || true)
+    status=$(printf '%s\n' "$response" | tail -n1)
+    body=$(printf '%s\n' "$response" | sed '$d')
+
+    if [[ "$status" == "200" && -n "$body" ]]; then
+      mapfile -t _cbc_parsed_release < <(
+        python - <<'PY_HELPER'
+import json
+import re
+import sys
+
+try:
+    data = json.load(sys.stdin)
+except Exception:
+    sys.exit(1)
+
+def clean(value: str) -> str:
+    if not value:
+        return ""
+    # Normalize whitespace to keep everything on one line
+    return re.sub(r"\s+", " ", value.strip())[:200]
+
+tag = clean(data.get("tag_name") or "")
+name = clean(data.get("name") or "")
+
+summary = ""
+for line in (data.get("body") or "").splitlines():
+    stripped = line.strip()
+    if stripped:
+        summary = stripped
+        break
+summary = clean(summary)
+
+url = data.get("html_url") or ""
+
+print(tag)
+print(name)
+print(summary)
+print(url)
+PY_HELPER
+        <<<"$body"
+      )
+
+      if ((${#_cbc_parsed_release[@]} >= 1)) && [[ -n "${_cbc_parsed_release[0]}" ]]; then
+        cache_timestamp=$now
+        cached_version="${_cbc_parsed_release[0]}"
+        cached_name="${_cbc_parsed_release[1]}"
+        cached_summary="${_cbc_parsed_release[2]}"
+        cached_url="${_cbc_parsed_release[3]}"
+      fi
+    elif [[ "$status" =~ ^[0-9]+$ ]]; then
+      cache_timestamp=$now
     fi
   fi
-}
 
+  local should_notify=0
+  if cbc_version_is_newer "$current_version" "$cached_version"; then
+    [[ "$last_notified" =~ ^[0-9]+$ ]] || last_notified=0
+    if ((now - last_notified >= notify_interval)); then
+      should_notify=1
+    fi
+  fi
+
+  if ((should_notify)); then
+    local notification_lines=(
+      "Custom Bash Commands update available!"
+      "  Current: $current_version"
+      "  Latest:  $cached_version${cached_name:+ ($cached_name)}"
+    )
+    [[ -n "$cached_summary" ]] && notification_lines+=("  Summary: $cached_summary")
+    notification_lines+=("  Update with: updatecbc")
+    [[ -n "$cached_url" ]] && notification_lines+=("  Release: $cached_url")
+
+    if [[ "$CBC_HAS_GUM" -eq 1 ]]; then
+      cbc_style_box "$CATPPUCCIN_SKY" "${notification_lines[@]}"
+    else
+      printf '%s\n' "${notification_lines[@]}"
+    fi
+
+    last_notified=$now
+  fi
+
+  if [[ -n "$cached_version" ]]; then
+    mkdir -p "$cache_dir"
+    printf '%s\n' \
+      "$cache_timestamp" \
+      "$cached_version" \
+      "$cached_name" \
+      "$cached_summary" \
+      "$cached_url" \
+      "$last_notified" \
+      >"$cache_file"
+  fi
+}
 # Automatically check for updates when the script is sourced
 check_cbc_update
 
