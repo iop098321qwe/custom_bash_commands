@@ -3358,28 +3358,6 @@ fi
 # }
 
 ###################################################################################################################################################################
-# Ensure that ranger is installed, and if not install it.
-###################################################################################################################################################################
-
-# Function to check if ranger is installed and install it if necessary
-check_install_ranger() {
-  if ! command -v ranger &>/dev/null; then
-    echo "ranger not found. Install with chezmoi"
-  fi
-}
-
-###################################################################################################################################################################
-# Ensure thefuck is installed, and if not install it.
-###################################################################################################################################################################
-
-# Function to check if thefuck is installed and install it if necessary
-check_install_thefuck() {
-  if ! command -v thefuck &>/dev/null; then
-    echo "thefuck not found. Install using thefuck documentation as it is currently not updated"
-  fi
-}
-
-###################################################################################################################################################################
 # Ensure obsidian is installed, and if not install it.
 ###################################################################################################################################################################
 
@@ -3387,17 +3365,6 @@ check_install_thefuck() {
 check_install_obsidian() {
   if ! command -v obsidian &>/dev/null; then
     echo "obsidian not found. Install with chezmoi."
-  fi
-}
-
-###################################################################################################################################################################
-# Ensure fzf is installed, and if not install it.
-###################################################################################################################################################################
-
-# Function to check if fzf is installed and install it if necessary
-check_install_fzf() {
-  if ! command -v fzf &>/dev/null; then
-    echo "fzf not found. Install with chezmoi."
   fi
 }
 
@@ -3420,30 +3387,6 @@ check_install_fzf() {
 check_install_bat() {
   if ! command -v batcat &>/dev/null; then
     echo "bat not found. Install with chezmoi."
-  fi
-}
-
-###################################################################################################################################################################
-# Check if neovim is installed, and if it is, add it to PATH.
-###################################################################################################################################################################
-
-# Function to check if neovim is installed and add it to PATH
-check_install_neovim() {
-  if command -v nvim &>/dev/null; then
-    export PATH="$PATH:/opt/nvim-linux64/bin"
-    # If neovim is not installed, install it using "sudo apt install neovim"
-  else
-    echo "Neovim not found. Please install from https://github.com/neovim/neovim/releases"
-    echo "Download the nvim.appimage file, use 'chmod +x nvim.appimage' to make it executable, and run 'sudo mv nvim.appimage /bin/nvim' to install."
-
-    # Download the neovim appimage file
-    wget https://github.com/neovim/neovim/releases/download/v0.10.0/nvim.appimage
-
-    # Make the appimage file executable
-    chmod +x nvim.appimage
-
-    # Move the appimage file to /bin/nvim
-    sudo mv nvim.appimage /bin/nvim
   fi
 }
 
@@ -3484,27 +3427,9 @@ if command -v hstr &>/dev/null; then
   bind '"\C-r": "\e^ihstr -- \n"'
 fi
 
-##################################################################################################################################################################
+###############################################################################
 # Additional Software Installation
-###################################################################################################################################################################
-
-# Read the configuration file and check if NEOVIM=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${NEOVIM:=true}" == "true" ]]; then
-    # Call the function to check neovim installation and install neovim
-    check_install_neovim
-  fi
-fi
-
-# Read the configuration file and check if OBSIDIAN=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${OBSIDIAN:=false}" == "true" ]]; then
-    # Call the function to check obsidian installation and install obsidian
-    check_install_obsidian
-  fi
-fi
+###############################################################################
 
 # Read the configuration file and check if BAT=true
 if [[ -f "$CONFIG_FILE" ]]; then
@@ -3512,15 +3437,6 @@ if [[ -f "$CONFIG_FILE" ]]; then
   if [[ "${BAT:=false}" == "true" ]]; then
     # Call the function to check bat installation and install bat
     check_install_bat
-  fi
-fi
-
-# Read the configuration file and check if RANGER=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${RANGER:=true}" == "true" ]]; then
-    # Call the function to check ranger installation and install ranger
-    check_install_ranger
   fi
 fi
 
@@ -3533,61 +3449,44 @@ if [[ -f "$CONFIG_FILE" ]]; then
   fi
 fi
 
-# Read the configuration file and check if FZF=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${FZF:=false}" == "true" ]]; then
-    # Call the function to check fzf installation and install fzf
-    check_install_fzf
-  fi
-fi
-
 # Check if zoxide is installed, and if it is, source the zoxide init script
 if command -v zoxide &>/dev/null; then
   eval "$(zoxide init --cmd cd bash)"
 fi
 
-# Read the configuration file and check if THEFUCK=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "$THEFUCK" = "true" ]]; then
-    # Call the function to check thefuck installation and install thefuck
-    check_install_thefuck
-  fi
-fi
-
-# Read the configuration file and check if HSTR=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${HSTR:=true}" == "true" ]]; then
-    # Call the function to check hstr installation and install hstr
-    check_install_hstr
-  fi
-fi
-
-###################################################################################################################################################################
-###################################################################################################################################################################
+###############################################################################
+###############################################################################
 # EXPORTS
-###################################################################################################################################################################
-###################################################################################################################################################################
+###############################################################################
+###############################################################################
 
+###############################################################################
 # Remove history duplications
+###############################################################################
+
 export HISTCONTROL=ignoredups:erasedups
 
-# Set terminal behavior to mimic vim
-set -o vi
-
+###############################################################################
 # Set the default editor to neovim if and only if neovim is installed and set manpager as neovim
+###############################################################################
+
 if command -v nvim &>/dev/null; then
   export EDITOR=nvim
   export MANPAGER="nvim +Man!"
 fi
+###############################################################################
+###############################################################################
+# Set terminal behavior to mimic vim
+###############################################################################
+###############################################################################
 
-###################################################################################################################################################################
-###################################################################################################################################################################
+set -o vi
+
+###############################################################################
+###############################################################################
 # ZELLIJ COMPLETION (Turn into a module maybe?)
-###################################################################################################################################################################
-###################################################################################################################################################################
+###############################################################################
+###############################################################################
 
 _zellij() {
   local i cur prev opts cmds
