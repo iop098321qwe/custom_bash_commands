@@ -2380,7 +2380,7 @@ up() {
   local detailed_listing=false
   local times=1
 
-  show_help() {
+  usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Move up directories or jump to key locations with optional post-move actions."
 
@@ -2405,7 +2405,7 @@ up() {
     case "$1" in
     -h)
       # Display help message and return
-      show_help
+      usage
       return
       ;;
     -a)
