@@ -151,10 +151,14 @@ batchopen() {
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Opens a .txt file of URLs and iterates through each line, opening them in the default browser."
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  batchopen [options] [file]"
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  batchopen [options] [file]"
+
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h      Display this help message" \
       "  -f      Specify a file containing URLs (one per line)"
+
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
       "  batchopen -f sites.txt" \
       "  batchopen  (will prompt for a file via fzf)"
@@ -270,12 +274,14 @@ phsearch() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Prompts the user for a search term, constructs a search URL, and opens it in the default browser."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  phsearch [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  phsearch [-h]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  phsearch"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  phsearch"
   }
 
   OPTIND=1
@@ -341,6 +347,9 @@ pronlist() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Processes each URL in the selected .txt file and uses yt-dlp with the _configs.txt" \
       "  configuration file to generate a sanitized output file listing the downloaded titles."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  pronlist [-h | -l]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Show this help message and exit" \
@@ -487,11 +496,14 @@ sopen() {
       "  Opens .mp4 files in the current directory that match patterns" \
       "  generated from lines in a selected .txt file."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  sopen [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  sopen [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  sopen"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  sopen"
   }
 
   while getopts "h" opt; do
@@ -578,11 +590,14 @@ sopenexact() {
       "  Opens .mp4 files in the current directory that match exact" \
       "  patterns generated from lines in a selected .txt file."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  sopenexact [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  sopenexact [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  sopenexact"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  sopenexact"
   }
 
   while getopts "h" opt; do
