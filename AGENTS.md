@@ -162,6 +162,19 @@ dependencies without need. |
    related scripts (`.version`, release automation) and docs mention the correct
    release number.
 
+### 7. Markdown authoring standards
+
+- **Wrap Markdown text at 80 characters.** Line wrapping keeps diffs concise
+  and predictable for reviewers and future automation. Exceptions are allowed
+  for tables, URLs, code blocks, or other structures where wrapping would harm
+  readability or functionality.
+- Whenever code changes introduce new behaviour, configuration steps, or other
+  user-facing adjustments, review `README.md` and expand it with the relevant
+  details. This includes usage instructions, dependency notes, screenshots, or
+  any other information that helps users understand the update. Treat the
+  README as the canonical user manual and update it in the same commit when the
+  change warrants documentation.
+
 ---
 
 ## Authoring guidelines for AI agents
