@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [304.0.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.0.0...v304.0.1) (2025-10-18)
+
+
+### Bug Fixes
+
+* **function name:** fix show_help function to be usage function ([06cdc8b](https://github.com/iop098321qwe/custom_bash_commands/commit/06cdc8b810dd39000bfff638b428b0820c96a50a))
+* **message:** move cargo update message ([ec63117](https://github.com/iop098321qwe/custom_bash_commands/commit/ec631175d58ef1759709be8f3c831a4bc8d0a27a))
+
 ## [304.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v303.0.1...v304.0.0) (2025-10-16)
 
 
