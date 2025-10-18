@@ -151,10 +151,14 @@ batchopen() {
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Opens a .txt file of URLs and iterates through each line, opening them in the default browser."
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  batchopen [options] [file]"
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  batchopen [options] [file]"
+
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h      Display this help message" \
       "  -f      Specify a file containing URLs (one per line)"
+
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
       "  batchopen -f sites.txt" \
       "  batchopen  (will prompt for a file via fzf)"
@@ -270,12 +274,14 @@ phsearch() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Prompts the user for a search term, constructs a search URL, and opens it in the default browser."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  phsearch [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  phsearch [-h]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  phsearch"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  phsearch"
   }
 
   OPTIND=1
@@ -341,6 +347,9 @@ pronlist() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Processes each URL in the selected .txt file and uses yt-dlp with the _configs.txt" \
       "  configuration file to generate a sanitized output file listing the downloaded titles."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  pronlist [-h | -l]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Show this help message and exit" \
@@ -487,11 +496,14 @@ sopen() {
       "  Opens .mp4 files in the current directory that match patterns" \
       "  generated from lines in a selected .txt file."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  sopen [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  sopen [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  sopen"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  sopen"
   }
 
   while getopts "h" opt; do
@@ -578,11 +590,14 @@ sopenexact() {
       "  Opens .mp4 files in the current directory that match exact" \
       "  patterns generated from lines in a selected .txt file."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  sopenexact [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  sopenexact [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  sopenexact"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  sopenexact"
   }
 
   while getopts "h" opt; do
@@ -1036,19 +1051,14 @@ random() {
 
   # Function to display help message
   usage() {
-    cat <<EOF
-Description: 
-  Function to open a random .mp4 file in the current directory.
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Function to open a random .mp4 file in the current directory."
 
-Usage: 
-  random [-h]
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  random [-h]"
 
-Options:
-  -h    Display this help message
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
 
-Example:
-  random
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  random"
   }
 
   while getopts ":h" opt; do
@@ -1058,7 +1068,7 @@ EOF
       return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       usage
       return 1
       ;;
@@ -1072,7 +1082,7 @@ EOF
 
   # Check if there are any mp4 files
   if [ ${#mp4_files[@]} -eq 0 ] || [ ! -e "${mp4_files[0]}" ]; then
-    echo "No mp4 files found in the current directory."
+    cbc_style_message "$CATPPUCCIN_RED" "No mp4 files found in the current directory."
     return 1
   fi
 
@@ -1084,11 +1094,11 @@ EOF
 
   # Check if the file was opened successfully
   if [ $? -ne 0 ]; then
-    echo "Failed to open the file: $random_file"
+    cbc_style_message "$CATPPUCCIN_RED" "Failed to open the file: $random_file"
     return 1
   fi
 
-  echo "Opened: $random_file"
+  cbc_style_message "$CATPPUCCIN_GREEN" "Opened: $random_file"
 }
 
 ################################################################################
@@ -1102,25 +1112,21 @@ wiki() {
   wiki_url="https://github.com/iop098321qwe/custom_bash_commands/wiki"
 
   usage() {
-    cat <<EOF
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the Custom Bash Commands wiki in your default browser."
 
-Description: 
-  Function to open the CBC wiki in the default browser
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  wiki [-h|-c|-C|-A|-F]"
 
-Usage: 
-  wiki
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -c    Copy the wiki URL to the clipboard" \
+      "  -C    Open the wiki to the commands section" \
+      "  -A    Open the wiki to the aliases section" \
+      "  -F    Open the wiki to the functions section"
 
-Options:
-  -h    Display this help message
-  -c    Copy the wiki URL to the clipboard
-  -C    Open the wiki to the CBC commands section
-  -A    Open the wiki to the CBC aliases section
-  -F    Open the wiki to the CBC functions section
-
-Example: 
-  wiki
-  wiki -A
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  wiki" \
+      "  wiki -A"
   }
 
   while getopts ":hcCAF" opt; do
@@ -1131,27 +1137,31 @@ EOF
       ;;
     c)
       echo "$wiki_url" | xclip -selection clipboard
-      echo "Wiki URL copied to clipboard."
+      cbc_style_message "$CATPPUCCIN_GREEN" "Wiki URL copied to clipboard."
       return 0
       ;;
     C)
-      nohup xdg-open "$wiki_url/Commands"
+      cbc_style_message "$CATPPUCCIN_SKY" "Opening Commands documentation..."
+      nohup xdg-open "$wiki_url/Commands" >/dev/null 2>&1 &
       return 0
       ;;
     A)
-      nohup xdg-open "$wiki_url/Aliases"
+      cbc_style_message "$CATPPUCCIN_SKY" "Opening Aliases documentation..."
+      nohup xdg-open "$wiki_url/Aliases" >/dev/null 2>&1 &
       return 0
       ;;
     F)
-      nohup xdg-open "$wiki_url/Functions"
+      cbc_style_message "$CATPPUCCIN_SKY" "Opening Functions documentation..."
+      nohup xdg-open "$wiki_url/Functions" >/dev/null 2>&1 &
       return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     *)
-      nohup xdg-open "$wiki_url"
+      cbc_style_message "$CATPPUCCIN_SKY" "Opening CBC wiki..."
+      nohup xdg-open "$wiki_url" >/dev/null 2>&1 &
       return 0
       ;;
     esac
@@ -1171,20 +1181,16 @@ changes() {
   local changelog_url="https://github.com/iop098321qwe/custom_bash_commands/blob/main/CHANGELOG.md"
 
   usage() {
-    cat <<EOF
-Description:
-  Function to open the CBC changelog in the default browser.
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the Custom Bash Commands changelog in your default browser."
 
-Usage:
-  changes
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  changes [-h|-c]"
 
-Options:
-  -h    Display this help message
-  -c    Copy the changelog URL to the clipboard
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -c    Copy the changelog URL to the clipboard"
 
-Example:
-  changes
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  changes"
   }
 
   while getopts ":hc" opt; do
@@ -1195,12 +1201,12 @@ EOF
       ;;
     c)
       echo "$changelog_url" | xclip -selection clipboard
-      echo "Changelog URL copied to clipboard."
+      cbc_style_message "$CATPPUCCIN_GREEN" "Changelog URL copied to clipboard."
       return 0
       ;;
     *)
       # invalid options
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -1222,19 +1228,25 @@ EOF
 dotfiles() {
   OPTIND=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the dotfiles repository in your default browser."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  dotfiles [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  dotfiles"
+  }
+
   while getopts ":h" opt; do
     case $opt in
     h)
-      echo "Description: Function to open the dotfiles repository in the default browser"
-      echo "Usage: dotfiles"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: dotfiles"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -1257,19 +1269,25 @@ dotfiles() {
 setup_directories() {
   OPTIND=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Create commonly used directories (Temporary, GitHub Repositories, Grymm's Grimoires)."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  setup_directories [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  setup_directories"
+  }
+
   while getopts ":h" opt; do
     case $opt in
     h)
-      echo "Description: Function to set up directories (Temporary, GitHub Repositories, Grymm's Grimoires)"
-      echo "Usage: setup_directories"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: setup_directories"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -1497,21 +1515,18 @@ cbcs() {
   all_info=false
 
   usage() {
-    cat <<EOF
-Description: 
-  This function allows you to display a list of all available custom commands in this script
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Display a list of available custom commands in this script."
 
-Usage: 
-  cbcs [-h | -a]
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  cbcs [-h|-a]"
 
-Options:
-  -h    Display this help message
-  -a    Display all available custom commands with descriptions
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -a    Display all available commands with descriptions"
 
-Example: 
-  cbcs
-  cbcs -a
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbcs" \
+      "  cbcs -a"
   }
 
   while getopts ":ha" opt; do
@@ -1524,7 +1539,7 @@ EOF
       all_info=true
       ;;
     *)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -2304,19 +2319,14 @@ backup() {
   local backup_filename="${filename}_backup_${timestamp}.bak" # Create the backup file name
 
   usage() {
-    cat <<EOF
-Description: 
-  This function allows you to create a backup file of a file.
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Create a timestamped backup of a specified file."
 
-Usage: 
-  backup [file]
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  backup [file] [-h]"
 
-Options:
-  -h    Display this help message
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
 
-Example: 
-  backup test.txt
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  backup test.txt"
   }
 
   while getopts ":h" opt; do
@@ -2326,7 +2336,7 @@ EOF
       return
       ;;
     \?)
-      echo "Invalid option: -$OPTARG. Use -h for help."
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG. Use -h for help."
       return
       ;;
     esac
@@ -2337,7 +2347,7 @@ EOF
   # Function to check if no arguments are provided
   check_no_arguments() {
     if [ $# -eq 0 ]; then
-      echo "Error: No arguments provided. Use -h for help."
+      cbc_style_message "$CATPPUCCIN_RED" "Error: No arguments provided. Use -h for help."
       return 1
     fi
   }
@@ -2345,14 +2355,19 @@ EOF
   # Function to check if the file exists
   check_file_exists() {
     if [ ! -f "$1" ]; then
-      echo "Error: File not found."
+      cbc_style_message "$CATPPUCCIN_RED" "Error: File not found."
       return 1
     fi
   }
 
   # Function to create a backup file
   make_backup() {
-    cp "$1" "$backup_filename" && echo "Backup created: $backup_filename"
+    if cp "$1" "$backup_filename"; then
+      cbc_style_message "$CATPPUCCIN_GREEN" "Backup created: $backup_filename"
+    else
+      cbc_style_message "$CATPPUCCIN_RED" "Failed to create backup."
+      return 1
+    fi
   }
 
   # Main logic
@@ -2380,27 +2395,38 @@ up() {
   local detailed_listing=false
   local times=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Move up directories or jump to key locations with optional post-move actions."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  up [-h|-a|-r|-c|-p|-q|-l] [levels]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -a    Return to the home directory" \
+      "  -r    Go to the root directory" \
+      "  -c    Clear the terminal after moving" \
+      "  -p    Print the current directory after moving" \
+      "  -q    Suppress ls output" \
+      "  -l    Use ls -l for a detailed listing"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  up 2" \
+      "  up -a"
+  }
+
   # Parse command-line arguments
   while [[ $# -gt 0 ]]; do
     case "$1" in
     -h)
       # Display help message and return
-      echo "Description: This function allows you to move up in the directory hierarchy by a specified number of levels."
-      echo "Usage: up [options] [number of levels]"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo "  -a    Return to the home directory"
-      echo "  -r    Go to the root directory"
-      echo "  -c    Clear the terminal after moving"
-      echo "  -p    Print the current directory after moving"
-      echo "  -q    Suppress the ls output"
-      echo "  -l    Use ls -l for a detailed listing after changing directories"
+      usage
       return
       ;;
     -a)
       # Change to home directory
       cd ~ || {
-        echo "Error: Failed to return to home directory."
+        cbc_style_message "$CATPPUCCIN_RED" "Error: Failed to return to home directory."
         return 1
       }
       # List contents if quiet mode is not enabled
@@ -2416,7 +2442,7 @@ up() {
     -r)
       # Change to root directory
       cd / || {
-        echo "Error: Failed to change to root directory."
+        cbc_style_message "$CATPPUCCIN_RED" "Error: Failed to change to root directory."
         return 1
       }
       # List contents if quiet mode is not enabled
@@ -2451,7 +2477,7 @@ up() {
       ;;
     *)
       # Handle invalid arguments
-      echo "Error: Invalid argument. Use -h for help."
+      cbc_style_message "$CATPPUCCIN_RED" "Error: Invalid argument. Use -h for help."
       return 1
       ;;
     esac
@@ -2477,7 +2503,7 @@ up() {
 
   # Change directory to the constructed path
   if ! cd "$path"; then
-    echo "Error: Failed to change directory."
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Failed to change directory."
     return 1
   fi
 
@@ -2508,20 +2534,26 @@ up() {
 remove_all_cbc_configs() {
   OPTIND=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Remove CBC-related configuration files from the system."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  remove_all_cbc_configs [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  remove_all_cbc_configs"
+  }
+
   while getopts ":h" opt; do
     case $opt in
     h)
-      echo "Description: A function to remove all configuration files associated with CBC"
-      echo "Usage: remove_all_cbc_configs"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: remove_all_cbc_configs"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG. Use -h for help."
-      return
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG. Use -h for help."
+      return 1
       ;;
     esac
   done
@@ -2541,20 +2573,26 @@ remove_all_cbc_configs() {
 mkdirs() {
   OPTIND=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Create a directory (if needed) and switch into it."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  mkdirs [directory] [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  mkdirs test"
+  }
+
   while getopts ":h" opt; do
     case $opt in
     h)
-      echo "Description: A function to create a directory then switch into it"
-      echo "Usage: mkdirs [directory]"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: mkdirs test"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG. Use -h for help."
-      return
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG. Use -h for help."
+      return 1
       ;;
     esac
   done
@@ -2563,11 +2601,16 @@ mkdirs() {
 
   # Check if the directory name is provided
   if [ -z "$1" ]; then
-    echo "Error: Directory name is not provided."
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Directory name is not provided."
     return 1
   else
     # Create the directory and switch into it
-    mkdir -p "$1" && cd "$1" || return 1
+    if mkdir -p "$1" && cd "$1"; then
+      cbc_style_message "$CATPPUCCIN_GREEN" "Created and moved into directory: $1"
+    else
+      cbc_style_message "$CATPPUCCIN_RED" "Failed to create or enter directory: $1"
+      return 1
+    fi
   fi
 }
 
@@ -2584,22 +2627,18 @@ update() {
   local sudo_required=false
 
   usage() {
-    cat <<EOF
-Description: 
-  A function to update the system and reboot if desired
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Update the system with optional reboot, shutdown, or log display."
 
-Usage:
-  update [option]
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  update [-h|-r|-s|-l]"
 
-Options:
-  -h    Display this help message
-  -r    Reboot the system after updating
-  -s    Shutdown the system after updating
-  -l    Display the log file path
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -r    Reboot the system after updating" \
+      "  -s    Shutdown the system after updating" \
+      "  -l    Display the log file path"
 
-Example:
-  update -r
-EOF
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  update -r"
   }
 
   while getopts ":hrsl" opt; do
@@ -2621,8 +2660,8 @@ EOF
       display_log=true
       ;;
     \?)
-      echo "Invalid option: -$OPTARG. Use -h for help."
-      return
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG. Use -h for help."
+      return 1
       ;;
     esac
   done
@@ -2766,19 +2805,27 @@ makeman() {
   OPTIND=1
 
   # Parse options
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Generate PDF manuals from man pages, optionally from a list."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  makeman [-h] [-f <file>] [-o <dir>] [-r] <command>"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h           Display this help message" \
+      "  -f <file>    Specify a file with a list of commands" \
+      "  -o <dir>     Specify an output directory" \
+      "  -r           Remove unlisted files from the output directory"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  makeman ls" \
+      "  makeman -f commands.txt -r"
+  }
+
   while getopts ":hf:o:r" opt; do
     case ${opt} in
     h)
-      echo "Description: Function to generate a PDF file from a man page"
-      echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
-      echo "Options:"
-      echo "  -h           Display this help message"
-      echo "  -f <file>    Specify a file with a list of commands"
-      echo "  -o <dir>     Specify an output directory (default: ~/Documents/grymms_grimoires/command_manuals)"
-      echo "  -r           Remove existing files in the output directory that are not listed in the specified file"
-      echo " "
-      echo "Example: makeman ls"
-      echo "Example: makeman -f commands.txt -r"
+      usage
       return 0
       ;;
     f)
@@ -2791,13 +2838,13 @@ makeman() {
       remove_unlisted=true
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
-      echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      usage
       return 1
       ;;
     :)
-      echo "Option -$OPTARG requires an argument." >&2
-      echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
+      cbc_style_message "$CATPPUCCIN_RED" "Option -$OPTARG requires an argument."
+      usage
       return 1
       ;;
     esac
@@ -2808,7 +2855,7 @@ makeman() {
   # Process remaining arguments as the command
   if [ -z "$file" ]; then
     if [ $# -eq 0 ]; then
-      echo "Usage: makeman [-h] [-f <file>] [-o <output_directory>] [-r] <command>"
+      usage
       return 1
     fi
     command=$1
@@ -2866,6 +2913,19 @@ regex_help() {
   # Default flavor
   local flavor="POSIX-extended"
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Display regex cheat-sheets for different flavors."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  regex_help [-f|--flavor <flavor>] [-h|--help]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -f|--flavor <flavor>    Specify the regex flavor (POSIX-extended, POSIX-basic, PCRE)" \
+      "  -h|--help               Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  regex_help -f PCRE"
+  }
+
   # Check for arguments
   while (("$#")); do
     case "$1" in
@@ -2874,23 +2934,16 @@ regex_help() {
         flavor=$2
         shift 2
       else
-        echo "Error: Argument for $1 is missing" >&2
+        cbc_style_message "$CATPPUCCIN_RED" "Error: Argument for $1 is missing"
         return 1
       fi
       ;;
     -h | --help) # Help flag
-      echo "Description: A function to display help for regular expressions"
-      echo "Usage: regex_help [-f|--flavor <flavor>] [-h|--help]"
-      echo "Options:"
-      echo "  -f|--flavor <flavor>    Specify the regex flavor (e.g., POSIX-extended, POSIX-basic, PCRE)"
-      echo "  -h|--help               Display this help message"
-      echo "  --example(?)               Display an example of the regex flavor"
-      echo " "
-      echo "Example: regex_help -f PCRE"
+      usage
       return 0
       ;;
     *) # Handle unexpected options
-      echo "Error: Unsupported flag $1" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Error: Unsupported flag $1"
       return 1
       ;;
     esac
@@ -2955,19 +3008,25 @@ regex_help() {
 extract() {
   OPTIND=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Extract a variety of compressed archive formats."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  extract [file] [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  extract file.tar.gz"
+  }
+
   while getopts ":h" opt; do
     case ${opt} in
     h)
-      echo "Description: A function to extract compressed files"
-      echo "Usage: extract [file]"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: extract file.tar.gz"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -2976,12 +3035,12 @@ extract() {
   shift $((OPTIND - 1))
 
   if [ -z "$1" ]; then
-    echo "Error: No file specified"
+    cbc_style_message "$CATPPUCCIN_RED" "Error: No file specified"
     return 1
   fi
 
   if [ ! -f "$1" ]; then
-    echo "Error: File not found"
+    cbc_style_message "$CATPPUCCIN_RED" "Error: File not found"
     return 1
   fi
 
@@ -3000,7 +3059,7 @@ extract() {
   *.deb) ar x "$1" ;;
   *.tar.xz) tar xf "$1" ;;
   *.tar.zst) unzstd "$1" ;;
-  *) echo "'$1' cannot be extracted using extract()" ;;
+  *) cbc_style_message "$CATPPUCCIN_RED" "'$1' cannot be extracted using extract()" ;;
   esac
 }
 
@@ -3011,19 +3070,25 @@ extract() {
 odt() {
   OPTIND=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Create an .odt document in the current directory and open it with LibreOffice."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  odt [filename] [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  odt meeting-notes"
+  }
+
   while getopts ":h" opt; do
     case $opt in
     h)
-      echo "Description: A function to create a .odt file in the current directory and open it"
-      echo "Usage: odt [filename]"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: odt test"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       ;;
     esac
   done
@@ -3042,17 +3107,25 @@ ods() {
   # Use getopts to handle Options
   OPTIND=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Create an .ods spreadsheet in the current directory and open it with LibreOffice."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  ods [filename] [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  ods budget"
+  }
+
   while getopts ":h" opt; do
     case $opt in
     h)
-      echo "Description: A function to create a .ods file in the current directory and open it"
-      echo "Usage: ods [filename]"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       ;;
     esac
   done
@@ -3089,17 +3162,28 @@ ods() {
 # Additionally, rework the whole function and make it more user-friendly
 
 filehash() {
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Generate hashes for files with various algorithms."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  filehash [options] [file] [method]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -m    Display available hash methods" \
+      "  -a    Run all hash methods on the file" \
+      "  -d    Run the specified method on each file in the current directory" \
+      "  -da   Run all methods on every file in the current directory"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  filehash test.txt sha256" \
+      "  filehash -d sha256"
+  }
+
   if [ "$1" = "-h" ]; then
     # Display help message if -h option is provided
-    echo "Description: A function to generate a hash of a file"
-    echo "Usage: filehash [file] [method]"
-    echo "Options:"
-    echo "  -h    Display this help message"
-    echo "  -m    Display available hash methods"
-    echo "  -a    Run all hash methods on the file"
-    echo "  -d    Iterate through the current directory and run the specified hash method on each file"
-    echo "  -da   Run all hash methods on all files in the current directory"
-    return
+    usage
+    return 0
   fi
   # Alias for the filehash function
   # alias fh="filehash"
@@ -3228,19 +3312,25 @@ filehash() {
 ################################################################################
 
 display_info() {
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Display key information about the Custom Bash Commands setup."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  display_info [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  display_info"
+  }
+
   while getopts ":h" opt; do
     case ${opt} in
     h)
-      echo "Description: A function to display information"
-      echo "Usage: display_info"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      echo " "
-      echo "Example: display_info"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       ;;
     esac
   done
@@ -3258,18 +3348,26 @@ updatecbc() {
   # Initialize OPTIND to 1 since it is a global variable within the script
   OPTIND=1
 
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Update the Custom Bash Commands repository and reload configuration."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  updatecbc [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  updatecbc"
+  }
+
   # Parse options using getopts
   while getopts ":h" opt; do
     case ${opt} in
     h)
-      echo "Description: A function to update the custom bash commands"
-      echo "Usage: updatecbc"
-      echo "Options:"
-      echo "  -h    Display this help message"
-      return
+      usage
+      return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       ;;
     esac
   done
@@ -3358,28 +3456,6 @@ fi
 # }
 
 ###################################################################################################################################################################
-# Ensure that ranger is installed, and if not install it.
-###################################################################################################################################################################
-
-# Function to check if ranger is installed and install it if necessary
-check_install_ranger() {
-  if ! command -v ranger &>/dev/null; then
-    echo "ranger not found. Install with chezmoi"
-  fi
-}
-
-###################################################################################################################################################################
-# Ensure thefuck is installed, and if not install it.
-###################################################################################################################################################################
-
-# Function to check if thefuck is installed and install it if necessary
-check_install_thefuck() {
-  if ! command -v thefuck &>/dev/null; then
-    echo "thefuck not found. Install using thefuck documentation as it is currently not updated"
-  fi
-}
-
-###################################################################################################################################################################
 # Ensure obsidian is installed, and if not install it.
 ###################################################################################################################################################################
 
@@ -3387,17 +3463,6 @@ check_install_thefuck() {
 check_install_obsidian() {
   if ! command -v obsidian &>/dev/null; then
     echo "obsidian not found. Install with chezmoi."
-  fi
-}
-
-###################################################################################################################################################################
-# Ensure fzf is installed, and if not install it.
-###################################################################################################################################################################
-
-# Function to check if fzf is installed and install it if necessary
-check_install_fzf() {
-  if ! command -v fzf &>/dev/null; then
-    echo "fzf not found. Install with chezmoi."
   fi
 }
 
@@ -3420,30 +3485,6 @@ check_install_fzf() {
 check_install_bat() {
   if ! command -v batcat &>/dev/null; then
     echo "bat not found. Install with chezmoi."
-  fi
-}
-
-###################################################################################################################################################################
-# Check if neovim is installed, and if it is, add it to PATH.
-###################################################################################################################################################################
-
-# Function to check if neovim is installed and add it to PATH
-check_install_neovim() {
-  if command -v nvim &>/dev/null; then
-    export PATH="$PATH:/opt/nvim-linux64/bin"
-    # If neovim is not installed, install it using "sudo apt install neovim"
-  else
-    echo "Neovim not found. Please install from https://github.com/neovim/neovim/releases"
-    echo "Download the nvim.appimage file, use 'chmod +x nvim.appimage' to make it executable, and run 'sudo mv nvim.appimage /bin/nvim' to install."
-
-    # Download the neovim appimage file
-    wget https://github.com/neovim/neovim/releases/download/v0.10.0/nvim.appimage
-
-    # Make the appimage file executable
-    chmod +x nvim.appimage
-
-    # Move the appimage file to /bin/nvim
-    sudo mv nvim.appimage /bin/nvim
   fi
 }
 
@@ -3484,27 +3525,9 @@ if command -v hstr &>/dev/null; then
   bind '"\C-r": "\e^ihstr -- \n"'
 fi
 
-##################################################################################################################################################################
+###############################################################################
 # Additional Software Installation
-###################################################################################################################################################################
-
-# Read the configuration file and check if NEOVIM=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${NEOVIM:=true}" == "true" ]]; then
-    # Call the function to check neovim installation and install neovim
-    check_install_neovim
-  fi
-fi
-
-# Read the configuration file and check if OBSIDIAN=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${OBSIDIAN:=false}" == "true" ]]; then
-    # Call the function to check obsidian installation and install obsidian
-    check_install_obsidian
-  fi
-fi
+###############################################################################
 
 # Read the configuration file and check if BAT=true
 if [[ -f "$CONFIG_FILE" ]]; then
@@ -3512,15 +3535,6 @@ if [[ -f "$CONFIG_FILE" ]]; then
   if [[ "${BAT:=false}" == "true" ]]; then
     # Call the function to check bat installation and install bat
     check_install_bat
-  fi
-fi
-
-# Read the configuration file and check if RANGER=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${RANGER:=true}" == "true" ]]; then
-    # Call the function to check ranger installation and install ranger
-    check_install_ranger
   fi
 fi
 
@@ -3533,61 +3547,44 @@ if [[ -f "$CONFIG_FILE" ]]; then
   fi
 fi
 
-# Read the configuration file and check if FZF=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${FZF:=false}" == "true" ]]; then
-    # Call the function to check fzf installation and install fzf
-    check_install_fzf
-  fi
-fi
-
 # Check if zoxide is installed, and if it is, source the zoxide init script
 if command -v zoxide &>/dev/null; then
   eval "$(zoxide init --cmd cd bash)"
 fi
 
-# Read the configuration file and check if THEFUCK=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "$THEFUCK" = "true" ]]; then
-    # Call the function to check thefuck installation and install thefuck
-    check_install_thefuck
-  fi
-fi
-
-# Read the configuration file and check if HSTR=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${HSTR:=true}" == "true" ]]; then
-    # Call the function to check hstr installation and install hstr
-    check_install_hstr
-  fi
-fi
-
-###################################################################################################################################################################
-###################################################################################################################################################################
+###############################################################################
+###############################################################################
 # EXPORTS
-###################################################################################################################################################################
-###################################################################################################################################################################
+###############################################################################
+###############################################################################
 
+###############################################################################
 # Remove history duplications
+###############################################################################
+
 export HISTCONTROL=ignoredups:erasedups
 
-# Set terminal behavior to mimic vim
-set -o vi
-
+###############################################################################
 # Set the default editor to neovim if and only if neovim is installed and set manpager as neovim
+###############################################################################
+
 if command -v nvim &>/dev/null; then
   export EDITOR=nvim
   export MANPAGER="nvim +Man!"
 fi
+###############################################################################
+###############################################################################
+# Set terminal behavior to mimic vim
+###############################################################################
+###############################################################################
 
-###################################################################################################################################################################
-###################################################################################################################################################################
+set -o vi
+
+###############################################################################
+###############################################################################
 # ZELLIJ COMPLETION (Turn into a module maybe?)
-###################################################################################################################################################################
-###################################################################################################################################################################
+###############################################################################
+###############################################################################
 
 _zellij() {
   local i cur prev opts cmds

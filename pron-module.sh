@@ -1,5 +1,109 @@
 #!/usr/bin/env bash
 
+# -------------------------------------------------------------------------------------------------
+# Charmbracelet Gum helpers (Catppuccin Mocha palette)
+# -------------------------------------------------------------------------------------------------
+
+# Only initialize styling helpers if they have not been defined already. This allows the module to
+# be sourced alongside custom_bash_commands.sh without overwriting shared helpers.
+if [ -z "${CBC_HAS_GUM+x}" ]; then
+  if command -v gum >/dev/null 2>&1; then
+    CBC_HAS_GUM=1
+  else
+    CBC_HAS_GUM=0
+  fi
+fi
+
+: "${CATPPUCCIN_ROSEWATER:=#f5e0dc}"
+: "${CATPPUCCIN_FLAMINGO:=#f2cdcd}"
+: "${CATPPUCCIN_PINK:=#f5c2e7}"
+: "${CATPPUCCIN_MAUVE:=#cba6f7}"
+: "${CATPPUCCIN_RED:=#f38ba8}"
+: "${CATPPUCCIN_MAROON:=#eba0ac}"
+: "${CATPPUCCIN_PEACH:=#fab387}"
+: "${CATPPUCCIN_YELLOW:=#f9e2af}"
+: "${CATPPUCCIN_GREEN:=#a6e3a1}"
+: "${CATPPUCCIN_TEAL:=#94e2d5}"
+: "${CATPPUCCIN_SKY:=#89dceb}"
+: "${CATPPUCCIN_SAPPHIRE:=#74c7ec}"
+: "${CATPPUCCIN_BLUE:=#89b4fa}"
+: "${CATPPUCCIN_LAVENDER:=#b4befe}"
+: "${CATPPUCCIN_TEXT:=#cdd6f4}"
+: "${CATPPUCCIN_SUBTEXT:=#a6adc8}"
+: "${CATPPUCCIN_OVERLAY:=#6c7086}"
+: "${CATPPUCCIN_SURFACE0:=#313244}"
+: "${CATPPUCCIN_SURFACE1:=#45475a}"
+: "${CATPPUCCIN_SURFACE2:=#585b70}"
+: "${CATPPUCCIN_BASE:=#1e1e2e}"
+
+if ! declare -f cbc_style_box >/dev/null 2>&1; then
+  cbc_style_box() {
+    local border_color="$1"
+    shift
+    if [ "$CBC_HAS_GUM" -eq 1 ]; then
+      gum style \
+        --border rounded \
+        --border-foreground "$border_color" \
+        --foreground "$CATPPUCCIN_TEXT" \
+        --background "$CATPPUCCIN_SURFACE0" \
+        --padding "0 2" \
+        --margin "0 0 1 0" \
+        "$@"
+    else
+      printf '%s\n' "$@"
+    fi
+  }
+fi
+
+if ! declare -f cbc_style_message >/dev/null 2>&1; then
+  cbc_style_message() {
+    local color="$1"
+    shift
+    if [ "$CBC_HAS_GUM" -eq 1 ]; then
+      gum style \
+        --foreground "$color" \
+        --background "$CATPPUCCIN_BASE" \
+        "$@"
+    else
+      printf '%s\n' "$*"
+    fi
+  }
+fi
+
+if ! declare -f cbc_confirm >/dev/null 2>&1; then
+  cbc_confirm() {
+    local prompt="$1"
+    shift
+    if [ "$CBC_HAS_GUM" -eq 1 ]; then
+      gum confirm \
+        --prompt.foreground "$CATPPUCCIN_LAVENDER" \
+        --selected.foreground "$CATPPUCCIN_GREEN" \
+        --selected.background "$CATPPUCCIN_SURFACE1" \
+        --unselected.foreground "$CATPPUCCIN_RED" \
+        "$prompt"
+    else
+      local response
+      read -r -p "$prompt [y/N]: " response
+      case "${response,,}" in
+      y | yes) return 0 ;;
+      *) return 1 ;;
+      esac
+    fi
+  }
+fi
+
+if ! declare -f cbc_spinner >/dev/null 2>&1; then
+  cbc_spinner() {
+    local title="$1"
+    shift
+    if [ "$CBC_HAS_GUM" -eq 1 ]; then
+      gum spin --spinner dot --title "$title" --title.foreground "$CATPPUCCIN_MAUVE" -- "$@"
+    else
+      "$@"
+    fi
+  }
+fi
+
 # This script will contain all of the logic associated with the pron module.
 # It should be sourced by the main script if the pron module is enabled.
 #
@@ -62,23 +166,29 @@
 pronlist() {
   # Function to display usage information for the script
   usage() {
-    cat <<EOF
-Usage: pronlist [-h] [-l]
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Processes each URL in the selected .txt file and uses yt-dlp with the _configs.txt" \
+      "  configuration file to generate a sanitized output file listing the downloaded titles."
 
-Options:
-  -h    Show this help message and exit
-  -l    Select and process a specific line from the selected .txt file
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  pronlist [-h] [-l]"
 
-Description:
-  Processes each URL in the selected .txt file and uses yt-dlp with the _configs.txt
-  configuration file to generate a sanitized output file listing the downloaded titles.
-EOF
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Show this help message and exit" \
+      "  -l    Select and process a specific line from the selected .txt file"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  pronlist" \
+      "  pronlist -l 3"
+
+    cbc_style_box "$CATPPUCCIN_LAVENDER" "Requires:" \
+      "  - _batch.txt: File containing URLs (one per line)" \
+      "  - _configs.txt: yt-dlp configuration file"
   }
 
   # Function to check the presence of the configuration file
   check_config_file() {
     if [ ! -f "_configs.txt" ]; then
-      echo "Error: _configs.txt not found in the current directory."
+      cbc_style_message "$CATPPUCCIN_RED" "Error: _configs.txt not found in the current directory."
       return 1
     fi
   }
@@ -89,7 +199,7 @@ EOF
     selected_file=$(find . -maxdepth 1 -name "*.txt" 2>/dev/null | fzf --prompt="Select a batch file: ")
 
     if [ -z "$selected_file" ]; then
-      echo "Error: No file selected."
+      cbc_style_message "$CATPPUCCIN_RED" "Error: No file selected."
       return 1
     fi
 
@@ -108,16 +218,11 @@ EOF
   # Function to prompt user whether to overwrite an existing file
   prompt_overwrite() {
     local file="$1"
-    read -p "File '$file' already exists. Overwrite? (y/N): " choice
-    case "$choice" in
-    [Yy]*)
-      return 0 # User chose to overwrite
-      ;;
-    *)
-      echo "Skipping existing file: $file"
-      return 1 # User declined overwrite
-      ;;
-    esac
+    if cbc_confirm "File '$file' already exists. Overwrite?"; then
+      return 0
+    fi
+    cbc_style_message "$CATPPUCCIN_YELLOW" "Skipping existing file: $file"
+    return 1
   }
 
   # Reset variables at the start
@@ -153,7 +258,7 @@ EOF
   if [ "$use_line_selection" = true ]; then
     line=$(cat "$batch_file" | fzf --prompt="Select a URL line: ")
     if [ -z "$line" ]; then
-      echo "Error: No URL selected."
+      cbc_style_message "$CATPPUCCIN_RED" "Error: No URL selected."
       return 1
     fi
 
@@ -165,17 +270,12 @@ EOF
       prompt_overwrite "$output_file" || return 0
     fi
 
-    echo " "
-    echo "################################################################################"
-    echo "Processing selected URL: $line"
-    echo "################################################################################"
-    echo " "
+    cbc_style_box "$CATPPUCCIN_LAVENDER" "Processing selected URL:" "  $line"
 
     # Execute yt-dlp and save the output to the file
     yt-dlp --cookies-from-browser brave -f b "$line" --print "%(title)s" | tee "$output_file"
 
-    echo " "
-    echo "Processing complete."
+    cbc_style_message "$CATPPUCCIN_GREEN" "Processing complete."
     reset_variables # Reset variables after processing
     return 0
   fi
@@ -195,18 +295,13 @@ EOF
       prompt_overwrite "$output_file" || continue
     fi
 
-    echo " "
-    echo "################################################################################"
-    echo "Processing URL: $line"
-    echo "################################################################################"
-    echo " "
+    cbc_style_box "$CATPPUCCIN_LAVENDER" "Processing URL:" "  $line"
 
     # Execute yt-dlp and save the output to the file
     yt-dlp --cookies-from-browser brave -f b "$line" --print "%(title)s" | tee "$output_file"
   done <"$batch_file"
 
-  echo " "
-  echo "Processing complete."
+  cbc_style_message "$CATPPUCCIN_GREEN" "Processing complete."
   reset_variables # Reset variables after all lines are processed
 }
 
@@ -231,7 +326,10 @@ sopen() {
   file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf --prompt="Select a .txt file: ")
 
   # If no file is selected, exit the function
-  [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
+  if [ -z "$file" ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "No file selected. Exiting..."
+    return 1
+  fi
 
   # Function to create a regex pattern from a line by:
   # 1) Converting all non-alphanumeric characters to spaces
@@ -276,7 +374,7 @@ sopen() {
         xdg-open "./$mp4" &
       done <<<"$mp4_files"
     else
-      echo "No .mp4 files found matching: '$line'"
+      cbc_style_message "$CATPPUCCIN_YELLOW" "No .mp4 files found matching: '$line'"
     fi
   done <"$file"
 }
@@ -302,7 +400,10 @@ sopenexact() {
   file=$(find . -maxdepth 1 -type f -name "*.txt" | fzf -e --prompt="Select a .txt file: ")
 
   # If no file is selected, exit the function
-  [[ -z "$file" ]] && echo "No file selected. Exiting..." && return 1
+  if [ -z "$file" ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "No file selected. Exiting..."
+    return 1
+  fi
 
   # Function to create a regex pattern from a line by:
   # 1) Converting all non-alphanumeric characters to spaces
@@ -347,7 +448,7 @@ sopenexact() {
         xdg-open "./$mp4" &
       done <<<"$mp4_files"
     else
-      echo "No .mp4 files found matching: '$line'"
+      cbc_style_message "$CATPPUCCIN_YELLOW" "No .mp4 files found matching: '$line'"
     fi
   done <"$file"
 }
@@ -370,12 +471,14 @@ sopenexact() {
 random() {
   # Function to display help message
   show_help() {
-    cat <<EOF
-Description: Function to open a random .mp4 file in the current directory
-Usage: random [-h]
-Options:
-  -h    Display this help message
-EOF
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Function to open a random .mp4 file in the current directory."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  random [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  random"
   }
 
   # Parse options using getopts
@@ -386,7 +489,7 @@ EOF
       return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       show_help
       return 1
       ;;
@@ -398,7 +501,7 @@ EOF
 
   # Check if there are any mp4 files
   if [ ${#mp4_files[@]} -eq 0 ] || [ ! -e "${mp4_files[0]}" ]; then
-    echo "No mp4 files found in the current directory."
+    cbc_style_message "$CATPPUCCIN_RED" "No mp4 files found in the current directory."
     return 1
   fi
 
@@ -410,11 +513,11 @@ EOF
 
   # Check if the file was opened successfully
   if [ $? -ne 0 ]; then
-    echo "Failed to open the file: $random_file"
+    cbc_style_message "$CATPPUCCIN_RED" "Failed to open the file: $random_file"
     return 1
   fi
 
-  echo "Opened: $random_file"
+  cbc_style_message "$CATPPUCCIN_GREEN" "Opened: $random_file"
 }
 
 # Place this entire function in your .bashrc or other shell configuration file.
@@ -437,14 +540,14 @@ sortalpha() {
   while getopts ":h" opt; do
     case $opt in
     h)
-      echo "Description: Function to sort files in the current directory alphabetically by extension"
-      echo "Usage: sortalpha [-h]"
-      echo "Options:"
-      echo "  -h    Display this help message"
+      cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+        "  Sort files in the current directory alphabetically grouped by extension."
+      cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  sortalpha [-h]"
+      cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
       return 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -455,7 +558,7 @@ sortalpha() {
   # HELPER: check if fzf is installed
   check_fzf_install() {
     if ! command -v fzf >/dev/null 2>&1; then
-      echo "fzf is not installed. Please install fzf first."
+      cbc_style_message "$CATPPUCCIN_RED" "fzf is not installed. Please install fzf first."
       return 1
     fi
   }
@@ -463,7 +566,7 @@ sortalpha() {
   # HELPER: check if the extension variable is empty
   check_ext() {
     if [ -z "$extension" ]; then
-      echo "No extension selected. Exiting..."
+      cbc_style_message "$CATPPUCCIN_RED" "No extension selected. Exiting..."
       return 1
     fi
   }
@@ -477,7 +580,7 @@ sortalpha() {
     check_ext || return 1
 
     # display a message to the user for the extension to sort files by
-    echo -e "\nSorting files by the following extension: $extension"
+    cbc_style_message "$CATPPUCCIN_SKY" "Sorting files by extension: $extension"
   }
 
   # HELPER: iterate through each file in the current directory and move to a new directory based on the first letter of the file
@@ -490,7 +593,7 @@ sortalpha() {
         mv "$first_letter"*."$extension" "$first_letter"/
       fi
     done
-    printf "\nFile sorting alphabetically completed successfully."
+    cbc_style_message "$CATPPUCCIN_GREEN" "File sorting alphabetically completed successfully."
   }
 
   # MAIN LOGIC
@@ -503,7 +606,7 @@ sortalpha() {
 
   # move files to new directories based on the first letter of the file
   move_files
-  printf "\nNo way to undo what you have just done... Maybe use ranger and manually move back? :)\n"
+  cbc_style_message "$CATPPUCCIN_SUBTEXT" "No way to undo what you have just done... Maybe use ranger and manually move back? :)"
 }
 
 ################################################################################
@@ -527,13 +630,15 @@ phsearch() {
 
   # Function to display help
   usage() {
-    cat <<EOF
-Usage: phsearch [-h]
-Options:
-  -h    Display this help message
-Description:
-  Prompts the user for a search term, constructs a search URL, and opens it.
-EOF
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Prompts the user for a search term, constructs a search URL, and opens it." \
+      "  Uses Gum for prompts when available."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  phsearch [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  phsearch"
   }
 
   # Parse options
@@ -552,7 +657,20 @@ EOF
   shift $((OPTIND - 1))
 
   # Prompt user for a search term
-  read -p "Enter search term: " search_term
+  if [ "$CBC_HAS_GUM" -eq 1 ]; then
+    search_term=$(gum input \
+      --prompt.foreground "$CATPPUCCIN_LAVENDER" \
+      --cursor.foreground "$CATPPUCCIN_GREEN" \
+      --placeholder "Enter search term..." \
+      --prompt "Search Term » ")
+  else
+    read -r -p "Enter search term: " search_term
+  fi
+
+  if [ -z "$search_term" ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "No search term entered. Exiting..."
+    return 1
+  fi
 
   # Replace spaces in the search term with '+' using parameter expansion
   formatted_term=${search_term// /+}
@@ -560,8 +678,15 @@ EOF
   # Construct the search URL
   search_url="https://www.pornhub.com/video/search?search=${formatted_term}"
 
-  # Open the URL in the default browser using nohup and xdg-open
-  nohup xdg-open "$search_url" >/dev/null 2>&1 &
+  cbc_style_message "$CATPPUCCIN_SKY" "🔍 Searching for: $search_term"
+  cbc_style_box "$CATPPUCCIN_TEAL" "URL:" "  $search_url"
+
+  if cbc_confirm "Open this search in your browser?"; then
+    nohup xdg-open "$search_url" >/dev/null 2>&1 &
+    cbc_style_message "$CATPPUCCIN_GREEN" "✅ Search opened successfully!"
+  else
+    cbc_style_message "$CATPPUCCIN_RED" "❌ Search canceled."
+  fi
 }
 
 ################################################################################################################################################################
