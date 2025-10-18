@@ -56,6 +56,17 @@ dependencies without need. |
 
 ## Implementation conventions
 
+### 0. Industry standards & best practices
+
+- **Adhere to widely accepted industry standards across all languages and
+  artifacts in this repository.** Follow shell scripting best practices
+  (POSIX-compatible Bash, defensive quoting, lint-friendly structure), ensure
+  documentation aligns with established technical writing guides, and model
+  automation or infrastructure changes after reputable sources (e.g., GNU,
+  Linux Foundation, Write the Docs). When unsure, reference authoritative style
+  guides or upstream project recommendations so that every change reflects
+  professional-quality craftsmanship.
+
 ### 1. Gum-aware UX
 
 - **Always use the `cbc_style_*`, `cbc_confirm`, `cbc_input`, and `cbc_spinner`
