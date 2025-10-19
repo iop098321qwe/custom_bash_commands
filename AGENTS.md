@@ -56,6 +56,17 @@ dependencies without need. |
 
 ## Implementation conventions
 
+### 0. Industry standards & best practices
+
+- **Adhere to widely accepted industry standards across all languages and
+  artifacts in this repository.** Follow shell scripting best practices
+  (POSIX-compatible Bash, defensive quoting, lint-friendly structure), ensure
+  documentation aligns with established technical writing guides, and model
+  automation or infrastructure changes after reputable sources (e.g., GNU,
+  Linux Foundation, Write the Docs). When unsure, reference authoritative style
+  guides or upstream project recommendations so that every change reflects
+  professional-quality craftsmanship.
+
 ### 1. Gum-aware UX
 
 - **Always use the `cbc_style_*`, `cbc_confirm`, `cbc_input`, and `cbc_spinner`
@@ -161,6 +172,37 @@ dependencies without need. |
 5. **Version coordination** – When modifying the `VERSION` constant, ensure
    related scripts (`.version`, release automation) and docs mention the correct
    release number.
+
+### 7. Markdown authoring standards
+
+- **Wrap Markdown text at 80 characters.** Line wrapping keeps diffs concise
+  and predictable for reviewers and future automation. Exceptions are allowed
+  for tables, URLs, code blocks, or other structures where wrapping would harm
+  readability or functionality. This mirrors the widely adopted [MD013
+  guideline][md013], so following it keeps the docs compatible with industry
+  tooling.
+- Prefer semantic heading levels that progress by one level at a time. Avoid
+  skipping from `##` to `####`, and keep heading text sentence case for
+  consistency with common technical documentation styles.
+- Use fenced code blocks with language hints (e.g., ```` ```bash ````) whenever
+  commands or configuration snippets are documented so that downstream tooling
+  can enable syntax highlighting.
+- Lists should be sentence cased, use parallel grammar, and keep ordered lists
+  for sequential tasks. This matches guidance from the Microsoft Writing Style
+  Guide and improves readability.
+- Whenever code changes introduce new behaviour, configuration steps, or other
+  user-facing adjustments, review `README.md` and expand it with the relevant
+  details. This includes usage instructions, dependency notes, screenshots, or
+  any other information that helps users understand the update. Treat the
+  README as the canonical user manual and update it in the same commit when the
+  change warrants documentation. Follow "Keep a Changelog" style summaries so
+  release notes and README guidance stay aligned.
+- README updates should follow docs-as-code best practices: include a brief
+  feature summary, prerequisites, installation or upgrade steps, usage
+  walkthroughs, and troubleshooting tips when applicable. Model the structure
+  after Write the Docs guidance so changes remain actionable for end users.
+
+[md013]: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md013
 
 ---
 
