@@ -829,7 +829,8 @@ smart_sort() {
       "    - time  : Sort by modification time (grouped by YYYY-MM)." \
       "    - size  : Sort by file size into categories (small, medium, large)."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  smart_sort [-h] [-i] [-m mode]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  smart_sort [-h] [-i] [-m mode]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h        Display this help message." \
@@ -1054,11 +1055,14 @@ random() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Function to open a random .mp4 file in the current directory."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  random [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  random [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  random"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  random"
   }
 
   while getopts ":h" opt; do
@@ -1115,7 +1119,8 @@ wiki() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Open the Custom Bash Commands wiki in your default browser."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  wiki [-h|-c|-C|-A|-F]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  wiki [-h|-c|-C|-A|-F]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
@@ -1184,13 +1189,15 @@ changes() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Open the Custom Bash Commands changelog in your default browser."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  changes [-h|-c]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  changes [-h|-c]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
       "  -c    Copy the changelog URL to the clipboard"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  changes"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  changes"
   }
 
   while getopts ":hc" opt; do
@@ -1232,11 +1239,14 @@ dotfiles() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Open the dotfiles repository in your default browser."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  dotfiles [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  dotfiles [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  dotfiles"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  dotfiles"
   }
 
   while getopts ":h" opt; do
@@ -1273,11 +1283,14 @@ setup_directories() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Create commonly used directories (Temporary, GitHub Repositories, Grymm's Grimoires)."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  setup_directories [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  setup_directories [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  setup_directories"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  setup_directories"
   }
 
   while getopts ":h" opt; do
@@ -1472,13 +1485,17 @@ display_version() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Displays the version number from the .custom_bash_commands file in the local repository."
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Alias:" "  dv"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Alias:" \
+      "  dv"
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  display_version"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  display_version"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_LAVENDER" "Example:" "  display_version"
+    cbc_style_box "$CATPPUCCIN_LAVENDER" "Example:" \
+      "  display_version"
   }
 
   OPTIND=1
@@ -1518,7 +1535,8 @@ cbcs() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Display a list of available custom commands in this script."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  cbcs [-h|-a]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbcs [-h|-a]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
@@ -2322,11 +2340,14 @@ backup() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Create a timestamped backup of a specified file."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  backup [file] [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  backup [file] [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  backup test.txt"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  backup test.txt"
   }
 
   while getopts ":h" opt; do
@@ -2399,7 +2420,8 @@ up() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Move up directories or jump to key locations with optional post-move actions."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  up [-h|-a|-r|-c|-p|-q|-l] [levels]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  up [-h|-a|-r|-c|-p|-q|-l] [levels]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
@@ -2538,11 +2560,14 @@ remove_all_cbc_configs() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Remove CBC-related configuration files from the system."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  remove_all_cbc_configs [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  remove_all_cbc_configs [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  remove_all_cbc_configs"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  remove_all_cbc_configs"
   }
 
   while getopts ":h" opt; do
@@ -2577,11 +2602,14 @@ mkdirs() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Create a directory (if needed) and switch into it."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  mkdirs [directory] [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  mkdirs [directory] [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  mkdirs test"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  mkdirs test"
   }
 
   while getopts ":h" opt; do
@@ -2630,7 +2658,8 @@ update() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Update the system with optional reboot, shutdown, or log display."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  update [-h|-r|-s|-l]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  update [-h|-r|-s|-l]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
@@ -2638,7 +2667,8 @@ update() {
       "  -s    Shutdown the system after updating" \
       "  -l    Display the log file path"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  update -r"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  update -r"
   }
 
   while getopts ":hrsl" opt; do
@@ -2809,7 +2839,8 @@ makeman() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Generate PDF manuals from man pages, optionally from a list."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  makeman [-h] [-f <file>] [-o <dir>] [-r] <command>"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  makeman [-h] [-f <file>] [-o <dir>] [-r] <command>"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h           Display this help message" \
@@ -2917,13 +2948,15 @@ regex_help() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Display regex cheat-sheets for different flavors."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  regex_help [-f|--flavor <flavor>] [-h|--help]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  regex_help [-f|--flavor <flavor>] [-h|--help]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -f|--flavor <flavor>    Specify the regex flavor (POSIX-extended, POSIX-basic, PCRE)" \
       "  -h|--help               Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  regex_help -f PCRE"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  regex_help -f PCRE"
   }
 
   # Check for arguments
@@ -3012,11 +3045,14 @@ extract() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Extract a variety of compressed archive formats."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  extract [file] [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  extract [file] [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  extract file.tar.gz"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  extract file.tar.gz"
   }
 
   while getopts ":h" opt; do
@@ -3074,11 +3110,14 @@ odt() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Create an .odt document in the current directory and open it with LibreOffice."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  odt [filename] [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  odt [filename] [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  odt meeting-notes"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  odt meeting-notes"
   }
 
   while getopts ":h" opt; do
@@ -3111,11 +3150,14 @@ ods() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Create an .ods spreadsheet in the current directory and open it with LibreOffice."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  ods [filename] [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  ods [filename] [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  ods budget"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  ods budget"
   }
 
   while getopts ":h" opt; do
@@ -3166,7 +3208,8 @@ filehash() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Generate hashes for files with various algorithms."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  filehash [options] [file] [method]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  filehash [options] [file] [method]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
@@ -3316,11 +3359,14 @@ display_info() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Display key information about the Custom Bash Commands setup."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  display_info [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  display_info [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  display_info"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  display_info"
   }
 
   while getopts ":h" opt; do
@@ -3352,11 +3398,14 @@ updatecbc() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Update the Custom Bash Commands repository and reload configuration."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  updatecbc [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  updatecbc [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  updatecbc"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  updatecbc"
   }
 
   # Parse options using getopts
