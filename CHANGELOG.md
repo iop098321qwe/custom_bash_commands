@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [304.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.0.1...v304.1.0) (2025-10-19)
+
+
+### Features
+
+* **agents file:** add agents file ([186b833](https://github.com/iop098321qwe/custom_bash_commands/commit/186b833713e4eabcb02910e986f8add882061029))
+
 ## [304.0.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.0.0...v304.0.1) (2025-10-18)
 
 
