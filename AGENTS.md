@@ -50,7 +50,7 @@ dependencies without need. |
    blocks triggered by the `-h` flag via `getopts`.
 4. The script sources `cbc_aliases.sh` near the end, appends itself to
    `~/.bashrc` through `append_to_bashrc`, and exposes helper commands like
-   `repeat`, `smart_sort`, `wiki`, and `changes`.
+  `repeat`, `smartsort`, `wiki`, and `changes`.
 
 ---
 
@@ -82,8 +82,12 @@ dependencies without need. |
 
 - Each function exposed to users **must implement a `-h` flag** (via `getopts`)
   that prints a `usage()` section using `cbc_style_box`. Follow the structure
-  seen in `batchopen`, `phopen`, `phsearch`, `pronlist`, `repeat`, `smart_sort`,
+  seen in `batchopen`, `phopen`, `phsearch`, `pronlist`, `repeat`, `smartsort`,
   etc.
+- `smartsort` supports extension, alphabet, modification time, size, and MIME
+  grouping modes. Preserve the `-d` destination flag, multi-selection prompts
+  that fall back gracefully when `fzf`/gum are unavailable, and the
+  compatibility shim that warns when `smart_sort` is called directly.
 - Default argument parsing should reset `OPTIND=1` at the start of every
   function to support re-entrancy.
 - For functions that accept interactive input, prefer `fzf` selectors (already
