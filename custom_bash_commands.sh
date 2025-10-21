@@ -905,7 +905,7 @@ smartsort() {
     if command -v fzf >/dev/null 2>&1; then
       mapfile -t selected_extensions < <(printf '%s\n' "${available[@]}" |
         fzf --multi --prompt="Extensions: " \
-          --header="Tab to toggle multiple extensions. Enter with none selected to include all." \
+          --header="Tab to toggle multiple extensions. (Esc for all)" \
           --height=12 --border)
     elif [ "$CBC_HAS_GUM" -eq 1 ]; then
       local selection=""
