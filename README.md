@@ -130,9 +130,10 @@ Popular functions:
 - **Media workflows:** `sopen`/`sopenexact` launch video files based on playlist
   patterns, `random` opens a random video, and `pronlist` manages batch download
   manifests that integrate with yt-dlp aliases.【F:custom_bash_commands.sh†L491-L686】【F:custom_bash_commands.sh†L1049-L1106】【F:custom_bash_commands.sh†L344-L489】
-- **File utilities:** `smart_sort` organizes files by extension, `extract`
-  handles archive formats, `filehash` computes checksums, and `regex_help`
-  surfaces common regular expression snippets.【F:custom_bash_commands.sh†L812-L1046】【F:custom_bash_commands.sh†L3008-L3167】【F:custom_bash_commands.sh†L2912-L3006】
+- **File utilities:** `smartsort` groups files by extension, alphabet, modified
+  date, size, or MIME type (with interactive refinements), `extract` handles
+  archive formats, `filehash` computes checksums, and `regex_help` surfaces
+  common regular expression snippets.【F:custom_bash_commands.sh†L809-L1332】【F:custom_bash_commands.sh†L3330-L3392】【F:custom_bash_commands.sh†L3498-L3599】【F:custom_bash_commands.sh†L3235-L3327】
 - **Reference helpers:** `wiki` jumps to the GitHub wiki, `dotfiles` opens the
   related dotfiles repository, and `makeman` scaffolds new man pages for your
   scripts.【F:custom_bash_commands.sh†L1108-L1176】【F:custom_bash_commands.sh†L1230-L1268】【F:custom_bash_commands.sh†L2798-L2910】
