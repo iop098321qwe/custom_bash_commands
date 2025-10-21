@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file. See [commit
 ### Features
 
 * **agents file:** add agents file ([186b833](https://github.com/iop098321qwe/custom_bash_commands/commit/186b833713e4eabcb02910e986f8add882061029))
+* **smartsort:** rename `smart_sort`, add destination flag, MIME grouping, and
+  richer interactive prompts for extensions, size buckets, and time
+  granularity.
 
 ## [304.0.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.0.0...v304.0.1) (2025-10-18)
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v304.1.1"
+VERSION="v304.2.0"
 
 # -------------------------------------------------------------------------------------------------
 # Charmbracelet Gum helpers (Catppuccin Mocha palette)
@@ -806,54 +806,271 @@ repeat() {
 }
 
 ################################################################################
-# SMART_SORT
+# SMARTSORT
 ################################################################################
 
-smart_sort() {
-  # Local variables initialization
-  local mode=""            # Sorting mode (ext, alpha, time, size)
-  local interactive_mode=0 # Flag for interactive mode (0: off, 1: on)
-  local extension=""       # Holds a specific extension if selected
-  local first_letter=""    # Holds the first letter of filenames during sorting
-  local file=""            # Temporary variable for file iteration
+smartsort() {
+  local mode=""            # Sorting mode (ext, alpha, time, size, type)
+  local interactive_mode=0 # Flag for interactive refinements
+  local target_dir="."     # Destination directory for sorted folders
+  local first_letter=""
+  local file=""
+  local time_grouping="month"
+  local type_granularity="top-level"
+  local small_threshold_bytes=1048576   # 1MB default
+  local medium_threshold_bytes=10485760 # 10MB default
+  local summary_details=""
+  local -a selected_extensions=()
 
-  # Reset getopts index for multiple calls
   OPTIND=1
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Sorts files in the current directory using different criteria." \
+      "  Organises files in the current directory according to the mode you choose." \
       "  Available modes:" \
-      "    - ext   : Sort by file extension." \
-      "    - alpha : Sort by the first letter of the filename." \
-      "    - time  : Sort by modification time (grouped by YYYY-MM)." \
-      "    - size  : Sort by file size into categories (small, medium, large)."
+      "    - ext   : Group by file extension (supports multi-selection)." \
+      "    - alpha : Group by the first character of the filename." \
+      "    - time  : Group by modification time (year, month, or day)." \
+      "    - size  : Group by file size buckets (customisable thresholds)." \
+      "    - type  : Group by MIME type (top-level or full type)."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  smart_sort [-h] [-i] [-m mode]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  smartsort [-h] [-i] [-m mode] [-d directory]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h        Display this help message." \
-      "  -i        Enable interactive mode for selecting options via fzf." \
-      "  -m mode   Specify sorting mode directly (ext|alpha|time|size)."
+      "  -h            Display this help message." \
+      "  -i            Enable interactive prompts for advanced configuration." \
+      "  -m mode       Specify the sorting mode directly (ext|alpha|time|size|type)." \
+      "  -d directory  Destination root for sorted folders (defaults to current directory)."
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
-      "  smart_sort -i" \
-      "  smart_sort -m ext" \
-      "  smart_sort -i -m size"
+      "  smartsort -i" \
+      "  smartsort -m type -d ./sorted" \
+      "  smartsort -i -m size"
   }
 
-  # Parse command-line options using getopts
-  while getopts ":hm:i" opt; do
+  smartsort_select_mode() {
+    local selection=""
+    if command -v fzf >/dev/null 2>&1; then
+      selection=$(printf "ext\nalpha\ntime\nsize\ntype\n" |
+        fzf --prompt="Select sorting mode: " --header="Choose how to organise files")
+    elif [ "$CBC_HAS_GUM" -eq 1 ]; then
+      selection=$(gum choose --cursor.foreground "$CATPPUCCIN_GREEN" \
+        --selected.foreground "$CATPPUCCIN_GREEN" \
+        --header "Select how to organise files" ext alpha time size type)
+    else
+      cbc_style_message "$CATPPUCCIN_SUBTEXT" "Enter sorting mode (ext/alpha/time/size/type):"
+      read -r selection
+    fi
+    printf '%s' "$selection"
+  }
+
+  smartsort_prompt_target_dir() {
+    local input
+    input=$(cbc_input "Destination directory (blank keeps current): " "$(pwd)/sorted")
+    if [ -n "$input" ]; then
+      target_dir="$input"
+    fi
+  }
+
+  smartsort_unique_extensions() {
+    local -a extensions=()
+    while IFS= read -r path; do
+      local base ext_label
+      base=${path#./}
+      if [[ "$base" == *.* && "$base" != .* ]]; then
+        ext_label=${base##*.}
+      else
+        ext_label="no-extension"
+      fi
+      extensions+=("$ext_label")
+    done < <(find . -maxdepth 1 -type f -print)
+
+    if [ "${#extensions[@]}" -eq 0 ]; then
+      return 1
+    fi
+
+    printf '%s\n' "${extensions[@]}" | sort -u
+    return 0
+  }
+
+  smartsort_choose_extensions() {
+    local -a available=()
+    if ! mapfile -t available < <(smartsort_unique_extensions); then
+      return 1
+    fi
+
+    cbc_style_message "$CATPPUCCIN_SUBTEXT" "Select extensions to include (leave empty to include all)."
+
+    if command -v fzf >/dev/null 2>&1; then
+      mapfile -t selected_extensions < <(printf '%s\n' "${available[@]}" |
+        fzf --multi --prompt="Extensions: " \
+          --header="Tab to toggle multiple extensions. (Esc for all)" \
+          --height=12 --border)
+    elif [ "$CBC_HAS_GUM" -eq 1 ]; then
+      local selection=""
+      if selection=$(gum choose --no-limit \
+        --cursor.foreground "$CATPPUCCIN_GREEN" \
+        --selected.foreground "$CATPPUCCIN_GREEN" \
+        --header "Select one or more extensions (Esc for all)" "${available[@]}"); then
+        if [ -n "$selection" ]; then
+          IFS=$'\n' read -r -a selected_extensions <<<"$selection"
+        else
+          selected_extensions=()
+        fi
+      else
+        local exit_code=$?
+        if [ $exit_code -eq 130 ] || [ -z "$selection" ]; then
+          selected_extensions=()
+        else
+          return $exit_code
+        fi
+      fi
+    else
+      local input
+      input=$(cbc_input "Extensions (space separated, blank for all): " "${available[*]}")
+      if [ -n "$input" ]; then
+        read -r -a selected_extensions <<<"$input"
+      else
+        selected_extensions=()
+      fi
+    fi
+
+    return 0
+  }
+
+  smartsort_get_mod_date() {
+    local path="$1"
+    local format="$2"
+    local mod_date=""
+
+    if mod_date=$(date -r "$path" +"$format" 2>/dev/null); then
+      printf '%s' "$mod_date"
+      return 0
+    fi
+
+    if mod_date=$(stat -f "%Sm" -t "$format" "$path" 2>/dev/null); then
+      printf '%s' "$mod_date"
+      return 0
+    fi
+
+    printf '%s' "unknown"
+    return 0
+  }
+
+  smartsort_get_file_size() {
+    local path="$1"
+    local size=""
+
+    if size=$(stat -c%s "$path" 2>/dev/null); then
+      printf '%s' "$size"
+      return 0
+    fi
+
+    if size=$(stat -f%z "$path" 2>/dev/null); then
+      printf '%s' "$size"
+      return 0
+    fi
+
+    return 1
+  }
+
+  smartsort_prompt_time_grouping() {
+    local selection=""
+    if command -v fzf >/dev/null 2>&1; then
+      selection=$(printf "month\nyear\nday\n" |
+        fzf --prompt="Select time grouping: " --header="Choose modification time grouping granularity")
+    elif [ "$CBC_HAS_GUM" -eq 1 ]; then
+      selection=$(gum choose --cursor.foreground "$CATPPUCCIN_GREEN" \
+        --selected.foreground "$CATPPUCCIN_GREEN" \
+        --header "Choose modification time grouping" month year day)
+    else
+      cbc_style_message "$CATPPUCCIN_SUBTEXT" "Group files by (month/year/day):"
+      read -r selection
+    fi
+
+    case "$selection" in
+    year) time_grouping="year" ;;
+    day) time_grouping="day" ;;
+    month | "") time_grouping="month" ;;
+    *)
+      cbc_style_message "$CATPPUCCIN_YELLOW" "Unknown selection '$selection'. Using month grouping."
+      time_grouping="month"
+      ;;
+    esac
+  }
+
+  smartsort_prompt_size_thresholds() {
+    cbc_style_message "$CATPPUCCIN_SUBTEXT" "Configure size buckets in whole megabytes (press Enter to keep defaults)."
+    local input_small
+    local input_medium
+
+    input_small=$(cbc_input "Max size for 'small' files (MB): " "$((small_threshold_bytes / 1024 / 1024))")
+    input_medium=$(cbc_input "Max size for 'medium' files (MB): " "$((medium_threshold_bytes / 1024 / 1024))")
+
+    if [ -n "$input_small" ]; then
+      if echo "$input_small" | grep -Eq '^[0-9]+$'; then
+        small_threshold_bytes=$((input_small * 1024 * 1024))
+      else
+        cbc_style_message "$CATPPUCCIN_RED" "Invalid value '$input_small'. Keeping default small bucket size."
+        small_threshold_bytes=1048576
+      fi
+    fi
+
+    if [ -n "$input_medium" ]; then
+      if echo "$input_medium" | grep -Eq '^[0-9]+$'; then
+        medium_threshold_bytes=$((input_medium * 1024 * 1024))
+      else
+        cbc_style_message "$CATPPUCCIN_RED" "Invalid value '$input_medium'. Keeping default medium bucket size."
+        medium_threshold_bytes=10485760
+      fi
+    fi
+
+    if [ "$medium_threshold_bytes" -le "$small_threshold_bytes" ]; then
+      cbc_style_message "$CATPPUCCIN_RED" "Medium bucket must be larger than small bucket. Reverting to defaults."
+      small_threshold_bytes=1048576
+      medium_threshold_bytes=10485760
+    fi
+  }
+
+  smartsort_prompt_type_granularity() {
+    local selection=""
+    if command -v fzf >/dev/null 2>&1; then
+      selection=$(printf "top-level\nfull\n" |
+        fzf --prompt="Select MIME grouping: " --header="Choose MIME granularity")
+    elif [ "$CBC_HAS_GUM" -eq 1 ]; then
+      selection=$(gum choose --cursor.foreground "$CATPPUCCIN_GREEN" \
+        --selected.foreground "$CATPPUCCIN_GREEN" \
+        --header "Choose MIME granularity" "top-level" full)
+    else
+      cbc_style_message "$CATPPUCCIN_SUBTEXT" "Group by MIME (top-level/full):"
+      read -r selection
+    fi
+
+    case "$selection" in
+    full) type_granularity="full" ;;
+    top-level | "") type_granularity="top-level" ;;
+    *)
+      cbc_style_message "$CATPPUCCIN_YELLOW" "Unknown selection '$selection'. Using top-level grouping."
+      type_granularity="top-level"
+      ;;
+    esac
+  }
+
+  while getopts ":hm:id:" opt; do
     case $opt in
     h)
       usage
       return 0
       ;;
     i)
-      interactive_mode=1 # Set interactive mode flag
+      interactive_mode=1
       ;;
     m)
-      mode="$OPTARG" # Set the sorting mode
+      mode="$OPTARG"
+      ;;
+    d)
+      target_dir="$OPTARG"
       ;;
     \?)
       cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
@@ -866,176 +1083,261 @@ smart_sort() {
     esac
   done
 
-  # Remove processed options from the positional parameters
   shift $((OPTIND - 1))
 
-  #####################################
-  # Default Behavior: Sort by Extension
-  #####################################
-  if [ -z "$mode" ] && [ "$interactive_mode" -eq 0 ]; then
-    mode="ext"
+  if [ -z "$target_dir" ]; then
+    target_dir="."
   fi
 
-  #####################################
-  # Process Interactive Mode Logic
-  #####################################
   if [ "$interactive_mode" -eq 1 ]; then
     if [ -z "$mode" ]; then
-      # If only -i flag is provided, enforce interactive selection.
-      # Check if fzf is installed.
-      if ! command -v fzf >/dev/null 2>&1; then
-        cbc_style_message "$CATPPUCCIN_RED" "fzf is not installed. Please install fzf to use interactive mode."
-        return 1
-      fi
-      # Interactive selection for sorting mode via fzf.
-      mode=$(printf "ext\nalpha\ntime\nsize" | fzf --prompt="Select sorting mode: ")
-      # If fzf returns an empty result, exit.
+      mode=$(smartsort_select_mode)
       if [ -z "$mode" ]; then
         cbc_style_message "$CATPPUCCIN_RED" "No sorting mode selected. Exiting..."
         return 1
       fi
     else
-      # If -i flag is used along with -m flag, interactive mode is disabled.
-      cbc_style_message "$CATPPUCCIN_SUBTEXT" "Note: Interactive mode (-i) is ignored when combined with other flags. Running non-interactively with mode: $mode"
-      interactive_mode=0
+      cbc_style_message "$CATPPUCCIN_SUBTEXT" "Interactive refinements enabled for mode: $mode"
+    fi
+
+    if [ "$target_dir" = "." ]; then
+      smartsort_prompt_target_dir
     fi
   fi
 
-  # If mode is still empty in non-interactive mode, display error and exit.
   if [ -z "$mode" ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "No sorting mode provided. Use -m flag or -i for interactive selection."
-    return 1
+    mode="ext"
   fi
 
-  #####################################
-  # Confirmation prompt before executing sorting
-  #####################################
-  cbc_style_box "$CATPPUCCIN_LAVENDER" "Selected Options:" \
-    "  Sorting Mode    : $mode" \
+  case "$mode" in
+  ext | alpha | time | size | type) ;;
+  *)
+    cbc_style_message "$CATPPUCCIN_RED" "Invalid sorting mode: $mode"
+    return 1
+    ;;
+  esac
+
+  if [ "$target_dir" != "." ]; then
+    if ! mkdir -p "$target_dir"; then
+      cbc_style_message "$CATPPUCCIN_RED" "Failed to create destination directory: $target_dir"
+      return 1
+    fi
+  fi
+
+  local absolute_target
+  absolute_target=$(cd "$target_dir" 2>/dev/null && pwd)
+  if [ -z "$absolute_target" ]; then
+    absolute_target="$target_dir"
+  fi
+
+  if [ -z "$(find . -maxdepth 1 -type f -print -quit)" ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" "No files found in the current directory to sort."
+    return 0
+  fi
+
+  if [ "$mode" = "ext" ] && [ "$interactive_mode" -eq 1 ]; then
+    if ! smartsort_choose_extensions; then
+      cbc_style_message "$CATPPUCCIN_YELLOW" "No files with extensions found for sorting."
+      return 0
+    fi
+  fi
+
+  if [ "$mode" = "time" ] && [ "$interactive_mode" -eq 1 ]; then
+    smartsort_prompt_time_grouping
+  fi
+
+  if [ "$mode" = "size" ] && [ "$interactive_mode" -eq 1 ]; then
+    smartsort_prompt_size_thresholds
+  fi
+
+  if [ "$mode" = "type" ] && [ "$interactive_mode" -eq 1 ]; then
+    smartsort_prompt_type_granularity
+  fi
+
+  case "$mode" in
+  ext)
+    if [ "${#selected_extensions[@]}" -gt 0 ]; then
+      summary_details="Extensions: ${selected_extensions[*]}"
+    else
+      summary_details="Extensions: all"
+    fi
+    ;;
+  time)
+    summary_details="Time grouping: $time_grouping"
+    ;;
+  size)
+    summary_details="Size buckets (MB): small≤$((small_threshold_bytes / 1024 / 1024)), medium≤$((medium_threshold_bytes / 1024 / 1024)), large>medium"
+    ;;
+  type)
+    summary_details="MIME grouping: $type_granularity"
+    ;;
+  *)
+    summary_details=""
+    ;;
+  esac
+
+  local -a summary_lines=(
+    "  Sorting Mode    : $mode"
     "  Interactive Mode: $([[ "$interactive_mode" -eq 1 ]] && echo Enabled || echo Disabled)"
+    "  Target Directory: $absolute_target"
+  )
+
+  if [ -n "$summary_details" ]; then
+    summary_lines+=("  Details         : $summary_details")
+  fi
+
+  cbc_style_box "$CATPPUCCIN_LAVENDER" "Selected Options:" "${summary_lines[@]}"
 
   if ! cbc_confirm "Proceed with sorting?"; then
     cbc_style_message "$CATPPUCCIN_YELLOW" "Sorting operation canceled."
     return 0
   fi
 
-  #####################################
-  # Sorting Mode Functions
-  #####################################
-
-  # Function to sort by file extension.
   sort_by_extension() {
-    # Interactive selection: choose to sort a specific extension or all extensions.
-    local choice
-    choice=$(printf "Select specific extension\nSort all by extension" | fzf --prompt="Choose option for extension sorting: ")
-    if [[ "$choice" == "Select specific extension" ]]; then
-      # List available file extensions interactively.
-      # TODO: Set up multi select for extensions to allow selective sorting
-      extension=$(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u | fzf --no-multi --prompt="Select an extension: ")
-      if [ -z "$extension" ]; then
-        cbc_style_message "$CATPPUCCIN_RED" "No extension selected. Exiting..."
-        return 1
-      fi
-      cbc_style_message "$CATPPUCCIN_BLUE" "Sorting files with extension: .$extension"
-      mkdir -p "$extension"
-      for file in *."$extension"; do
-        [ -f "$file" ] && mv "$file" "$extension"/ # Move each matching file
-      done
-      cbc_style_message "$CATPPUCCIN_GREEN" "Files with extension .$extension have been moved to directory: $extension"
-    elif [[ "$choice" == "Sort all by extension" ]]; then
-      local ext
-      for ext in $(find . -maxdepth 1 -type f | sed -n 's/.*\.\([^.]\+\)$/\1/p' | sort -u); do
-        mkdir -p "$ext"
-        for file in *."$ext"; do
-          [ -f "$file" ] && mv "$file" "$ext"/
-        done
-        cbc_style_message "$CATPPUCCIN_GREEN" "Files with extension .$ext have been moved to directory: $ext"
-      done
-    else
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid selection."
-      return 1
+    local include_all=1
+    local path=""
+
+    if [ "${#selected_extensions[@]}" -gt 0 ]; then
+      include_all=0
     fi
+
+    cbc_style_message "$CATPPUCCIN_BLUE" "Sorting files by extension..."
+
+    while IFS= read -r path; do
+      [ -f "$path" ] || continue
+      local base ext_label target_subdir matched=0
+      base=${path#./}
+      if [[ "$base" == *.* && "$base" != .* ]]; then
+        ext_label=${base##*.}
+      else
+        ext_label="no-extension"
+      fi
+
+      if [ "$include_all" -eq 0 ]; then
+        for selected in "${selected_extensions[@]}"; do
+          if [ "$selected" = "$ext_label" ]; then
+            matched=1
+            break
+          fi
+        done
+        if [ "$matched" -eq 0 ]; then
+          continue
+        fi
+      fi
+
+      target_subdir="$target_dir/$ext_label"
+      mkdir -p "$target_subdir"
+      mv "$path" "$target_subdir/"
+    done < <(find . -maxdepth 1 -type f -print)
+
+    cbc_style_message "$CATPPUCCIN_GREEN" "Files have been sorted into extension-based directories."
   }
 
-  # Function to sort files alphabetically by the first letter of the filename.
   sort_by_alpha() {
     cbc_style_message "$CATPPUCCIN_BLUE" "Sorting files alphabetically by the first letter..."
-    for file in *; do
-      if [ -f "$file" ]; then
-        # Extract the first letter and convert it to lowercase.
-        first_letter=$(echo "$file" | cut -c1 | tr '[:upper:]' '[:lower:]')
-        mkdir -p "$first_letter"
-        mv "$file" "$first_letter"/
+
+    while IFS= read -r path; do
+      [ -f "$path" ] || continue
+      local base letter target_subdir
+      base=${path#./}
+      letter=$(printf '%s' "$base" | cut -c1 | tr '[:upper:]' '[:lower:]')
+      if [ -z "$letter" ]; then
+        letter="misc"
       fi
-    done
-    cbc_style_message "$CATPPUCCIN_GREEN" "Files have been sorted into directories based on the first letter."
+      target_subdir="$target_dir/$letter"
+      mkdir -p "$target_subdir"
+      mv "$path" "$target_subdir/"
+    done < <(find . -maxdepth 1 -type f -print)
+
+    cbc_style_message "$CATPPUCCIN_GREEN" "Files have been sorted into directories based on their first letter."
   }
 
-  # TODO: Implement selecting the time format/grouping interactively, and default to the current implementation. (Using fzf)
-  #
-  # Function to sort files by modification time (grouped by year-month).
   sort_by_time() {
-    cbc_style_message "$CATPPUCCIN_BLUE" "Sorting files by modification time (grouped as YYYY-MM)..."
-    for file in *; do
-      if [ -f "$file" ]; then
-        # Retrieve the file's modification date in YYYY-MM format.
-        local mod_date
-        mod_date=$(date -r "$file" +"%Y-%m")
-        mkdir -p "$mod_date"
-        mv "$file" "$mod_date"/
+    local date_format="%Y-%m"
+    case "$time_grouping" in
+    year) date_format="%Y" ;;
+    day) date_format="%Y-%m-%d" ;;
+    *) date_format="%Y-%m" ;;
+    esac
+
+    cbc_style_message "$CATPPUCCIN_BLUE" "Sorting files by modification time..."
+
+    while IFS= read -r path; do
+      [ -f "$path" ] || continue
+      local mod_date target_subdir
+      mod_date=$(smartsort_get_mod_date "$path" "$date_format")
+      if [ -z "$mod_date" ]; then
+        mod_date="unknown"
       fi
-    done
-    cbc_style_message "$CATPPUCCIN_GREEN" "Files have been sorted into directories based on modification date."
+      target_subdir="$target_dir/$mod_date"
+      mkdir -p "$target_subdir"
+      mv "$path" "$target_subdir/"
+    done < <(find . -maxdepth 1 -type f -print)
+
+    cbc_style_message "$CATPPUCCIN_GREEN" "Files have been sorted into date-based directories."
   }
 
-  # TODO: Implement selecting the size categories interactively, and defaulting to the current implementation. (Using fzf)
-  #
-  # Function to sort files by file size into categories:
-  #   - small:  < 1MB
-  #   - medium: 1MB to 10MB
-  #   - large:  > 10MB
   sort_by_size() {
-    cbc_style_message "$CATPPUCCIN_BLUE" "Sorting files by size into categories: small (<1MB), medium (1MB-10MB), large (>10MB)..."
-    for file in *; do
-      if [ -f "$file" ]; then
-        # Get the file size in bytes.
-        local size
-        size=$(stat -c%s "$file")
-        local category=""
-        if [ "$size" -lt 1048576 ]; then
-          category="small"
-        elif [ "$size" -lt 10485760 ]; then
-          category="medium"
-        else
-          category="large"
-        fi
-        mkdir -p "$category"
-        mv "$file" "$category"/
+    cbc_style_message "$CATPPUCCIN_BLUE" "Sorting files by size into categories..."
+
+    while IFS= read -r path; do
+      [ -f "$path" ] || continue
+      local size category="unknown" target_subdir
+      if ! size=$(smartsort_get_file_size "$path"); then
+        cbc_style_message "$CATPPUCCIN_YELLOW" "Unable to determine size for $path. Skipping."
+        continue
       fi
-    done
-    cbc_style_message "$CATPPUCCIN_GREEN" "Files have been sorted into size categories: small, medium, and large."
+
+      if [ "$size" -lt "$small_threshold_bytes" ]; then
+        category="small"
+      elif [ "$size" -lt "$medium_threshold_bytes" ]; then
+        category="medium"
+      else
+        category="large"
+      fi
+
+      target_subdir="$target_dir/$category"
+      mkdir -p "$target_subdir"
+      mv "$path" "$target_subdir/"
+    done < <(find . -maxdepth 1 -type f -print)
+
+    cbc_style_message "$CATPPUCCIN_GREEN" "Files have been sorted into size-based directories."
   }
 
-  #####################################
-  # Main Logic: Execute Selected Sorting Mode
-  #####################################
+  sort_by_type() {
+    if ! command -v file >/dev/null 2>&1; then
+      cbc_style_message "$CATPPUCCIN_RED" "The 'file' command is required for type sorting."
+      return 1
+    fi
+
+    cbc_style_message "$CATPPUCCIN_BLUE" "Sorting files by MIME type..."
+
+    while IFS= read -r path; do
+      [ -f "$path" ] || continue
+      local mime category target_subdir
+      mime=$(file --brief --mime-type "$path")
+      if [ "$type_granularity" = "full" ]; then
+        category=${mime//\//_}
+      else
+        category=${mime%%/*}
+      fi
+      if [ -z "$category" ]; then
+        category="unknown"
+      fi
+      target_subdir="$target_dir/$category"
+      mkdir -p "$target_subdir"
+      mv "$path" "$target_subdir/"
+    done < <(find . -maxdepth 1 -type f -print)
+
+    cbc_style_message "$CATPPUCCIN_GREEN" "Files have been sorted into MIME type directories."
+  }
+
   case "$mode" in
-  ext)
-    sort_by_extension || return 1
-    ;;
-  alpha)
-    sort_by_alpha || return 1
-    ;;
-  time)
-    sort_by_time || return 1
-    ;;
-  size)
-    sort_by_size || return 1
-    ;;
-  *)
-    cbc_style_message "$CATPPUCCIN_RED" "Invalid sorting mode: $mode"
-    return 1
-    ;;
+  ext) sort_by_extension || return 1 ;;
+  alpha) sort_by_alpha || return 1 ;;
+  time) sort_by_time || return 1 ;;
+  size) sort_by_size || return 1 ;;
+  type) sort_by_type || return 1 ;;
   esac
 
   cbc_style_message "$CATPPUCCIN_GREEN" "Sorting operation completed successfully."
@@ -1054,11 +1356,14 @@ random() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Function to open a random .mp4 file in the current directory."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  random [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  random [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  random"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  random"
   }
 
   while getopts ":h" opt; do
@@ -1115,7 +1420,8 @@ wiki() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Open the Custom Bash Commands wiki in your default browser."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  wiki [-h|-c|-C|-A|-F]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  wiki [-h|-c|-C|-A|-F]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
@@ -1184,13 +1490,15 @@ changes() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Open the Custom Bash Commands changelog in your default browser."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  changes [-h|-c]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  changes [-h|-c]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
       "  -c    Copy the changelog URL to the clipboard"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  changes"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  changes"
   }
 
   while getopts ":hc" opt; do
@@ -1232,11 +1540,14 @@ dotfiles() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Open the dotfiles repository in your default browser."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  dotfiles [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  dotfiles [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  dotfiles"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  dotfiles"
   }
 
   while getopts ":h" opt; do
@@ -1273,11 +1584,14 @@ setup_directories() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Create commonly used directories (Temporary, GitHub Repositories, Grymm's Grimoires)."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  setup_directories [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  setup_directories [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  setup_directories"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  setup_directories"
   }
 
   while getopts ":h" opt; do
@@ -1472,13 +1786,17 @@ display_version() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Displays the version number from the .custom_bash_commands file in the local repository."
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Alias:" "  dv"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Alias:" \
+      "  dv"
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  display_version"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  display_version"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_LAVENDER" "Example:" "  display_version"
+    cbc_style_box "$CATPPUCCIN_LAVENDER" "Example:" \
+      "  display_version"
   }
 
   OPTIND=1
@@ -1518,7 +1836,8 @@ cbcs() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Display a list of available custom commands in this script."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  cbcs [-h|-a]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbcs [-h|-a]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
@@ -2322,11 +2641,14 @@ backup() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Create a timestamped backup of a specified file."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  backup [file] [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  backup [file] [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  backup test.txt"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  backup test.txt"
   }
 
   while getopts ":h" opt; do
@@ -2399,7 +2721,8 @@ up() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Move up directories or jump to key locations with optional post-move actions."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  up [-h|-a|-r|-c|-p|-q|-l] [levels]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  up [-h|-a|-r|-c|-p|-q|-l] [levels]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
@@ -2538,11 +2861,14 @@ remove_all_cbc_configs() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Remove CBC-related configuration files from the system."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  remove_all_cbc_configs [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  remove_all_cbc_configs [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  remove_all_cbc_configs"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  remove_all_cbc_configs"
   }
 
   while getopts ":h" opt; do
@@ -2577,11 +2903,14 @@ mkdirs() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Create a directory (if needed) and switch into it."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  mkdirs [directory] [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  mkdirs [directory] [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  mkdirs test"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  mkdirs test"
   }
 
   while getopts ":h" opt; do
@@ -2630,7 +2959,8 @@ update() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Update the system with optional reboot, shutdown, or log display."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  update [-h|-r|-s|-l]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  update [-h|-r|-s|-l]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
@@ -2638,7 +2968,8 @@ update() {
       "  -s    Shutdown the system after updating" \
       "  -l    Display the log file path"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  update -r"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  update -r"
   }
 
   while getopts ":hrsl" opt; do
@@ -2809,7 +3140,8 @@ makeman() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Generate PDF manuals from man pages, optionally from a list."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  makeman [-h] [-f <file>] [-o <dir>] [-r] <command>"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  makeman [-h] [-f <file>] [-o <dir>] [-r] <command>"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h           Display this help message" \
@@ -2917,13 +3249,15 @@ regex_help() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Display regex cheat-sheets for different flavors."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  regex_help [-f|--flavor <flavor>] [-h|--help]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  regex_help [-f|--flavor <flavor>] [-h|--help]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -f|--flavor <flavor>    Specify the regex flavor (POSIX-extended, POSIX-basic, PCRE)" \
       "  -h|--help               Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  regex_help -f PCRE"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  regex_help -f PCRE"
   }
 
   # Check for arguments
@@ -3012,11 +3346,14 @@ extract() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Extract a variety of compressed archive formats."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  extract [file] [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  extract [file] [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  extract file.tar.gz"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  extract file.tar.gz"
   }
 
   while getopts ":h" opt; do
@@ -3074,11 +3411,14 @@ odt() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Create an .odt document in the current directory and open it with LibreOffice."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  odt [filename] [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  odt [filename] [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  odt meeting-notes"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  odt meeting-notes"
   }
 
   while getopts ":h" opt; do
@@ -3111,11 +3451,14 @@ ods() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Create an .ods spreadsheet in the current directory and open it with LibreOffice."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  ods [filename] [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  ods [filename] [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  ods budget"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  ods budget"
   }
 
   while getopts ":h" opt; do
@@ -3166,7 +3509,8 @@ filehash() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Generate hashes for files with various algorithms."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  filehash [options] [file] [method]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  filehash [options] [file] [method]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
@@ -3316,11 +3660,14 @@ display_info() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Display key information about the Custom Bash Commands setup."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  display_info [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  display_info [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  display_info"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  display_info"
   }
 
   while getopts ":h" opt; do
@@ -3352,11 +3699,14 @@ updatecbc() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Update the Custom Bash Commands repository and reload configuration."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" "  updatecbc [-h]"
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  updatecbc [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" "  -h    Display this help message"
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" "  updatecbc"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  updatecbc"
   }
 
   # Parse options using getopts
