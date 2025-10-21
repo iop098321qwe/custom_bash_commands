@@ -905,13 +905,27 @@ smartsort() {
     if command -v fzf >/dev/null 2>&1; then
       mapfile -t selected_extensions < <(printf '%s\n' "${available[@]}" |
         fzf --multi --prompt="Extensions: " \
-          --header="Tab to toggle multiple extensions. Enter with none selected to include all." \
+          --header="Tab to toggle multiple extensions. (Esc for all)" \
           --height=12 --border)
     elif [ "$CBC_HAS_GUM" -eq 1 ]; then
-      mapfile -t selected_extensions < <(gum choose --no-limit \
+      local selection=""
+      if selection=$(gum choose --no-limit \
         --cursor.foreground "$CATPPUCCIN_GREEN" \
         --selected.foreground "$CATPPUCCIN_GREEN" \
-        --header "Select one or more extensions (Esc for all)" "${available[@]}")
+        --header "Select one or more extensions (Esc for all)" "${available[@]}"); then
+        if [ -n "$selection" ]; then
+          IFS=$'\n' read -r -a selected_extensions <<<"$selection"
+        else
+          selected_extensions=()
+        fi
+      else
+        local exit_code=$?
+        if [ $exit_code -eq 130 ] || [ -z "$selection" ]; then
+          selected_extensions=()
+        else
+          return $exit_code
+        fi
+      fi
     else
       local input
       input=$(cbc_input "Extensions (space separated, blank for all): " "${available[*]}")
