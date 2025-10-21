@@ -817,7 +817,7 @@ smartsort() {
   local file=""
   local time_grouping="month"
   local type_granularity="top-level"
-  local small_threshold_bytes=1048576  # 1MB default
+  local small_threshold_bytes=1048576   # 1MB default
   local medium_threshold_bytes=10485760 # 10MB default
   local summary_details=""
   local -a selected_extensions=()
@@ -852,7 +852,7 @@ smartsort() {
   smartsort_select_mode() {
     local selection=""
     if command -v fzf >/dev/null 2>&1; then
-      selection=$(printf "ext\nalpha\ntime\nsize\ntype\n" | \
+      selection=$(printf "ext\nalpha\ntime\nsize\ntype\n" |
         fzf --prompt="Select sorting mode: " --header="Choose how to organise files")
     elif [ "$CBC_HAS_GUM" -eq 1 ]; then
       selection=$(gum choose --cursor.foreground "$CATPPUCCIN_GREEN" \
@@ -903,7 +903,7 @@ smartsort() {
     cbc_style_message "$CATPPUCCIN_SUBTEXT" "Select extensions to include (leave empty to include all)."
 
     if command -v fzf >/dev/null 2>&1; then
-      mapfile -t selected_extensions < <(printf '%s\n' "${available[@]}" | \
+      mapfile -t selected_extensions < <(printf '%s\n' "${available[@]}" |
         fzf --multi --prompt="Extensions: " \
           --header="Tab to toggle multiple extensions. Enter with none selected to include all." \
           --height=12 --border)
@@ -964,7 +964,7 @@ smartsort() {
   smartsort_prompt_time_grouping() {
     local selection=""
     if command -v fzf >/dev/null 2>&1; then
-      selection=$(printf "month\nyear\nday\n" | \
+      selection=$(printf "month\nyear\nday\n" |
         fzf --prompt="Select time grouping: " --header="Choose modification time grouping granularity")
     elif [ "$CBC_HAS_GUM" -eq 1 ]; then
       selection=$(gum choose --cursor.foreground "$CATPPUCCIN_GREEN" \
@@ -1022,7 +1022,7 @@ smartsort() {
   smartsort_prompt_type_granularity() {
     local selection=""
     if command -v fzf >/dev/null 2>&1; then
-      selection=$(printf "top-level\nfull\n" | \
+      selection=$(printf "top-level\nfull\n" |
         fzf --prompt="Select MIME grouping: " --header="Choose MIME granularity")
     elif [ "$CBC_HAS_GUM" -eq 1 ]; then
       selection=$(gum choose --cursor.foreground "$CATPPUCCIN_GREEN" \
@@ -1328,11 +1328,6 @@ smartsort() {
 
   cbc_style_message "$CATPPUCCIN_GREEN" "Sorting operation completed successfully."
   cbc_style_message "$CATPPUCCIN_SUBTEXT" "There is no way to undo what you just did. Stay tuned for possible undo in the future."
-}
-
-smart_sort() {
-  cbc_style_message "$CATPPUCCIN_YELLOW" "smart_sort has been renamed to smartsort. Redirecting..."
-  smartsort "$@"
 }
 
 ################################################################################
