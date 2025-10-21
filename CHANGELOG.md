@@ -2,15 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [304.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.1.0...v304.2.0) (2025-10-21)
+
+
+### Features
+
+* **smartsort:** expand interactive sorting options ([69d7327](https://github.com/iop098321qwe/custom_bash_commands/commit/69d7327e7439f358bb2e3419cdca01c448218836))
+
+
+### Bug Fixes
+
+* **function:** fix wording in smartsort interactive ([a0db78f](https://github.com/iop098321qwe/custom_bash_commands/commit/a0db78fe6992d2d6fcda43b058e86e97b3667ecb))
+* **function:** remove message for smart_sort ([7c5a9bc](https://github.com/iop098321qwe/custom_bash_commands/commit/7c5a9bc1311c084db99dd6a3635c1e10a74236d1))
+* **smartsort:** allow empty gum selection ([3d5950c](https://github.com/iop098321qwe/custom_bash_commands/commit/3d5950c709f25767b8f06c70456884006c4fddfe))
+
 ## [304.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.0.1...v304.1.0) (2025-10-19)
 
 
 ### Features
 
 * **agents file:** add agents file ([186b833](https://github.com/iop098321qwe/custom_bash_commands/commit/186b833713e4eabcb02910e986f8add882061029))
-* **smartsort:** rename `smart_sort`, add destination flag, MIME grouping, and
-  richer interactive prompts for extensions, size buckets, and time
-  granularity.
 
 ## [304.0.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.0.0...v304.0.1) (2025-10-18)
 
