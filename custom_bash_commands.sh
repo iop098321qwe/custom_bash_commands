@@ -1609,13 +1609,19 @@ setup_directories() {
 
   shift $((OPTIND - 1))
 
-  # Create the Temporary directory if it does not exist
+  # Create the 'screenshots' directory if it does not exist
   mkdir -p ~/Documents/Temporary/screenshots/
 
-  # Create the GitHub Repositories directory if it does not exist
+  # Create the 'recordings/raw' directory if it does not exist
+  mkdir -p ~/Documents/Temporary/recordings/raw/
+
+  # Create the 'recordings/edited' directory if it does not exist
+  mkdir -p ~/Documents/Temporary/recordings/edited/
+
+  # Create the 'github_repositories' directory if it does not exist
   mkdir -p ~/Documents/github_repositories
 
-  # Create the Grymm's Grimoires directory if it does not exist
+  # Create the 'grymms_grimoires' directory if it does not exist
   mkdir -p ~/Documents/grymms_grimoires/
 }
 
