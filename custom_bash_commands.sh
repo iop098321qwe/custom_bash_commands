@@ -3755,34 +3755,7 @@ updatecbc() {
 # Call the function to display information
 ###############################################################################
 
-# Read the configuration file and check if BAT=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${BAT:=false}" == "true" ]]; then
-    # Call the function to check bat installation and install bat
-    check_install_bat
-  fi
-fi
-
-# Read the configuration file and check if ZOXIDE=true
-if [[ -f "$CONFIG_FILE" ]]; then
-  source "$CONFIG_FILE"
-  if [[ "${ZOXIDE:=false}" == "true" ]]; then
-    # Call the function to check zoxide installation and install zoxide
-    check_install_zoxide
-  fi
-fi
-
-# Check if zoxide is installed, and if it is, source the zoxide init script
-if command -v zoxide &>/dev/null; then
-  eval "$(zoxide init --cmd cd bash)"
-fi
-
-###############################################################################
-###############################################################################
-# EXPORTS
-###############################################################################
-###############################################################################
+display_info
 
 ###############################################################################
 # Remove history duplications
