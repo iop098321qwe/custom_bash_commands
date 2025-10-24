@@ -121,8 +121,11 @@ matching reality.
 
 ## Markdown authoring standards
 
-- Wrap Markdown text at 80 characters. Tables, URLs, and code fences may exceed
-  the limit for clarity.
+- Wrap Markdown text at 80 characters. The following exceptions may exceed the
+  limit for clarity:
+  - Tables, including the repository orientation table in this handbook.
+  - URLs that would lose meaning if broken up.
+  - Code fences where formatting requires longer lines.
 - Use sequential heading levels (e.g., `##` → `###`) and sentence case titles.
 - Annotate code examples with language fences (```` ```bash ````) when
   applicable.
