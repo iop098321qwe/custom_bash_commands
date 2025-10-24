@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [305.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.2.0...v305.0.0) (2025-10-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **versioning:** hard reset with clean codebase
+
+* **versioning:** adjust version number ([c014918](https://github.com/iop098321qwe/custom_bash_commands/commit/c014918e9b1e000eeeaaf23c548f17045ff0fe03))
+
+
+### Features
+
+* **aliases:** remove unused aliases ([f59e360](https://github.com/iop098321qwe/custom_bash_commands/commit/f59e3600b81ecca1c234b8da95edefba23a109e9))
+* **autocomplete:** remove cht.sh autocomplete ([bda21c3](https://github.com/iop098321qwe/custom_bash_commands/commit/bda21c361fc2dd22320c9691e53727616050f71b))
+* **function:** add more directories to setup_directories function ([27654ff](https://github.com/iop098321qwe/custom_bash_commands/commit/27654ffa532726762150749ff076139de6ba9d59))
+* **function:** remove `up` function ([0f581db](https://github.com/iop098321qwe/custom_bash_commands/commit/0f581dbd3f5611e7c7cf809fbdfbb371d3a4f253))
+* **function:** remove check_install functions ([fe633d1](https://github.com/iop098321qwe/custom_bash_commands/commit/fe633d197d242297e0745bdce53173b144d4d932))
+* **terminal settings:** move terminal settings to .bashrc ([b8e97e1](https://github.com/iop098321qwe/custom_bash_commands/commit/b8e97e13a46dcb05401f8d14a4ca1a16d42cd2db))
+
+
+### Bug Fixes
+
+* **file:** remove any references to deprecated .version file ([8fdbaba](https://github.com/iop098321qwe/custom_bash_commands/commit/8fdbaba462188e1d39ba077e2ad3d43f103c75aa))
+
 ## [304.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.1.0...v304.2.0) (2025-10-21)
 
 
