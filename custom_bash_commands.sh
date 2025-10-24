@@ -3482,27 +3482,6 @@ ods() {
 # FILEHASH
 ################################################################################
 
-# Describe the filehash function and its options and usage
-
-# filehash
-# Description: A function to generate a hash of a file
-# Usage: filehash [file] [method]
-# Options:
-#   -h    Display this help message
-#   -d    Iterate through the current directory and run the specified hash method on each file
-#   -a    Run all hash methods on the file
-#   -da   Run all hash methods on all files in the current directory
-
-# Example: filehash test.txt sha256  ---Generates a sha256 hash of test.txt.
-# Example: filehash -d sha256  ---Generates a sha256 hash of each file in the current directory.
-# Example: filehash -a test.txt  ---Runs all hash methods on test.txt.
-# Example: filehash -da  ---Runs all hash methods on all files in the current directory.
-
-# Define the filehash function to generate a hash of a file
-
-# TODO: add usage function, fix getopts section, and fix the main logic
-# Additionally, rework the whole function and make it more user-friendly
-
 filehash() {
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
