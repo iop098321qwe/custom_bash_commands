@@ -2598,8 +2598,6 @@ cbcs() {
       echo "pronupdate"
       echo "pu"
       echo "regex_help"
-      echo "remove_all_cbc_configs"
-      echo "remove_session_id_config"
       echo "rm"
       echo "rma"
       echo "s"
