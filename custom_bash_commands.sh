@@ -1917,7 +1917,7 @@ cbcs() {
       echo "          Aliases: 'di'"
       echo " "
       echo "display_version"
-      echo "          Description: Display the version number from the .version file"
+      echo "          Description: Display the version number from the custom_bash_commands file"
       echo "          Usage: display_version"
       echo "          Aliases: 'dv'"
       echo " "
@@ -3295,7 +3295,6 @@ updatecbc() {
   # List of file paths to download and move
   FILE_PATHS=(
     custom_bash_commands.sh
-    .version
     cbc_aliases.sh
   )
 
