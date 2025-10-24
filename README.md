@@ -32,33 +32,15 @@ users know which features loaded successfully.【F:custom_bash_commands.sh†L15
 
 | Path | Purpose |
 | --- | --- |
-| `custom_bash_commands.sh` | Main entry point. Defines gum-aware UI helpers,
-  configures onboarding tasks, implements feature functions, and triggers the
-  initial status output when sourced.【F:custom_bash_commands.sh†L1-L3357】 |
-| `cbc_aliases.sh` | Catalog of navigation shortcuts, Git aliases, fuzzy
-  wrappers, media launchers, and helper shorthands that keep the main script
-  modular.【F:cbc_aliases.sh†L1-L135】 |
-| `new_update_commands.sh` | Provisioning script that copies the main script,
-  bootstrap helpers, and release metadata into the home directory, ensures
-  expected folders exist, verifies the repository lives under
-  `~/Documents/github_repositories/custom_bash_commands`, and appends sourcing
-  lines to `~/.bashrc`.【F:new_update_commands.sh†L1-L43】 |
-| `.cbcconfig/apt_packages.conf` | Optional package manifest that records apt
-  software to install alongside CBC.【F:.cbcconfig/apt_packages.conf†L1-L23】 |
-| `.testing_setup.sh` | Helper for staging a parallel "test" install of CBC by
-  copying the main script, `update_commands.sh`, and `.version` into temporary
-  dotfiles before sourcing them from `.bashrc`.【F:.testing_setup.sh†L1-L23】 |
-| `docs/` | Reference documentation covering dependency expectations, SOPs for
-  adding functions or aliases, and the current TODO backlog.【F:docs/dependencies.md†L1-L24】【F:docs/standard_operating_procedures.md†L1-L72】【F:docs/todo.md†L1-L81】 |
-| `managed_context/` & `test_suite_analysis/` | Metadata captured from prior AI
-  sessions and test runs. The JSON files are informational and do not affect
-  runtime behavior.【F:managed_context/metadata.json†L1-L1】【F:test_suite_analysis/metadata.json†L1-L1】 |
-| `node_modules/` | Vendored tooling used for release automation (e.g.,
-  `npx commit-and-tag-version`, exposed via the `ver` alias). Avoid modifying or
-  expanding the dependency tree unless a release workflow change requires it.
-  【F:cbc_aliases.sh†L124-L125】 |
-| `CHANGELOG.md` & `cbc_logo_00001.png` | Human-readable release history and
-  branding assets referenced by the CLI and README.【F:custom_bash_commands.sh†L1483-L1529】 |
+| `custom_bash_commands.sh` | Main entry point. Defines gum-aware UI helpers, configures onboarding tasks, implements feature functions, and triggers the initial status output when sourced.【F:custom_bash_commands.sh†L1-L3357】 |
+| `cbc_aliases.sh` | Catalog of navigation shortcuts, Git aliases, fuzzy wrappers, media launchers, and helper shorthands that keep the main script modular.【F:cbc_aliases.sh†L1-L135】 |
+| `new_update_commands.sh` | Provisioning script that copies the main script, bootstrap helpers, and release metadata into the home directory, ensures expected folders exist, verifies the repository lives under `~/Documents/github_repositories/custom_bash_commands`, and appends sourcing lines to `~/.bashrc`.【F:new_update_commands.sh†L1-L43】 |
+| `.cbcconfig/apt_packages.conf` | Optional package manifest that records apt software to install alongside CBC.【F:.cbcconfig/apt_packages.conf†L1-L23】 |
+| `.testing_setup.sh` | Helper for staging a parallel "test" install of CBC by copying the main script, `update_commands.sh`, and `.version` into temporary dotfiles before sourcing them from `.bashrc`.【F:.testing_setup.sh†L1-L23】 |
+| `docs/` | Reference documentation covering dependency expectations, SOPs for adding functions or aliases, and the current TODO backlog.【F:docs/dependencies.md†L1-L24】【F:docs/standard_operating_procedures.md†L1-L72】【F:docs/todo.md†L1-L81】 |
+| `managed_context/` & `test_suite_analysis/` | Metadata captured from prior AI sessions and test runs. The JSON files are informational and do not affect runtime behavior.【F:managed_context/metadata.json†L1-L1】【F:test_suite_analysis/metadata.json†L1-L1】 |
+| `node_modules/` | Vendored tooling used for release automation (e.g., `npx commit-and-tag-version`, exposed via the `ver` alias). Avoid modifying or expanding the dependency tree unless a release workflow change requires it.【F:cbc_aliases.sh†L124-L125】 |
+| `CHANGELOG.md` & `cbc_logo_00001.png` | Human-readable release history and branding assets referenced by the CLI and README.【F:custom_bash_commands.sh†L1483-L1529】 |
 
 ## Prerequisites
 
@@ -183,6 +165,16 @@ you need a refresher.【F:cbc_aliases.sh†L25-L27】
 - `.testing_setup.sh` mirrors the provisioning process for a sandbox install so
   you can test changes without touching the primary configuration.
   【F:.testing_setup.sh†L1-L23】
+
+## Documentation Style
+
+Most Markdown in this project is wrapped at 80 characters. The following cases
+may exceed that limit when readability would otherwise suffer:
+
+- Tables, including the repository orientation table in `AGENTS.md` and the Key
+  Components table in this README.
+- URLs that become ambiguous or unusable when broken across lines.
+- Code fences where formatting depends on preserving longer lines.
 
 ## Troubleshooting
 
