@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [305.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.0.0...v305.1.0) (2025-10-26)
+
+
+### Features
+
+* **regex_help:** overhaul regex cheat-sheet ([5a3ca1f](https://github.com/iop098321qwe/custom_bash_commands/commit/5a3ca1f002e9b4544158011dccd2eeddad59b17c))
+
 ## [305.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v304.2.0...v305.0.0) (2025-10-24)
 
 
