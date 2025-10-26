@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [305.1.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.1.0...v305.1.1) (2025-10-26)
+
 ## [305.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.0.0...v305.1.0) (2025-10-26)
 
 
