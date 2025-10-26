@@ -137,6 +137,7 @@ cbc_spinner() {
 ################################################################################################################################################################
 
 # TODO: Find a way to make pron module work with the cbcs command to show help information.
+# this should modularize the code better and allow users to optionally load/unload the pron module.
 
 ###################################################################################################################################################################
 # BATCHOPEN
