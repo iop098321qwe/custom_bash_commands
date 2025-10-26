@@ -2248,8 +2248,9 @@ cbcs() {
       echo "         Usage: pu"
       echo " "
       echo "regex_help"
-      echo "         Description: Display help for regular expressions"
-      echo "         Usage: regex_help [-f|--flavor <flavor>] [-h|--help]"
+      echo "         Description: Display regex cheat-sheets with flavor selection"
+      echo "         Default: PCRE output with -i/-f to explore other engines"
+      echo "         Usage: regex_help [-f <flavor>] [-i] [-l] [-h]"
       echo " "
       echo "updatecbc, (alias: ucbc)"
       echo "         Description: Update the custom bash commands script"
@@ -2821,101 +2822,374 @@ makeman() {
 }
 
 ################################################################################
-# REGEX HELP (REWRITE)
+# REGEX HELP
 ################################################################################
 
 regex_help() {
-  # Default flavor
-  local flavor="POSIX-extended"
+  OPTIND=1
+
+  local default_flavor="pcre"
+  local requested_flavor=""
+  local interactive=false
+  local list_only=false
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Display regex cheat-sheets for different flavors."
+      "  Display regex cheat-sheets for popular flavors with rich examples."
 
     cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  regex_help [-f|--flavor <flavor>] [-h|--help]"
+      "  regex_help [-f <flavor>] [-i] [-l] [-h]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -f|--flavor <flavor>    Specify the regex flavor (POSIX-extended, POSIX-basic, PCRE)" \
-      "  -h|--help               Display this help message"
+      "  -f <flavor>    Show the cheat-sheet for a specific regex flavor" \
+      "  -i             Interactively choose a flavor (gum, fzf, or select)" \
+      "  -l             List the available flavors and their typical tools" \
+      "  -h             Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-      "  regex_help -f PCRE"
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  regex_help                    # Defaults to PCRE" \
+      "  regex_help -i                 # Pick a flavor interactively" \
+      "  regex_help -f posix-basic     # Show the POSIX Basic overview"
   }
 
-  # Check for arguments
-  while (("$#")); do
-    case "$1" in
-    -f | --flavor) # Option for specifying the regex flavor
-      if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
-        flavor=$2
-        shift 2
-      else
-        cbc_style_message "$CATPPUCCIN_RED" "Error: Argument for $1 is missing"
-        return 1
-      fi
-      ;;
-    -h | --help) # Help flag
+  while getopts ":hf:il" opt; do
+    case "$opt" in
+    h)
       usage
       return 0
       ;;
-    *) # Handle unexpected options
-      cbc_style_message "$CATPPUCCIN_RED" "Error: Unsupported flag $1"
+    f)
+      requested_flavor="$OPTARG"
+      ;;
+    i)
+      interactive=true
+      ;;
+    l)
+      list_only=true
+      ;;
+    :) # Missing argument
+      cbc_style_message "$CATPPUCCIN_RED" "Error: -$OPTARG requires a value"
+      return 1
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Error: Unsupported flag -$OPTARG"
+      usage
       return 1
       ;;
     esac
   done
 
-  # Displaying regex information based on the chosen flavor
-  case "$flavor" in
-  # POSIX-extended regex
-  "POSIX-extended")
-    echo "POSIX-extended regex selected."
-    echo "Syntax and common patterns:"
-    echo "  - .: Matches any single character"
-    echo "  - ^: Matches the start of a line"
-    echo "  - $: Matches the end of a line"
-    echo "  - *: Matches zero or more occurrences"
-    echo "  - +: Matches one or more occurrences"
-    echo "  - ?: Matches zero or one occurrence"
-    echo "  - [abc]: Matches any one of the characters a, b, or c"
-    echo "  - [^abc]: Matches any character not in the set a, b, or c"
-    echo "  - (ab|cd): Matches either the sequence 'ab' or 'cd'"
-    ;;
-  # POSIX-basic regex
-  "POSIX-basic")
-    echo "POSIX-basic regex selected."
-    echo "Syntax and common patterns:"
-    echo "  - .: Matches any single character except newline"
-    echo "  - ^: Matches the start of a line"
-    echo "  - $: Matches the end of a line"
-    echo "  - *: Matches zero or more occurrences of the preceding element"
-    echo "  - [abc]: Matches any one of the characters a, b, or c"
-    echo "  - [^abc]: Matches any character not in the set a, b, or c"
-    echo "  - \\(ab\\|cd\\): Backslashes are used to escape special characters"
-    ;;
-  # PCRE regex
-  "PCRE")
-    echo "Perl-compatible regex (PCRE) selected."
-    echo "Syntax and common patterns:"
-    echo "  - .: Matches any character except newline"
-    echo "  - ^: Matches the start of the string"
-    echo "  - $: Matches the end of the string"
-    echo "  - *: Matches 0 or more of the preceding element"
-    echo "  - +: Matches 1 or more of the preceding element"
-    echo "  - ?: Makes the preceding quantifier lazy"
-    echo "  - \\d: Matches any digit character"
-    echo "  - \\D: Matches any non-digit character"
-    echo "  - \\w: Matches any word character (alphanumeric plus '_')"
-    echo "  - \\W: Matches any non-word character"
-    echo "  - (abc|def): Matches either 'abc' or 'def'"
-    ;;
-  *)
-    # Handle unexpected flavors
-    echo "Error: Unsupported flavor $flavor" >&2
+  shift $((OPTIND - 1))
+
+  if [ $# -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
     return 1
-    ;;
-  esac
+  fi
+
+  local -a flavor_order=(
+    pcre
+    python
+    javascript
+    posix-extended
+    posix-basic
+  )
+
+  local -A flavor_names=(
+    [pcre]="PCRE (Perl compatible regular expressions)"
+    [python]="Python (re module)"
+    [javascript]="JavaScript / ECMAScript"
+    [posix-extended]="POSIX Extended (ERE)"
+    [posix-basic]="POSIX Basic (BRE)"
+  )
+
+  local -A flavor_tools=(
+    [pcre]="ripgrep, grep -P, Perl, PHP, VS Code, most editors"
+    [python]="Python's re module, Django URL routing, pytest"
+    [javascript]="Browsers, Node.js, frontend build tools"
+    [posix-extended]="egrep, awk, modern sed -E"
+    [posix-basic]="grep, traditional sed, legacy Unix utilities"
+  )
+
+  regex_normalize_flavor() {
+    local raw="${1,,}"
+    raw=${raw// /}
+    raw=${raw//_/}
+    raw=${raw//-/}
+    case "$raw" in
+    "") return 1 ;;
+    pcre | perl | perlcompatible | perlregex | perlcompatibleregex)
+      printf '%s' "pcre"
+      ;;
+    python | py)
+      printf '%s' "python"
+      ;;
+    javascript | js | ecmascript | node | nodejs)
+      printf '%s' "javascript"
+      ;;
+    posixextended | extended | ere)
+      printf '%s' "posix-extended"
+      ;;
+    posixbasic | basic | bre)
+      printf '%s' "posix-basic"
+      ;;
+    *)
+      return 1
+      ;;
+    esac
+  }
+
+  regex_print_section() {
+    local title="$1"
+    shift
+    cbc_style_box "$CATPPUCCIN_TEAL" "$title" "$@"
+  }
+
+  regex_select_flavor() {
+    local selection=""
+    local -a options=()
+    local entry
+
+    for entry in "${flavor_order[@]}"; do
+      options+=("$entry|${flavor_names[$entry]} — ${flavor_tools[$entry]}")
+    done
+
+    if [ "$CBC_HAS_GUM" -eq 1 ]; then
+      selection=$(printf '%s\n' "${options[@]}" |
+        gum choose --header "Select a regex flavor" --limit 1 2>/dev/null)
+    elif command -v fzf >/dev/null 2>&1; then
+      selection=$(printf '%s\n' "${options[@]}" |
+        fzf --prompt="Regex flavor > " \
+          --header="TAB or arrows to move, ENTER to confirm" \
+          --delimiter='|' --with-nth=2.. 2>/dev/null)
+    fi
+
+    if [ -z "$selection" ] && [ -t 0 ] && [ -t 1 ]; then
+      local PS3="Choose a regex flavor (default ${flavor_names[$default_flavor]}): "
+      select selection in "${options[@]}"; do
+        if [ -n "$selection" ]; then
+          break
+        fi
+      done
+    fi
+
+    if [ -z "$selection" ]; then
+      return 1
+    fi
+
+    printf '%s\n' "${selection%%|*}"
+  }
+
+  regex_show_flavor() {
+    local flavor="$1"
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "${flavor_names[$flavor]}" \
+      "  Typical tools: ${flavor_tools[$flavor]}" \
+      "  Tip: Use 'regex_help -l' to explore every option."
+
+    case "$flavor" in
+    pcre)
+      regex_print_section "Anchors" \
+        "  ^  Start of string (or line with (?m))" \
+        "  $  End of string (or line with (?m))" \
+        "  \\A  Absolute start of string" \
+        "  \\z  Absolute end of string" \
+        "  \\b  Word boundary" \
+        "  \\B  Non-word boundary"
+
+      regex_print_section "Quantifiers" \
+        "  *   Zero or more" \
+        "  +   One or more" \
+        "  ?   Zero or one" \
+        "  {m,n}  Between m and n (omit n for open range)" \
+        "  *?, +?, ??  Lazy versions" \
+        "  {m,n}?  Lazy bounded quantifier"
+
+      regex_print_section "Character classes" \
+        "  .        Any char except newline (use (?s) for dotall)" \
+        "  \\d / \\D  Digit / not digit" \
+        "  \\w / \\W  Word / not word" \
+        "  \\s / \\S  Whitespace / not whitespace" \
+        "  \\h / \\v  Horizontal / vertical whitespace" \
+        "  \\p{L}    Unicode property (letters, numbers, etc.)"
+
+      regex_print_section "Grouping & references" \
+        "  (...)        Capturing group" \
+        "  (?:...)      Non-capturing group" \
+        "  (?<name>...) Named capturing group" \
+        "  \\1, \\g<name>  Backreferences" \
+        "  (?=...), (?!...)  Lookahead" \
+        "  (?<=...), (?<!...) Lookbehind"
+
+      regex_print_section "Flags" \
+        "  (?i) case-insensitive   (?m) multiline ^/$" \
+        "  (?s) dotall             (?x) verbose mode" \
+        "  (?U) swap greedy/lazy   (?J) duplicate names"
+
+      cbc_style_note "Example:" \
+        "  (?i)^(?<user>[\\w.-]+)@(?<domain>[\\w.-]+\\.[A-Za-z]{2,})$" \
+        "  • Captures case-insensitive emails with named groups."
+      ;;
+    python)
+      regex_print_section "Anchors" \
+        "  ^ / $    Start or end of string (line with re.MULTILINE)" \
+        "  \\A / \\Z  Start / end of string regardless of flags" \
+        "  \\b / \\B  Word boundary / non-boundary"
+
+      regex_print_section "Quantifiers" \
+        "  * 0+   + 1+   ? 0 or 1   {m,n} bounded" \
+        "  Append ? for lazy variants (e.g., *?, +?, {m,n}?)"
+
+      regex_print_section "Character classes" \
+        "  . matches any char except newline (unless re.DOTALL)" \
+        "  \\d, \\w, \\s mirror Unicode sets with re.UNICODE (default)" \
+        "  \\N matches any char except newline" \
+        "  Classes like [[:alpha:]] need re module's re.ASCII flag"
+
+      regex_print_section "Grouping & references" \
+        "  (?P<name>...)    Named capture" \
+        "  (?P=name)        Named backreference" \
+        "  (?=...), (?!...) Lookahead" \
+        "  (?<=...), (?<!...) Lookbehind (fixed-width)" \
+        "  (?(id)yes|no)    Conditional on group matched"
+
+      regex_print_section "Flags" \
+        "  re.I / (?i) ignore case    re.M / (?m) multiline" \
+        "  re.S / (?s) dotall        re.X / (?x) verbose" \
+        "  re.A / (?a) ASCII classes  re.U legacy alias"
+
+      cbc_style_note "Example:" \
+        "  (?P<slug>[a-z0-9-]+)(?:/(?P<page>\\d+))?$" \
+        "  • Django-friendly URL slug with optional page number."
+      ;;
+    javascript)
+      regex_print_section "Anchors" \
+        "  ^ / $  Start / end of string" \
+        "  \\b / \\B  Word boundary / non-boundary" \
+        "  (?<=^|\\s) simulate start-of-word when \\b is insufficient"
+
+      regex_print_section "Quantifiers" \
+        "  * 0+   + 1+   ? 0 or 1   {m,n} bounded" \
+        "  Lazy versions use ? (e.g., .*?)" \
+        "  Possessive quantifiers x*+ available in modern engines"
+
+      regex_print_section "Character classes" \
+        "  . matches any char except newline (use [\\s\\S] for dotall)" \
+        "  \\d, \\w, \\s follow ECMAScript definitions" \
+        "  \\p{Letter} requires the /u flag for Unicode sets" \
+        "  Character class escapes like [\u{1F4A9}] need /u"
+
+      regex_print_section "Grouping & references" \
+        "  (?<name>...) Named capture (ES2018+)" \
+        "  \\1 or \\k<name> Backreferences" \
+        "  (?=...), (?!...) Lookahead" \
+        "  (?<=...), (?<!...) Lookbehind (modern runtimes only)"
+
+      regex_print_section "Flags" \
+        "  /i ignore case   /m multiline ^/$" \
+        "  /s dotall        /u Unicode" \
+        "  /g global match  /y sticky (anchor to lastIndex)"
+
+      cbc_style_note "Example:" \
+        "  const rx = /^(?<tag>[a-z]+)(?:-(?<variant>\\w+))?$/i;" \
+        "  // Capture <tag>-<variant> attributes case-insensitively."
+      ;;
+    posix-extended)
+      regex_print_section "Anchors" \
+        "  ^ start of line    $ end of line" \
+        "  Use \\b inside character classes (e.g., [[:<:]]) for words"
+
+      regex_print_section "Quantifiers" \
+        "  * 0+   + 1+   ? 0 or 1   {m,n} bounded" \
+        "  No lazy or possessive variants"
+
+      regex_print_section "Character classes" \
+        "  . matches any char except newline" \
+        "  [:class:] named classes: [:alpha:], [:digit:], [:alnum:], [:space:]" \
+        "  Bracket expressions like [^abc] negate character sets" \
+        "  No \\d / \\w shortcuts—use [:digit:], [:alnum:], etc."
+
+      regex_print_section "Grouping & alternation" \
+        "  (...) capture group    (?:...) unavailable" \
+        "  | alternation          Backreferences with \\1, \\2" \
+        "  No lookaround or named groups"
+
+      regex_print_section "Usage notes" \
+        "  Works with egrep, awk, and sed -E" \
+        "  Portable across most Unix-like systems" \
+        "  Ideal when scripting with POSIX tools that support ERE"
+
+      cbc_style_note "Example:" \
+        "  egrep '^[[:alnum:]_]+@[[:alnum:].-]+\\.[[:alpha:]]{2,}$' file" \
+        "  • Email validation using portable character classes."
+      ;;
+    posix-basic)
+      regex_print_section "Anchors" \
+        "  ^ start of line    $ end of line" \
+        "  [[:<:]] and [[:>:]] for word boundaries (GNU extensions)"
+
+      regex_print_section "Quantifiers" \
+        "  * 0+   \{m,n\} bounded" \
+        "  +, ?, |, () are literals unless escaped" \
+        "  Use \+, \?, \|, \(, \) for regex operators"
+
+      regex_print_section "Character classes" \
+        "  . matches any char except newline" \
+        "  [:class:] works inside [] just like ERE" \
+        "  Escapes like \\d or \\w are not supported"
+
+      regex_print_section "Grouping & references" \
+        "  \( ... \) capture group" \
+        "  \{m\} literal braces require escaping: \\{" \
+        "  Backreferences: \\1, \\2" \
+        "  No alternation without \| and no non-capturing groups"
+
+      regex_print_section "Usage notes" \
+        "  Default for grep and sed without -E" \
+        "  Preferred when targeting the most portable scripts" \
+        "  Escaping operators is the most common pitfall"
+
+      cbc_style_note "Example:" \
+        "  grep '\\<[[:digit:]]\\{3\\}\\>' numbers.txt" \
+        "  • Find three-digit numbers in GNU grep (word boundaries)."
+      ;;
+    esac
+  }
+
+  if $list_only; then
+    local -a lines=("  Available regex flavors:")
+    local key
+    for key in "${flavor_order[@]}"; do
+      lines+=("    - ${flavor_names[$key]} [${key}] — ${flavor_tools[$key]}")
+    done
+    cbc_style_box "$CATPPUCCIN_BLUE" "Regex flavors" "${lines[@]}"
+    return 0
+  fi
+
+  local normalized=""
+
+  if [ -n "$requested_flavor" ]; then
+    if ! normalized=$(regex_normalize_flavor "$requested_flavor"); then
+      cbc_style_message "$CATPPUCCIN_RED" \
+        "Error: Unknown regex flavor '$requested_flavor'"
+      cbc_style_note "Hint:" \
+        "  Use 'regex_help -l' to see supported flavors." \
+        "  Examples: pcre, python, javascript, posix-extended, posix-basic."
+      return 1
+    fi
+  elif $interactive; then
+    if ! normalized=$(regex_select_flavor); then
+      cbc_style_message "$CATPPUCCIN_RED" "No selection made; showing default."
+      normalized="$default_flavor"
+    fi
+  else
+    normalized="$default_flavor"
+  fi
+
+  regex_show_flavor "$normalized"
+
+  cbc_style_note "Need more?" \
+    "  Combine 'rg --pcre2', 'python -m re', or 'node --eval' with these" \
+    "  snippets to test patterns quickly in your favorite environment."
 }
 
 ################################################################################
