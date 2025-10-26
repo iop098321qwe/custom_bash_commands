@@ -3526,8 +3526,6 @@ display_info() {
 # UPDATECBC
 ################################################################################
 
-# TODO: add usage function, fix getopts section, and fix the main logic
-
 updatecbc() {
   # Initialize OPTIND to 1 since it is a global variable within the script
   OPTIND=1
