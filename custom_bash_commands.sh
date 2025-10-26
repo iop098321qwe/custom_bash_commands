@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v305.0.0"
+VERSION="v305.1.1"
 
 ###############################################################################
 # Charmbracelet Gum helpers (Catppuccin Mocha palette)
@@ -2899,16 +2899,16 @@ regex_help() {
     [pcre]="PCRE (Perl compatible regular expressions)"
     [python]="Python (re module)"
     [javascript]="JavaScript / ECMAScript"
-    [posix-extended]="POSIX Extended (ERE)"
-    [posix-basic]="POSIX Basic (BRE)"
+    [posix - extended]="POSIX Extended (ERE)"
+    [posix - basic]="POSIX Basic (BRE)"
   )
 
   local -A flavor_tools=(
     [pcre]="ripgrep, grep -P, Perl, PHP, VS Code, most editors"
     [python]="Python's re module, Django URL routing, pytest"
     [javascript]="Browsers, Node.js, frontend build tools"
-    [posix-extended]="egrep, awk, modern sed -E"
-    [posix-basic]="grep, traditional sed, legacy Unix utilities"
+    [posix - extended]="egrep, awk, modern sed -E"
+    [posix - basic]="grep, traditional sed, legacy Unix utilities"
   )
 
   regex_normalize_flavor() {
