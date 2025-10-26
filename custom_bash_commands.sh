@@ -1927,7 +1927,10 @@ cbcs() {
       echo " "
       echo "extract"
       echo "         Description: Extract compressed files"
-      echo "         Usage: extract [file]"
+      echo "         Usage: extract [-d <dir>] [-v] <file>"
+      echo "         Options:"
+      echo "             -d <dir>    Extract into a specific directory"
+      echo "             -v          Enable verbose logging"
       echo " "
       echo "mkdirs"
       echo "         Description: Create a directory and switch into it"
@@ -2309,7 +2312,7 @@ cbcs() {
       echo " "
       echo "  ext"
       echo "         Description: Alias for extract function"
-      echo "         Usage: ext [file]"
+      echo "         Usage: ext [-d <dir>] [-v] <file>"
       echo " "
       echo "  vim"
       echo "         Description: Alias for 'nvim'"
@@ -2930,20 +2933,35 @@ extract() {
       "  Extract a variety of compressed archive formats."
 
     cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  extract [file] [-h]"
+      "  extract [options] <file>"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
+      "  -d <dir>  Extract into the specified directory (created if needed)" \
+      "  -v        Enable verbose logging" \
+      "  -h        Display this help message"
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-      "  extract file.tar.gz"
+      "  extract -d ~/Downloads archive.tar.gz"
   }
 
-  while getopts ":h" opt; do
+  local destination="$PWD"
+  local verbose=0
+
+  while getopts ":hd:v" opt; do
     case ${opt} in
     h)
       usage
       return 0
+      ;;
+    d)
+      destination="$OPTARG"
+      ;;
+    v)
+      verbose=1
+      ;;
+    :)
+      cbc_style_message "$CATPPUCCIN_RED" "Option -$OPTARG requires an argument"
+      return 1
       ;;
     \?)
       cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
@@ -2964,23 +2982,198 @@ extract() {
     return 1
   fi
 
-  case "$1" in
-  *.tar.bz2) tar xjf "$1" ;;
-  *.tar.gz) tar xzf "$1" ;;
-  *.bz2) bunzip2 "$1" ;;
-  *.rar) unrar x "$1" ;;
-  *.gz) gunzip "$1" ;;
-  *.tar) tar xf "$1" ;;
-  *.tbz2) tar xjf "$1" ;;
-  *.tgz) tar xzf "$1" ;;
-  *.zip) unzip "$1" ;;
-  *.Z) uncompress "$1" ;;
-  *.7z) 7z x "$1" ;;
-  *.deb) ar x "$1" ;;
-  *.tar.xz) tar xf "$1" ;;
-  *.tar.zst) unzstd "$1" ;;
-  *) cbc_style_message "$CATPPUCCIN_RED" "'$1' cannot be extracted using extract()" ;;
+  if ! mkdir -p "$destination" 2>/dev/null; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unable to create destination directory"
+    return 1
+  fi
+
+  local archive_path=""
+  local dest_dir=""
+  if command -v realpath >/dev/null 2>&1; then
+    archive_path=$(realpath "$1") || {
+      cbc_style_message "$CATPPUCCIN_RED" "Error: Unable to resolve archive path"
+      return 1
+    }
+    dest_dir=$(realpath "$destination") || {
+      cbc_style_message "$CATPPUCCIN_RED" "Error: Unable to resolve destination path"
+      return 1
+    }
+  else
+    local archive_dir
+    archive_dir=$(cd "$(dirname -- "$1")" && pwd) || {
+      cbc_style_message "$CATPPUCCIN_RED" "Error: Unable to resolve archive path"
+      return 1
+    }
+    archive_path="$archive_dir/$(basename "$1")"
+    dest_dir=$(cd "$destination" && pwd) || {
+      cbc_style_message "$CATPPUCCIN_RED" "Error: Unable to resolve destination path"
+      return 1
+    }
+  fi
+
+  local file_dir
+  file_dir=$(dirname -- "$archive_path")
+  local file_name
+  file_name=$(basename -- "$archive_path")
+
+  local handler="array"
+  local output_path=""
+  local remove_source=0
+  local -a required_cmds=()
+  local -a command_args=()
+  local command_preview=""
+
+  case "$file_name" in
+  *.tar.bz2 | *.tbz2)
+    required_cmds=(tar bzip2)
+    command_args=(tar -xjf "$archive_path" -C "$dest_dir")
+    ;;
+  *.tar.gz | *.tgz)
+    required_cmds=(tar gzip)
+    command_args=(tar -xzf "$archive_path" -C "$dest_dir")
+    ;;
+  *.tar)
+    required_cmds=(tar)
+    command_args=(tar -xf "$archive_path" -C "$dest_dir")
+    ;;
+  *.tar.xz)
+    required_cmds=(tar xz)
+    command_args=(tar -xJf "$archive_path" -C "$dest_dir")
+    ;;
+  *.tar.zst)
+    required_cmds=(tar unzstd)
+    command_args=(tar --use-compress-program=unzstd -xf "$archive_path" -C "$dest_dir")
+    ;;
+  *.bz2)
+    required_cmds=(bzip2)
+    handler="redirect"
+    command_args=(bzip2 -dc "$archive_path")
+    output_path="$dest_dir/${file_name%.bz2}"
+    if [ "$dest_dir" = "$file_dir" ]; then
+      remove_source=1
+    fi
+    ;;
+  *.rar)
+    required_cmds=(unrar)
+    handler="subshell"
+    command_args=(unrar x -o+ "$archive_path")
+    ;;
+  *.gz)
+    required_cmds=(gzip)
+    handler="redirect"
+    command_args=(gzip -dc "$archive_path")
+    output_path="$dest_dir/${file_name%.gz}"
+    if [ "$dest_dir" = "$file_dir" ]; then
+      remove_source=1
+    fi
+    ;;
+  *.zip)
+    required_cmds=(unzip)
+    if [ "$verbose" -eq 1 ]; then
+      command_args=(unzip "$archive_path" -d "$dest_dir")
+    else
+      command_args=(unzip -q "$archive_path" -d "$dest_dir")
+    fi
+    ;;
+  *.Z)
+    required_cmds=(uncompress)
+    handler="redirect"
+    command_args=(uncompress -c "$archive_path")
+    output_path="$dest_dir/${file_name%.Z}"
+    if [ "$dest_dir" = "$file_dir" ]; then
+      remove_source=1
+    fi
+    ;;
+  *.7z)
+    required_cmds=(7z)
+    handler="subshell"
+    command_args=(7z x "$archive_path")
+    ;;
+  *.deb)
+    required_cmds=(ar)
+    handler="subshell"
+    command_args=(ar x "$archive_path")
+    ;;
+  *)
+    cbc_style_message "$CATPPUCCIN_RED" "'$file_name' cannot be extracted using extract()"
+    return 1
+    ;;
   esac
+
+  if [ ${#required_cmds[@]} -gt 0 ]; then
+    local missing_cmds=()
+    local cmd
+    for cmd in "${required_cmds[@]}"; do
+      if ! command -v "$cmd" >/dev/null 2>&1; then
+        missing_cmds+=("$cmd")
+      fi
+    done
+    if [ ${#missing_cmds[@]} -gt 0 ]; then
+      cbc_style_message "$CATPPUCCIN_RED" \
+        "Missing required command(s): ${missing_cmds[*]}. Please install them and try again."
+      return 127
+    fi
+  fi
+
+  if [ ${#command_args[@]} -gt 0 ]; then
+    if [ "$handler" = "array" ]; then
+      printf -v command_preview '%q ' "${command_args[@]}"
+      command_preview="${command_preview% }"
+    elif [ "$handler" = "redirect" ]; then
+      printf -v command_preview '%q ' "${command_args[@]}"
+      command_preview="${command_preview% }"
+      local quoted_output
+      printf -v quoted_output '%q' "$output_path"
+      command_preview="$command_preview > $quoted_output"
+    elif [ "$handler" = "subshell" ]; then
+      printf -v command_preview '%q ' "${command_args[@]}"
+      command_preview="${command_preview% }"
+      local quoted_dest
+      printf -v quoted_dest '%q' "$dest_dir"
+      command_preview="(cd $quoted_dest && $command_preview)"
+    fi
+  fi
+
+  if [ "$verbose" -eq 1 ]; then
+    cbc_style_message "$CATPPUCCIN_SKY" "Destination: $dest_dir"
+    if [ -n "$command_preview" ]; then
+      cbc_style_message "$CATPPUCCIN_BLUE" "Running: $command_preview"
+    fi
+  fi
+
+  local exit_code=0
+  case "$handler" in
+  array)
+    "${command_args[@]}"
+    exit_code=$?
+    ;;
+  redirect)
+    "${command_args[@]}" >"$output_path"
+    exit_code=$?
+    ;;
+  subshell)
+    (
+      cd "$dest_dir" && "${command_args[@]}"
+    )
+    exit_code=$?
+    ;;
+  esac
+
+  if [ $exit_code -ne 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "Extraction command failed with exit code $exit_code"
+    return $exit_code
+  fi
+
+  if [ $remove_source -eq 1 ]; then
+    rm -f "$archive_path"
+  fi
+
+  if [ "$handler" = "redirect" ] && [ "$verbose" -eq 1 ]; then
+    cbc_style_message "$CATPPUCCIN_GREEN" "Created: $output_path"
+  fi
+
+  cbc_style_message "$CATPPUCCIN_GREEN" "Extraction complete in '$dest_dir'"
 }
 
 ################################################################################

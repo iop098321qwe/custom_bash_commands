@@ -142,7 +142,9 @@ When the terminal sources CBC it immediately prepares the working environment:
   type using interactive prompts for fine-grained control.【F:custom_bash_commands.sh†L812-L1344】
 - `backup`, `makeman`, `regex_help`, `extract`, and `filehash` provide
   lightweight utilities for backups, documentation, regex snippets, archive
-  extraction, and checksum generation.【F:custom_bash_commands.sh†L2631-L3141】
+  extraction, and checksum generation. `extract` now accepts `-d` destination
+  overrides, verbose logging via `-v`, and verifies required tools before
+  running.【F:custom_bash_commands.sh†L2631-L3141】
 
 ### Aliases and navigation
 
