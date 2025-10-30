@@ -3194,6 +3194,185 @@ regex_help() {
 }
 
 ################################################################################
+# UPDATE
+################################################################################
+
+update() {
+  OPTIND=1
+  local reboot=false
+  local shutdown=false
+  local display_log=false
+  local log_file=~/Documents/update_logs/$(date +"%Y-%m-%d_%H-%M-%S").log
+  local sudo_required=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Update the system with optional reboot, shutdown, or log display."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  update [-h|-r|-s|-l]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -r    Reboot the system after updating" \
+      "  -s    Shutdown the system after updating" \
+      "  -l    Display the log file path"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  update -r"
+  }
+
+  while getopts ":hrsl" opt; do
+    case $opt in
+    h)
+      usage
+      return
+      ;;
+    r)
+      # Reboot the system after updating
+      reboot=true
+      ;;
+    s)
+      # Shutdown the system after updating
+      shutdown=true
+      ;;
+    l)
+      # Display the log path after updating
+      display_log=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG. Use -h for help."
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  # Function to check if sudo password is required
+  check_sudo_requirement() {
+    if sudo -n true 2>/dev/null; then
+      sudo_required=false
+    else
+      sudo_required=true
+      if [ "$sudo_required" = true ]; then
+        sudo_password=$(gum input --password --placeholder "Enter your sudo password: ")
+        if [[ -z "$sudo_password" ]]; then
+          gum style --foreground "$CATPPUCCIN_RED" --bold "No password provided!"
+          return 1
+        fi
+        # Validate password before proceeding
+        echo "$sudo_password" | sudo -S true 2>/dev/null
+        if [[ $? -ne 0 ]]; then
+          # echo "Incorrect password."
+          gum style --foreground "$CATPPUCCIN_RED" --bold "Incorrect password!"
+          return 1
+        fi
+      fi
+    fi
+  }
+
+  # Create the log directory if it doesn't exist
+  create_log_directory() {
+    mkdir -p ~/Documents/update_logs
+  }
+
+  # Call the create_log_directory function
+  create_log_directory
+
+  # Function to check if ttf-mscorefonts-installer is installed
+  check_install_mscorefonts() {
+    # Check if the package is installed
+    if dpkg-query -W -f='${Status}' ttf-mscorefonts-installer 2>/dev/null | grep -q "install ok installed"; then
+      echo "ttf-mscorefonts-installer is already installed."
+    else
+      echo "ttf-mscorefonts-installer is not installed. Please run 'i ttf-mscorefonts-installer' to install it."
+    fi
+  }
+
+  # Run update commands with sudo, tee to output to terminal and append to log file
+  # Define an array of commands to run
+  commands=(
+    "sudo apt update"
+    "sudo apt autoremove -y"
+    "sudo apt upgrade -y"
+    "atuin update"
+    ""
+    "sudo flatpak update -y"
+    "sudo snap refresh"
+    "pip install --upgrade yt-dlp --break-system-packages"
+    "check_install_mscorefonts"
+    "sudo apt clean"
+  )
+
+  # Function to print completion message using gum
+  print_completion_message() {
+    echo " "
+    gum style --foreground "#a6e3a1" --bold "Updates completed!"
+  }
+
+  # Function to run a command and log the output
+  run_command() {
+    local command="$1"
+    echo " "
+    gum style --foreground "#f9e2af" --bold "================================================================================"
+    gum style --foreground "#f9e2af" --bold "Running command: $command" | tee -a "$log_file"
+    gum style --foreground "#f9e2af" --bold "================================================================================"
+    eval "$command" | tee -a "$log_file"
+  }
+
+  # Iterate through the list of commands and run them
+  iterate_commands() {
+    for command in "${commands[@]}"; do
+      run_command "$command"
+    done
+  }
+
+  main() {
+    # check the sudo password requirement
+    check_sudo_requirement
+    if [[ $? -ne 0 ]]; then
+      gum style --foreground "#f9e2af" "Exiting due to authentication failure."
+      return 1 # Stop execution of `main`
+    fi
+    if gum confirm "Are you sure you want to update the system? (y/N):" --default=no; then
+      if [ $reboot = true ]; then
+        iterate_commands | tee -a "$log_file"
+        # prompt the user to confirm reboot
+        if gum confirm "Are you sure you want to reboot the system? (y/N):" --default=no; then
+          reboot
+        else
+          gum style --foreground "$CATPPUCCIN_RED" --bold "Reboot canceled..."
+        fi
+      elif [ $shutdown = true ]; then
+        iterate_commands | tee -a "$log_file"
+        # promt the user to confirm shutdown
+        if gum confirm "Are you sure you want to shutdown the system? (y/N):" --default=no; then
+          shutdown now
+        else
+          gum style --foreground "$CATPPUCCIN_RED" --bold "Shutdown canceled..."
+        fi
+      elif [ $display_log = true ]; then
+        iterate_commands | tee -a "$log_file"
+        gum style --foreground "#89dceb" --bold "Update logs saved to: $log_file"
+      else
+        iterate_commands | tee -a "$log_file"
+      fi
+    else
+      gum style --foreground "$CATPPUCCIN_RED" --bold "Update canceled."
+      return
+    fi
+    ###########################################################################
+    echo " "
+    gum style --foreground "#a6e3a1" --bold "Please run 'cargo install-update -a' to update Cargo packages."
+    print_completion_message
+  }
+
+  # Main logic
+  main
+}
+
+################################################################################
 # EXTRACT
 ################################################################################
 
