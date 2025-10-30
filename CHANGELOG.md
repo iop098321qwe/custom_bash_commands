@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [305.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.1.1...v305.2.0) (2025-10-30)
+
+
+### Features
+
+* **function:** recreate update function ([4f71576](https://github.com/iop098321qwe/custom_bash_commands/commit/4f71576b288a08cd3f1746ce6677dbacc484f13f))
+
+
+### Bug Fixes
+
+* **alias:** remove `smart_sort` alias for `smartsort` ([b512a47](https://github.com/iop098321qwe/custom_bash_commands/commit/b512a472503815068c346a4bb946ff917f33d391))
+
 ## [305.1.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.1.0...v305.1.1) (2025-10-26)
 
 ## [305.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.0.0...v305.1.0) (2025-10-26)
