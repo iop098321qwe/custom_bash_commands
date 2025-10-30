@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [305.3.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.2.0...v305.3.0) (2025-10-30)
+
+
+### Features
+
+* **script:** rework update script for current state ([b98f041](https://github.com/iop098321qwe/custom_bash_commands/commit/b98f04176bbe1f4150e2b53a8a0354cebc95a5ff))
+
 ## [305.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.1.1...v305.2.0) (2025-10-30)
 
 
