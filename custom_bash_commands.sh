@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v305.2.0"
+VERSION="v305.3.1"
 
 ###############################################################################
 # Charmbracelet Gum helpers (Catppuccin Mocha palette)
