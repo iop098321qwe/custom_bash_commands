@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v305.4.1"
+VERSION="v305.5.0"
 
 ###############################################################################
 # Charmbracelet Gum helpers (Catppuccin Mocha palette)
@@ -3521,6 +3521,11 @@ ods() {
 ################################################################################
 
 filehash() {
+  OPTIND=1
+  OPTERR=0
+
+  local default_method="sha256"
+
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Generate hashes for files with various algorithms."
@@ -3529,142 +3534,218 @@ filehash() {
       "  filehash [options] [file] [method]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message" \
-      "  -m    Display available hash methods" \
-      "  -a    Run all hash methods on the file" \
-      "  -d    Run the specified method on each file in the current directory" \
-      "  -da   Run all methods on every file in the current directory"
+      "  -h        Display this help message" \
+      "  -m        Display available hash methods" \
+      "  -a        Run all hash methods on the file" \
+      "  -d [meth] Run the method on each file in the current directory" \
+      "  -da       Run all methods on every file in the current directory"
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
-      "  filehash test.txt sha256" \
-      "  filehash -d sha256"
+      "  filehash report.pdf" \
+      "  filehash report.pdf sha512" \
+      "  filehash -d sha1"
   }
 
-  if [ "$1" = "-h" ]; then
-    # Display help message if -h option is provided
-    usage
-    return 0
-  fi
-  # Alias for the filehash function
-  # alias fh="filehash"
+  list_methods() {
+    cbc_style_box "$CATPPUCCIN_LAVENDER" "Available hash methods" \
+      "  md5     – MD5 hash" \
+      "  sha1    – SHA-1 hash" \
+      "  sha224  – SHA-224 hash" \
+      "  sha256  – SHA-256 hash" \
+      "  sha384  – SHA-384 hash" \
+      "  sha512  – SHA-512 hash" \
+      "  blake2b – BLAKE2b hash"
+  }
 
-  # Check if the first argument is a tag for displaying available methods
-  if [ "$1" = "-m" ]; then
-    echo " "
-    echo "#############################"
-    echo "## Available hash methods: ##"
-    echo "#############################"
-    echo " "
-    echo "  md5     - MD5 hash"
-    echo "  sha1    - SHA-1 hash"
-    echo "  sha224  - SHA-224 hash"
-    echo "  sha256  - SHA-256 hash"
-    echo "  sha384  - SHA-384 hash"
-    echo "  sha512  - SHA-512 hash"
-    echo "  blake2b - BLAKE2b hash"
-    # Add additional methods and descriptions here
-    return
+  method_command() {
+    case "$1" in
+    md5) printf 'md5sum' ;;
+    sha1) printf 'sha1sum' ;;
+    sha224) printf 'sha224sum' ;;
+    sha256) printf 'sha256sum' ;;
+    sha384) printf 'sha384sum' ;;
+    sha512) printf 'sha512sum' ;;
+    blake2b) printf 'b2sum' ;;
+    *) return 1 ;;
+    esac
+  }
+
+  method_title() {
+    case "$1" in
+    md5) printf 'MD5' ;;
+    sha1) printf 'SHA-1' ;;
+    sha224) printf 'SHA-224' ;;
+    sha256) printf 'SHA-256' ;;
+    sha384) printf 'SHA-384' ;;
+    sha512) printf 'SHA-512' ;;
+    blake2b) printf 'BLAKE2b' ;;
+    *) return 1 ;;
+    esac
+  }
+
+  validate_method() {
+    if ! method_command "$1" >/dev/null 2>&1; then
+      cbc_style_message "$CATPPUCCIN_RED" "Unsupported method: $1"
+      return 1
+    fi
+  }
+
+  print_hash_result() {
+    local method="$1"
+    local file="$2"
+    local is_default="$3"
+
+    local cmd
+    cmd=$(method_command "$method") || return 1
+
+    if [ ! -f "$file" ]; then
+      cbc_style_message "$CATPPUCCIN_RED" "File not found: $file"
+      return 1
+    fi
+
+    local hash_output
+    if ! hash_output=$("$cmd" "$file"); then
+      cbc_style_message "$CATPPUCCIN_RED" "Failed to calculate hash with $method for $file"
+      return 1
+    fi
+
+    local hash_value=${hash_output%% *}
+    local method_label
+    method_label=$(method_title "$method") || return 1
+
+    local method_line="  Method: $method_label"
+    if [ "$is_default" = "1" ]; then
+      method_line+=" (default)"
+    fi
+
+    cbc_style_box "$CATPPUCCIN_GREEN" "$method_label hash" \
+      "  File: $file" \
+      "$method_line" \
+      "  Hash: $hash_value"
+  }
+
+  local opt
+  local show_methods=0
+  while getopts ":hm" opt; do
+    case "$opt" in
+    h)
+      usage
+      return 0
+      ;;
+    m)
+      show_methods=1
+      ;;
+    \?)
+      case "$OPTARG" in
+      a | d)
+        if [ "$OPTIND" -gt 1 ]; then
+          OPTIND=$((OPTIND - 1))
+        fi
+        break
+        ;;
+      *)
+        cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+        usage
+        return 1
+        ;;
+      esac
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_methods" -eq 1 ]; then
+    list_methods
+    [ $# -eq 0 ] && return 0
   fi
 
-  # Check if the -a tag is provided to run each hash method
-  if [ "$1" = "-a" ]; then
+  case "$1" in
+  -a)
     shift
     if [ $# -eq 0 ]; then
-      echo " "
-      echo "#########################################"
-      echo "## File was not provided... Try again. ##"
-      echo "#########################################"
-      return
+      cbc_style_message "$CATPPUCCIN_RED" "File was not provided."
+      usage
+      return 1
     fi
-    local file=$1
+    local file="$1"
     shift
-    echo " "
-    echo "#############################################"
-    echo "## Running all hash methods on file: $file ##"
-    echo "#############################################"
-    echo " "
-    echo "MD5:     $(md5sum $file)"
-    echo "SHA-1:   $(sha1sum $file)"
-    echo "SHA-224: $(sha224sum $file)"
-    echo "SHA-256: $(sha256sum $file)"
-    echo "SHA-384: $(sha384sum $file)"
-    echo "SHA-512: $(sha512sum $file)"
-    echo "BLAKE2b: $(b2sum $file)"
-    # Add additional hash methods here
-    return
-  fi
-
-  # Check if the -d tag is provided to iterate through the current directory
-  if [ "$1" = "-d" ]; then
+    cbc_style_note "All methods" "  Running every hash on: $file"
+    local method
+    for method in md5 sha1 sha224 sha256 sha384 sha512 blake2b; do
+      print_hash_result "$method" "$file" 0
+    done
+    return 0
+    ;;
+  -da)
     shift
-    local method=${1:-sha256}
-    echo " "
-    echo "#########################################################"
-    echo "## Ran $method hash on files in the current directory.  ##"
-    echo "#########################################################"
-    echo " "
+    cbc_style_note "Directory scan" "  Running every method on regular files in: $(pwd)"
+    local found=0
+    local file
     for file in *; do
       if [ -f "$file" ]; then
-        echo "$(sha256sum $file)"
+        found=1
+        cbc_style_box "$CATPPUCCIN_BLUE" "File: $file" "  All available hash methods"
+        local method
+        for method in md5 sha1 sha224 sha256 sha384 sha512 blake2b; do
+          print_hash_result "$method" "$file" 0
+        done
       fi
     done
-    return
-  fi
-
-  # Check if the -da tag is provided to run all hash methods on all files in the current directory
-  if [ "$1" = "-da" ]; then
+    if [ "$found" -eq 0 ]; then
+      cbc_style_message "$CATPPUCCIN_YELLOW" "No regular files found in $(pwd)."
+    fi
+    return 0
+    ;;
+  -d)
     shift
-    echo " "
-    echo "#############################################"
-    echo "## Running all hash methods on all files.  ##"
-    echo "#############################################"
-    echo " "
+    local provided_method="$1"
+    local used_default=0
+    if [ -z "$provided_method" ]; then
+      provided_method="$default_method"
+      used_default=1
+    else
+      shift
+    fi
+    validate_method "$provided_method" || return 1
+    local method_label
+    method_label=$(method_title "$provided_method") || return 1
+    local note_message="  Running $method_label on regular files in: $(pwd)"
+    if [ "$used_default" -eq 1 ]; then
+      note_message+=" (default)"
+    fi
+    cbc_style_note "Directory scan" "$note_message"
+    local found=0
+    local file
     for file in *; do
       if [ -f "$file" ]; then
-        echo " "
-        echo "##########################################################################################"
-        echo "Running all hash methods on file: $file "
-        echo "##########################################################################################"
-        echo " "
-        echo "MD5:     $(md5sum $file)"
-        echo "SHA-1:   $(sha1sum $file)"
-        echo "SHA-224: $(sha224sum $file)"
-        echo "SHA-256: $(sha256sum $file)"
-        echo "SHA-384: $(sha384sum $file)"
-        echo "SHA-512: $(sha512sum $file)"
-        echo "BLAKE2b: $(b2sum $file)"
-        # Add additional hash methods here
+        found=1
+        print_hash_result "$provided_method" "$file" "$used_default"
       fi
     done
-    echo "##########################################################################################"
-    return
-  fi
+    if [ "$found" -eq 0 ]; then
+      cbc_style_message "$CATPPUCCIN_YELLOW" "No regular files found in $(pwd)."
+    fi
+    return 0
+    ;;
+  esac
 
-  # Check if a file was provided
   if [ $# -eq 0 ]; then
-    echo " "
-    echo "#########################################"
-    echo "## File was not provided... Try again. ##"
-    echo "#########################################"
-    echo " "
+    cbc_style_message "$CATPPUCCIN_RED" "File was not provided."
+    usage
     return 1
   fi
 
-  # Set the default hash method to sha256 if not provided
-  local method=${2:-sha256}
+  local file="$1"
+  local method_arg="$2"
+  local used_default=0
+  if [ -z "$method_arg" ]; then
+    method_arg="$default_method"
+    used_default=1
+  fi
 
-  # Generate hash based on the specified method
-  case "$method" in
-  md5) md5sum $1 ;;
-  sha1) sha1sum $1 ;;
-  sha224) sha224sum $1 ;;
-  sha256) sha256sum $1 ;;
-  sha384) sha384sum $1 ;;
-  sha512) sha512sum $1 ;;
-  blake2b) b2sum $1 ;;
-  # Additional cases for other hash methods
-  *) echo "Unsupported method: $method" ;;
-  esac
+  validate_method "$method_arg" || return 1
+  print_hash_result "$method_arg" "$file" "$used_default"
 }
 
 ################################################################################
