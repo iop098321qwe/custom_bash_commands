@@ -104,10 +104,11 @@ When the terminal sources CBC it immediately prepares the working environment:
 - `check_cbc_update` polls the GitHub Releases API on a configurable interval,
   caches the response, and surfaces styled upgrade notifications when a newer
   tag is available.【F:custom_bash_commands.sh†L1635-L1781】
-- `display_info` runs automatically to show the current version, discovery
-  hints, and removal instructions, while `cbc_aliases.sh` is sourced to expose
-  every alias. If `.bash_aliases` exists it is sourced as well so user-defined
-  shortcuts remain available.【F:custom_bash_commands.sh†L3220-L3357】【F:cbc_aliases.sh†L1-L135】
+- `display_info` runs automatically once per interactive session to show the
+  current version, discovery hints, and removal instructions, while
+  `cbc_aliases.sh` is sourced to expose every alias. If `.bash_aliases` exists
+  it is sourced as well so user-defined shortcuts remain available.
+  【F:custom_bash_commands.sh†L3220-L3357】【F:cbc_aliases.sh†L1-L135】
 
 ## Daily Usage
 
@@ -115,8 +116,9 @@ When the terminal sources CBC it immediately prepares the working environment:
 
 - `display_version` (alias `dv`) prints the current version banner and links to
   the wiki for deeper documentation.【F:custom_bash_commands.sh†L1787-L1829】
-- `display_info` (alias `di`) is available on demand and runs automatically at
-  the end of script startup to confirm CBC loaded correctly.【F:custom_bash_commands.sh†L3220-L3342】
+- `display_info` (alias `di`) is available on demand and runs automatically the
+  first time CBC loads in an interactive session to confirm it loaded
+  correctly.【F:custom_bash_commands.sh†L3220-L3342】
 - `changes [-c]` opens or copies the GitHub changelog before you update so you
   can scan release notes from the terminal.【F:custom_bash_commands.sh†L1483-L1529】
 - `wiki [-c|-C|-A|-F]` opens the project wiki or copies the URL to the

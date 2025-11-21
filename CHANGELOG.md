@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [Unreleased]
+
+### Bug Fixes
+
+* **startup:** show the `display_info` banner only once per interactive session
+  to avoid re-sourcing noise when the shell reloads `.bashrc` more than
+  necessary.
+
 ## [305.4.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.3.1...v305.4.0) (2025-10-31)
 
 
