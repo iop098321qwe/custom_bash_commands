@@ -3787,10 +3787,16 @@ updatecbc() {
 }
 
 ###############################################################################
-# Call the function to display information
+# Call the function to display information once per interactive session
 ###############################################################################
 
-display_info
+if [[ $- == *i* ]]; then
+  if [ -z "${CBC_INFO_SHOWN:-}" ]; then
+    CBC_INFO_SHOWN=1
+    export CBC_INFO_SHOWN
+    display_info
+  fi
+fi
 
 ###############################################################################
 # Source the aliases file if it exists
