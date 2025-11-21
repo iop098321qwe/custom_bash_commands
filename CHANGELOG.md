@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [305.5.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.4.1...v305.5.0) (2025-11-21)
+
+
+### Features
+
+* **alias:** add `chap` alias for `chezmoi apply` ([2d0e32a](https://github.com/iop098321qwe/custom_bash_commands/commit/2d0e32af33034e6e7a59b0f72eec91e22d1f9331))
+* **alias:** add `chd` alias for `chezmoi cd` ([33c863c](https://github.com/iop098321qwe/custom_bash_commands/commit/33c863c1fe8c5223ad757851cf9b64901d795d48))
+* **filehash:** polish gum output and defaults ([e63baec](https://github.com/iop098321qwe/custom_bash_commands/commit/e63baecaddeb8f4fa09203816be3992d00173f83))
+
+
+### Bug Fixes
+
+* **alias:** fix `c` alias to no longer display cbc info ([8d08649](https://github.com/iop098321qwe/custom_bash_commands/commit/8d0864969c2b94f17f6dfd2c4b2ed734c45fbba0))
+* **alias:** remove `ls` from multiple commands as it is now redundant ([5c252d8](https://github.com/iop098321qwe/custom_bash_commands/commit/5c252d88db4e9d9da9cc49d934b978111129c219))
+
 ## [305.4.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.4.0...v305.4.1) (2025-11-21)
 
 
