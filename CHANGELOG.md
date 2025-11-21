@@ -10,6 +10,14 @@ All notable changes to this project will be documented in this file. See [commit
 * **CHANGELOG:** remove ai generated changelog item ([3124c81](https://github.com/iop098321qwe/custom_bash_commands/commit/3124c81fe0cec4b694045c264ae3aaf9e0735319))
 * **startup:** show info banner once per session ([8d41004](https://github.com/iop098321qwe/custom_bash_commands/commit/8d41004b820661361ba71c7a9e9daf7b5e2b9eac))
 
+## [305.4.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.4.0...v305.4.1) (2025-11-21)
+
+
+### Bug Fixes
+
+* **CHANGELOG:** remove ai generated changelog item ([3124c81](https://github.com/iop098321qwe/custom_bash_commands/commit/3124c81fe0cec4b694045c264ae3aaf9e0735319))
+* **startup:** show info banner once per session ([8d41004](https://github.com/iop098321qwe/custom_bash_commands/commit/8d41004b820661361ba71c7a9e9daf7b5e2b9eac))
+
 ## [305.4.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.3.1...v305.4.0) (2025-10-31)
 
 ### Features
