@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [305.5.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.5.0...v305.5.1) (2025-11-22)
+
+
+### Bug Fixes
+
+* **alias:** add `&& clear` to refresh to also clear screen ([3eb1873](https://github.com/iop098321qwe/custom_bash_commands/commit/3eb187396d3b2e904e6e3d500328332e5956646b))
+
 ## [305.5.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.4.1...v305.5.0) (2025-11-21)
 
 
