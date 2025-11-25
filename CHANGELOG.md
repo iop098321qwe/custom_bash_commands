@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.0.0...v306.1.0) (2025-11-26)
+
+
+### Features
+
+* **pkg:** add manifest locking ([67d53a7](https://github.com/iop098321qwe/custom_bash_commands/commit/67d53a7a240ff9706b987be50b74b1a14fe18009))
+
+## [306.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.8.0...v306.0.0) (2025-11-26)
+
+
+### Features
+
+* **pkg:** add update command ([7fc0990](https://github.com/iop098321qwe/custom_bash_commands/commit/7fc09902d1f13821b29745a4ad4d04dc7d47f764))
+
+## [305.8.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.7.0...v305.8.0) (2025-11-26)
+
+
+### Features
+
+* **function:** add `arch_dotfiles` function ([94e5da6](https://github.com/iop098321qwe/custom_bash_commands/commit/94e5da6e47a43f18488255d84e332ccbbaa7f54a))
+* **function:** remove `odt` and `ods` functions ([bc6e4fe](https://github.com/iop098321qwe/custom_bash_commands/commit/bc6e4fe77d23d68ed2c4288c50350b47e8818f1d))
+
+
+### Bug Fixes
+
+* **function:** remove 'grymms_grimoires' from `setup_directories` function ([68cc024](https://github.com/iop098321qwe/custom_bash_commands/commit/68cc024dd086cf90ec054803517ee8aa695abbe5))
+
+## [305.7.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.6.0...v305.7.0) (2025-11-26)
+
+
+### Features
+
+* **function:** add `releases` command ([85e2a72](https://github.com/iop098321qwe/custom_bash_commands/commit/85e2a72d252f8b5dc6ea614159cd300b7ec5f541))
+* **function:** rework display info function ([569ed5c](https://github.com/iop098321qwe/custom_bash_commands/commit/569ed5cc61113f11103d7d07b77c2bc52f582905))
+
+
+### Bug Fixes
+
+* **function:** ensure `nohup` command doesn't output a nohup.out file ([bba9fed](https://github.com/iop098321qwe/custom_bash_commands/commit/bba9fed88512c09b779f6ee17f83fd52e863c078))
+* **function:** fix `wiki` function not opening the page by default ([90346b8](https://github.com/iop098321qwe/custom_bash_commands/commit/90346b80b995c5120bd417a608a0aff6573da295))
+
+## [305.6.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.5.1...v305.6.0) (2025-11-26)
+
+
+### Features
+
+* **alias:** add 'chra' alias for 'chezmoi re-add' ([9e3d165](https://github.com/iop098321qwe/custom_bash_commands/commit/9e3d165e4d5b5feb376330076898a4172e20e48e))
+* **alias:** add 'lg' alias for 'lazygit' ([4b110b7](https://github.com/iop098321qwe/custom_bash_commands/commit/4b110b7dcd171c91691b584448ca8a78e65250ac))
+
 ## [305.5.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.5.0...v305.5.1) (2025-11-22)
 
 

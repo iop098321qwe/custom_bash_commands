@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
-VERSION="v305.5.1"
+VERSION="v306.1.0"
+
+CBC_CONFIG_DIR="${CBC_CONFIG_DIR:-$HOME/.config/cbc}"
+CBC_MODULE_ROOT="${CBC_MODULE_ROOT:-$CBC_CONFIG_DIR/modules}"
+CBC_PACKAGE_MANIFEST="${CBC_PACKAGE_MANIFEST:-$CBC_CONFIG_DIR/packages.toml}"
+CBC_MODULE_ENTRYPOINT="cbc-module.sh"
 
 ###############################################################################
 # Charmbracelet Gum helpers (Catppuccin Mocha palette)
@@ -140,8 +145,594 @@ cbc_spinner() {
 # this should modularize the code better and allow users to optionally load/unload the pron module.
 
 ###################################################################################################################################################################
+# CBC MODULE LOADER
+################################################################################################################################
+################################
+
+cbc_pkg_trim() {
+  local text="$1"
+  printf "%s" "$text" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+}
+
+cbc_pkg_ensure_config() {
+  mkdir -p "$CBC_CONFIG_DIR" "$CBC_MODULE_ROOT"
+}
+
+cbc_pkg_read_manifest() {
+  CBC_MANIFEST_MODULES=()
+  CBC_MANIFEST_SOURCES=()
+  CBC_MANIFEST_LOCKS=()
+
+  [ -f "$CBC_PACKAGE_MANIFEST" ] || return 0
+
+  local in_packages=false
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%%#*}"
+    line="$(cbc_pkg_trim "$line")"
+
+    if [ "$line" = "[packages]" ]; then
+      in_packages=true
+      continue
+    fi
+
+    if [[ "$line" =~ ^\[.*\]$ ]]; then
+      in_packages=false
+      continue
+    fi
+
+    if [ "$in_packages" = true ] && \
+      [[ "$line" =~ ^([A-Za-z0-9._-]+)[[:space:]]*=[[:space:]]*"(.*)"$ ]]; then
+      local module="${BASH_REMATCH[1]}"
+      local value="${BASH_REMATCH[2]}"
+
+      local source="$value"
+      local lock=""
+
+      if [[ "$value" == *"="* ]]; then
+        source="${value%%=*}"
+        lock="${value#*=}"
+      fi
+
+      CBC_MANIFEST_MODULES+=("$module")
+      CBC_MANIFEST_SOURCES+=("$source")
+      CBC_MANIFEST_LOCKS+=("$lock")
+    fi
+  done <"$CBC_PACKAGE_MANIFEST"
+}
+
+cbc_pkg_write_manifest() {
+  cbc_pkg_ensure_config
+
+  {
+    echo "[packages]"
+    for idx in "${!CBC_MANIFEST_MODULES[@]}"; do
+      local module="${CBC_MANIFEST_MODULES[$idx]}"
+      local source="${CBC_MANIFEST_SOURCES[$idx]}"
+      local lock="${CBC_MANIFEST_LOCKS[$idx]}"
+      local value="$source"
+
+      if [ -n "$lock" ]; then
+        value="${value}=${lock}"
+      fi
+
+      echo "${module} = \"${value}\""
+    done
+  } >"$CBC_PACKAGE_MANIFEST"
+}
+
+cbc_pkg_record_manifest() {
+  local module="$1"
+  local source="$2"
+  local lock="$3"
+
+  cbc_pkg_read_manifest
+
+  local updated=false
+  for idx in "${!CBC_MANIFEST_MODULES[@]}"; do
+    if [ "${CBC_MANIFEST_MODULES[$idx]}" = "$module" ]; then
+      CBC_MANIFEST_SOURCES[$idx]="$source"
+      CBC_MANIFEST_LOCKS[$idx]="$lock"
+      updated=true
+      break
+    fi
+  done
+
+  if [ "$updated" = false ]; then
+    CBC_MANIFEST_MODULES+=("$module")
+    CBC_MANIFEST_SOURCES+=("$source")
+    CBC_MANIFEST_LOCKS+=("$lock")
+  fi
+
+  cbc_pkg_write_manifest
+}
+
+cbc_pkg_update_status_line() {
+  local module_dir="$1"
+  local lock="$2"
+
+  if ! command -v git >/dev/null 2>&1; then
+    echo "Update status: Git unavailable; revision state unknown."
+    return
+  fi
+
+  if [ -n "$lock" ] && [ -d "$module_dir/.git" ]; then
+    local current_commit
+    current_commit="$(git -C "$module_dir" rev-parse HEAD 2>/dev/null || true)"
+
+    if [ -n "$current_commit" ] && [ "$current_commit" != "$lock" ]; then
+      echo "Update status: Diverges from locked revision ($lock)."
+      return
+    fi
+  fi
+
+  if [ -d "$module_dir/.git" ]; then
+    local upstream
+    upstream="$(git -C "$module_dir" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
+
+    if [ -n "$upstream" ]; then
+      git -C "$module_dir" fetch --quiet 2>/dev/null || true
+      local behind_count
+      behind_count="$(git -C "$module_dir" rev-list --count HEAD.."$upstream" 2>/dev/null || echo 0)"
+
+      if [ "$behind_count" -gt 0 ]; then
+        echo "Update status: Upstream revisions available."
+      else
+        echo "Update status: Aligned with upstream revisions."
+      fi
+    else
+      echo "Update status: No upstream configured; treated as current."
+    fi
+  else
+    echo "Update status: Version control unavailable; treated as current."
+  fi
+}
+
+cbc_pkg_align_with_manifest() {
+  cbc_pkg_read_manifest
+
+  local git_available=true
+  if ! command -v git >/dev/null 2>&1; then
+    git_available=false
+
+    if [ ${#CBC_MANIFEST_MODULES[@]} -gt 0 ]; then
+      cbc_style_message "$CATPPUCCIN_YELLOW" \
+        "Git unavailable; skipping manifest installs and lock enforcement."
+    fi
+  fi
+
+  for idx in "${!CBC_MANIFEST_MODULES[@]}"; do
+    local module="${CBC_MANIFEST_MODULES[$idx]}"
+    local source="${CBC_MANIFEST_SOURCES[$idx]}"
+    local lock="${CBC_MANIFEST_LOCKS[$idx]}"
+    local module_dir="$CBC_MODULE_ROOT/$module"
+
+    if [ ! -d "$module_dir" ]; then
+      if [ "$git_available" = false ]; then
+        cbc_style_message "$CATPPUCCIN_MAROON" \
+          "Cannot install '$module' from packages.toml because git is missing."
+        continue
+      fi
+
+      cbc_style_message "$CATPPUCCIN_BLUE" \
+        "Module '$module' is defined in packages.toml but missing locally. Installing."
+      cbc_pkg_install "$source" "$lock" "$module"
+      continue
+    fi
+
+    if [ "$git_available" = true ] && [ -n "$lock" ] && [ -d "$module_dir/.git" ]; then
+      local current_commit
+      current_commit="$(git -C "$module_dir" rev-parse HEAD 2>/dev/null || true)"
+
+      if [ "$current_commit" != "$lock" ]; then
+        git -C "$module_dir" fetch --quiet --all 2>/dev/null || true
+        if cbc_spinner "Aligning $module to locked revision" \
+          git -C "$module_dir" checkout --quiet "$lock"; then
+          cbc_style_message "$CATPPUCCIN_GREEN" \
+            "Aligned '$module' with locked revision $lock."
+        else
+          cbc_style_message "$CATPPUCCIN_MAROON" \
+            "Failed to align '$module' with locked revision $lock."
+        fi
+      fi
+    fi
+  done
+}
+
+cbc_pkg_install() {
+  local source="$1"
+  local lock_ref="$2"
+  local module_override="$3"
+
+  if [ -z "$source" ]; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "No module source provided. Use 'cbc pkg install <creator/repo>' or a git URL."
+    return 1
+  fi
+
+  cbc_pkg_ensure_config
+
+  if [ -z "$lock_ref" ] && [[ "$source" == *"="* ]]; then
+    lock_ref="${source#*=}"
+    source="${source%%=*}"
+  fi
+
+  if ! command -v git >/dev/null 2>&1; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "Git is required to install modules. Install git and try again."
+    return 1
+  fi
+
+  local repo_url="$source"
+  local module_name=""
+
+  if [ -d "$source" ]; then
+    module_name="$(basename "$source")"
+  else
+    if [[ ! "$source" =~ :// ]] && [[ "$source" != git@*:* ]]; then
+      repo_url="https://github.com/${source}.git"
+    fi
+    module_name="$(basename "$repo_url")"
+    module_name="${module_name%.git}"
+  fi
+
+  if [ -n "$module_override" ]; then
+    module_name="$module_override"
+  fi
+
+  local destination="$CBC_MODULE_ROOT/$module_name"
+
+  if [ -d "$destination" ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Module '$module_name' is already installed at $destination."
+    return 0
+  fi
+
+  if [ -d "$source" ]; then
+    cbc_spinner "Copying module $module_name" cp -R "$source" "$destination" || return 1
+  else
+    cbc_spinner "Cloning $module_name" git clone "$repo_url" "$destination" || return 1
+  fi
+
+  if [ -n "$lock_ref" ] && [ -d "$destination/.git" ]; then
+    if ! cbc_spinner "Checking out locked revision for $module_name" \
+      git -C "$destination" checkout --quiet "$lock_ref"; then
+      cbc_style_message "$CATPPUCCIN_MAROON" \
+        "Failed to apply lock '$lock_ref' for $module_name."
+    fi
+  fi
+
+  local recorded_lock="$lock_ref"
+  if [ -d "$destination/.git" ]; then
+    recorded_lock="$(git -C "$destination" rev-parse HEAD 2>/dev/null || true)"
+  fi
+
+  local manifest_source="$source"
+  if [ ! -d "$source" ] && [[ "$source" =~ :// ]]; then
+    manifest_source="$repo_url"
+  elif [ ! -d "$source" ] && [[ "$source" == git@*:* ]]; then
+    manifest_source="$source"
+  elif [ ! -d "$source" ]; then
+    manifest_source="$source"
+  else
+    manifest_source="$(cd "$source" && pwd)"
+  fi
+
+  cbc_pkg_record_manifest "$module_name" "$manifest_source" "$recorded_lock"
+
+  if [ -f "$destination/$CBC_MODULE_ENTRYPOINT" ]; then
+    cbc_style_message "$CATPPUCCIN_GREEN" \
+      "Installed '$module_name'. Run 'cbc pkg load' to source its entrypoint."
+  else
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Installed '$module_name' but no $CBC_MODULE_ENTRYPOINT file was found."
+  fi
+}
+
+cbc_pkg_list() {
+  cbc_pkg_ensure_config
+  cbc_pkg_read_manifest
+
+  local found=false
+  local manifest_modules=()
+
+  for idx in "${!CBC_MANIFEST_MODULES[@]}"; do
+    local module="${CBC_MANIFEST_MODULES[$idx]}"
+    local source="${CBC_MANIFEST_SOURCES[$idx]}"
+    local lock="${CBC_MANIFEST_LOCKS[$idx]}"
+    local module_dir="$CBC_MODULE_ROOT/$module"
+    manifest_modules+=("$module")
+
+    if [ -d "$module_dir" ]; then
+      local entrypoint="$module_dir/$CBC_MODULE_ENTRYPOINT"
+      local readiness="Entrypoint: $CBC_MODULE_ENTRYPOINT"
+
+      if [ ! -f "$entrypoint" ]; then
+        readiness="Entrypoint: (missing)"
+      fi
+
+      local status_line
+      status_line="$(cbc_pkg_update_status_line "$module_dir" "$lock")"
+
+      cbc_style_box "$CATPPUCCIN_BLUE" "Module: $module" \
+        "  Source: $source" \
+        "  $readiness" \
+        "  $status_line"
+    else
+      cbc_style_box "$CATPPUCCIN_SAPPHIRE" "Module: $module" \
+        "  Source: $source" \
+        "  Status: Not present locally; will synchronize on next load."
+    fi
+
+    found=true
+  done
+
+  shopt -s nullglob
+  for module_dir in "$CBC_MODULE_ROOT"/*; do
+    [ -d "$module_dir" ] || continue
+
+    local module_name="$(basename "$module_dir")"
+    if [[ " ${manifest_modules[*]} " == *" $module_name "* ]]; then
+      continue
+    fi
+
+    found=true
+    local entrypoint="$module_dir/$CBC_MODULE_ENTRYPOINT"
+    local readiness="Entrypoint: $CBC_MODULE_ENTRYPOINT"
+
+    if [ ! -f "$entrypoint" ]; then
+      readiness="Entrypoint: (missing)"
+    fi
+
+    local status_line
+    status_line="$(cbc_pkg_update_status_line "$module_dir" "")"
+
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Module: $module_name" \
+      "  Source: Local install (not tracked in packages.toml)" \
+      "  $readiness" \
+      "  $status_line"
+  done
+  shopt -u nullglob
+
+  if [ "$found" = false ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "No CBC modules installed. Use 'cbc pkg install <creator/repo>' to add one."
+  fi
+}
+
+cbc_pkg_update() {
+  if ! command -v git >/dev/null 2>&1; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "Git is required to update modules. Install git and try again."
+    return 1
+  fi
+
+  cbc_pkg_ensure_config
+  cbc_pkg_read_manifest
+
+  local updated_modules=()
+  local skipped_modules=()
+
+  shopt -s nullglob
+  for module_dir in "$CBC_MODULE_ROOT"/*; do
+    [ -d "$module_dir" ] || continue
+
+    local module_name="$(basename "$module_dir")"
+    local manifest_source=""
+
+    if [ ! -d "$module_dir/.git" ]; then
+      skipped_modules+=("$module_name (not a git repository)")
+      continue
+    fi
+
+    if cbc_spinner "Updating $module_name" git -C "$module_dir" pull --ff-only --quiet; then
+      updated_modules+=("$module_name")
+      local new_lock
+      new_lock="$(git -C "$module_dir" rev-parse HEAD 2>/dev/null || true)"
+
+      for idx in "${!CBC_MANIFEST_MODULES[@]}"; do
+        if [ "${CBC_MANIFEST_MODULES[$idx]}" = "$module_name" ]; then
+          manifest_source="${CBC_MANIFEST_SOURCES[$idx]}"
+        fi
+      done
+
+      if [ -z "$manifest_source" ]; then
+        manifest_source="$(git -C "$module_dir" config --get remote.origin.url 2>/dev/null || true)"
+      fi
+
+      if [ -n "$manifest_source" ]; then
+        cbc_pkg_record_manifest "$module_name" "$manifest_source" "$new_lock"
+      fi
+    else
+      skipped_modules+=("$module_name (update failed)")
+    fi
+  done
+  shopt -u nullglob
+
+  if [ ${#updated_modules[@]} -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_GREEN" \
+      "Updated modules: ${updated_modules[*]}"
+  fi
+
+  if [ ${#skipped_modules[@]} -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_MAROON" \
+      "Skipped modules: ${skipped_modules[*]}"
+  fi
+
+  if [ ${#updated_modules[@]} -eq 0 ] && [ ${#skipped_modules[@]} -eq 0 ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "No CBC modules installed. Use 'cbc pkg install <creator/repo>' to add one."
+  fi
+
+  cbc_pkg_load_modules auto
+}
+
+cbc_pkg_load_modules() {
+  local auto_load="$1"
+  shift || true
+
+  cbc_pkg_ensure_config
+  cbc_pkg_align_with_manifest
+
+  local loaded_any=false
+  local skipped_modules=()
+
+  shopt -s nullglob
+  for module_dir in "$CBC_MODULE_ROOT"/*; do
+    [ -d "$module_dir" ] || continue
+
+    local entrypoint="$module_dir/$CBC_MODULE_ENTRYPOINT"
+    local module_name="$(basename "$module_dir")"
+
+    if [ -f "$entrypoint" ]; then
+      # shellcheck disable=SC1090
+      source "$entrypoint"
+      loaded_any=true
+    else
+      skipped_modules+=("$module_name")
+    fi
+  done
+  shopt -u nullglob
+
+  if [ "$loaded_any" = false ] && [ "$auto_load" != "auto" ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "No modules to load from $CBC_MODULE_ROOT."
+  fi
+
+  if [ ${#skipped_modules[@]} -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_MAROON" \
+      "Skipped modules missing $CBC_MODULE_ENTRYPOINT: ${skipped_modules[*]}"
+  fi
+}
+
+cbc_pkg() {
+  OPTIND=1
+  local show_help=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Manage CBC modules inspired by yazi's 'ya pkg' loader."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc pkg [subcommand]" \
+      "  cbc pkg install <creator/repo|git-url|path>" \
+      "  cbc pkg list" \
+      "  cbc pkg load" \
+      "  cbc pkg update"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc pkg" \
+      "  cbc pkg install creator/example-module" \
+      "  cbc pkg load" \
+      "  cbc pkg update"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  local subcommand="${1:-list}"
+  if [ -n "$1" ]; then
+    shift
+  fi
+
+  case "$subcommand" in
+  install)
+    cbc_pkg_install "$1"
+    ;;
+  list)
+    cbc_pkg_list
+    ;;
+  load)
+    cbc_pkg_load_modules
+    ;;
+  update)
+    cbc_pkg_update
+    ;;
+  *)
+    cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc pkg command: $subcommand"
+    usage
+    return 1
+    ;;
+  esac
+}
+
+cbc() {
+  OPTIND=1
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Entry point for CBC subcommands."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc [subcommand]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Subcommands:" \
+      "  pkg    Manage CBC modules (install, list, load, update)" \
+      "  -h     Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc pkg" \
+      "  cbc pkg install creator/example-module"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  local subcommand="$1"
+  if [ -n "$subcommand" ]; then
+    shift
+  fi
+
+  case "$subcommand" in
+  ""|-h|--help)
+    usage
+    ;;
+  pkg)
+    cbc_pkg "$@"
+    ;;
+  *)
+    cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc subcommand: $subcommand"
+    usage
+    return 1
+    ;;
+  esac
+}
+
+################################################################################################################################
+###################################
 # BATCHOPEN
-###################################################################################################################################################################
+################################################################################################################################
+###################################
 
 batchopen() {
   # Reset getopts in case this function is called multiple times
@@ -1475,6 +2066,14 @@ wiki() {
   done
 
   shift $((OPTIND - 1))
+
+  # Function to open the CBC wiki in the default browser
+  open_wiki() {
+    nohup xdg-open "$wiki_url" > /dev/null 2>&1 &
+  }
+
+  # Call the open_wiki function
+  open_wiki
 }
 
 ################################################################################
@@ -1523,11 +2122,64 @@ changes() {
 
   # Function to open the changelog in the default browser
   open_changelog() {
-    nohup xdg-open "$changelog_url"
+    nohup xdg-open "$changelog_url" > /dev/null 2>&1 &
   }
 
   # Call the open_changelog function
   open_changelog
+}
+
+################################################################################
+# RELEASES
+################################################################################
+
+releases() {
+  OPTIND=1
+
+  # Define the CBC wiki URL
+  local releases_url="https://github.com/iop098321qwe/custom_bash_commands/releases"
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the Custom Bash Commands releases in your default browser."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  releases [-h|-c]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -c    Copy the releases URL to the clipboard"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  releases"
+  }
+
+  while getopts ":hc" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    c)
+      echo "$releases_url" | xclip -selection clipboard
+      cbc_style_message "$CATPPUCCIN_GREEN" "Changelog URL copied to clipboard."
+      return 0
+      ;;
+    *)
+      # invalid options
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  # Function to open the changelog in the default browser
+  open_releases() {
+    nohup xdg-open "$releases_url" > /dev/null 2>&1 &
+  }
+
+  # Call the open_releases function
+  open_releases
 }
 
 ################################################################################
@@ -1571,6 +2223,49 @@ dotfiles() {
 
   # Open the dotfiles repository in the default browser
   xdg-open "$dotfiles_url"
+}
+
+################################################################################
+# ARCH_DOTFILES
+################################################################################
+
+arch_dotfiles() {
+  OPTIND=1
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the arch_dotfiles repository in your default browser."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  arch_dotfiles [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  arch_dotfiles"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  # Define the arch_dotfiles repository URL
+  arch_dotfiles_url="https://github.com/iop098321qwe/dotfiles-arch"
+
+  # Open the arch_dotfiles repository in the default browser
+  xdg-open "$arch_dotfiles_url"
 }
 
 ################################################################################
@@ -1621,9 +2316,6 @@ setup_directories() {
 
   # Create the 'github_repositories' directory if it does not exist
   mkdir -p ~/Documents/github_repositories
-
-  # Create the 'grymms_grimoires' directory if it does not exist
-  mkdir -p ~/Documents/grymms_grimoires/
 }
 
 # Call the setup_directories function
@@ -1822,11 +2514,8 @@ display_version() {
   shift $((OPTIND - 1))
 
   # Display version details in a fancy box
-  cbc_style_box "$CATPPUCCIN_GREEN" "Using Custom Bash Commands (by iop098321qwe)"
-  cbc_style_message "$CATPPUCCIN_YELLOW" "Version: $VERSION 🔹🔹 To see the changes in this version, use the 'changes' command."
-  cbc_style_message "$CATPPUCCIN_SKY" "Show available commands with 'cbcs [-h]' or by typing 'commands' ('comm' for shortcut)."
-  cbc_style_message "$CATPPUCCIN_SUBTEXT" "To stop using CBC, remove '.custom_bash_commands.sh' from your '.bashrc' file using 'editbash'."
-  cbc_style_message "$CATPPUCCIN_PINK" "Use the 'wiki' command or visit: https://github.com/iop098321qwe/custom_bash_commands/wiki"
+  cbc_style_message "$CATPPUCCIN_GREEN" "CUSTOM BASH COMMANDS (by iop098321qwe)"
+  cbc_style_message "$CATPPUCCIN_YELLOW" "🔹🔹$VERSION🔹🔹CHANGELOG: 'changes'🔹🔹RELEASES: 'releases'🔹🔹WIKI: 'wiki'🔹🔹"
 }
 
 ################################################################################
@@ -1896,6 +2585,23 @@ cbcs() {
       echo "          Usage: cbcs [-h]"
       echo "          Options:"
       echo "              -h    Display this help message"
+      echo " "
+      echo "cbc"
+      echo "          Description: Entry point for CBC subcommands, including modules."
+      echo "          Usage: cbc [subcommand]"
+      echo "          Options:"
+      echo "              -h    Display this help message"
+      echo "              pkg  Manage CBC modules"
+      echo " "
+      echo "cbc pkg"
+      echo "          Description: Install, list, update, and load CBC modules."
+      echo "          Usage: cbc pkg [install|list|load|update]"
+      echo "          Options:"
+      echo "              -h               Display this help message"
+      echo "              install <src>    Install from creator/repo, git URL, or path"
+      echo "              list             Show installed modules"
+      echo "              load             Source installed modules"
+      echo "              update           Pull the latest changes for installed modules"
       echo " "
       echo "cc"
       echo "          Description: Combine the git add, git commit and git push process interactively"
@@ -2033,9 +2739,9 @@ cbcs() {
       echo "          Alias For: 'cdgh && cd custom_bash_commands && ls && cc'"
       echo " "
       echo "cbc"
-      echo "          Description: Change to the custom_bash_commands directory and list its contents"
-      echo "          Usage: cbc"
-      echo "          Alias For: 'cdgh && cd custom_bash_commands && ls'"
+      echo "          Description: CBC dispatcher for subcommands such as 'cbc pkg'"
+      echo "          Usage: cbc [subcommand]"
+      echo "          Notes: Use 'cdgh && cd custom_bash_commands' to jump into the repo"
       echo " "
       echo "c"
       echo "          Description: Clear the terminal screen and call display_info command"
@@ -2489,6 +3195,8 @@ cbcs() {
       echo " "
       echo "backup"
       echo "cbcs"
+      echo "cbc"
+      echo "cbc pkg"
       echo "cc"
       echo "changes"
       echo "cht.sh"
@@ -3438,85 +4146,6 @@ extract() {
 }
 
 ################################################################################
-# ODT
-################################################################################
-
-odt() {
-  OPTIND=1
-
-  usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Create an .odt document in the current directory and open it with LibreOffice."
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  odt [filename] [-h]"
-
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
-
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-      "  odt meeting-notes"
-  }
-
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      usage
-      return 0
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  touch "$1.odt"
-  libreoffice "$1.odt"
-}
-
-################################################################################
-# ODS
-################################################################################
-
-ods() {
-  # Use getopts to handle Options
-  OPTIND=1
-
-  usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Create an .ods spreadsheet in the current directory and open it with LibreOffice."
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  ods [filename] [-h]"
-
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
-
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-      "  ods budget"
-  }
-
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      usage
-      return 0
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  touch "$1.ods"
-  libreoffice "$1.ods"
-}
-
-################################################################################
 # FILEHASH
 ################################################################################
 
@@ -3866,6 +4495,12 @@ updatecbc() {
   # Source the updated commands
   source ~/.custom_bash_commands.sh
 }
+
+###############################################################################
+# Auto-load installed CBC modules
+###############################################################################
+
+cbc_pkg_load_modules auto
 
 ###############################################################################
 # Call the function to display information once per interactive session
