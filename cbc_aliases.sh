@@ -68,6 +68,7 @@ alias hsearch='historysearch'
 alias hse='historysearchexact'
 alias hs='historysearch'
 alias i='sudo apt install'
+# TODO add if statement to check for wayland or x11 and alias accordingly
 alias imv='imv-x11'
 alias iopen='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" \) | fzf -m | xargs -r -d "\n" -I {} nohup open "{}"'
 alias iopenexact='find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" \) | fzf -m -e | xargs -r -d "\n" -I {} nohup open "{}"'
