@@ -84,6 +84,7 @@ alias lsr="eza --icons=always --group-directories-first -r"
 alias lt="eza --icons=always --group-directories-first -T"
 alias ln='ln -i'
 alias line='read -p "Enter line number: " line && file=$(fzf --prompt="Select a file: ") && nvim +$line "$file"'
+alias lg='lazygit'
 alias lzd='lazydocker'
 alias lzg='lazygit'
 alias man='sudo man'
