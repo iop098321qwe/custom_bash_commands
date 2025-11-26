@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.3.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.2.0...v306.3.0) (2025-11-26)
+
+
+### Features
+
+* **pkg:** simplify list reporting ([#139](https://github.com/iop098321qwe/custom_bash_commands/issues/139)) ([24fe1e5](https://github.com/iop098321qwe/custom_bash_commands/commit/24fe1e57b87c5776db7ad5cc77d914b1fc8f07b8))
+
 ## [306.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.1.0...v306.2.0) (2025-11-26)
 
 
