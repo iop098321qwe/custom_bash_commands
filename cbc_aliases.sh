@@ -8,23 +8,10 @@
 # ALIASES
 ################################################################################
 
-alias c='clear'
-alias comm='commands'
-alias commm='commandsmore'
-alias di='display_info'
 alias dl='downloads'
-alias dv='display_version'
 alias editbash='$EDITOR ~/.bashrc'
-alias ext='extract'
-alias fh='filehash'
 alias fman='compgen -c | fzf | xargs man'
 alias fzf='fzf -m'
-alias historysearchexact='history | sort -nr | fzf -m -e --query="$1" --no-sort --preview="echo {}" --preview-window=down:20%:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
-alias historysearch='history | sort -nr | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=down:20%:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
-alias hsearch='historysearch'
-alias hse='historysearchexact'
-alias hs='historysearch'
-alias i='sudo apt install'
 # TODO: add if statement to check for wayland or x11 and alias accordingly
 alias imv='imv-x11'
 alias line='read -p "Enter line number: " line && file=$(fzf --prompt="Select a file: ") && nvim +$line "$file"'
@@ -32,16 +19,39 @@ alias myip='curl http://ipecho.net/plain; echo'
 alias nv='files=$(fzf --multi --prompt="Select files/dirs for nvim: " --bind "enter:accept") && [ -n "$files" ] && nvim $files'
 alias please='sudo $(history -p !!)'
 alias refresh='source ~/.bashrc && clear'
-alias rh='regex_help'
 alias rma='rm -rfI'
 # TODO: Check if sortalpha still exists, if not remove this alias
 alias sa='sortalpha'
-alias s='sudo'
 # TODO: Check if smartsort still exists, if not remove this alias
 alias ssort='smartsort'
+
+################################################################################
+# CBC SPECIFIC
+################################################################################
+
+alias comm='commands'
+alias commm='commandsmore'
+alias di='display_info'
+alias dv='display_version'
+alias ext='extract'
+alias fh='filehash'
+alias rh='regex_help'
 alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh; source ~/Documents/github_repositories/custom_bash_commands/cbc_aliases.sh'
 alias ucbc='updatecbc'
+
+################################################################################
+# VIM TO NVIM
+################################################################################
+
 alias vim='nvim'
+
+################################################################################
+# SINGLE LETTER ALIAS
+################################################################################
+
+alias c='clear'
+alias i='sudo apt install'
+alias s='sudo'
 alias v='nvim'
 alias x='chmod +x'
 alias z='zellij'
@@ -121,3 +131,13 @@ alias cp='cp -i'
 alias ln='ln -i'
 alias mv='mv -i'
 alias rm='rm -I'
+
+################################################################################
+# HISTORY
+################################################################################
+
+alias historysearchexact='history | sort -nr | fzf -m -e --query="$1" --no-sort --preview="echo {}" --preview-window=down:20%:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
+alias historysearch='history | sort -nr | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=down:20%:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | xclip -selection clipboard'
+alias hsearch='historysearch'
+alias hse='historysearchexact'
+alias hs='historysearch'
