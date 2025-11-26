@@ -1523,11 +1523,64 @@ changes() {
 
   # Function to open the changelog in the default browser
   open_changelog() {
-    nohup xdg-open "$changelog_url"
+    nohup xdg-open "$changelog_url" > /dev/null 2>&1 &
   }
 
   # Call the open_changelog function
   open_changelog
+}
+
+################################################################################
+# RELEASES
+################################################################################
+
+releases() {
+  OPTIND=1
+
+  # Define the CBC wiki URL
+  local releases_url="https://github.com/iop098321qwe/custom_bash_commands/releases"
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the Custom Bash Commands releases in your default browser."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  releases [-h|-c]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -c    Copy the releases URL to the clipboard"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  releases"
+  }
+
+  while getopts ":hc" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    c)
+      echo "$releases_url" | xclip -selection clipboard
+      cbc_style_message "$CATPPUCCIN_GREEN" "Changelog URL copied to clipboard."
+      return 0
+      ;;
+    *)
+      # invalid options
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  # Function to open the changelog in the default browser
+  open_releases() {
+    nohup xdg-open "$releases_url" > /dev/null 2>&1 &
+  }
+
+  # Call the open_releases function
+  open_releases
 }
 
 ################################################################################
