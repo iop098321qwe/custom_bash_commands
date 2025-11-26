@@ -1725,9 +1725,6 @@ setup_directories() {
 
   # Create the 'github_repositories' directory if it does not exist
   mkdir -p ~/Documents/github_repositories
-
-  # Create the 'grymms_grimoires' directory if it does not exist
-  mkdir -p ~/Documents/grymms_grimoires/
 }
 
 # Call the setup_directories function
