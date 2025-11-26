@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [305.8.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.7.0...v305.8.0) (2025-11-26)
+
+
+### Features
+
+* **function:** add `arch_dotfiles` function ([94e5da6](https://github.com/iop098321qwe/custom_bash_commands/commit/94e5da6e47a43f18488255d84e332ccbbaa7f54a))
+* **function:** remove `odt` and `ods` functions ([bc6e4fe](https://github.com/iop098321qwe/custom_bash_commands/commit/bc6e4fe77d23d68ed2c4288c50350b47e8818f1d))
+
+
+### Bug Fixes
+
+* **function:** remove 'grymms_grimoires' from `setup_directories` function ([68cc024](https://github.com/iop098321qwe/custom_bash_commands/commit/68cc024dd086cf90ec054803517ee8aa695abbe5))
+
 ## [305.7.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.6.0...v305.7.0) (2025-11-26)
 
 
