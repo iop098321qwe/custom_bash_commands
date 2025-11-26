@@ -1635,6 +1635,49 @@ dotfiles() {
 }
 
 ################################################################################
+# ARCH_DOTFILES
+################################################################################
+
+arch_dotfiles() {
+  OPTIND=1
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the arch_dotfiles repository in your default browser."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  arch_dotfiles [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  arch_dotfiles"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  # Define the arch_dotfiles repository URL
+  arch_dotfiles_url="https://github.com/iop098321qwe/dotfiles-arch"
+
+  # Open the arch_dotfiles repository in the default browser
+  xdg-open "$arch_dotfiles_url"
+}
+
+################################################################################
 # SETUP_DIRECTORIES
 ################################################################################
 
