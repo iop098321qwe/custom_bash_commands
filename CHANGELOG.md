@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.8.0...v306.0.0) (2025-11-26)
+
+
+### Features
+
+* **pkg:** add update command ([7fc0990](https://github.com/iop098321qwe/custom_bash_commands/commit/7fc09902d1f13821b29745a4ad4d04dc7d47f764))
+
 ## [305.8.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.7.0...v305.8.0) (2025-11-26)
 
 
