@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-VERSION="v305.8.0"
+VERSION="v306.0.0"
+
+CBC_MODULE_ROOT="${CBC_MODULE_ROOT:-$HOME/.config/cbc/modules}"
+CBC_MODULE_ENTRYPOINT="cbc-module.sh"
 
 ###############################################################################
 # Charmbracelet Gum helpers (Catppuccin Mocha palette)
@@ -140,8 +143,306 @@ cbc_spinner() {
 # this should modularize the code better and allow users to optionally load/unload the pron module.
 
 ###################################################################################################################################################################
+# CBC MODULE LOADER
+################################################################################################################################
+################################
+
+cbc_pkg_install() {
+  local source="$1"
+
+  if [ -z "$source" ]; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "No module source provided. Use 'cbc pkg install <creator/repo>' or a git URL."
+    return 1
+  fi
+
+  if ! command -v git >/dev/null 2>&1; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "Git is required to install modules. Install git and try again."
+    return 1
+  fi
+
+  mkdir -p "$CBC_MODULE_ROOT"
+
+  local repo_url="$source"
+  local module_name=""
+
+  if [ -d "$source" ]; then
+    module_name="$(basename "$source")"
+  else
+    if [[ ! "$source" =~ :// ]] && [[ "$source" != git@*:* ]]; then
+      repo_url="https://github.com/${source}.git"
+    fi
+    module_name="$(basename "$repo_url")"
+    module_name="${module_name%.git}"
+  fi
+
+  local destination="$CBC_MODULE_ROOT/$module_name"
+
+  if [ -d "$destination" ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Module '$module_name' is already installed at $destination."
+    return 0
+  fi
+
+  if [ -d "$source" ]; then
+    cbc_spinner "Copying module $module_name" cp -R "$source" "$destination" || return 1
+  else
+    cbc_spinner "Cloning $module_name" git clone "$repo_url" "$destination" || return 1
+  fi
+
+  if [ -f "$destination/$CBC_MODULE_ENTRYPOINT" ]; then
+    cbc_style_message "$CATPPUCCIN_GREEN" \
+      "Installed '$module_name'. Run 'cbc pkg load' to source its entrypoint."
+  else
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Installed '$module_name' but no $CBC_MODULE_ENTRYPOINT file was found."
+  fi
+}
+
+cbc_pkg_list() {
+  mkdir -p "$CBC_MODULE_ROOT"
+
+  local found=false
+  shopt -s nullglob
+  for module_dir in "$CBC_MODULE_ROOT"/*; do
+    [ -d "$module_dir" ] || continue
+    found=true
+
+    local module_name="$(basename "$module_dir")"
+    local entrypoint="$module_dir/$CBC_MODULE_ENTRYPOINT"
+
+    if [ -f "$entrypoint" ]; then
+      cbc_style_box "$CATPPUCCIN_BLUE" "Module: $module_name" \
+        "  Entrypoint: $CBC_MODULE_ENTRYPOINT" \
+        "  Status: Ready to load"
+    else
+      cbc_style_box "$CATPPUCCIN_MAUVE" "Module: $module_name" \
+        "  Entrypoint: (missing)" \
+        "  Status: Add $CBC_MODULE_ENTRYPOINT to enable loading"
+    fi
+  done
+  shopt -u nullglob
+
+  if [ "$found" = false ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "No CBC modules installed. Use 'cbc pkg install <creator/repo>' to add one."
+  fi
+}
+
+cbc_pkg_update() {
+  if ! command -v git >/dev/null 2>&1; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "Git is required to update modules. Install git and try again."
+    return 1
+  fi
+
+  mkdir -p "$CBC_MODULE_ROOT"
+
+  local updated_modules=()
+  local skipped_modules=()
+
+  shopt -s nullglob
+  for module_dir in "$CBC_MODULE_ROOT"/*; do
+    [ -d "$module_dir" ] || continue
+
+    local module_name="$(basename "$module_dir")"
+
+    if [ ! -d "$module_dir/.git" ]; then
+      skipped_modules+=("$module_name (not a git repository)")
+      continue
+    fi
+
+    if cbc_spinner "Updating $module_name" git -C "$module_dir" pull --ff-only --quiet; then
+      updated_modules+=("$module_name")
+    else
+      skipped_modules+=("$module_name (update failed)")
+    fi
+  done
+  shopt -u nullglob
+
+  if [ ${#updated_modules[@]} -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_GREEN" \
+      "Updated modules: ${updated_modules[*]}"
+  fi
+
+  if [ ${#skipped_modules[@]} -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_MAROON" \
+      "Skipped modules: ${skipped_modules[*]}"
+  fi
+
+  if [ ${#updated_modules[@]} -eq 0 ] && [ ${#skipped_modules[@]} -eq 0 ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "No CBC modules installed. Use 'cbc pkg install <creator/repo>' to add one."
+  fi
+}
+
+cbc_pkg_load_modules() {
+  local auto_load="$1"
+  shift || true
+
+  mkdir -p "$CBC_MODULE_ROOT"
+
+  local loaded_any=false
+  local skipped_modules=()
+
+  shopt -s nullglob
+  for module_dir in "$CBC_MODULE_ROOT"/*; do
+    [ -d "$module_dir" ] || continue
+
+    local entrypoint="$module_dir/$CBC_MODULE_ENTRYPOINT"
+    local module_name="$(basename "$module_dir")"
+
+    if [ -f "$entrypoint" ]; then
+      # shellcheck disable=SC1090
+      source "$entrypoint"
+      loaded_any=true
+    else
+      skipped_modules+=("$module_name")
+    fi
+  done
+  shopt -u nullglob
+
+  if [ "$loaded_any" = false ] && [ "$auto_load" != "auto" ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "No modules to load from $CBC_MODULE_ROOT."
+  fi
+
+  if [ ${#skipped_modules[@]} -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_MAROON" \
+      "Skipped modules missing $CBC_MODULE_ENTRYPOINT: ${skipped_modules[*]}"
+  fi
+}
+
+cbc_pkg() {
+  OPTIND=1
+  local show_help=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Manage CBC modules inspired by yazi's 'ya pkg' loader."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc pkg [subcommand]" \
+      "  cbc pkg install <creator/repo|git-url|path>" \
+      "  cbc pkg list" \
+      "  cbc pkg load" \
+      "  cbc pkg update"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc pkg" \
+      "  cbc pkg install creator/example-module" \
+      "  cbc pkg load" \
+      "  cbc pkg update"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  local subcommand="${1:-list}"
+  if [ -n "$1" ]; then
+    shift
+  fi
+
+  case "$subcommand" in
+  install)
+    cbc_pkg_install "$1"
+    ;;
+  list)
+    cbc_pkg_list
+    ;;
+  load)
+    cbc_pkg_load_modules
+    ;;
+  update)
+    cbc_pkg_update
+    ;;
+  *)
+    cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc pkg command: $subcommand"
+    usage
+    return 1
+    ;;
+  esac
+}
+
+cbc() {
+  OPTIND=1
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Entry point for CBC subcommands."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc [subcommand]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Subcommands:" \
+      "  pkg    Manage CBC modules (install, list, load, update)" \
+      "  -h     Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc pkg" \
+      "  cbc pkg install creator/example-module"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  local subcommand="$1"
+  if [ -n "$subcommand" ]; then
+    shift
+  fi
+
+  case "$subcommand" in
+  ""|-h|--help)
+    usage
+    ;;
+  pkg)
+    cbc_pkg "$@"
+    ;;
+  *)
+    cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc subcommand: $subcommand"
+    usage
+    return 1
+    ;;
+  esac
+}
+
+################################################################################################################################
+###################################
 # BATCHOPEN
-###################################################################################################################################################################
+################################################################################################################################
+###################################
 
 batchopen() {
   # Reset getopts in case this function is called multiple times
@@ -1995,6 +2296,23 @@ cbcs() {
       echo "          Options:"
       echo "              -h    Display this help message"
       echo " "
+      echo "cbc"
+      echo "          Description: Entry point for CBC subcommands, including modules."
+      echo "          Usage: cbc [subcommand]"
+      echo "          Options:"
+      echo "              -h    Display this help message"
+      echo "              pkg  Manage CBC modules"
+      echo " "
+      echo "cbc pkg"
+      echo "          Description: Install, list, update, and load CBC modules."
+      echo "          Usage: cbc pkg [install|list|load|update]"
+      echo "          Options:"
+      echo "              -h               Display this help message"
+      echo "              install <src>    Install from creator/repo, git URL, or path"
+      echo "              list             Show installed modules"
+      echo "              load             Source installed modules"
+      echo "              update           Pull the latest changes for installed modules"
+      echo " "
       echo "cc"
       echo "          Description: Combine the git add, git commit and git push process interactively"
       echo "          Usage: cc"
@@ -2131,9 +2449,9 @@ cbcs() {
       echo "          Alias For: 'cdgh && cd custom_bash_commands && ls && cc'"
       echo " "
       echo "cbc"
-      echo "          Description: Change to the custom_bash_commands directory and list its contents"
-      echo "          Usage: cbc"
-      echo "          Alias For: 'cdgh && cd custom_bash_commands && ls'"
+      echo "          Description: CBC dispatcher for subcommands such as 'cbc pkg'"
+      echo "          Usage: cbc [subcommand]"
+      echo "          Notes: Use 'cdgh && cd custom_bash_commands' to jump into the repo"
       echo " "
       echo "c"
       echo "          Description: Clear the terminal screen and call display_info command"
@@ -2587,6 +2905,8 @@ cbcs() {
       echo " "
       echo "backup"
       echo "cbcs"
+      echo "cbc"
+      echo "cbc pkg"
       echo "cc"
       echo "changes"
       echo "cht.sh"
@@ -3885,6 +4205,12 @@ updatecbc() {
   # Source the updated commands
   source ~/.custom_bash_commands.sh
 }
+
+###############################################################################
+# Auto-load installed CBC modules
+###############################################################################
+
+cbc_pkg_load_modules auto
 
 ###############################################################################
 # Call the function to display information once per interactive session

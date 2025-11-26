@@ -128,6 +128,19 @@ When the terminal sources CBC it immediately prepares the working environment:
   and `commandsmore` aliases pipe that output through `batcat` for easier
   browsing.【F:custom_bash_commands.sh†L1835-L2626】【F:cbc_aliases.sh†L19-L36】
 
+### Manage CBC modules
+
+- `cbc pkg` surfaces the module loader inspired by Yazi's `ya pkg` workflow.
+  Installed modules live under `~/.config/cbc/modules` by default and are
+  sourced automatically when CBC loads if they contain a `cbc-module.sh`
+  entrypoint.
+- `cbc pkg install <creator/repo|git-url|path>` clones or copies a module into
+  the module root so it can be loaded in subsequent shells.
+- `cbc pkg update` pulls the latest changes for each installed module that is a
+  git repository.
+- `cbc pkg load` re-sources every installed module, while `cbc pkg` or
+  `cbc pkg list` prints the installed set with readiness details.【F:custom_bash_commands.sh†L128-L207】【F:custom_bash_commands.sh†L220-L394】
+
 ### Automation, media, and file utilities
 
 - `batchopen`, `phopen`, and `phsearch` open batches of URLs or interactive
