@@ -51,10 +51,12 @@ introducing.
 - `cbcs` is the discoverability hub. Whenever you add a function or alias,
   update both the brief list and the `-a` detail output, plus any alias rows in
   `cbc_aliases.sh`.
-- `cbc pkg` now relies on the manifest/lock file at
-  `~/.config/cbc/packages.toml` to source modules across machines. Keep the
-  manifest in sync when installs, updates, or lock changes occur, and preserve
-  the auto-load step after `cbc pkg update`.
+- `cbc pkg` now writes `[[module.deps]]` entries (`use`, `rev`, `hash`) to
+  `~/.config/cbc/packages.toml`. `install` must append new modules without
+  clearing earlier entries, `load` syncs modules into `modules/` while
+  refreshing the recorded fields, `update` checks the manifest before pulling,
+  and the post-update auto-load must remain intact. Keep the manifest parser
+  tolerant of spacing and quoted values.
 - `updatecbc` performs a sparse checkout of the repository, copying the main
   script and `cbc_aliases.sh` into the home directory before sourcing the new
   version. Preserve its temporary-directory hygiene and cleanup flow.
