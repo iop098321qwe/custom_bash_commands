@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v306.1.0"
+VERSION="v306.2.0"
 
 CBC_CONFIG_DIR="${CBC_CONFIG_DIR:-$HOME/.config/cbc}"
 CBC_MODULE_ROOT="${CBC_MODULE_ROOT:-$CBC_CONFIG_DIR/modules}"
@@ -195,11 +195,11 @@ cbc_pkg_directory_checksum() {
     return
   fi
 
-  find "$dir" -type f ! -path "*/.git/*" -print0 2>/dev/null \
-    | sort -z \
-    | xargs -0 sha256sum 2>/dev/null \
-    | sha256sum 2>/dev/null \
-    | awk '{print $1}'
+  find "$dir" -type f ! -path "*/.git/*" -print0 2>/dev/null |
+    sort -z |
+    xargs -0 sha256sum 2>/dev/null |
+    sha256sum 2>/dev/null |
+    awk '{print $1}'
 }
 
 cbc_pkg_collect_metadata() {
@@ -410,7 +410,7 @@ cbc_pkg_update_status_line() {
     return
   fi
 
-  if [ -n "$remote_head" ] && [ -n "$manifest_hash" ] && \
+  if [ -n "$remote_head" ] && [ -n "$manifest_hash" ] &&
     [ "$remote_head" != "$manifest_hash" ]; then
     echo "Status: Updates available (remote ahead of manifest rev $manifest_label)."
     return
@@ -861,7 +861,7 @@ cbc() {
   fi
 
   case "$subcommand" in
-  ""|-h|--help)
+  "" | -h | --help)
     usage
     ;;
   pkg)
@@ -2216,7 +2216,7 @@ wiki() {
 
   # Function to open the CBC wiki in the default browser
   open_wiki() {
-    nohup xdg-open "$wiki_url" > /dev/null 2>&1 &
+    nohup xdg-open "$wiki_url" >/dev/null 2>&1 &
   }
 
   # Call the open_wiki function
@@ -2269,7 +2269,7 @@ changes() {
 
   # Function to open the changelog in the default browser
   open_changelog() {
-    nohup xdg-open "$changelog_url" > /dev/null 2>&1 &
+    nohup xdg-open "$changelog_url" >/dev/null 2>&1 &
   }
 
   # Call the open_changelog function
@@ -2322,7 +2322,7 @@ releases() {
 
   # Function to open the changelog in the default browser
   open_releases() {
-    nohup xdg-open "$releases_url" > /dev/null 2>&1 &
+    nohup xdg-open "$releases_url" >/dev/null 2>&1 &
   }
 
   # Call the open_releases function
