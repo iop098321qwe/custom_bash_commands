@@ -32,6 +32,9 @@ matching reality.
 | `docs/` | Supporting references: dependency list, SOPs for adding functions or
   aliases, and the current TODO backlog. Keep these synchronized with any
   behaviour changes you introduce. |
+| `~/.config/cbc/` | Home for CBC-managed configuration, including
+  modules under `~/.config/cbc/modules`. Keep new config or module assets in
+  this tree. |
 | `managed_context/` & `test_suite_analysis/` | Metadata from previous AI or test
   sessions. No runtime impact; update only if schemas change. |
 | `node_modules/` | Vendored release tooling (`npx commit-and-tag-version`). Do
@@ -110,8 +113,8 @@ matching reality.
 3. **Pull requests** – Titles should also follow Conventional Commit style.
    Summaries must include motivation, user-facing behaviour changes, tests run,
    and documentation updates (including this handbook when applicable).
-4. **Changelog** – Update `CHANGELOG.md` when end-user behaviour changes. Align
-   the version with any constants or release tooling.
+4. **Changelog** – Do not modify `CHANGELOG.md`; it is auto-generated outside
+   this repository.
 5. **Version bumps** – If you change the `VERSION` constant in the main script,
    ensure `.version`, release automation, and docs reflect the same number.
 6. **make_pr** – After committing, call the provided `make_pr` tool with an
