@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v306.3.0"
+VERSION="v306.4.0"
 
 CBC_CONFIG_DIR="${CBC_CONFIG_DIR:-$HOME/.config/cbc}"
 CBC_MODULE_ROOT="${CBC_MODULE_ROOT:-$CBC_CONFIG_DIR/modules}"
@@ -530,6 +530,78 @@ cbc_pkg_install() {
     "${status_note}"
 }
 
+cbc_pkg_uninstall() {
+  local use="$1"
+
+  if [ -z "$use" ]; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "No module provided. Use 'cbc pkg uninstall <creator/repo|module-name>'."
+    return 1
+  fi
+
+  cbc_pkg_ensure_config
+  cbc_pkg_read_manifest
+
+  local source=""
+  local module_name=""
+  cbc_pkg_resolve_source "$use" source module_name
+  local module_dir="$CBC_MODULE_ROOT/$module_name"
+
+  local new_uses=()
+  local new_revs=()
+  local new_hashes=()
+  local removed=false
+
+  for idx in "${!CBC_MANIFEST_USES[@]}"; do
+    local current_use="${CBC_MANIFEST_USES[$idx]}"
+    local current_name
+    current_name="$(cbc_pkg_module_name_from_use "$current_use")"
+
+    if [ "$current_use" = "$use" ] || [ "$current_name" = "$module_name" ]; then
+      removed=true
+      continue
+    fi
+
+    new_uses+=("$current_use")
+    new_revs+=("${CBC_MANIFEST_REVS[$idx]}")
+    new_hashes+=("${CBC_MANIFEST_HASHES[$idx]}")
+  done
+
+  if [ "$removed" = true ]; then
+    CBC_MANIFEST_USES=("${new_uses[@]}")
+    CBC_MANIFEST_REVS=("${new_revs[@]}")
+    CBC_MANIFEST_HASHES=("${new_hashes[@]}")
+    cbc_pkg_write_manifest
+  fi
+
+  local removed_local=false
+  if [ -d "$module_dir" ]; then
+    if cbc_spinner "Removing $module_name" rm -rf -- "$module_dir"; then
+      removed_local=true
+    else
+      cbc_style_message "$CATPPUCCIN_MAROON" \
+        "Failed to remove local files for '$module_name'."
+    fi
+  fi
+
+  if [ "$removed" = true ] || [ "$removed_local" = true ]; then
+    local removal_targets=()
+    if [ "$removed" = true ]; then
+      removal_targets+=("packages.toml")
+    fi
+    if [ "$removed_local" = true ]; then
+      removal_targets+=("local modules")
+    fi
+
+    cbc_style_message "$CATPPUCCIN_GREEN" \
+      "Removed '$module_name' from ${removal_targets[*]}." \
+      "Restart your shell to fully unload sourced functions."
+  else
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "No matching module found in packages.toml or local modules."
+  fi
+}
+
 cbc_pkg_list() {
   cbc_pkg_ensure_config
   cbc_pkg_read_manifest
@@ -749,6 +821,7 @@ cbc_pkg() {
       "  cbc pkg install <creator/repo|git-url|path>" \
       "  cbc pkg list" \
       "  cbc pkg load" \
+      "  cbc pkg uninstall <creator/repo|module-name>" \
       "  cbc pkg update"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
@@ -758,6 +831,7 @@ cbc_pkg() {
       "  cbc pkg" \
       "  cbc pkg install creator/example-module" \
       "  cbc pkg load" \
+      "  cbc pkg uninstall creator/example-module" \
       "  cbc pkg update"
   }
 
@@ -795,6 +869,9 @@ cbc_pkg() {
   load)
     cbc_pkg_load_modules
     ;;
+  uninstall)
+    cbc_pkg_uninstall "$1"
+    ;;
   update)
     cbc_pkg_update
     ;;
@@ -817,7 +894,7 @@ cbc() {
       "  cbc [subcommand]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Subcommands:" \
-      "  pkg    Manage CBC modules (install, list, load, update)" \
+      "  pkg    Manage CBC modules (install, list, load, uninstall, update)" \
       "  -h     Display this help message"
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
@@ -2727,12 +2804,13 @@ cbcs() {
       echo " "
       echo "cbc pkg"
       echo "          Description: Manage CBC modules via packages.toml manifest."
-      echo "          Usage: cbc pkg [install|list|load|update]"
+      echo "          Usage: cbc pkg [install|list|load|uninstall|update]"
       echo "          Options:"
       echo "              -h               Display this help message"
       echo "              install <src>    Record module metadata to packages.toml"
       echo "              list             Show manifest entries and update state"
       echo "              load             Sync manifest modules then source them"
+      echo "              uninstall <src> Remove a module and delete its files"
       echo "              update           Pull newer commits for manifest modules"
       echo " "
       echo "cc"
