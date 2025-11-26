@@ -131,6 +131,10 @@ When the terminal sources CBC it immediately prepares the working environment:
 - `cbc pkg load` reads `packages.toml`, installs any missing modules using the
   `use` field into `~/.config/cbc/modules/`, updates the recorded `rev` and
   `hash` values, and sources each module's `cbc-module.sh` entrypoint.
+- `cbc pkg uninstall <creator/repo|module-name>` prunes the entry from
+  `packages.toml`, deletes the module directory in
+  `~/.config/cbc/modules/`, and should be followed by a new shell session to
+  clear any sourced functions.
 - `cbc pkg update` consults the manifest to fetch upstream commits only when a
   module needs them, refreshes the stored metadata, and reloads the modules.
 - `cbc pkg` or `cbc pkg list` reports manifest entries with their last updated
