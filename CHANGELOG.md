@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.1.0...v306.2.0) (2025-11-26)
+
+
+### Features
+
+* **pkg:** rework manifest-driven module loader ([#137](https://github.com/iop098321qwe/custom_bash_commands/issues/137)) ([f8a3ffb](https://github.com/iop098321qwe/custom_bash_commands/commit/f8a3ffb000a998f89111f3179d20724a2a8b9610))
+
 ## [306.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.0.0...v306.1.0) (2025-11-26)
 
 
