@@ -57,6 +57,9 @@ introducing.
   refreshing the recorded fields, `update` checks the manifest before pulling,
   and the post-update auto-load must remain intact. Keep the manifest parser
   tolerant of spacing and quoted values.
+- `cbc pkg list` should summarize modules with last-updated timestamps and a
+  concise status (`Current` or `UPDATE AVAILABLE`) without surfacing module
+  entrypoints.
 - `updatecbc` performs a sparse checkout of the repository, copying the main
   script and `cbc_aliases.sh` into the home directory before sourcing the new
   version. Preserve its temporary-directory hygiene and cleanup flow.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v306.2.0"
+VERSION="v306.3.0"
 
 CBC_CONFIG_DIR="${CBC_CONFIG_DIR:-$HOME/.config/cbc}"
 CBC_MODULE_ROOT="${CBC_MODULE_ROOT:-$CBC_CONFIG_DIR/modules}"
@@ -391,10 +391,13 @@ cbc_pkg_update_status_line() {
   local manifest_rev="$3"
   local manifest_hash="$4"
 
-  local manifest_label="${manifest_rev:-unknown}"
-
   if [ ! -d "$module_dir" ]; then
     echo "Status: Not installed; run 'cbc pkg load'."
+    return
+  fi
+
+  if ! command -v git >/dev/null 2>&1; then
+    echo "Status: Current (git unavailable; update checks skipped.)"
     return
   fi
 
@@ -405,27 +408,23 @@ cbc_pkg_update_status_line() {
   local remote_head=""
   cbc_pkg_resolve_remote_head "$use" "$module_dir" remote_head
 
-  if ! command -v git >/dev/null 2>&1; then
-    echo "Status: Git unavailable; update checks skipped."
-    return
-  fi
-
-  if [ -n "$remote_head" ] && [ -n "$manifest_hash" ] &&
-    [ "$remote_head" != "$manifest_hash" ]; then
-    echo "Status: Updates available (remote ahead of manifest rev $manifest_label)."
+  if [ -n "$remote_head" ] && [ "$remote_head" != "$current_hash" ]; then
+    echo "Status: UPDATE AVAILABLE"
     return
   fi
 
   if [ -n "$manifest_hash" ] && [ "$current_hash" != "$manifest_hash" ]; then
-    echo "Status: Local differs from recorded manifest revision."
+    echo "Status: UPDATE AVAILABLE"
     return
   fi
 
-  if [ -n "$remote_head" ]; then
-    echo "Status: Up to date with recorded revision."
-  else
-    echo "Status: Unable to verify remote; using manifest revision."
+  if [ -n "$manifest_hash" ] && [ -n "$remote_head" ] &&
+    [ "$remote_head" != "$manifest_hash" ]; then
+    echo "Status: UPDATE AVAILABLE"
+    return
   fi
+
+  echo "Status: Current"
 }
 
 cbc_pkg_align_with_manifest() {
@@ -549,13 +548,7 @@ cbc_pkg_list() {
     local module_dir="$CBC_MODULE_ROOT/$module_name"
     manifest_modules+=("$module_name")
 
-    local entrypoint="$module_dir/$CBC_MODULE_ENTRYPOINT"
-    local readiness="Entrypoint: $CBC_MODULE_ENTRYPOINT"
     local last_update="Unknown"
-
-    if [ -d "$module_dir" ] && [ ! -f "$entrypoint" ]; then
-      readiness="Entrypoint: (missing)"
-    fi
 
     if [ -d "$module_dir/.git" ] && command -v git >/dev/null 2>&1; then
       last_update="$(git -C "$module_dir" log -1 --format=%cs 2>/dev/null || echo "Unknown")"
@@ -571,7 +564,6 @@ cbc_pkg_list() {
         "  Use: $use" \
         "  Recorded rev: ${manifest_rev:-unknown}" \
         "  Last update: $last_update" \
-        "  $readiness" \
         "  $status_line"
     else
       cbc_style_box "$CATPPUCCIN_SAPPHIRE" "Module: $module_name" \
@@ -594,12 +586,6 @@ cbc_pkg_list() {
     fi
 
     found=true
-    local entrypoint="$module_dir/$CBC_MODULE_ENTRYPOINT"
-    local readiness="Entrypoint: $CBC_MODULE_ENTRYPOINT"
-
-    if [ ! -f "$entrypoint" ]; then
-      readiness="Entrypoint: (missing)"
-    fi
 
     local status_line
     status_line="$(cbc_pkg_update_status_line "$module_name" "$module_dir" "" "")"
@@ -607,7 +593,6 @@ cbc_pkg_list() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Module: $module_name" \
       "  Use: Local install (not tracked in packages.toml)" \
       "  Last update: $(date -r "$module_dir" +%Y-%m-%d 2>/dev/null || echo "Unknown")" \
-      "  $readiness" \
       "  $status_line"
   done
   shopt -u nullglob
