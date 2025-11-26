@@ -5,8 +5,9 @@
 This handbook keeps automated contributors aligned with the expectations of the
 `custom_bash_commands` project. Use it to understand how the scripts are wired
 together, which conventions are non-negotiable, and what must be updated when
-you touch the codebase. Always refresh this file when its guidance stops
-matching reality.
+you touch the codebase. Update this file and `README.md` in every change set so
+they describe both the current state of the repository and the changes you are
+introducing.
 
 ---
 
@@ -20,25 +21,18 @@ matching reality.
 | `cbc_aliases.sh` | Alias catalog sourced by the main script. Provides fuzzy
   navigation, Git helpers, media launchers, and release automation shortcuts
   (e.g., `ver`). Keep this file as the single source of truth for aliases. |
-| `new_update_commands.sh` | Provisioning script that copies CBC into `~`, checks
-  the repository path, appends sourcing lines to `.bashrc`, and refreshes the
-  shell. It expects `update_commands.sh` and `.version` to exist beside the main
-  script. |
-| `.cbcconfig/apt_packages.conf` | Optional apt manifest used by external
-  installers. Update it when dependencies change. |
-| `.testing_setup.sh` | Mirrors the provisioning flow for sandbox installs of
-  `.test_custom_bash_commands.sh` and `.test_update_commands.sh`. Useful when you
-  need to validate changes without touching the primary setup. |
+| `install_cbc.sh` | Installer that validates the repository path, copies the
+  main script and aliases into the home directory, appends sourcing lines to
+  `.bashrc`, and reloads the shell. Use this when you need a fast local setup. |
 | `docs/` | Supporting references: dependency list, SOPs for adding functions or
   aliases, and the current TODO backlog. Keep these synchronized with any
   behaviour changes you introduce. |
-| `~/.config/cbc/` | Home for CBC-managed configuration, including
-  modules under `~/.config/cbc/modules`. Keep new config or module assets in
-  this tree. |
-| `managed_context/` & `test_suite_analysis/` | Metadata from previous AI or test
-  sessions. No runtime impact; update only if schemas change. |
 | `node_modules/` | Vendored release tooling (`npx commit-and-tag-version`). Do
   not add packages unless you are intentionally changing the release workflow. |
+| `CHANGELOG.md` & `cbc_logo_00001.png` | Human-readable release history and
+  branding assets referenced by the CLI and README. |
+| Missing/expected externals | `.version` and `update_commands.sh` are not
+  tracked. Document any reliance on them in `README.md` and this handbook. |
 
 ---
 
@@ -58,9 +52,8 @@ matching reality.
   update both the brief list and the `-a` detail output, plus any alias rows in
   `cbc_aliases.sh`.
 - `updatecbc` performs a sparse checkout of the repository, copying the main
-  script, `cbc_aliases.sh`, and `.version` into the home directory before
-  sourcing the new version. Preserve its temporary-directory hygiene and cleanup
-  flow.
+  script and `cbc_aliases.sh` into the home directory before sourcing the new
+  version. Preserve its temporary-directory hygiene and cleanup flow.
 
 ---
 
@@ -82,14 +75,31 @@ matching reality.
    sure any alias with custom behaviour is documented in `cbcs -a` and the
    README.
 5. **Documentation sync** – When behaviour or dependencies change, update this
-   handbook, `README.md`, `docs/dependencies.md`, `docs/standard_operating_
-   procedures.md`, and any other affected references in the same change set.
+  handbook and `README.md` in the same change set, capturing both the new
+  behaviour and any prior changes that need to remain discoverable. Refresh
+  other references (`docs/dependencies.md`, `docs/standard_operating_procedures.
+  md`, `docs/todo.md`) as needed to keep them aligned.
 6. **Release metadata** – If you modify the release process or `updatecbc`,
    verify the sparse checkout still copies `.version` and that the `ver`/`verg`
    aliases in `cbc_aliases.sh` remain accurate.
 7. **Non-repo support files** – `update_commands.sh` and `.version` are not
-   tracked. If your change depends on them existing or changing, document the
-   expectation in README/AGENTS and avoid committing private copies.
+  tracked. If your change depends on them existing or changing, document the
+  expectation in README/AGENTS and avoid committing private copies.
+
+---
+
+## Documentation maintenance
+
+- Treat `README.md` and this handbook as paired sources of truth. Every update
+  must adjust both files to reflect the current repository contents, the new
+  behaviour you introduced, and any earlier changes that should stay visible to
+  future contributors.
+- Keep tables and setup instructions in sync with the actual files present
+  (e.g., `install_cbc.sh` is the current installer; provisioning helpers such as
+  `new_update_commands.sh` are absent). If those files return, immediately
+  revise both documents.
+- Summarize documentation edits in the PR body so reviewers can verify the
+  narrative matches the code.
 
 ---
 
@@ -110,9 +120,10 @@ matching reality.
    `main`.
 2. **Commit messages** – Follow Conventional Commits:
    `<type>(<optional scope>): <description>` (e.g., `feat(cbcs): add wiki link`).
+   Apply the same convention to PR titles.
 3. **Pull requests** – Titles should also follow Conventional Commit style.
    Summaries must include motivation, user-facing behaviour changes, tests run,
-   and documentation updates (including this handbook when applicable).
+   and documentation updates (including this handbook and `README.md`).
 4. **Changelog** – Do not modify `CHANGELOG.md`; it is auto-generated outside
    this repository.
 5. **Version bumps** – If you change the `VERSION` constant in the main script,
@@ -145,6 +156,8 @@ matching reality.
 - [ ] Gum helpers used for all user-facing interactions.
 - [ ] Functions and aliases expose `-h` help and reset `OPTIND`.
 - [ ] `cbcs` and `cbc_aliases.sh` updated for any new or removed items.
+- [ ] `README.md` and this handbook refreshed to reflect the current state and
+      the changes introduced.
 - [ ] Manual tests executed and captured for the final report.
 - [ ] Dependencies and documentation refreshed as needed.
 - [ ] Conventional Commit message prepared and `make_pr` planned after commit.
