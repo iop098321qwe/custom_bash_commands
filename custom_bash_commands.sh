@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v305.6.0"
+VERSION="v305.7.0"
 
 ###############################################################################
 # Charmbracelet Gum helpers (Catppuccin Mocha palette)
@@ -1475,6 +1475,14 @@ wiki() {
   done
 
   shift $((OPTIND - 1))
+
+  # Function to open the CBC wiki in the default browser
+  open_wiki() {
+    nohup xdg-open "$wiki_url" > /dev/null 2>&1 &
+  }
+
+  # Call the open_wiki function
+  open_wiki
 }
 
 ################################################################################
@@ -1523,11 +1531,64 @@ changes() {
 
   # Function to open the changelog in the default browser
   open_changelog() {
-    nohup xdg-open "$changelog_url"
+    nohup xdg-open "$changelog_url" > /dev/null 2>&1 &
   }
 
   # Call the open_changelog function
   open_changelog
+}
+
+################################################################################
+# RELEASES
+################################################################################
+
+releases() {
+  OPTIND=1
+
+  # Define the CBC wiki URL
+  local releases_url="https://github.com/iop098321qwe/custom_bash_commands/releases"
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the Custom Bash Commands releases in your default browser."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  releases [-h|-c]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -c    Copy the releases URL to the clipboard"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  releases"
+  }
+
+  while getopts ":hc" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    c)
+      echo "$releases_url" | xclip -selection clipboard
+      cbc_style_message "$CATPPUCCIN_GREEN" "Changelog URL copied to clipboard."
+      return 0
+      ;;
+    *)
+      # invalid options
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  # Function to open the changelog in the default browser
+  open_releases() {
+    nohup xdg-open "$releases_url" > /dev/null 2>&1 &
+  }
+
+  # Call the open_releases function
+  open_releases
 }
 
 ################################################################################
@@ -1822,11 +1883,8 @@ display_version() {
   shift $((OPTIND - 1))
 
   # Display version details in a fancy box
-  cbc_style_box "$CATPPUCCIN_GREEN" "Using Custom Bash Commands (by iop098321qwe)"
-  cbc_style_message "$CATPPUCCIN_YELLOW" "Version: $VERSION 🔹🔹 To see the changes in this version, use the 'changes' command."
-  cbc_style_message "$CATPPUCCIN_SKY" "Show available commands with 'cbcs [-h]' or by typing 'commands' ('comm' for shortcut)."
-  cbc_style_message "$CATPPUCCIN_SUBTEXT" "To stop using CBC, remove '.custom_bash_commands.sh' from your '.bashrc' file using 'editbash'."
-  cbc_style_message "$CATPPUCCIN_PINK" "Use the 'wiki' command or visit: https://github.com/iop098321qwe/custom_bash_commands/wiki"
+  cbc_style_message "$CATPPUCCIN_GREEN" "CUSTOM BASH COMMANDS (by iop098321qwe)"
+  cbc_style_message "$CATPPUCCIN_YELLOW" "🔹🔹$VERSION🔹🔹CHANGELOG: 'changes'🔹🔹RELEASES: 'releases'🔹🔹WIKI: 'wiki'🔹🔹"
 }
 
 ################################################################################
