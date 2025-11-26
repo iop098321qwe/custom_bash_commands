@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v305.8.0"
+VERSION="v306.0.0"
 
 CBC_MODULE_ROOT="${CBC_MODULE_ROOT:-$HOME/.config/cbc/modules}"
 CBC_MODULE_ENTRYPOINT="cbc-module.sh"
