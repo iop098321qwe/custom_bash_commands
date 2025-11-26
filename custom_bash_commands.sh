@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 VERSION="v306.0.0"
 
-CBC_MODULE_ROOT="${CBC_MODULE_ROOT:-$HOME/.config/cbc/modules}"
+CBC_CONFIG_DIR="${CBC_CONFIG_DIR:-$HOME/.config/cbc}"
+CBC_MODULE_ROOT="${CBC_MODULE_ROOT:-$CBC_CONFIG_DIR/modules}"
+CBC_PACKAGE_MANIFEST="${CBC_PACKAGE_MANIFEST:-$CBC_CONFIG_DIR/packages.toml}"
 CBC_MODULE_ENTRYPOINT="cbc-module.sh"
 
 ###############################################################################
@@ -147,8 +149,199 @@ cbc_spinner() {
 ################################################################################################################################
 ################################
 
+cbc_pkg_trim() {
+  local text="$1"
+  printf "%s" "$text" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+}
+
+cbc_pkg_ensure_config() {
+  mkdir -p "$CBC_CONFIG_DIR" "$CBC_MODULE_ROOT"
+}
+
+cbc_pkg_read_manifest() {
+  CBC_MANIFEST_MODULES=()
+  CBC_MANIFEST_SOURCES=()
+  CBC_MANIFEST_LOCKS=()
+
+  [ -f "$CBC_PACKAGE_MANIFEST" ] || return 0
+
+  local in_packages=false
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%%#*}"
+    line="$(cbc_pkg_trim "$line")"
+
+    if [ "$line" = "[packages]" ]; then
+      in_packages=true
+      continue
+    fi
+
+    if [[ "$line" =~ ^\[.*\]$ ]]; then
+      in_packages=false
+      continue
+    fi
+
+    if [ "$in_packages" = true ] && \
+      [[ "$line" =~ ^([A-Za-z0-9._-]+)[[:space:]]*=[[:space:]]*"(.*)"$ ]]; then
+      local module="${BASH_REMATCH[1]}"
+      local value="${BASH_REMATCH[2]}"
+
+      local source="$value"
+      local lock=""
+
+      if [[ "$value" == *"="* ]]; then
+        source="${value%%=*}"
+        lock="${value#*=}"
+      fi
+
+      CBC_MANIFEST_MODULES+=("$module")
+      CBC_MANIFEST_SOURCES+=("$source")
+      CBC_MANIFEST_LOCKS+=("$lock")
+    fi
+  done <"$CBC_PACKAGE_MANIFEST"
+}
+
+cbc_pkg_write_manifest() {
+  cbc_pkg_ensure_config
+
+  {
+    echo "[packages]"
+    for idx in "${!CBC_MANIFEST_MODULES[@]}"; do
+      local module="${CBC_MANIFEST_MODULES[$idx]}"
+      local source="${CBC_MANIFEST_SOURCES[$idx]}"
+      local lock="${CBC_MANIFEST_LOCKS[$idx]}"
+      local value="$source"
+
+      if [ -n "$lock" ]; then
+        value="${value}=${lock}"
+      fi
+
+      echo "${module} = \"${value}\""
+    done
+  } >"$CBC_PACKAGE_MANIFEST"
+}
+
+cbc_pkg_record_manifest() {
+  local module="$1"
+  local source="$2"
+  local lock="$3"
+
+  cbc_pkg_read_manifest
+
+  local updated=false
+  for idx in "${!CBC_MANIFEST_MODULES[@]}"; do
+    if [ "${CBC_MANIFEST_MODULES[$idx]}" = "$module" ]; then
+      CBC_MANIFEST_SOURCES[$idx]="$source"
+      CBC_MANIFEST_LOCKS[$idx]="$lock"
+      updated=true
+      break
+    fi
+  done
+
+  if [ "$updated" = false ]; then
+    CBC_MANIFEST_MODULES+=("$module")
+    CBC_MANIFEST_SOURCES+=("$source")
+    CBC_MANIFEST_LOCKS+=("$lock")
+  fi
+
+  cbc_pkg_write_manifest
+}
+
+cbc_pkg_update_status_line() {
+  local module_dir="$1"
+  local lock="$2"
+
+  if ! command -v git >/dev/null 2>&1; then
+    echo "Update status: Git unavailable; revision state unknown."
+    return
+  fi
+
+  if [ -n "$lock" ] && [ -d "$module_dir/.git" ]; then
+    local current_commit
+    current_commit="$(git -C "$module_dir" rev-parse HEAD 2>/dev/null || true)"
+
+    if [ -n "$current_commit" ] && [ "$current_commit" != "$lock" ]; then
+      echo "Update status: Diverges from locked revision ($lock)."
+      return
+    fi
+  fi
+
+  if [ -d "$module_dir/.git" ]; then
+    local upstream
+    upstream="$(git -C "$module_dir" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
+
+    if [ -n "$upstream" ]; then
+      git -C "$module_dir" fetch --quiet 2>/dev/null || true
+      local behind_count
+      behind_count="$(git -C "$module_dir" rev-list --count HEAD.."$upstream" 2>/dev/null || echo 0)"
+
+      if [ "$behind_count" -gt 0 ]; then
+        echo "Update status: Upstream revisions available."
+      else
+        echo "Update status: Aligned with upstream revisions."
+      fi
+    else
+      echo "Update status: No upstream configured; treated as current."
+    fi
+  else
+    echo "Update status: Version control unavailable; treated as current."
+  fi
+}
+
+cbc_pkg_align_with_manifest() {
+  cbc_pkg_read_manifest
+
+  local git_available=true
+  if ! command -v git >/dev/null 2>&1; then
+    git_available=false
+
+    if [ ${#CBC_MANIFEST_MODULES[@]} -gt 0 ]; then
+      cbc_style_message "$CATPPUCCIN_YELLOW" \
+        "Git unavailable; skipping manifest installs and lock enforcement."
+    fi
+  fi
+
+  for idx in "${!CBC_MANIFEST_MODULES[@]}"; do
+    local module="${CBC_MANIFEST_MODULES[$idx]}"
+    local source="${CBC_MANIFEST_SOURCES[$idx]}"
+    local lock="${CBC_MANIFEST_LOCKS[$idx]}"
+    local module_dir="$CBC_MODULE_ROOT/$module"
+
+    if [ ! -d "$module_dir" ]; then
+      if [ "$git_available" = false ]; then
+        cbc_style_message "$CATPPUCCIN_MAROON" \
+          "Cannot install '$module' from packages.toml because git is missing."
+        continue
+      fi
+
+      cbc_style_message "$CATPPUCCIN_BLUE" \
+        "Module '$module' is defined in packages.toml but missing locally. Installing."
+      cbc_pkg_install "$source" "$lock" "$module"
+      continue
+    fi
+
+    if [ "$git_available" = true ] && [ -n "$lock" ] && [ -d "$module_dir/.git" ]; then
+      local current_commit
+      current_commit="$(git -C "$module_dir" rev-parse HEAD 2>/dev/null || true)"
+
+      if [ "$current_commit" != "$lock" ]; then
+        git -C "$module_dir" fetch --quiet --all 2>/dev/null || true
+        if cbc_spinner "Aligning $module to locked revision" \
+          git -C "$module_dir" checkout --quiet "$lock"; then
+          cbc_style_message "$CATPPUCCIN_GREEN" \
+            "Aligned '$module' with locked revision $lock."
+        else
+          cbc_style_message "$CATPPUCCIN_MAROON" \
+            "Failed to align '$module' with locked revision $lock."
+        fi
+      fi
+    fi
+  done
+}
+
 cbc_pkg_install() {
   local source="$1"
+  local lock_ref="$2"
+  local module_override="$3"
 
   if [ -z "$source" ]; then
     cbc_style_message "$CATPPUCCIN_RED" \
@@ -156,13 +349,18 @@ cbc_pkg_install() {
     return 1
   fi
 
+  cbc_pkg_ensure_config
+
+  if [ -z "$lock_ref" ] && [[ "$source" == *"="* ]]; then
+    lock_ref="${source#*=}"
+    source="${source%%=*}"
+  fi
+
   if ! command -v git >/dev/null 2>&1; then
     cbc_style_message "$CATPPUCCIN_RED" \
       "Git is required to install modules. Install git and try again."
     return 1
   fi
-
-  mkdir -p "$CBC_MODULE_ROOT"
 
   local repo_url="$source"
   local module_name=""
@@ -175,6 +373,10 @@ cbc_pkg_install() {
     fi
     module_name="$(basename "$repo_url")"
     module_name="${module_name%.git}"
+  fi
+
+  if [ -n "$module_override" ]; then
+    module_name="$module_override"
   fi
 
   local destination="$CBC_MODULE_ROOT/$module_name"
@@ -191,6 +393,32 @@ cbc_pkg_install() {
     cbc_spinner "Cloning $module_name" git clone "$repo_url" "$destination" || return 1
   fi
 
+  if [ -n "$lock_ref" ] && [ -d "$destination/.git" ]; then
+    if ! cbc_spinner "Checking out locked revision for $module_name" \
+      git -C "$destination" checkout --quiet "$lock_ref"; then
+      cbc_style_message "$CATPPUCCIN_MAROON" \
+        "Failed to apply lock '$lock_ref' for $module_name."
+    fi
+  fi
+
+  local recorded_lock="$lock_ref"
+  if [ -d "$destination/.git" ]; then
+    recorded_lock="$(git -C "$destination" rev-parse HEAD 2>/dev/null || true)"
+  fi
+
+  local manifest_source="$source"
+  if [ ! -d "$source" ] && [[ "$source" =~ :// ]]; then
+    manifest_source="$repo_url"
+  elif [ ! -d "$source" ] && [[ "$source" == git@*:* ]]; then
+    manifest_source="$source"
+  elif [ ! -d "$source" ]; then
+    manifest_source="$source"
+  else
+    manifest_source="$(cd "$source" && pwd)"
+  fi
+
+  cbc_pkg_record_manifest "$module_name" "$manifest_source" "$recorded_lock"
+
   if [ -f "$destination/$CBC_MODULE_ENTRYPOINT" ]; then
     cbc_style_message "$CATPPUCCIN_GREEN" \
       "Installed '$module_name'. Run 'cbc pkg load' to source its entrypoint."
@@ -201,26 +429,67 @@ cbc_pkg_install() {
 }
 
 cbc_pkg_list() {
-  mkdir -p "$CBC_MODULE_ROOT"
+  cbc_pkg_ensure_config
+  cbc_pkg_read_manifest
 
   local found=false
+  local manifest_modules=()
+
+  for idx in "${!CBC_MANIFEST_MODULES[@]}"; do
+    local module="${CBC_MANIFEST_MODULES[$idx]}"
+    local source="${CBC_MANIFEST_SOURCES[$idx]}"
+    local lock="${CBC_MANIFEST_LOCKS[$idx]}"
+    local module_dir="$CBC_MODULE_ROOT/$module"
+    manifest_modules+=("$module")
+
+    if [ -d "$module_dir" ]; then
+      local entrypoint="$module_dir/$CBC_MODULE_ENTRYPOINT"
+      local readiness="Entrypoint: $CBC_MODULE_ENTRYPOINT"
+
+      if [ ! -f "$entrypoint" ]; then
+        readiness="Entrypoint: (missing)"
+      fi
+
+      local status_line
+      status_line="$(cbc_pkg_update_status_line "$module_dir" "$lock")"
+
+      cbc_style_box "$CATPPUCCIN_BLUE" "Module: $module" \
+        "  Source: $source" \
+        "  $readiness" \
+        "  $status_line"
+    else
+      cbc_style_box "$CATPPUCCIN_SAPPHIRE" "Module: $module" \
+        "  Source: $source" \
+        "  Status: Not present locally; will synchronize on next load."
+    fi
+
+    found=true
+  done
+
   shopt -s nullglob
   for module_dir in "$CBC_MODULE_ROOT"/*; do
     [ -d "$module_dir" ] || continue
-    found=true
 
     local module_name="$(basename "$module_dir")"
-    local entrypoint="$module_dir/$CBC_MODULE_ENTRYPOINT"
-
-    if [ -f "$entrypoint" ]; then
-      cbc_style_box "$CATPPUCCIN_BLUE" "Module: $module_name" \
-        "  Entrypoint: $CBC_MODULE_ENTRYPOINT" \
-        "  Status: Ready to load"
-    else
-      cbc_style_box "$CATPPUCCIN_MAUVE" "Module: $module_name" \
-        "  Entrypoint: (missing)" \
-        "  Status: Add $CBC_MODULE_ENTRYPOINT to enable loading"
+    if [[ " ${manifest_modules[*]} " == *" $module_name "* ]]; then
+      continue
     fi
+
+    found=true
+    local entrypoint="$module_dir/$CBC_MODULE_ENTRYPOINT"
+    local readiness="Entrypoint: $CBC_MODULE_ENTRYPOINT"
+
+    if [ ! -f "$entrypoint" ]; then
+      readiness="Entrypoint: (missing)"
+    fi
+
+    local status_line
+    status_line="$(cbc_pkg_update_status_line "$module_dir" "")"
+
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Module: $module_name" \
+      "  Source: Local install (not tracked in packages.toml)" \
+      "  $readiness" \
+      "  $status_line"
   done
   shopt -u nullglob
 
@@ -237,7 +506,8 @@ cbc_pkg_update() {
     return 1
   fi
 
-  mkdir -p "$CBC_MODULE_ROOT"
+  cbc_pkg_ensure_config
+  cbc_pkg_read_manifest
 
   local updated_modules=()
   local skipped_modules=()
@@ -247,6 +517,7 @@ cbc_pkg_update() {
     [ -d "$module_dir" ] || continue
 
     local module_name="$(basename "$module_dir")"
+    local manifest_source=""
 
     if [ ! -d "$module_dir/.git" ]; then
       skipped_modules+=("$module_name (not a git repository)")
@@ -255,6 +526,22 @@ cbc_pkg_update() {
 
     if cbc_spinner "Updating $module_name" git -C "$module_dir" pull --ff-only --quiet; then
       updated_modules+=("$module_name")
+      local new_lock
+      new_lock="$(git -C "$module_dir" rev-parse HEAD 2>/dev/null || true)"
+
+      for idx in "${!CBC_MANIFEST_MODULES[@]}"; do
+        if [ "${CBC_MANIFEST_MODULES[$idx]}" = "$module_name" ]; then
+          manifest_source="${CBC_MANIFEST_SOURCES[$idx]}"
+        fi
+      done
+
+      if [ -z "$manifest_source" ]; then
+        manifest_source="$(git -C "$module_dir" config --get remote.origin.url 2>/dev/null || true)"
+      fi
+
+      if [ -n "$manifest_source" ]; then
+        cbc_pkg_record_manifest "$module_name" "$manifest_source" "$new_lock"
+      fi
     else
       skipped_modules+=("$module_name (update failed)")
     fi
@@ -275,13 +562,16 @@ cbc_pkg_update() {
     cbc_style_message "$CATPPUCCIN_YELLOW" \
       "No CBC modules installed. Use 'cbc pkg install <creator/repo>' to add one."
   fi
+
+  cbc_pkg_load_modules auto
 }
 
 cbc_pkg_load_modules() {
   local auto_load="$1"
   shift || true
 
-  mkdir -p "$CBC_MODULE_ROOT"
+  cbc_pkg_ensure_config
+  cbc_pkg_align_with_manifest
 
   local loaded_any=false
   local skipped_modules=()
