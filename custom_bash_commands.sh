@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v306.2.0"
+VERSION="v306.3.0"
 
 CBC_CONFIG_DIR="${CBC_CONFIG_DIR:-$HOME/.config/cbc}"
 CBC_MODULE_ROOT="${CBC_MODULE_ROOT:-$CBC_CONFIG_DIR/modules}"
@@ -418,7 +418,7 @@ cbc_pkg_update_status_line() {
     return
   fi
 
-  if [ -n "$manifest_hash" ] && [ -n "$remote_head" ] && \
+  if [ -n "$manifest_hash" ] && [ -n "$remote_head" ] &&
     [ "$remote_head" != "$manifest_hash" ]; then
     echo "Status: UPDATE AVAILABLE"
     return
