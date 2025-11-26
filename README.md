@@ -134,7 +134,7 @@ When the terminal sources CBC it immediately prepares the working environment:
 - `cbc pkg update` consults the manifest to fetch upstream commits only when a
   module needs them, refreshes the stored metadata, and reloads the modules.
 - `cbc pkg` or `cbc pkg list` reports manifest entries with their last updated
-  date, entrypoint readiness, and whether newer revisions are available.
+  date and a status that marks modules as `Current` or `UPDATE AVAILABLE`.
 
 ### Automation, media, and file utilities
 
