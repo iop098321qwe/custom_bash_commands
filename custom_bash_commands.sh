@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v305.7.0"
+VERSION="v305.8.0"
 
 ###############################################################################
 # Charmbracelet Gum helpers (Catppuccin Mocha palette)
@@ -1635,6 +1635,49 @@ dotfiles() {
 }
 
 ################################################################################
+# ARCH_DOTFILES
+################################################################################
+
+arch_dotfiles() {
+  OPTIND=1
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the arch_dotfiles repository in your default browser."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  arch_dotfiles [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  arch_dotfiles"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  # Define the arch_dotfiles repository URL
+  arch_dotfiles_url="https://github.com/iop098321qwe/dotfiles-arch"
+
+  # Open the arch_dotfiles repository in the default browser
+  xdg-open "$arch_dotfiles_url"
+}
+
+################################################################################
 # SETUP_DIRECTORIES
 ################################################################################
 
@@ -1682,9 +1725,6 @@ setup_directories() {
 
   # Create the 'github_repositories' directory if it does not exist
   mkdir -p ~/Documents/github_repositories
-
-  # Create the 'grymms_grimoires' directory if it does not exist
-  mkdir -p ~/Documents/grymms_grimoires/
 }
 
 # Call the setup_directories function
@@ -3493,85 +3533,6 @@ extract() {
   *.tar.zst) unzstd "$1" ;;
   *) cbc_style_message "$CATPPUCCIN_RED" "'$1' cannot be extracted using extract()" ;;
   esac
-}
-
-################################################################################
-# ODT
-################################################################################
-
-odt() {
-  OPTIND=1
-
-  usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Create an .odt document in the current directory and open it with LibreOffice."
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  odt [filename] [-h]"
-
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
-
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-      "  odt meeting-notes"
-  }
-
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      usage
-      return 0
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  touch "$1.odt"
-  libreoffice "$1.odt"
-}
-
-################################################################################
-# ODS
-################################################################################
-
-ods() {
-  # Use getopts to handle Options
-  OPTIND=1
-
-  usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Create an .ods spreadsheet in the current directory and open it with LibreOffice."
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  ods [filename] [-h]"
-
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
-
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-      "  ods budget"
-  }
-
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      usage
-      return 0
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  touch "$1.ods"
-  libreoffice "$1.ods"
 }
 
 ################################################################################
