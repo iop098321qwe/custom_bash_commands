@@ -1475,6 +1475,14 @@ wiki() {
   done
 
   shift $((OPTIND - 1))
+
+  # Function to open the CBC wiki in the default browser
+  open_wiki() {
+    nohup xdg-open "$wiki_url" > /dev/null 2>&1 &
+  }
+
+  # Call the open_wiki function
+  open_wiki
 }
 
 ################################################################################
