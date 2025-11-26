@@ -1523,7 +1523,7 @@ changes() {
 
   # Function to open the changelog in the default browser
   open_changelog() {
-    nohup xdg-open "$changelog_url"
+    nohup xdg-open "$changelog_url" > /dev/null 2>&1 &
   }
 
   # Call the open_changelog function
