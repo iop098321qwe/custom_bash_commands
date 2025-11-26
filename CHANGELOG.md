@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.6.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.5.0...v306.6.0) (2025-11-26)
+
+
+### Features
+
+* **alias:** add `lg` alias for `lazydocker` ([1551af1](https://github.com/iop098321qwe/custom_bash_commands/commit/1551af16c93d8af47ff163d27e5bfc1ed93a9d68))
+* **alias:** move av aliases to av module ([8b94fd3](https://github.com/iop098321qwe/custom_bash_commands/commit/8b94fd3647066b953386178ea7b4ba40dbaa0e7f))
+* **alias:** move chezmoi aliases to chezmod module ([ad602f0](https://github.com/iop098321qwe/custom_bash_commands/commit/ad602f090f39e90d7a4ced604245102bfd8372f7))
+* **alias:** move git aliases to gitmod module ([0b9b837](https://github.com/iop098321qwe/custom_bash_commands/commit/0b9b8370f762abfbb9e74adf024766f41e4cc0f0))
+* **alias:** remove `man` alias for `sudo man` ([6096b2d](https://github.com/iop098321qwe/custom_bash_commands/commit/6096b2d9cd45f0d22f46150778bc2a6e2af5422a))
+
 ## [306.5.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.4.0...v306.5.0) (2025-11-26)
 
 
