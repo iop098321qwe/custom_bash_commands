@@ -285,22 +285,23 @@ cbc_pkg_read_manifest() {
       continue
     fi
 
-    if [[ "$line" =~ ^([A-Za-z0-9._-]+)[[:space:]]*=[[:space:]]*"(.*)"$ ]]; then
-      local key="${BASH_REMATCH[1]}"
-      local value="${BASH_REMATCH[2]}"
+    local key="$(cbc_pkg_trim "${line%%=*}")"
+    local value="$(cbc_pkg_trim "${line#*=}")"
 
-      case "$key" in
-      use)
-        current_use="$value"
-        ;;
-      rev)
-        current_rev="$value"
-        ;;
-      hash)
-        current_hash="$value"
-        ;;
-      esac
-    fi
+    value="${value%\"}"
+    value="${value#\"}"
+
+    case "$key" in
+    use)
+      current_use="$value"
+      ;;
+    rev)
+      current_rev="$value"
+      ;;
+    hash)
+      current_hash="$value"
+      ;;
+    esac
   done <"$CBC_PACKAGE_MANIFEST"
 
   if [ -n "$current_use" ]; then
@@ -444,6 +445,7 @@ cbc_pkg_align_with_manifest() {
 
   for idx in "${!CBC_MANIFEST_USES[@]}"; do
     local use="${CBC_MANIFEST_USES[$idx]}"
+    local manifest_rev="${CBC_MANIFEST_REVS[$idx]}"
     local manifest_hash="${CBC_MANIFEST_HASHES[$idx]}"
 
     local source=""
@@ -539,6 +541,7 @@ cbc_pkg_list() {
   for idx in "${!CBC_MANIFEST_USES[@]}"; do
     local use="${CBC_MANIFEST_USES[$idx]}"
     local manifest_hash="${CBC_MANIFEST_HASHES[$idx]}"
+    local manifest_rev="${CBC_MANIFEST_REVS[$idx]}"
 
     local source=""
     local module_name=""

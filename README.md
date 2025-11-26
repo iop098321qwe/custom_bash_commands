@@ -126,11 +126,11 @@ When the terminal sources CBC it immediately prepares the working environment:
   `[[module.deps]]` entries that carry `use`, `rev`, and `hash` fields so your
   installs can be synchronized across systems.
 - `cbc pkg install <creator/repo|git-url|path>` records a module in the
-  manifest, capturing revision details when possible so `cbc pkg load` can
-  later clone it.
-- `cbc pkg load` reads `packages.toml`, installs any missing modules into
-  `~/.config/cbc/modules/`, updates the recorded `rev` and `hash` values, and
-  sources each module's `cbc-module.sh` entrypoint.
+  manifest (without removing existing entries), capturing revision details when
+  possible so `cbc pkg load` can later clone it.
+- `cbc pkg load` reads `packages.toml`, installs any missing modules using the
+  `use` field into `~/.config/cbc/modules/`, updates the recorded `rev` and
+  `hash` values, and sources each module's `cbc-module.sh` entrypoint.
 - `cbc pkg update` consults the manifest to fetch upstream commits only when a
   module needs them, refreshes the stored metadata, and reloads the modules.
 - `cbc pkg` or `cbc pkg list` reports manifest entries with their last updated
