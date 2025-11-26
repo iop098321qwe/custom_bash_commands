@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.0.0...v306.1.0) (2025-11-26)
+
+
+### Features
+
+* **pkg:** add manifest locking ([67d53a7](https://github.com/iop098321qwe/custom_bash_commands/commit/67d53a7a240ff9706b987be50b74b1a14fe18009))
+
 ## [306.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.8.0...v306.0.0) (2025-11-26)
 
 
