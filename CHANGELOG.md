@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [305.7.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.6.0...v305.7.0) (2025-11-26)
+
+
+### Features
+
+* **function:** add `releases` command ([85e2a72](https://github.com/iop098321qwe/custom_bash_commands/commit/85e2a72d252f8b5dc6ea614159cd300b7ec5f541))
+* **function:** rework display info function ([569ed5c](https://github.com/iop098321qwe/custom_bash_commands/commit/569ed5cc61113f11103d7d07b77c2bc52f582905))
+
+
+### Bug Fixes
+
+* **function:** ensure `nohup` command doesn't output a nohup.out file ([bba9fed](https://github.com/iop098321qwe/custom_bash_commands/commit/bba9fed88512c09b779f6ee17f83fd52e863c078))
+* **function:** fix `wiki` function not opening the page by default ([90346b8](https://github.com/iop098321qwe/custom_bash_commands/commit/90346b80b995c5120bd417a608a0aff6573da295))
+
 ## [305.6.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.5.1...v305.6.0) (2025-11-26)
 
 
