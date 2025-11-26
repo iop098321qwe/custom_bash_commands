@@ -55,8 +55,9 @@ introducing.
   `~/.config/cbc/packages.toml`. `install` must append new modules without
   clearing earlier entries, `load` syncs modules into `modules/` while
   refreshing the recorded fields, `update` checks the manifest before pulling,
-  and the post-update auto-load must remain intact. Keep the manifest parser
-  tolerant of spacing and quoted values.
+  `uninstall` removes entries while deleting local module directories, and the
+  post-update auto-load must remain intact. Keep the manifest parser tolerant of
+  spacing and quoted values.
 - `cbc pkg list` should summarize modules with last-updated timestamps and a
   concise status (`Current` or `UPDATE AVAILABLE`) without surfacing module
   entrypoints.
