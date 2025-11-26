@@ -52,9 +52,10 @@ introducing.
   update both the brief list and the `-a` detail output, plus any alias rows in
   `cbc_aliases.sh`.
 - `cbc pkg` now relies on the manifest/lock file at
-  `~/.config/cbc/packages.toml` to source modules across machines. Keep the
-  manifest in sync when installs, updates, or lock changes occur, and preserve
-  the auto-load step after `cbc pkg update`.
+  `~/.config/cbc/packages.toml` to source modules across machines. `cbc pkg
+  install` only updates the manifest; `cbc pkg load` performs the installs and
+  lock alignment. Keep the manifest in sync when installs, updates, or lock
+  changes occur, and preserve the auto-load step after `cbc pkg update`.
 - `updatecbc` performs a sparse checkout of the repository, copying the main
   script and `cbc_aliases.sh` into the home directory before sourcing the new
   version. Preserve its temporary-directory hygiene and cleanup flow.

@@ -123,20 +123,21 @@ When the terminal sources CBC it immediately prepares the working environment:
 ### Manage CBC modules
 
 - `cbc pkg` surfaces the module loader inspired by Yazi's `ya pkg` workflow and
-  now tracks the manifest/lock file at `~/.config/cbc/packages.toml` so the
-  installed set can be synchronized across systems.
-- `cbc pkg install <creator/repo|git-url|path>` clones or copies a module into
-  the module root, records its source and locked revision in `packages.toml`,
-  and keeps the manifest ready for reuse elsewhere.
+  treats `~/.config/cbc/packages.toml` as the declarative manifest/lock file so
+  the installed set can be synchronized across systems.
+- `cbc pkg install <creator/repo|git-url|path>` records the module source (git
+  URL, creator/repo shorthand, or local path) and optional lock in
+  `packages.toml` without cloning immediately so the manifest stays the source
+  of truth.
+- `cbc pkg load` reads `packages.toml`, installs any missing modules into
+  `~/.config/cbc/modules`, aligns locked revisions, and then sources every
+  entrypoint to match the manifest.
 - `cbc pkg update` pulls the latest changes for each installed git-backed
   module, refreshes the manifest locks, and automatically reloads the modules
   after updating.
-- `cbc pkg load` re-sources every installed module after aligning the working
-  copies with the manifest (including locked revisions and any missing module
-  installs defined in `packages.toml`).
-- `cbc pkg` or `cbc pkg list` prints the installed set with professionalism
-  around update state (synchronized vs. upstream updates available) alongside
-  entrypoint readiness.【F:custom_bash_commands.sh†L3-L115】【F:custom_bash_commands.sh†L128-L394】
+  - `cbc pkg` or `cbc pkg list` prints the installed set with professionalism
+    around update state (synchronized vs. upstream updates available) alongside
+    entrypoint readiness.【F:custom_bash_commands.sh†L152-L551】【F:custom_bash_commands.sh†L655-L718】
 
 ### Automation, media, and file utilities
 

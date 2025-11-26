@@ -154,6 +154,45 @@ cbc_pkg_trim() {
   printf "%s" "$text" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
 }
 
+cbc_pkg_resolve_manifest_fields() {
+  local raw_source="$1"
+  local lock_ref="$2"
+  local module_override="$3"
+
+  if [ -z "$raw_source" ]; then
+    return 1
+  fi
+
+  if [ -z "$lock_ref" ] && [[ "$raw_source" == *"="* ]]; then
+    lock_ref="${raw_source#*=}"
+    raw_source="${raw_source%%=*}"
+  fi
+
+  local module_name=""
+  local manifest_source="$raw_source"
+  local repo_url="$raw_source"
+
+  if [ -d "$raw_source" ]; then
+    module_name="$(basename "$raw_source")"
+    manifest_source="$(cd "$raw_source" && pwd)"
+  else
+    if [[ ! "$raw_source" =~ :// ]] && [[ "$raw_source" != git@*:* ]]; then
+      repo_url="https://github.com/${raw_source}.git"
+    fi
+    module_name="$(basename "$repo_url")"
+    module_name="${module_name%.git}"
+    manifest_source="$repo_url"
+  fi
+
+  if [ -n "$module_override" ]; then
+    module_name="$module_override"
+  fi
+
+  CBC_RESOLVED_MODULE_NAME="$module_name"
+  CBC_RESOLVED_SOURCE="$manifest_source"
+  CBC_RESOLVED_LOCK="$lock_ref"
+}
+
 cbc_pkg_ensure_config() {
   mkdir -p "$CBC_CONFIG_DIR" "$CBC_MODULE_ROOT"
 }
@@ -296,7 +335,7 @@ cbc_pkg_align_with_manifest() {
 
     if [ ${#CBC_MANIFEST_MODULES[@]} -gt 0 ]; then
       cbc_style_message "$CATPPUCCIN_YELLOW" \
-        "Git unavailable; skipping manifest installs and lock enforcement."
+        "Git unavailable; skipping git-backed installs and lock enforcement."
     fi
   fi
 
@@ -306,8 +345,13 @@ cbc_pkg_align_with_manifest() {
     local lock="${CBC_MANIFEST_LOCKS[$idx]}"
     local module_dir="$CBC_MODULE_ROOT/$module"
 
+    local requires_git=true
+    if [ -d "$source" ]; then
+      requires_git=false
+    fi
+
     if [ ! -d "$module_dir" ]; then
-      if [ "$git_available" = false ]; then
+      if [ "$git_available" = false ] && [ "$requires_git" = true ]; then
         cbc_style_message "$CATPPUCCIN_MAROON" \
           "Cannot install '$module' from packages.toml because git is missing."
         continue
@@ -315,7 +359,7 @@ cbc_pkg_align_with_manifest() {
 
       cbc_style_message "$CATPPUCCIN_BLUE" \
         "Module '$module' is defined in packages.toml but missing locally. Installing."
-      cbc_pkg_install "$source" "$lock" "$module"
+      cbc_pkg_materialize_module "$module" "$source" "$lock"
       continue
     fi
 
@@ -334,70 +378,51 @@ cbc_pkg_align_with_manifest() {
             "Failed to align '$module' with locked revision $lock."
         fi
       fi
+    elif [ "$git_available" = false ] && [ -n "$lock" ] && [ -d "$module_dir/.git" ]; then
+      cbc_style_message "$CATPPUCCIN_YELLOW" \
+        "Git unavailable; cannot enforce lock for '$module' until git is installed."
     fi
   done
 }
 
-cbc_pkg_install() {
-  local source="$1"
-  local lock_ref="$2"
-  local module_override="$3"
+cbc_pkg_materialize_module() {
+  local module="$1"
+  local source="$2"
+  local lock_ref="$3"
 
-  if [ -z "$source" ]; then
+  if [ -z "$module" ] || [ -z "$source" ]; then
     cbc_style_message "$CATPPUCCIN_RED" \
-      "No module source provided. Use 'cbc pkg install <creator/repo>' or a git URL."
+      "Module name and source are required to install from packages.toml."
     return 1
   fi
 
   cbc_pkg_ensure_config
 
-  if [ -z "$lock_ref" ] && [[ "$source" == *"="* ]]; then
-    lock_ref="${source#*=}"
-    source="${source%%=*}"
-  fi
-
-  if ! command -v git >/dev/null 2>&1; then
-    cbc_style_message "$CATPPUCCIN_RED" \
-      "Git is required to install modules. Install git and try again."
-    return 1
-  fi
-
-  local repo_url="$source"
-  local module_name=""
-
-  if [ -d "$source" ]; then
-    module_name="$(basename "$source")"
-  else
-    if [[ ! "$source" =~ :// ]] && [[ "$source" != git@*:* ]]; then
-      repo_url="https://github.com/${source}.git"
-    fi
-    module_name="$(basename "$repo_url")"
-    module_name="${module_name%.git}"
-  fi
-
-  if [ -n "$module_override" ]; then
-    module_name="$module_override"
-  fi
-
-  local destination="$CBC_MODULE_ROOT/$module_name"
+  local destination="$CBC_MODULE_ROOT/$module"
 
   if [ -d "$destination" ]; then
     cbc_style_message "$CATPPUCCIN_YELLOW" \
-      "Module '$module_name' is already installed at $destination."
+      "Module '$module' is already installed at $destination."
     return 0
   fi
 
   if [ -d "$source" ]; then
-    cbc_spinner "Copying module $module_name" cp -R "$source" "$destination" || return 1
+    cbc_spinner "Copying module $module" cp -R "$source" "$destination" || return 1
   else
-    cbc_spinner "Cloning $module_name" git clone "$repo_url" "$destination" || return 1
+    if ! command -v git >/dev/null 2>&1; then
+      cbc_style_message "$CATPPUCCIN_RED" \
+        "Git is required to install '$module' from $source. Install git and retry."
+      return 1
+    fi
+
+    cbc_spinner "Cloning $module" git clone "$source" "$destination" || return 1
   fi
 
   if [ -n "$lock_ref" ] && [ -d "$destination/.git" ]; then
-    if ! cbc_spinner "Checking out locked revision for $module_name" \
+    if ! cbc_spinner "Checking out locked revision for $module" \
       git -C "$destination" checkout --quiet "$lock_ref"; then
       cbc_style_message "$CATPPUCCIN_MAROON" \
-        "Failed to apply lock '$lock_ref' for $module_name."
+        "Failed to apply lock '$lock_ref' for $module."
     fi
   fi
 
@@ -406,26 +431,49 @@ cbc_pkg_install() {
     recorded_lock="$(git -C "$destination" rev-parse HEAD 2>/dev/null || true)"
   fi
 
-  local manifest_source="$source"
-  if [ ! -d "$source" ] && [[ "$source" =~ :// ]]; then
-    manifest_source="$repo_url"
-  elif [ ! -d "$source" ] && [[ "$source" == git@*:* ]]; then
-    manifest_source="$source"
-  elif [ ! -d "$source" ]; then
-    manifest_source="$source"
-  else
-    manifest_source="$(cd "$source" && pwd)"
-  fi
-
-  cbc_pkg_record_manifest "$module_name" "$manifest_source" "$recorded_lock"
+  cbc_pkg_record_manifest "$module" "$source" "$recorded_lock"
 
   if [ -f "$destination/$CBC_MODULE_ENTRYPOINT" ]; then
     cbc_style_message "$CATPPUCCIN_GREEN" \
-      "Installed '$module_name'. Run 'cbc pkg load' to source its entrypoint."
+      "Installed '$module'. Run 'cbc pkg load' to source its entrypoint."
   else
     cbc_style_message "$CATPPUCCIN_YELLOW" \
-      "Installed '$module_name' but no $CBC_MODULE_ENTRYPOINT file was found."
+      "Installed '$module' but no $CBC_MODULE_ENTRYPOINT file was found."
   fi
+}
+
+cbc_pkg_install() {
+  local raw_source="$1"
+  local lock_ref="$2"
+  local module_override="$3"
+
+  if [ -z "$raw_source" ]; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "No module source provided. Use 'cbc pkg install <creator/repo>' or a git URL."
+    return 1
+  fi
+
+  if ! cbc_pkg_resolve_manifest_fields "$raw_source" "$lock_ref" "$module_override"; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "Failed to parse module details for '$raw_source'."
+    return 1
+  fi
+
+  local module_name="$CBC_RESOLVED_MODULE_NAME"
+  local manifest_source="$CBC_RESOLVED_SOURCE"
+  local manifest_lock="$CBC_RESOLVED_LOCK"
+
+  cbc_pkg_record_manifest "$module_name" "$manifest_source" "$manifest_lock"
+
+  if ! command -v git >/dev/null 2>&1 && [ ! -d "$manifest_source" ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Recorded '$module_name' but git is unavailable. Install git before running 'cbc pkg load'."
+    return 0
+  fi
+
+  cbc_style_message "$CATPPUCCIN_GREEN" \
+    "Recorded '$module_name' in packages.toml from $manifest_source." \
+    "Run 'cbc pkg load' to install or refresh modules from the manifest."
 }
 
 cbc_pkg_list() {
@@ -610,7 +658,8 @@ cbc_pkg() {
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Manage CBC modules inspired by yazi's 'ya pkg' loader."
+      "  Manage CBC modules inspired by yazi's 'ya pkg' loader." \
+      "  packages.toml is the declarative source; installs occur during 'cbc pkg load'."
 
     cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
       "  cbc pkg [subcommand]" \
@@ -2598,7 +2647,7 @@ cbcs() {
       echo "          Usage: cbc pkg [install|list|load|update]"
       echo "          Options:"
       echo "              -h               Display this help message"
-      echo "              install <src>    Install from creator/repo, git URL, or path"
+      echo "              install <src>    Record module in packages.toml; install on load"
       echo "              list             Show installed modules"
       echo "              load             Source installed modules"
       echo "              update           Pull the latest changes for installed modules"
