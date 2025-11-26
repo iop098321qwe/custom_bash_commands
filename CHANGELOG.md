@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.5.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.4.0...v306.5.0) (2025-11-26)
+
+
+### Features
+
+* **module:** remove av module from main script ([13261af](https://github.com/iop098321qwe/custom_bash_commands/commit/13261af431e9be4a4bc79a4136c0dd2fc52559a7))
+
 ## [306.4.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.3.0...v306.4.0) (2025-11-26)
 
 
