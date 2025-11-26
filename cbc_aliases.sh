@@ -46,8 +46,9 @@ alias hsearch='historysearch'
 alias hse='historysearchexact'
 alias hs='historysearch'
 alias i='sudo apt install'
-# TODO add if statement to check for wayland or x11 and alias accordingly
+# TODO: add if statement to check for wayland or x11 and alias accordingly
 alias imv='imv-x11'
+# TODO: only use eza aliases if not on Arch Linux
 alias la="eza --icons=always --group-directories-first -a"
 alias lar="eza --icons=always -r --group-directories-first -a"
 alias le="eza --icons=always --group-directories-first -s extension"
@@ -75,8 +76,10 @@ alias rh='regex_help'
 alias rma='rm -rfI'
 alias rm='rm -I'
 alias seebash='batcat ~/.bashrc'
+# TODO: Check if sortalpha still exists, if not remove this alias
 alias sa='sortalpha'
 alias s='sudo'
+# TODO: Check if smartsort still exists, if not remove this alias
 alias ssort='smartsort'
 alias temp='cd ~/Documents/Temporary'
 alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh; source ~/Documents/github_repositories/custom_bash_commands/cbc_aliases.sh'
