@@ -875,6 +875,100 @@ cbc_pkg() {
   esac
 }
 
+cbc_help() {
+  OPTIND=1
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Interactively search for a command and display its help output."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc help [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc help" \
+      "  cbc help -h"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  local selection=""
+  mapfile -t available_commands < <(compgen -c | awk '!seen[$0]++' | sort)
+
+  if [ ${#available_commands[@]} -eq 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "No commands available to inspect."
+    return 1
+  fi
+
+  if [ "$CBC_HAS_GUM" -eq 1 ]; then
+    selection=$(printf "%s\n" "${available_commands[@]}" |
+      gum filter \
+        --placeholder "Search commands" \
+        --indicator "➤" \
+        --limit 1)
+  elif command -v fzf >/dev/null 2>&1; then
+    selection=$(printf "%s\n" "${available_commands[@]}" |
+      fzf --prompt="Select command for help: ")
+  else
+    cbc_style_note "Gum and fzf unavailable." \
+      "Type a command name to view its help output."
+    read -r -p "Command: " selection
+  fi
+
+  if [ -z "$selection" ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "No command selected. Exiting."
+    return 1
+  fi
+
+  cbc_style_box "$CATPPUCCIN_SAPPHIRE" "Selected:" "  $selection"
+
+  show_command_help() {
+    local cmd="$1"
+    local help_output
+
+    help_output=$("$cmd" --help 2>&1)
+    if [ -n "$help_output" ]; then
+      cbc_style_box "$CATPPUCCIN_MAUVE" "Help output (--help):"
+      printf "%s\n" "$help_output"
+      return 0
+    fi
+
+    help_output=$("$cmd" -h 2>&1)
+    if [ -n "$help_output" ]; then
+      cbc_style_box "$CATPPUCCIN_MAUVE" "Help output (-h):"
+      printf "%s\n" "$help_output"
+      return 0
+    fi
+
+    if man -w "$cmd" >/dev/null 2>&1; then
+      man "$cmd"
+      return 0
+    fi
+
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "No help output detected for '$cmd'."
+    return 1
+  }
+
+  show_command_help "$selection"
+}
+
 cbc() {
   OPTIND=1
 
@@ -886,10 +980,12 @@ cbc() {
       "  cbc [subcommand]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Subcommands:" \
+      "  help   Search for commands and show their help output" \
       "  pkg    Manage CBC modules (install, list, load, uninstall, update)" \
       "  -h     Display this help message"
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc help" \
       "  cbc pkg" \
       "  cbc pkg install creator/example-module"
   }
@@ -917,6 +1013,9 @@ cbc() {
   case "$subcommand" in
   "" | -h | --help)
     usage
+    ;;
+  help)
+    cbc_help "$@"
     ;;
   pkg)
     cbc_pkg "$@"
@@ -2194,6 +2293,12 @@ cbcs() {
       echo "          Options:"
       echo "              -h    Display this help message"
       echo "              pkg  Manage CBC modules"
+      echo " "
+      echo "cbc help"
+      echo "          Description: Search for a command and display its help output"
+      echo "          Usage: cbc help [-h]"
+      echo "          Options:"
+      echo "              -h    Display this help message"
       echo " "
       echo "cbc pkg"
       echo "          Description: Manage CBC modules via packages.toml manifest."

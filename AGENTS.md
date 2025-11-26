@@ -51,6 +51,9 @@ introducing.
 - `cbcs` is the discoverability hub. Whenever you add a function or alias,
   update both the brief list and the `-a` detail output, plus any alias rows in
   `cbc_aliases.sh`.
+- `cbc help` should remain a gum-first command picker that falls back to fzf or
+  a manual prompt while surfacing `--help`/`-h` output for the selected
+  command.
 - `cbc pkg` now writes `[[module.deps]]` entries (`use`, `rev`, `hash`) to
   `~/.config/cbc/packages.toml`. `install` must append new modules without
   clearing earlier entries, `load` syncs modules into `modules/` while

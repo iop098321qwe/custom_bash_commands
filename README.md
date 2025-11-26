@@ -119,6 +119,9 @@ When the terminal sources CBC it immediately prepares the working environment:
 - `cbcs [-a]` lists every custom function and alias CBC provides. The `commands`
   and `commandsmore` aliases pipe that output through `batcat` for easier
   browsing.【F:custom_bash_commands.sh†L1835-L2626】【F:cbc_aliases.sh†L19-L36】
+- `cbc help` provides a gum selector (with fzf or prompt fallbacks) so you can
+  pick any command and print its help output without leaving CBC.
+  【F:custom_bash_commands.sh†L878-L1029】
 
 ### Manage CBC modules
 
