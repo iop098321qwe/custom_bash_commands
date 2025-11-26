@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [305.6.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.5.1...v305.6.0) (2025-11-26)
+
+
+### Features
+
+* **alias:** add 'chra' alias for 'chezmoi re-add' ([9e3d165](https://github.com/iop098321qwe/custom_bash_commands/commit/9e3d165e4d5b5feb376330076898a4172e20e48e))
+* **alias:** add 'lg' alias for 'lazygit' ([4b110b7](https://github.com/iop098321qwe/custom_bash_commands/commit/4b110b7dcd171c91691b584448ca8a78e65250ac))
+
 ## [305.5.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v305.5.0...v305.5.1) (2025-11-22)
 
 
