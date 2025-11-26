@@ -136,8 +136,10 @@ When the terminal sources CBC it immediately prepares the working environment:
   entrypoint.
 - `cbc pkg install <creator/repo|git-url|path>` clones or copies a module into
   the module root so it can be loaded in subsequent shells.
+- `cbc pkg update` pulls the latest changes for each installed module that is a
+  git repository.
 - `cbc pkg load` re-sources every installed module, while `cbc pkg` or
-  `cbc pkg list` prints the installed set with readiness details.【F:custom_bash_commands.sh†L128-L172】【F:custom_bash_commands.sh†L220-L379】
+  `cbc pkg list` prints the installed set with readiness details.【F:custom_bash_commands.sh†L128-L207】【F:custom_bash_commands.sh†L220-L394】
 
 ### Automation, media, and file utilities
 

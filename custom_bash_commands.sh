@@ -230,13 +230,60 @@ cbc_pkg_list() {
   fi
 }
 
+cbc_pkg_update() {
+  if ! command -v git >/dev/null 2>&1; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "Git is required to update modules. Install git and try again."
+    return 1
+  fi
+
+  mkdir -p "$CBC_MODULE_ROOT"
+
+  local updated_modules=()
+  local skipped_modules=()
+
+  shopt -s nullglob
+  for module_dir in "$CBC_MODULE_ROOT"/*; do
+    [ -d "$module_dir" ] || continue
+
+    local module_name="$(basename "$module_dir")"
+
+    if [ ! -d "$module_dir/.git" ]; then
+      skipped_modules+=("$module_name (not a git repository)")
+      continue
+    fi
+
+    if cbc_spinner "Updating $module_name" git -C "$module_dir" pull --ff-only --quiet; then
+      updated_modules+=("$module_name")
+    else
+      skipped_modules+=("$module_name (update failed)")
+    fi
+  done
+  shopt -u nullglob
+
+  if [ ${#updated_modules[@]} -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_GREEN" \
+      "Updated modules: ${updated_modules[*]}"
+  fi
+
+  if [ ${#skipped_modules[@]} -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_MAROON" \
+      "Skipped modules: ${skipped_modules[*]}"
+  fi
+
+  if [ ${#updated_modules[@]} -eq 0 ] && [ ${#skipped_modules[@]} -eq 0 ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "No CBC modules installed. Use 'cbc pkg install <creator/repo>' to add one."
+  fi
+}
+
 cbc_pkg_load_modules() {
   local auto_load="$1"
   shift || true
 
   mkdir -p "$CBC_MODULE_ROOT"
 
-  local loaded_modules=()
+  local loaded_any=false
   local skipped_modules=()
 
   shopt -s nullglob
@@ -249,17 +296,14 @@ cbc_pkg_load_modules() {
     if [ -f "$entrypoint" ]; then
       # shellcheck disable=SC1090
       source "$entrypoint"
-      loaded_modules+=("$module_name")
+      loaded_any=true
     else
       skipped_modules+=("$module_name")
     fi
   done
   shopt -u nullglob
 
-  if [ ${#loaded_modules[@]} -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_GREEN" \
-      "Loaded modules: ${loaded_modules[*]}"
-  elif [ "$auto_load" != "auto" ]; then
+  if [ "$loaded_any" = false ] && [ "$auto_load" != "auto" ]; then
     cbc_style_message "$CATPPUCCIN_YELLOW" \
       "No modules to load from $CBC_MODULE_ROOT."
   fi
@@ -282,7 +326,8 @@ cbc_pkg() {
       "  cbc pkg [subcommand]" \
       "  cbc pkg install <creator/repo|git-url|path>" \
       "  cbc pkg list" \
-      "  cbc pkg load"
+      "  cbc pkg load" \
+      "  cbc pkg update"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message"
@@ -290,7 +335,8 @@ cbc_pkg() {
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
       "  cbc pkg" \
       "  cbc pkg install creator/example-module" \
-      "  cbc pkg load"
+      "  cbc pkg load" \
+      "  cbc pkg update"
   }
 
   while getopts ":h" opt; do
@@ -327,6 +373,9 @@ cbc_pkg() {
   load)
     cbc_pkg_load_modules
     ;;
+  update)
+    cbc_pkg_update
+    ;;
   *)
     cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc pkg command: $subcommand"
     usage
@@ -346,7 +395,7 @@ cbc() {
       "  cbc [subcommand]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Subcommands:" \
-      "  pkg    Manage CBC modules (install, list, load)" \
+      "  pkg    Manage CBC modules (install, list, load, update)" \
       "  -h     Display this help message"
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
@@ -2255,13 +2304,14 @@ cbcs() {
       echo "              pkg  Manage CBC modules"
       echo " "
       echo "cbc pkg"
-      echo "          Description: Install, list, and load CBC modules."
-      echo "          Usage: cbc pkg [install|list|load]"
+      echo "          Description: Install, list, update, and load CBC modules."
+      echo "          Usage: cbc pkg [install|list|load|update]"
       echo "          Options:"
       echo "              -h               Display this help message"
       echo "              install <src>    Install from creator/repo, git URL, or path"
       echo "              list             Show installed modules"
       echo "              load             Source installed modules"
+      echo "              update           Pull the latest changes for installed modules"
       echo " "
       echo "cc"
       echo "          Description: Combine the git add, git commit and git push process interactively"
