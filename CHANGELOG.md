@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.4.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.3.0...v306.4.0) (2025-11-26)
+
+
+### Features
+
+* **pkg:** add uninstall command ([#141](https://github.com/iop098321qwe/custom_bash_commands/issues/141)) ([8c94cb2](https://github.com/iop098321qwe/custom_bash_commands/commit/8c94cb271320c34fa52e25bd86f6ed4d54fd3a6d))
+
 ## [306.3.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.2.0...v306.3.0) (2025-11-26)
 
 
