@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.7.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.6.0...v306.7.0) (2025-11-27)
+
+
+### Features
+
+* **module:** move `backup` to `filemod` module ([fa2799e](https://github.com/iop098321qwe/custom_bash_commands/commit/fa2799e81a740c724415731a6be4d3417a4b0959))
+* **module:** move `commit-and-tag-version` aliases to `commit-and-tag-version` module ([4e22974](https://github.com/iop098321qwe/custom_bash_commands/commit/4e22974c836775554a0148967a21cefb95200f7f))
+* **module:** move `extract` to `filemod` module ([35c4f86](https://github.com/iop098321qwe/custom_bash_commands/commit/35c4f8698525fbbb319396564abcf03bb55625fc))
+* **module:** move `filehash` to `filemod` module ([c3a0443](https://github.com/iop098321qwe/custom_bash_commands/commit/c3a0443b21e4932e400d94ae2c4af864a8efa60e))
+* **module:** move `lazygit` and `lazydocker` aliases to `lazymod` module ([f11ab81](https://github.com/iop098321qwe/custom_bash_commands/commit/f11ab81ec104bf7ed7da57009373ca6fcbda208e))
+* **module:** move `makeman` to `makeman` module ([d8f08d6](https://github.com/iop098321qwe/custom_bash_commands/commit/d8f08d62d331bbb7b0dc0e088cb23078cde77d5d))
+* **module:** move `repeat` function to `repeat` module ([4644331](https://github.com/iop098321qwe/custom_bash_commands/commit/46443318c47ac72f208535bed85ea6ec6a6ce5f4))
+* **module:** move `smartsort` to `filemod` module ([27dae9b](https://github.com/iop098321qwe/custom_bash_commands/commit/27dae9b331db6ae289b949402b69646f0ae2f890))
+* **module:** move `update` to `apt-update` module ([0413f71](https://github.com/iop098321qwe/custom_bash_commands/commit/0413f71fc23818bc2bd29695bd9d899d2a733d79))
+* **module:** move cd shortcuts aliases to `cd-shortcuts` module ([32b7e61](https://github.com/iop098321qwe/custom_bash_commands/commit/32b7e61787322aa179aa2b802d1657a6f28a9870))
+* **module:** move interactive aliases to `interactive` module ([ee902f3](https://github.com/iop098321qwe/custom_bash_commands/commit/ee902f38cbafe9242d91517ea58215eb77a63bd5))
+* **module:** move vim exit aliases to `vim-exit` module ([eac7056](https://github.com/iop098321qwe/custom_bash_commands/commit/eac705684dbd60c8c66a9318a84a26094371cf23))
+
 ## [306.6.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.5.0...v306.6.0) (2025-11-26)
 
 
