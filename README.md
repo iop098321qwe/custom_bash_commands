@@ -190,6 +190,15 @@ may exceed that limit when readability would otherwise suffer:
 - URLs that become ambiguous or unusable when broken across lines.
 - Code fences where formatting depends on preserving longer lines.
 
+## Contribution Workflow
+
+- Work on feature branches and keep commit and PR titles in Conventional Commit
+  format.
+- Write PR summaries that explain motivation, user-facing behaviour changes,
+  tests performed, and documentation updates (including this README and
+  `AGENTS.md`). If you push new commits before merging, revise the PR body so it
+  reflects every change in the current diff.
+
 ## Troubleshooting
 
 - **Provisioning fails with a path error:** `install_cbc.sh` verifies the
