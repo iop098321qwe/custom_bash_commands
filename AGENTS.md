@@ -135,7 +135,10 @@ introducing.
    Apply the same convention to PR titles.
 3. **Pull requests** – Titles should also follow Conventional Commit style.
    Summaries must include motivation, user-facing behaviour changes, tests run,
-   and documentation updates (including this handbook and `README.md`).
+   and documentation updates (including this handbook and `README.md`). Keep the
+   PR body in lockstep with the current diff: rewrite the summary whenever new
+   commits land before merge so reviewers always see a complete, detailed
+   accounting of the latest changes.
 4. **Changelog** – Do not modify `CHANGELOG.md`; it is auto-generated outside
    this repository.
 5. **Version bumps** – If you change the `VERSION` constant in the main script,
