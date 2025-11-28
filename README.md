@@ -135,8 +135,9 @@ When the terminal sources CBC it immediately prepares the working environment:
   `packages.toml`, deletes the module directory in
   `~/.config/cbc/modules/`, and should be followed by a new shell session to
   clear any sourced functions.
-- `cbc pkg update` consults the manifest to fetch upstream commits only when a
-  module needs them, refreshes the stored metadata, and reloads the modules.
+- `cbc pkg update` performs a single fetch per module with a "Checking
+  <module>" spinner, fast-forwards only when new commits are present, refreshes
+  the stored metadata, and reloads the modules.
 - `cbc pkg` or `cbc pkg list` reports manifest entries with their last updated
   date and a status that marks modules as `Current` or `UPDATE AVAILABLE`.
 

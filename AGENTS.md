@@ -54,10 +54,11 @@ introducing.
 - `cbc pkg` now writes `[[module.deps]]` entries (`use`, `rev`, `hash`) to
   `~/.config/cbc/packages.toml`. `install` must append new modules without
   clearing earlier entries, `load` syncs modules into `modules/` while
-  refreshing the recorded fields, `update` checks the manifest before pulling,
-  `uninstall` removes entries while deleting local module directories, and the
-  post-update auto-load must remain intact. Keep the manifest parser tolerant of
-  spacing and quoted values.
+  refreshing the recorded fields, `update` should show a spinner per module
+  while performing a single fetch before fast-forwarding, `uninstall` removes
+  entries while deleting local module directories, and the post-update auto-load
+  must remain intact. Keep the manifest parser tolerant of spacing and quoted
+  values.
 - `cbc pkg list` should summarize modules with last-updated timestamps and a
   concise status (`Current` or `UPDATE AVAILABLE`) without surfacing module
   entrypoints.
