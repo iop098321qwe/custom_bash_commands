@@ -1,6 +1,6 @@
 ![Custom Bash Commands logo](cbc_logo_00001.png)
 
-# Custom Bash Commands
+# Custom Bash Commands (by iop098321qwe)
 
 Custom Bash Commands (CBC) is a personal automation toolkit for Linux shells.
 It wraps interactive helpers, media utilities, fuzzy finders, and Git-focused
