@@ -83,7 +83,14 @@ alias python='python3'
 # BATCAT
 ################################################################################
 
-alias bat='batcat'
+# alias bat if any only if on Ubuntu
+if [ -f /etc/os-release ]; then
+  . /etc/os-release
+  if [ "$ID" = "ubuntu" ]; then
+    alias bat='batcat'
+  fi
+fi
+
 alias commands='cbcs | batcat'
 alias commandsmore='cbcs -a | batcat'
 alias seebash='batcat ~/.bashrc'
