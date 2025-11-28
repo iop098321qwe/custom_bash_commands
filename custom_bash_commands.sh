@@ -763,13 +763,23 @@ cbc_pkg_update() {
   fi
 
   if [ ${#updated_modules[@]} -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_GREEN" \
-      "Updated modules: ${updated_modules[*]}"
+    local updated_body="Updated Modules"
+
+    for module_name in "${updated_modules[@]}"; do
+      updated_body+=$'\n'"  - $module_name"
+    done
+
+    cbc_style_message "$CATPPUCCIN_GREEN" "$updated_body"
   fi
 
   if [ ${#skipped_modules[@]} -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_MAROON" \
-      "Skipped modules: ${skipped_modules[*]}"
+    local skipped_body="Skipped Modules"
+
+    for module_name in "${skipped_modules[@]}"; do
+      skipped_body+=$'\n'"  - $module_name"
+    done
+
+    cbc_style_message "$CATPPUCCIN_MAROON" "$skipped_body"
   fi
 
   if [ ${#updated_modules[@]} -eq 0 ] && [ ${#skipped_modules[@]} -eq 0 ]; then
