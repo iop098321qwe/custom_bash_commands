@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.8.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.7.0...v306.8.0) (2025-11-28)
+
+
+### Features
+
+* **pkg:** streamline updates ([#151](https://github.com/iop098321qwe/custom_bash_commands/issues/151)) ([cd9ff1c](https://github.com/iop098321qwe/custom_bash_commands/commit/cd9ff1ce74856519726ae0dd7134ce4fadce8bf8))
+
 ## [306.7.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.6.0...v306.7.0) (2025-11-27)
 
 ### Features
