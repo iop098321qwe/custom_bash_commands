@@ -139,8 +139,9 @@ When the terminal sources CBC it immediately prepares the working environment:
   <module>" spinner, fast-forwards only when new commits are present, refreshes
   the stored metadata, shows `Updated Modules` and `Skipped Modules` headers
   with one module per line, and reloads the modules.
-- `cbc pkg` or `cbc pkg list` reports manifest entries with their last updated
-  date and a status that marks modules as `Current` or `UPDATE AVAILABLE`.
+- `cbc pkg` or `cbc pkg list` reports manifest entries alphabetically with
+  their last updated date and a status that marks modules as `Current` or
+  `UPDATE AVAILABLE`.
 
 ### Automation, media, and file utilities
 

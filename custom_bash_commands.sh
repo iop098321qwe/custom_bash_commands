@@ -611,6 +611,7 @@ cbc_pkg_list() {
 
   local found=false
   local manifest_modules=()
+  local manifest_entries=()
 
   for idx in "${!CBC_MANIFEST_USES[@]}"; do
     local use="${CBC_MANIFEST_USES[$idx]}"
@@ -634,22 +635,35 @@ cbc_pkg_list() {
     local status_line
     status_line="$(cbc_pkg_update_status_line "$use" "$module_dir" "$manifest_rev" "$manifest_hash")"
 
-    if [ -d "$module_dir" ]; then
-      cbc_style_box "$CATPPUCCIN_BLUE" "Module: $module_name" \
-        "  Use: $use" \
-        "  Recorded rev: ${manifest_rev:-unknown}" \
-        "  Last update: $last_update" \
-        "  $status_line"
-    else
-      cbc_style_box "$CATPPUCCIN_SAPPHIRE" "Module: $module_name" \
-        "  Use: $use" \
-        "  Recorded rev: ${manifest_rev:-unknown}" \
-        "  Last update: $last_update" \
-        "  Status: Not present locally; will synchronize on next load."
-    fi
+    local present_flag="absent"
+    [ -d "$module_dir" ] && present_flag="present"
 
-    found=true
+    manifest_entries+=("$module_name\t$use\t$manifest_rev\t$last_update\t$status_line\t$present_flag")
   done
+
+  if [ ${#manifest_entries[@]} -gt 0 ]; then
+    printf '%s\n' "${manifest_entries[@]}" |
+      sort -f |
+      while IFS=$'\t' read -r module_name use manifest_rev last_update status_line present_flag; do
+        if [ "$present_flag" = "present" ]; then
+          cbc_style_box "$CATPPUCCIN_BLUE" "Module: $module_name" \
+            "  Use: $use" \
+            "  Recorded rev: ${manifest_rev:-unknown}" \
+            "  Last update: $last_update" \
+            "  $status_line"
+        else
+          cbc_style_box "$CATPPUCCIN_SAPPHIRE" "Module: $module_name" \
+            "  Use: $use" \
+            "  Recorded rev: ${manifest_rev:-unknown}" \
+            "  Last update: $last_update" \
+            "  Status: Not present locally; will synchronize on next load."
+        fi
+
+        found=true
+      done
+  fi
+
+  local local_entries=()
 
   shopt -s nullglob
   for module_dir in "$CBC_MODULE_ROOT"/*; do
@@ -660,17 +674,24 @@ cbc_pkg_list() {
       continue
     fi
 
-    found=true
-
     local status_line
     status_line="$(cbc_pkg_update_status_line "$module_name" "$module_dir" "" "")"
 
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Module: $module_name" \
-      "  Use: Local install (not tracked in packages.toml)" \
-      "  Last update: $(date -r "$module_dir" +%Y-%m-%d 2>/dev/null || echo "Unknown")" \
-      "  $status_line"
+    local_entries+=("$module_name\t$(date -r "$module_dir" +%Y-%m-%d 2>/dev/null || echo "Unknown")\t$status_line")
   done
   shopt -u nullglob
+
+  if [ ${#local_entries[@]} -gt 0 ]; then
+    printf '%s\n' "${local_entries[@]}" | sort -f |
+      while IFS=$'\t' read -r module_name last_update status_line; do
+        cbc_style_box "$CATPPUCCIN_MAUVE" "Module: $module_name" \
+          "  Use: Local install (not tracked in packages.toml)" \
+          "  Last update: $last_update" \
+          "  $status_line"
+
+        found=true
+      done
+  fi
 
   if [ "$found" = false ]; then
     cbc_style_message "$CATPPUCCIN_YELLOW" \
