@@ -2812,6 +2812,7 @@ updatecbc() {
 
   # Source the updated commands
   source ~/.custom_bash_commands.sh
+  display_info
 }
 
 ###############################################################################
