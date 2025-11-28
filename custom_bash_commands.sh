@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v306.7.0"
+VERSION="v306.8.0"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -349,6 +349,7 @@ cbc_pkg_resolve_remote_head() {
   local use="$1"
   local module_dir="$2"
   local -n out_remote="$3"
+  local refresh_remote="${4:-true}"
 
   out_remote=""
 
@@ -361,12 +362,20 @@ cbc_pkg_resolve_remote_head() {
     upstream="$(git -C "$module_dir" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
 
     if [ -n "$upstream" ]; then
-      git -C "$module_dir" fetch --quiet 2>/dev/null || true
+      if [ "$refresh_remote" = true ]; then
+        git -C "$module_dir" fetch --quiet 2>/dev/null || true
+      fi
+
       out_remote="$(git -C "$module_dir" rev-parse "$upstream" 2>/dev/null || true)"
       return
     fi
 
-    out_remote="$(git -C "$module_dir" ls-remote origin HEAD 2>/dev/null | awk 'NR==1 {print $1}')"
+    if [ "$refresh_remote" = true ]; then
+      out_remote="$(git -C "$module_dir" ls-remote origin HEAD 2>/dev/null | awk 'NR==1 {print $1}')"
+      return
+    fi
+
+    out_remote="$(git -C "$module_dir" rev-parse origin/HEAD 2>/dev/null || true)"
     return
   fi
 
@@ -374,7 +383,9 @@ cbc_pkg_resolve_remote_head() {
   local module_name=""
   cbc_pkg_resolve_source "$use" source module_name
 
-  out_remote="$(git ls-remote "$source" HEAD 2>/dev/null | awk 'NR==1 {print $1}')"
+  if [ "$refresh_remote" = true ]; then
+    out_remote="$(git ls-remote "$source" HEAD 2>/dev/null | awk 'NR==1 {print $1}')"
+  fi
 }
 
 cbc_pkg_update_status_line() {
@@ -700,8 +711,14 @@ cbc_pkg_update() {
       continue
     fi
 
+    if ! cbc_spinner "Checking $module_name for updates..." \
+      git -C "$module_dir" fetch --quiet --prune; then
+      skipped_modules+=("$module_name (unable to refresh remote)")
+      continue
+    fi
+
     local remote_head=""
-    cbc_pkg_resolve_remote_head "$use" "$module_dir" remote_head
+    cbc_pkg_resolve_remote_head "$use" "$module_dir" remote_head false
 
     local current_rev=""
     local current_hash=""
@@ -727,7 +744,8 @@ cbc_pkg_update() {
       continue
     fi
 
-    if cbc_spinner "Updating $module_name" git -C "$module_dir" pull --ff-only --quiet; then
+    if cbc_spinner "Updating $module_name" \
+      git -C "$module_dir" merge --ff-only --quiet "$remote_head"; then
       updated_modules+=("$module_name")
 
       local new_rev=""
@@ -745,13 +763,23 @@ cbc_pkg_update() {
   fi
 
   if [ ${#updated_modules[@]} -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_GREEN" \
-      "Updated modules: ${updated_modules[*]}"
+    local updated_body="Updated Modules"
+
+    for module_name in "${updated_modules[@]}"; do
+      updated_body+=$'\n'"  - $module_name"
+    done
+
+    cbc_style_message "$CATPPUCCIN_GREEN" "$updated_body"
   fi
 
   if [ ${#skipped_modules[@]} -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_MAROON" \
-      "Skipped modules: ${skipped_modules[*]}"
+    local skipped_body="Skipped Modules"
+
+    for module_name in "${skipped_modules[@]}"; do
+      skipped_body+=$'\n'"  - $module_name"
+    done
+
+    cbc_style_message "$CATPPUCCIN_MAROON" "$skipped_body"
   fi
 
   if [ ${#updated_modules[@]} -eq 0 ] && [ ${#skipped_modules[@]} -eq 0 ]; then
