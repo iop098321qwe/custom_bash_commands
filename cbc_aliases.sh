@@ -86,9 +86,11 @@ alias python='python3'
 # alias bat if any only if on Ubuntu
 if [ -f /etc/os-release ]; then
   . /etc/os-release
-  if [ "$ID" = "ubuntu" ]; then
-    alias bat='batcat'
-  fi
+  case "$ID_LIKE" in
+    *ubuntu*)
+      alias bat='batcat'
+      ;;
+  esac
 fi
 
 alias commands='cbcs | batcat'
