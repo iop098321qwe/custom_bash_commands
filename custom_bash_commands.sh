@@ -2849,6 +2849,13 @@ updatecbc() {
 
   if [ ${#updated_files[@]} -eq 0 ]; then
     cbc_style_message "$CATPPUCCIN_YELLOW" "No updates were applied."
+    return 0
+  fi
+
+  if ! cbc_confirm "Source the updated commands now?"; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Updates are ready. Restart your shell or source manually later."
+    return 0
   fi
 
   # Source the updated commands
