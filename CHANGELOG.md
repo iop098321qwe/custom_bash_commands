@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.9.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.8.4...v306.9.0) (2025-11-29)
+
+
+### Features
+
+* **function:** add `display_info` to end of `updatecbc` runs ([96b584c](https://github.com/iop098321qwe/custom_bash_commands/commit/96b584ceafdb0378db218e42a55c6355a766d672))
+* **updatecbc:** add gum-guided update flow ([#161](https://github.com/iop098321qwe/custom_bash_commands/issues/161)) ([f3e756e](https://github.com/iop098321qwe/custom_bash_commands/commit/f3e756edd7718cabce475ddab46a95a7ce5b96eb))
+
 ## [306.8.4](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.8.3...v306.8.4) (2025-11-28)
 
 ## [306.8.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.8.2...v306.8.3) (2025-11-28)
