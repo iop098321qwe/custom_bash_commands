@@ -2767,6 +2767,16 @@ updatecbc() {
   shift $((OPTIND - 1))
 
   # Temporary directory for sparse checkout
+  if ! cbc_confirm "Update Custom Bash Commands now?"; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" "Update canceled."
+    return 0
+  fi
+
+  local SPARSE_DIR
+  local REPO_URL
+  local FILE_PATHS
+
+  # Temporary directory for sparse checkout
   SPARSE_DIR=$(mktemp -d)
 
   # URL of the GitHub repository
@@ -2778,37 +2788,68 @@ updatecbc() {
     cbc_aliases.sh
   )
 
-  # Initialize an empty git repository and configure for sparse checkout
-  cd $SPARSE_DIR
-  git init -q
-  git remote add origin $REPO_URL
-  git config core.sparseCheckout true
+  cbc_spinner "Fetching latest Custom Bash Commands files" bash -c "
+    set -e
+    cd \"$SPARSE_DIR\"
+    git init -q
+    git remote add origin \"$REPO_URL\"
+    git config core.sparseCheckout true
+    for path in ${FILE_PATHS[*]}; do
+      echo \"$path\" >>.git/info/sparse-checkout
+    done
+    git pull origin main -q
+  " || {
+    cbc_style_message "$CATPPUCCIN_RED" "Failed to download updates."
+    rm -rf "$SPARSE_DIR"
+    cd ~ || return
+    return 1
+  }
 
-  # Add each file path to the sparse checkout configuration
+  local updated_files=()
+  local skipped_files=()
+
   for path in "${FILE_PATHS[@]}"; do
-    echo "$path" >>.git/info/sparse-checkout
-  done
-
-  # Fetch only the desired files from the main branch
-  git pull origin main -q
-
-  # Move the fetched files to the target directory
-  for path in "${FILE_PATHS[@]}"; do
-    # Determine the new filename with '.' prefix (if not already prefixed)
+    local new_filename
     new_filename="$(basename "$path")"
     if [[ $new_filename != .* ]]; then
       new_filename=".$new_filename"
     fi
 
-    # Copy the file to the home directory with the new filename
-    cp "$SPARSE_DIR"/"$path" ~/"$new_filename"
-    echo "Copied $path to $new_filename"
+    local source_path
+    local target_path
+    source_path="$SPARSE_DIR/$path"
+    target_path=~/"$new_filename"
+
+    if cmp -s "$source_path" "$target_path"; then
+      skipped_files+=("$new_filename")
+      continue
+    fi
+
+    if cbc_spinner "Updating $new_filename" cp "$source_path" "$target_path"; then
+      updated_files+=("$new_filename")
+    else
+      cbc_style_message "$CATPPUCCIN_RED" "Failed to update $new_filename."
+    fi
   done
 
   # Clean up
   rm -rf "$SPARSE_DIR"
   cd ~ || return
   clear
+
+  if [ ${#updated_files[@]} -gt 0 ]; then
+    cbc_style_box "$CATPPUCCIN_GREEN" "Updated files:" \
+      "${updated_files[@]/#/  }"
+  fi
+
+  if [ ${#skipped_files[@]} -gt 0 ]; then
+    cbc_style_box "$CATPPUCCIN_YELLOW" "Already up to date:" \
+      "${skipped_files[@]/#/  }"
+  fi
+
+  if [ ${#updated_files[@]} -eq 0 ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" "No updates were applied."
+  fi
 
   # Source the updated commands
   source ~/.custom_bash_commands.sh

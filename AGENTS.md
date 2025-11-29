@@ -65,7 +65,9 @@ introducing.
   entrypoints.
 - `updatecbc` performs a sparse checkout of the repository, copying the main
   script and `cbc_aliases.sh` into the home directory before sourcing the new
-  version. Preserve its temporary-directory hygiene and cleanup flow.
+  version. Preserve its temporary-directory hygiene and cleanup flow while
+  keeping the gum confirmation, spinners, and the selective copy logic that
+  only overwrites files when their contents change.
 
 ---
 
