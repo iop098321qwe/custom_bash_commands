@@ -2852,14 +2852,15 @@ updatecbc() {
     return 0
   fi
 
-  if ! cbc_confirm "Source the updated commands now?"; then
+  if ! cbc_confirm \
+    "Reload now? This will source ~/.custom_bash_commands.sh and ~/.cbc_aliases.sh."; then
     cbc_style_message "$CATPPUCCIN_YELLOW" \
       "Updates are ready. Restart your shell or source manually later."
     return 0
   fi
 
   # Source the updated commands
-  source ~/.custom_bash_commands.sh
+  cbc_spinner "Sourcing updated CBC files" bash -c "source ~/.custom_bash_commands.sh"
   display_info
 }
 

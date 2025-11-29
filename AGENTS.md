@@ -66,9 +66,9 @@ introducing.
 - `updatecbc` performs a sparse checkout of the repository, copying the main
   script and `cbc_aliases.sh` into the home directory. Preserve its
   temporary-directory hygiene and cleanup flow while keeping the gum
-  confirmation, spinners, selective copy logic that only overwrites files when
-  their contents change, a second gum confirmation before sourcing, and an
-  early exit when no files changed.
+  confirmation, spinners (including for the reload), selective copy logic that
+  only overwrites files when their contents change, a second gum confirmation
+  before sourcing any files, and an early exit when no files changed.
 
 ---
 

@@ -125,8 +125,9 @@ When the terminal sources CBC it immediately prepares the working environment:
 - `updatecbc` (alias `ucbc`) asks for confirmation with gum (or a plain
   prompt), downloads the latest `custom_bash_commands.sh` and `cbc_aliases.sh`
   with spinners, only overwrites files whose contents changed, and reloads the
-  configuration only after a second confirmation; if nothing changed it exits
-  without reloading.【F:custom_bash_commands.sh†L2740-L2872】
+  configuration only after a gum confirmation that precedes sourcing
+  `~/.custom_bash_commands.sh` and `~/.cbc_aliases.sh`; if nothing changed it
+  exits without reloading.【F:custom_bash_commands.sh†L2740-L2872】
 
 ### Manage CBC modules
 
