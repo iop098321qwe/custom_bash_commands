@@ -2766,6 +2766,12 @@ updatecbc() {
 
   shift $((OPTIND - 1))
 
+  local SPARSE_DIR
+  local REPO_URL
+  local FILE_PATHS
+  local new_filename
+  local copy_errors=0
+
   # Temporary directory for sparse checkout
   SPARSE_DIR=$(mktemp -d)
 
@@ -2778,37 +2784,57 @@ updatecbc() {
     cbc_aliases.sh
   )
 
-  # Initialize an empty git repository and configure for sparse checkout
-  cd $SPARSE_DIR
-  git init -q
-  git remote add origin $REPO_URL
-  git config core.sparseCheckout true
+  cbc_style_box "$CATPPUCCIN_BLUE" "Updating Custom Bash Commands" \
 
-  # Add each file path to the sparse checkout configuration
+  if ! cbc_confirm "Pull the latest version and overwrite local files?"; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" "Update cancelled."
+    rm -rf "$SPARSE_DIR"
+    return 0
+  fi
+
+  # Initialize an empty git repository and configure for sparse checkout
+  if ! cbc_spinner "Preparing temporary checkout" \
+    bash -c "cd '$SPARSE_DIR' && git init -q && git remote add origin '$REPO_URL' \
+    && git config core.sparseCheckout true"; then
+    cbc_style_message "$CATPPUCCIN_RED" "Failed to prepare sparse checkout."
+    rm -rf "$SPARSE_DIR"
+    return 1
+  fi
+
   for path in "${FILE_PATHS[@]}"; do
-    echo "$path" >>.git/info/sparse-checkout
+    echo "$path" >>"$SPARSE_DIR/.git/info/sparse-checkout"
   done
 
-  # Fetch only the desired files from the main branch
-  git pull origin main -q
+  if ! cbc_spinner "Downloading updates" \
+    bash -c "cd '$SPARSE_DIR' && git pull origin main -q"; then
+    cbc_style_message "$CATPPUCCIN_RED" "Unable to download updates from the repository."
+    rm -rf "$SPARSE_DIR"
+    return 1
+  fi
 
-  # Move the fetched files to the target directory
   for path in "${FILE_PATHS[@]}"; do
-    # Determine the new filename with '.' prefix (if not already prefixed)
     new_filename="$(basename "$path")"
     if [[ $new_filename != .* ]]; then
       new_filename=".$new_filename"
     fi
 
-    # Copy the file to the home directory with the new filename
-    cp "$SPARSE_DIR"/"$path" ~/"$new_filename"
-    echo "Copied $path to $new_filename"
+    if ! cbc_spinner "Updating $new_filename" \
+      cp "$SPARSE_DIR/$path" "$HOME/$new_filename"; then
+      cbc_style_message "$CATPPUCCIN_RED" "Failed to copy $path."
+      copy_errors=1
+    fi
   done
 
-  # Clean up
   rm -rf "$SPARSE_DIR"
   cd ~ || return
   clear
+
+  if [ $copy_errors -eq 1 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Update incomplete. Please retry."
+    return 1
+  fi
+
+  cbc_style_message "$CATPPUCCIN_GREEN" "Custom Bash Commands updated. Reloading..."
 
   # Source the updated commands
   source ~/.custom_bash_commands.sh

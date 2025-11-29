@@ -63,9 +63,11 @@ introducing.
 - `cbc pkg list` should summarize modules with last-updated timestamps and a
   concise status (`Current` or `UPDATE AVAILABLE`) without surfacing module
   entrypoints.
-- `updatecbc` performs a sparse checkout of the repository, copying the main
-  script and `cbc_aliases.sh` into the home directory before sourcing the new
-  version. Preserve its temporary-directory hygiene and cleanup flow.
+- `updatecbc` performs a sparse checkout of the repository, presenting a gum
+  confirmation (with a plain fallback) before pulling the latest copy of the
+  main script and `cbc_aliases.sh`, overwriting the home-directory versions, and
+  sourcing the result. Preserve its temporary-directory hygiene, spinner
+  feedback, and cleanup flow.
 
 ---
 

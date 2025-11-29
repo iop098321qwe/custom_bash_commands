@@ -120,6 +120,15 @@ When the terminal sources CBC it immediately prepares the working environment:
   and `commandsmore` aliases pipe that output through `batcat` for easier
   browsing.【F:custom_bash_commands.sh†L1835-L2626】【F:cbc_aliases.sh†L19-L36】
 
+### Update CBC
+
+- `updatecbc` (alias `ucbc`) now presents a gum-styled confirmation (with a
+  plain-text fallback) before performing a sparse checkout of the repository.
+  It shows spinners while preparing the temporary clone, pulling the latest
+  files, and overwriting `~/.custom_bash_commands.sh` and
+  `~/.cbc_aliases.sh` in place. After a successful copy, the script reloads the
+  updated commands automatically.【F:custom_bash_commands.sh†L2736-L2850】
+
 ### Manage CBC modules
 
 - `cbc pkg` stores module metadata in `~/.config/cbc/packages.toml` using
