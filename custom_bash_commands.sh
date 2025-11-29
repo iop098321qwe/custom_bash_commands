@@ -2835,7 +2835,6 @@ updatecbc() {
   # Clean up
   rm -rf "$SPARSE_DIR"
   cd ~ || return
-  clear
 
   if [ ${#updated_files[@]} -gt 0 ]; then
     cbc_style_box "$CATPPUCCIN_GREEN" "Updated files:" \

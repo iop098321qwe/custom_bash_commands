@@ -127,8 +127,9 @@ When the terminal sources CBC it immediately prepares the working environment:
   with spinners, only overwrites files whose contents changed, and reloads the
   configuration only after a gum confirmation that precedes sourcing
   `~/.custom_bash_commands.sh` and `~/.cbc_aliases.sh`; if nothing changed it
-  displays a gum acknowledgement before exiting without
-  reloading.【F:custom_bash_commands.sh†L2740-L2872】
+  displays a gum acknowledgement before exiting without reloading. The process
+  leaves your terminal output intact (no screen clears) so summaries remain
+  visible.【F:custom_bash_commands.sh†L2740-L2871】
 
 ### Manage CBC modules
 
