@@ -123,13 +123,12 @@ When the terminal sources CBC it immediately prepares the working environment:
 ### Update CBC
 
 - `updatecbc` (alias `ucbc`) asks for confirmation with gum (or a plain
-  prompt), downloads the latest `custom_bash_commands.sh` and `cbc_aliases.sh`
-  with spinners, only overwrites files whose contents changed, and reloads the
-  configuration only after a gum confirmation that precedes sourcing
-  `~/.custom_bash_commands.sh` and `~/.cbc_aliases.sh`; if nothing changed it
-  displays a gum acknowledgement before exiting without reloading. The process
-  leaves your terminal output intact (no screen clears) so summaries remain
-  visible.【F:custom_bash_commands.sh†L2740-L2871】
+  prompt) and, when accepted, downloads the latest `custom_bash_commands.sh`
+  and `cbc_aliases.sh` with spinners and overwrites both dotfiles regardless of
+  their current contents. It always asks again before sourcing
+  `~/.custom_bash_commands.sh` and `~/.cbc_aliases.sh`. The process leaves your
+  terminal output intact (no screen clears) so summaries remain visible.
+  【F:custom_bash_commands.sh†L2740-L2858】
 
 ### Manage CBC modules
 

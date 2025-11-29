@@ -2806,7 +2806,6 @@ updatecbc() {
   }
 
   local updated_files=()
-  local skipped_files=()
 
   for path in "${FILE_PATHS[@]}"; do
     local new_filename
@@ -2820,12 +2819,8 @@ updatecbc() {
     source_path="$SPARSE_DIR/$path"
     target_path=~/"$new_filename"
 
-    if cmp -s "$source_path" "$target_path"; then
-      skipped_files+=("$new_filename")
-      continue
-    fi
-
-    if cbc_spinner "Updating $new_filename" cp "$source_path" "$target_path"; then
+    if cbc_spinner "Overwriting $new_filename" \
+      cp "$source_path" "$target_path"; then
       updated_files+=("$new_filename")
     else
       cbc_style_message "$CATPPUCCIN_RED" "Failed to update $new_filename."
@@ -2839,22 +2834,9 @@ updatecbc() {
   if [ ${#updated_files[@]} -gt 0 ]; then
     cbc_style_box "$CATPPUCCIN_GREEN" "Updated files:" \
       "${updated_files[@]/#/  }"
-  fi
-
-  if [ ${#skipped_files[@]} -gt 0 ]; then
-    cbc_style_box "$CATPPUCCIN_YELLOW" "Already up to date:" \
-      "${skipped_files[@]/#/  }"
-  fi
-
-  if [ ${#updated_files[@]} -eq 0 ]; then
-    cbc_style_message "$CATPPUCCIN_YELLOW" "No updates were applied."
-    if cbc_confirm "Acknowledge and exit updatecbc?"; then
-      cbc_style_message "$CATPPUCCIN_BLUE" "Exiting without changes."
-    else
-      cbc_style_message "$CATPPUCCIN_YELLOW" \
-        "No changes detected; leaving CBC as-is."
-    fi
-    return 0
+  else
+    cbc_style_message "$CATPPUCCIN_RED" "No files were updated."
+    return 1
   fi
 
   if ! cbc_confirm \

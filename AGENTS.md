@@ -66,10 +66,10 @@ introducing.
 - `updatecbc` performs a sparse checkout of the repository, copying the main
   script and `cbc_aliases.sh` into the home directory. Preserve its
   temporary-directory hygiene and cleanup flow while keeping the gum
-  confirmation, spinners (including for the reload), selective copy logic that
-  only overwrites files when their contents change, a second gum confirmation
-  before sourcing any files, and a gum acknowledgement when no files changed
-  before exiting. Avoid clearing the screen so prior context remains visible.
+  confirmation, spinners (including for the reload), unconditional overwrites
+  of the dotfiles when the user agrees to update, and a second gum confirmation
+  before sourcing any files. Avoid clearing the screen so prior context remains
+  visible.
 
 ---
 
