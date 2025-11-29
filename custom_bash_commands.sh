@@ -2785,9 +2785,6 @@ updatecbc() {
   )
 
   cbc_style_box "$CATPPUCCIN_BLUE" "Updating Custom Bash Commands" \
-    "Using gum for confirmations and progress when available."
-
-  cbc_style_note "Files to update:" "${FILE_PATHS[@]}"
 
   if ! cbc_confirm "Pull the latest version and overwrite local files?"; then
     cbc_style_message "$CATPPUCCIN_YELLOW" "Update cancelled."
