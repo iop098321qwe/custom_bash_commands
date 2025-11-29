@@ -68,7 +68,8 @@ introducing.
   temporary-directory hygiene and cleanup flow while keeping the gum
   confirmation, spinners (including for the reload), selective copy logic that
   only overwrites files when their contents change, a second gum confirmation
-  before sourcing any files, and an early exit when no files changed.
+  before sourcing any files, and a gum acknowledgement when no files changed
+  before exiting.
 
 ---
 

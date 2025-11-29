@@ -2849,6 +2849,12 @@ updatecbc() {
 
   if [ ${#updated_files[@]} -eq 0 ]; then
     cbc_style_message "$CATPPUCCIN_YELLOW" "No updates were applied."
+    if cbc_confirm "Acknowledge and exit updatecbc?"; then
+      cbc_style_message "$CATPPUCCIN_BLUE" "Exiting without changes."
+    else
+      cbc_style_message "$CATPPUCCIN_YELLOW" \
+        "No changes detected; leaving CBC as-is."
+    fi
     return 0
   fi
 
