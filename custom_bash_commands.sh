@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v306.9.0"
+CBC_VERSION="v306.9.0"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -2784,7 +2784,7 @@ updatecbc() {
     cbc_aliases.sh
   )
 
-  cbc_style_box "$CATPPUCCIN_BLUE" "Updating Custom Bash Commands" \
+  cbc_style_box "$CATPPUCCIN_BLUE" "Updating Custom Bash Commands"
 
   if ! cbc_confirm "Pull the latest version and overwrite local files?"; then
     cbc_style_message "$CATPPUCCIN_YELLOW" "Update cancelled."
