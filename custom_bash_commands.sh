@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION="v306.9.0"
+CBC_VERSION="v306.9.1"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -1324,7 +1324,7 @@ cbc_version_is_newer() {
 
 # Check GitHub release for newer version of the script
 check_cbc_update() {
-  local current_version="$VERSION"
+  local current_version="$CBC_VERSION"
   local release_api_url="https://api.github.com/repos/iop098321qwe/custom_bash_commands/releases/latest"
   local now check_interval notify_interval
 
@@ -1500,7 +1500,7 @@ display_version() {
 
   # Display version details in a fancy box
   cbc_style_message "$CATPPUCCIN_GREEN" "CUSTOM BASH COMMANDS (by iop098321qwe)"
-  cbc_style_message "$CATPPUCCIN_YELLOW" "🔹🔹$VERSION🔹🔹CHANGELOG: 'changes'🔹🔹RELEASES: 'releases'🔹🔹WIKI: 'wiki'🔹🔹"
+  cbc_style_message "$CATPPUCCIN_YELLOW" "🔹🔹$CBC_VERSION🔹🔹CHANGELOG: 'changes'🔹🔹RELEASES: 'releases'🔹🔹WIKI: 'wiki'🔹🔹"
 }
 
 ################################################################################
@@ -2784,7 +2784,7 @@ updatecbc() {
     cbc_aliases.sh
   )
 
-  cbc_style_box "$CATPPUCCIN_BLUE" "Updating Custom Bash Commands" \
+  cbc_style_box "$CATPPUCCIN_BLUE" "Updating Custom Bash Commands"
 
   if ! cbc_confirm "Pull the latest version and overwrite local files?"; then
     cbc_style_message "$CATPPUCCIN_YELLOW" "Update cancelled."
