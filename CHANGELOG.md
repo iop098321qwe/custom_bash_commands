@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.9.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.9.1...v306.9.2) (2025-12-11)
+
+
+### Bug Fixes
+
+* **alias:** remove `sa` alias ([5bfdf9c](https://github.com/iop098321qwe/custom_bash_commands/commit/5bfdf9c5672f4f49c205b3770b7c601115338d67))
+* **alias:** remove `ssort` alias ([1348e13](https://github.com/iop098321qwe/custom_bash_commands/commit/1348e132b9c02480957c61e653a15a83e504dce1))
+
 ## [306.9.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.9.0...v306.9.1) (2025-12-01)
 
 ## [306.9.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.8.4...v306.9.0) (2025-11-29)
