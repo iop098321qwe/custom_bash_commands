@@ -20,7 +20,7 @@ new environments aligned with the toolkit's expectations.【F:cbc_aliases.sh†L
 
 ## Overview
 
-The core script detects whether [Charmbracelet gum](https://github.com/
+The core script detects whether [Charmbracelet gum](<https://github.com/>
 charmbracelet/gum) is available before exposing a Catppuccin-themed set of
 styling helpers and gracefully falling back to plain `printf` and `read` when
 gum is absent.【F:custom_bash_commands.sh†L1-L129】 A startup routine creates the
@@ -52,19 +52,25 @@ styled UI experience.【F:custom_bash_commands.sh†L1-L129】
 ## Installation
 
 1. Ensure the canonical repository location exists:
+
    ```bash
    mkdir -p ~/Documents/github_repositories
    ```
+
 2. Clone the project into the expected folder:
+
    ```bash
    git clone https://github.com/iop098321qwe/custom_bash_commands \
      ~/Documents/github_repositories/custom_bash_commands
    ```
+
 3. Run the installer from inside the repository:
+
    ```bash
    cd ~/Documents/github_repositories/custom_bash_commands
    ./install_cbc.sh
    ```
+
    The script verifies the repository path, copies the main script and alias
    catalog into the home directory, appends the sourcing line to `.bashrc`, and
    reloads the shell session.【F:install_cbc.sh†L1-L34】
@@ -163,8 +169,6 @@ When the terminal sources CBC it immediately prepares the working environment:
   patterns or pick a random video from the current directory.【F:custom_bash_commands.sh†L488-L1407】
 - `repeat` reruns commands with optional delays and verbose logging so you can
   automate repetitive tasks safely.【F:custom_bash_commands.sh†L702-L780】
-- `smartsort` groups files by extension, name, modification date, size, or MIME
-  type using interactive prompts for fine-grained control.【F:custom_bash_commands.sh†L812-L1344】
 - `backup`, `makeman`, `extract`, and `filehash` provide lightweight utilities
   for backups, documentation, archive extraction, and checksum generation.
   【F:custom_bash_commands.sh†L2631-L3141】
