@@ -20,8 +20,6 @@ alias nv='files=$(fzf --multi --prompt="Select files/dirs for nvim: " --bind "en
 alias please='sudo $(history -p !!)'
 alias refresh='source ~/.bashrc && clear'
 alias rma='rm -rfI'
-# TODO: Check if sortalpha still exists, if not remove this alias
-alias sa='sortalpha'
 # TODO: Check if smartsort still exists, if not remove this alias
 alias ssort='smartsort'
 
