@@ -56,7 +56,6 @@ alias z='zellij'
 # EZA
 ################################################################################
 
-# TODO: only use eza aliases if not on Arch Linux
 alias la="eza --icons=always --group-directories-first -a"
 alias lar="eza --icons=always -r --group-directories-first -a"
 alias le="eza --icons=always --group-directories-first -s extension"
