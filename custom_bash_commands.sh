@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v306.9.1"
+CBC_VERSION="v306.9.2"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -1656,11 +1656,6 @@ cbcs() {
       echo "          Usage: remove_all_cbc_configs"
       echo "          Aliases: racc"
       echo " "
-      echo "sortalpha"
-      echo "         Description: Sort files alphabetically into subdirectories by type and first letter"
-      echo "         Usage: sortalpha"
-      echo "         Aliases: sa"
-      echo " "
       echo "seebash"
       echo "          Description: Display the contents of the .bashrc file"
       echo "          Usage: seebash"
@@ -2134,10 +2129,6 @@ cbcs() {
       echo "          Description: Alias for 'lazygit'"
       echo "          Usage: lg"
       echo " "
-      echo "sa"
-      echo "          Description: Alias for 'sortalpha'"
-      echo "          Usage: sa"
-      echo " "
       echo "s"
       echo "          Description: Alias for 'sudo'"
       echo "          Usage : s <command>"
@@ -2197,7 +2188,6 @@ cbcs() {
       echo "random"
       echo "refresh"
       echo "rmconf"
-      echo "sortalpha"
       echo "seebash"
       echo "sopen"
       echo "sopenexact"

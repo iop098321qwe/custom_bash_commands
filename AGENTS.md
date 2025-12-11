@@ -79,7 +79,7 @@ introducing.
    downgrade to `printf`/`read` when gum is unavailable.
 2. **Help flags & `OPTIND`** – Every function callable from the CLI must offer a
    `-h`/`--help` path implemented with `getopts` and reset `OPTIND=1` at the
-   start. Follow the formatting used by `batchopen`, `repeat`, `smartsort`, and
+   start. Follow the formatting used by `batchopen`, `repeat`, and
    `regex_help` to stay consistent.
 3. **Interactive input** – Prefer `fzf` selectors and gum confirmations when
    collecting user choices. Ensure the scripts still behave sensibly if `fzf` or
