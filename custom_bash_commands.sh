@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v306.9.1"
+CBC_VERSION="v306.9.2"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
