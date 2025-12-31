@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v306.9.2"
+CBC_VERSION="v306.9.3"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -1734,11 +1734,6 @@ cbcs() {
       echo "          Usage: ch [options]"
       echo "          Alias For: 'chezmoi'"
       echo " "
-      echo "chup"
-      echo "          Description: Alias shortcut to pull updates from chezmoi"
-      echo "          Usage: chup"
-      echo "          Alias For: 'chezmoi update'"
-      echo " "
       echo "cla"
       echo "          Description: Clear the terminal screen and print the contents of the current directory including hidden"
       echo "          Usage: cla"
@@ -2206,7 +2201,6 @@ cbcs() {
       echo "c"
       echo "cdgh"
       echo "ch"
-      echo "chup"
       echo "cla"
       echo "cls"
       echo "commands"
