@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.9.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.9.2...v306.9.3) (2025-12-31)
+
+
+### Bug Fixes
+
+* **alias:** remove alias established in separate module ([7209d8b](https://github.com/iop098321qwe/custom_bash_commands/commit/7209d8b33ab1f10b4a4340a036e1179ffee26337))
+
 ## [306.9.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.9.1...v306.9.2) (2025-12-11)
 
 
