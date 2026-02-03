@@ -95,8 +95,10 @@ When the terminal sources CBC it immediately prepares the working environment:
   recording subfolders), the GitHub repositories directory, and the Grymm's
   Grimoires vault if they do not already exist.【F:custom_bash_commands.sh†L1579-L1629】
 - `check_cbc_update` polls the GitHub Releases API on a configurable interval,
-  caches the response, and surfaces styled upgrade notifications when a newer
-  tag is available.【F:custom_bash_commands.sh†L1635-L1781】
+  caches the response, uses `curl` with `--connect-timeout 2` and
+  `--max-time 4` to avoid startup hangs, and surfaces styled upgrade
+  notifications when a newer tag is available.
+  【F:custom_bash_commands.sh†L1635-L1781】
 - `display_version` runs automatically once per interactive session to show the
   current version, discovery hints, and removal instructions, while
   `cbc_aliases.sh` is sourced to expose every alias. If `.bash_aliases` exists
