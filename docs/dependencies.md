@@ -13,6 +13,7 @@
 - sort
 - xargs
 - xdg-open
+- setsid
 - gum
 - fzf
 - bat or batcat
