@@ -1557,7 +1557,6 @@ cbcs() {
     "  cbc pkg"
     "  cbcs"
     "  changes"
-    "  display_info"
     "  display_version"
     "  dotfiles"
     "  readme"
@@ -1575,7 +1574,6 @@ cbcs() {
     "  commm"
     "  commands"
     "  commandsmore"
-    "  di"
     "  dv"
     "  editbash"
     "  fman"
@@ -1620,7 +1618,6 @@ cbcs() {
     "  cbc pkg            Manage CBC modules (install, list, load, uninstall, update)"
     "  cbcs               List CBC functions and aliases"
     "  changes            Open the CBC changelog in a browser"
-    "  display_info       Show CBC version info"
     "  display_version    Print the current CBC version"
     "  dotfiles           Open the dotfiles repository"
     "  readme             Open the CBC README in a browser"
@@ -1638,7 +1635,6 @@ cbcs() {
     "  commm              commandsmore"
     "  commands           cbcs | batcat"
     "  commandsmore       cbcs -a | batcat"
-    "  di                 display_info"
     "  dv                 display_version"
     "  editbash           \$EDITOR ~/.bashrc"
     "  fman               compgen -c | fzf | xargs man"
@@ -2059,40 +2055,6 @@ regex_help() {
 }
 
 ################################################################################
-# DISPLAY INFO
-################################################################################
-
-display_info() {
-  usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Display key information about the Custom Bash Commands setup."
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  display_info [-h]"
-
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
-
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-      "  display_info"
-  }
-
-  while getopts ":h" opt; do
-    case ${opt} in
-    h)
-      usage
-      return 0
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
-      ;;
-    esac
-  done
-
-  display_version
-}
-
-################################################################################
 # UPDATECBC
 ################################################################################
 
@@ -2201,7 +2163,7 @@ updatecbc() {
 
   # Source the updated commands
   source ~/.custom_bash_commands.sh
-  display_info
+  display_version
 }
 
 ###############################################################################
@@ -2218,7 +2180,7 @@ if [[ $- == *i* ]]; then
   if [ -z "${CBC_INFO_SHOWN:-}" ]; then
     CBC_INFO_SHOWN=1
     export CBC_INFO_SHOWN
-    display_info
+    display_version
   fi
 fi
 
