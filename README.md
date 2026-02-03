@@ -115,7 +115,8 @@ When the terminal sources CBC it immediately prepares the working environment:
 - `changes [-c]` opens or copies the GitHub changelog before you update so you
   can scan release notes from the terminal.【F:custom_bash_commands.sh†L1483-L1529】
 - `wiki [-c|-C|-A|-F]` opens the project wiki or copies the URL to the
-  clipboard, providing quick access to deeper documentation categories.
+  clipboard, and it can jump to Alias Reference, Command Reference
+  (commands/functions), or the Cheatsheet page.
   【F:custom_bash_commands.sh†L1413-L1477】
 - `cbcs [-a]` lists every custom function and alias CBC provides. The `commands`
   and `commandsmore` aliases pipe that output through `bat` for easier
