@@ -167,9 +167,8 @@ When the terminal sources CBC it immediately prepares the working environment:
   patterns or pick a random video from the current directory.【F:custom_bash_commands.sh†L488-L1407】
 - `repeat` reruns commands with optional delays and verbose logging so you can
   automate repetitive tasks safely.【F:custom_bash_commands.sh†L702-L780】
-- `backup`, `makeman`, `extract`, and `filehash` provide lightweight utilities
-  for backups, documentation, archive extraction, and checksum generation.
-  【F:custom_bash_commands.sh†L2631-L3141】
+- `backup` and `makeman` provide lightweight utilities for backups and
+  documentation. 【F:custom_bash_commands.sh†L2631-L3141】
 - `regex_help` defaults to a PCRE cheat-sheet and can list or interactively
   display other regex flavors so the syntax you need is always in reach.
   【F:custom_bash_commands.sh†L2827-L3164】
