@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.10.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.9.3...v306.10.0) (2026-02-03)
+
+
+### Features
+
+* **alias:** remove `rma` alias from main CBC's ([27cfe9b](https://github.com/iop098321qwe/custom_bash_commands/commit/27cfe9bf9c5ffffa6b3bc4b8ed147880e89e20ce))
+* **function:** update and rework `cbcs` function ([9e96e70](https://github.com/iop098321qwe/custom_bash_commands/commit/9e96e706c98bbc36220b901d6243db8e08031f44))
+
+
+### Bug Fixes
+
+* **alias:** change uses of batcat to bat ([8e38da6](https://github.com/iop098321qwe/custom_bash_commands/commit/8e38da62788ea863370c52f122c928f6c215875b))
+* **alias:** remove `ver` and `verg` alias references ([0244f9e](https://github.com/iop098321qwe/custom_bash_commands/commit/0244f9e5b4fe8ec95ccb97517b6b5067380a7c71))
+
 ## [306.9.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.9.2...v306.9.3) (2025-12-31)
 
 
