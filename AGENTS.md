@@ -66,7 +66,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
 ## Architecture
 
 - `custom_bash_commands.sh` is the main entry point. It defines UI helpers,
-  command functions, and `updatecbc`, then sources `~/.cbc_aliases.sh`.
+  command functions, and `updatecbc`, then sources `~/.cbc_aliases.sh` if
+  present and warns when missing.
 - `cbc_aliases.sh` defines aliases that the main script loads during startup.
 - `install_cbc.sh` copies scripts into `~`, appends a sourcing block to
   `~/.bashrc` when missing, and creates common directories under

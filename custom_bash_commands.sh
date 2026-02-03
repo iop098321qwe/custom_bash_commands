@@ -967,7 +967,13 @@ cbc() {
 # SOURCE ALIAS FILE
 ################################################################################
 
-source ~/.cbc_aliases.sh
+if [ -f "$HOME/.cbc_aliases.sh" ]; then
+  # shellcheck disable=SC1090
+  source "$HOME/.cbc_aliases.sh"
+else
+  cbc_style_message "$CATPPUCCIN_YELLOW" \
+    "Alias file not found; skipping $HOME/.cbc_aliases.sh."
+fi
 
 ################################################################################
 # WIKI
