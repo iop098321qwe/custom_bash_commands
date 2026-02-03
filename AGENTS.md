@@ -32,7 +32,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 - Targets Debian/Ubuntu-based systems.
 - Requires Bash (`custom_bash_commands.sh` and `cbc_aliases.sh` use bash).
-- Optional: `gum` for styled output; the script falls back without it.
+- `docs/dependencies.md` lists `gum` as required, while
+  `custom_bash_commands.sh` falls back when `gum` is missing.
 - Config variables set in `custom_bash_commands.sh`:
   - `CBC_CONFIG_DIR` (default `~/.config/cbc`)
   - `CBC_MODULE_ROOT` (default `~/.config/cbc/modules`)
@@ -102,7 +103,9 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 - Follow `docs/standard_operating_procedures.md` when adding or modifying
   functions and aliases.
-- Keep `cbcs` output in `custom_bash_commands.sh` aligned with new commands.
+- Keep `cbcs` output in `custom_bash_commands.sh` aligned with current
+  functions and aliases by updating `functions`, `aliases`,
+  `function_details`, and `alias_details`.
 - Maintain `cbc_aliases.sh` as the alias catalog loaded by the main script.
 
 ## Security and Compliance
@@ -112,12 +115,12 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 ## Dependencies and Services
 
-- `docs/dependencies.md` lists required tools: zellij, zoxide, fzf, stacer,
-  eza, neofetch, figlet, neovim, tldr, btop, brave-browser, vscode,
-  python3, chezmoi, thefuck, fd, ripgrep, starship, ranger, lazygit,
-  tree, obsidian.
-- Optional dependency: `gum` for styled terminal UI.
-- External service: GitHub is used by `updatecbc` for sparse checkout updates.
+- `docs/dependencies.md` required tools: bash, git, curl, python3, sed,
+  awk, sha256sum, find, sort, xargs, xdg-open, gum, fzf, bat or
+  batcat, eza, nvim.
+- `docs/dependencies.md` optional tools: zellij, sudo.
+- External service: GitHub is used by `updatecbc` for sparse checkout
+  updates.
 
 ## Troubleshooting
 
@@ -137,8 +140,9 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 ## Maintenance
 
-- After any code or documentation change, re-check this file against the repo.
+- After any code or documentation change, re-check this file against the
+  repo.
 - Re-scan tracked files and update the file list immediately.
 - Re-verify commands, paths, and workflows for accuracy.
 - Update AGENTS.md to resolve mismatches without delay.
-- Do not record change logs inside this file.
+- Do not record AGENTS.md changes inside this file.
