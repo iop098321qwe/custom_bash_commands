@@ -9,6 +9,7 @@
 ################################################################################
 
 alias editbash='$EDITOR ~/.bashrc'
+alias editbash='$EDITOR ~/.bashrc'
 alias fman='compgen -c | fzf | xargs man'
 alias fzf='fzf -m'
 # TODO: add if statement to check for wayland or x11 and alias accordingly
