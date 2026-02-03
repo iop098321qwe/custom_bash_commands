@@ -36,7 +36,6 @@ users know which features loaded successfully.【F:custom_bash_commands.sh†L15
 | `cbc_aliases.sh` | Catalog of navigation shortcuts, Git aliases, fuzzy wrappers, media launchers, and helper shorthands that keep the main script modular.【F:cbc_aliases.sh†L1-L135】 |
 | `install_cbc.sh` | Installer that validates the repository path, copies the main script and aliases into the home directory, and appends sourcing lines to `.bashrc` before reloading the shell.【F:install_cbc.sh†L1-L34】 |
 | `docs/` | Reference documentation covering dependency expectations, SOPs for adding functions or aliases, and the current TODO backlog.【F:docs/dependencies.md†L1-L24】【F:docs/standard_operating_procedures.md†L1-L72】【F:docs/todo.md†L1-L81】 |
-| `node_modules/` | Vendored tooling used for release automation (e.g., `npx commit-and-tag-version`, exposed via the `ver` alias). Avoid modifying or expanding the dependency tree unless a release workflow change requires it.【F:cbc_aliases.sh†L124-L125】 |
 | `CHANGELOG.md` & `cbc_logo_00001.png` | Human-readable release history and branding assets referenced by the CLI and README.【F:custom_bash_commands.sh†L1483-L1529】 |
 
 ## Prerequisites
@@ -47,7 +46,10 @@ and aliases call directly so each helper works without manual edits. The
 script and alias catalog reference additional utilities such as Git, curl,
 `batcat`, `fzf`, `yt-dlp`, `xclip`, Obsidian, Lazygit, Zellij, and the Catppuccin
 friendly `eza` file lister.【F:docs/dependencies.md†L1-L24】【F:custom_bash_commands.sh†L145-L1106】【F:cbc_aliases.sh†L11-L135】 Gum is optional but unlocks the
-styled UI experience.【F:custom_bash_commands.sh†L1-L129】
+styled UI experience.【F:custom_bash_commands.sh†L1-L129】 The `cbcs` output also
+documents release shortcuts (`ver`, `verg`) that call
+`npx commit-and-tag-version`, so ensure `npx` is available if you use them.
+【F:custom_bash_commands.sh†L2139-L2147】
 
 ## Installation
 
@@ -180,9 +182,11 @@ When the terminal sources CBC it immediately prepares the working environment:
 
 Common aliases cover directory jumps (`cbc`, `cdgh`, `vault`, `temp`), Git
 workflows (`cbcc`, `gco`, `gsw`, `gpfom`), fuzzy file launchers (`fo`, `fman`,
-`iopen`), media helpers (`pron`, `so`, `vopen`), and release automation (`ver`,
-`verg`).【F:cbc_aliases.sh†L11-L135】 Use `commandsmore` for descriptions whenever
-you need a refresher.【F:cbc_aliases.sh†L25-L27】
+`iopen`), and media helpers (`pron`, `so`, `vopen`).【F:cbc_aliases.sh†L11-L135】
+The `cbcs` output also documents release shortcuts (`ver`, `verg`) that call
+`npx commit-and-tag-version` if you choose to use them.
+【F:custom_bash_commands.sh†L2139-L2147】 Use `commandsmore` for descriptions
+whenever you need a refresher.【F:cbc_aliases.sh†L25-L27】
 
 ## Supporting Docs & Utilities
 
