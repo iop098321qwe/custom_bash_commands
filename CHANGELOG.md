@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.12.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.11.0...v306.12.0) (2026-02-03)
+
+
+### Features
+
+* **alias:** remove the `i` alias for apt install ([d84318b](https://github.com/iop098321qwe/custom_bash_commands/commit/d84318bf6a57d625231751b70f411e2786ec80a4))
+* **function:** update `wiki` function ([319461e](https://github.com/iop098321qwe/custom_bash_commands/commit/319461e422c0213b2cd5bee6950c147dd9fb433f))
+
 ## [306.11.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.10.2...v306.11.0) (2026-02-03)
 
 
