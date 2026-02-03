@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.13.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.12.1...v306.13.0) (2026-02-03)
+
+
+### Features
+
+* **function:** add `readme` function ([a73f262](https://github.com/iop098321qwe/custom_bash_commands/commit/a73f262991478e2f74aff13605186ebb9c3238f2))
+
 ## [306.12.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.12.0...v306.12.1) (2026-02-03)
 
 
