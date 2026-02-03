@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.11.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.10.2...v306.11.0) (2026-02-03)
+
+
+### Features
+
+* **script:** update the installer script ([bff4186](https://github.com/iop098321qwe/custom_bash_commands/commit/bff418658ad2c929981bc7e7ad82ff23d005571e))
+
 ## [306.10.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.10.1...v306.10.2) (2026-02-03)
 
 ## [306.10.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.10.0...v306.10.1) (2026-02-03)
