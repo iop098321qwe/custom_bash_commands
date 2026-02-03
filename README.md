@@ -34,7 +34,7 @@ users know which features loaded successfully.【F:custom_bash_commands.sh†L15
 | --- | --- |
 | `custom_bash_commands.sh` | Main entry point. Defines gum-aware UI helpers, configures onboarding tasks, implements feature functions, and triggers the initial status output when sourced.【F:custom_bash_commands.sh†L1-L3357】 |
 | `cbc_aliases.sh` | Catalog of navigation shortcuts, Git aliases, fuzzy wrappers, media launchers, and helper shorthands that keep the main script modular.【F:cbc_aliases.sh†L1-L135】 |
-| `install_cbc.sh` | Installer that validates the repository path, copies the main script and aliases into the home directory, and appends sourcing lines to `.bashrc` before reloading the shell.【F:install_cbc.sh†L1-L34】 |
+| `install_cbc.sh` | Installer that validates the repository path, copies the main script and aliases into the home directory, and appends sourcing lines to `.bashrc` when missing before reloading the shell.【F:install_cbc.sh†L1-L34】 |
 | `docs/` | Reference documentation covering dependency expectations, SOPs for adding functions or aliases, and the current TODO backlog.【F:docs/dependencies.md†L1-L24】【F:docs/standard_operating_procedures.md†L1-L72】【F:docs/todo.md†L1-L81】 |
 | `CHANGELOG.md` & `cbc_logo_00001.png` | Human-readable release history and branding assets referenced by the CLI and README.【F:custom_bash_commands.sh†L1483-L1529】 |
 
@@ -71,12 +71,8 @@ styled UI experience.【F:custom_bash_commands.sh†L1-L129】
    ```
 
    The script verifies the repository path, copies the main script and alias
-   catalog into the home directory, appends the sourcing line to `.bashrc`, and
-   reloads the shell session.【F:install_cbc.sh†L1-L34】
-
-> **Note:** The installer appends a sourcing line on every run. Use the
-> `editbash` alias to remove duplicates from `.bashrc` after reinstalling.
-> 【F:install_cbc.sh†L24-L29】【F:cbc_aliases.sh†L19-L36】
+   catalog into the home directory, appends the sourcing line to `.bashrc` when
+   missing, and reloads the shell session.【F:install_cbc.sh†L1-L34】
 
 If you install manually, copy `custom_bash_commands.sh` and `cbc_aliases.sh` to
 `~` (prefixed with dots), mark them executable, and append the following to the
@@ -218,9 +214,6 @@ may exceed that limit when readability would otherwise suffer:
   repository lives at `~/Documents/github_repositories/custom_bash_commands` and
   aborts if it does not. Move the clone into the expected location and rerun the
   script.【F:install_cbc.sh†L1-L21】
-- **Duplicate sourcing lines:** If `.bashrc` contains repeated `source` entries
-  after running the installer multiple times, open the file with `editbash` and
-  remove the extra lines.【F:install_cbc.sh†L24-L29】【F:cbc_aliases.sh†L19-L36】
 - **Dependencies missing or failing silently:** Compare your environment against
   the dependency list and confirm helpers such as `fzf`, `yt-dlp`, `xclip`, and
   `bat` are installed. CBC leans on these binaries in both scripts and alias
