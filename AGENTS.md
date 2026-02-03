@@ -32,8 +32,6 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 - Targets Arch Linux systems.
 - Requires Bash (`custom_bash_commands.sh` and `cbc_aliases.sh` use bash).
-- `docs/dependencies.md` lists `gum` as required, while
-  `custom_bash_commands.sh` falls back when `gum` is missing.
 - Config variables set in `custom_bash_commands.sh`:
   - `CBC_CONFIG_DIR` (default `~/.config/cbc`)
   - `CBC_MODULE_ROOT` (default `~/.config/cbc/modules`)
@@ -66,10 +64,16 @@ cd ~/Documents/github_repositories/custom_bash_commands
 ## Architecture
 
 - `custom_bash_commands.sh` is the main entry point. It defines UI helpers,
-  command functions, and `updatecbc`, then sources `~/.cbc_aliases.sh`.
+  command functions, and update helpers, then sources `~/.cbc_aliases.sh` if
+  present and warns when missing.
+  It uses `curl` with `--connect-timeout 10` and `--max-time 30` for update
+  checks.
+  It parses JSON with `awk` and `sed` for update checks.
 - `cbc_aliases.sh` defines aliases that the main script loads during startup.
-- `install_cbc.sh` copies scripts into `~` and appends a sourcing line to
-  `~/.bashrc` when missing for automatic loading.
+- `install_cbc.sh` copies scripts into `~`, appends a sourcing block to
+  `~/.bashrc` when missing, and creates common directories under
+  `~/Documents/Temporary` and
+  `~/Documents/github_repositories`.
 - `docs/` captures dependencies, SOP guidance, and open tasks.
 
 ## Commands
@@ -77,6 +81,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `./install_cbc.sh`: Install the scripts into the home directory.
 - `source ~/.custom_bash_commands.sh`: Load CBC after a manual copy.
 - `cbc list` or `cbc list -v`: List available commands and descriptions.
+- `cbc update check`: Query the latest GitHub release and report status.
 - `updatecbc`: Pull the latest scripts via sparse checkout and reload them.
 - `cbc pkg`: Manage CBC modules (see `custom_bash_commands.sh`).
 - `readme [-c]`: Open the README or copy the README URL.
@@ -90,8 +95,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
 ## Linting and Formatting
 
 - No linting or formatting tooling is documented.
-- Verification needed: confirm if any lint/format commands exist outside this
-  repository.
+- Verification needed: confirm if any lint/format commands exist outside
+  this repository.
 
 ## CI and Release
 
@@ -119,12 +124,11 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 ## Dependencies and Services
 
-- `docs/dependencies.md` required tools: bash, git, curl, python3, sed,
-  awk, sha256sum, find, sort, xargs, xdg-open, setsid, gum, fzf,
-  bat or batcat, eza, nvim.
+- `docs/dependencies.md` required tools: bash, git, curl, sed, awk, sha256sum,
+  find, sort, xargs, xdg-open, setsid, gum, fzf,
+  bat or batcat, eza, nvim, wl-copy.
 - `docs/dependencies.md` optional tools: zellij, sudo.
-- External service: GitHub is used by `updatecbc` for sparse checkout
-  updates.
+- External service: GitHub is used by `cbc update check` and `updatecbc`.
 
 ## Troubleshooting
 
@@ -149,7 +153,4 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - Re-scan tracked files and update the file list immediately.
 - Re-verify commands, paths, and workflows for accuracy.
 - Update AGENTS.md to resolve mismatches without delay.
-- Update notes: 2026-02-02 - switch to `setsid -f xdg-open` for
-  detached link opens in `custom_bash_commands.sh`.
-- Update notes: 2026-02-02 - refresh `cbc list -v` formatting and
-  align `AGENTS.md`.
+- Do not record update notes or logs in this file.
