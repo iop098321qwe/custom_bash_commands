@@ -970,26 +970,6 @@ cbc() {
 source ~/.cbc_aliases.sh
 
 ################################################################################
-# Append to end of .bashrc function
-################################################################################
-
-# Function to append the CBC script to the end of the .bashrc file
-append_to_bashrc() {
-  # Check if the CBC script is already sourced in the .bashrc file
-  if ! grep -q ".custom_bash_commands.sh" "$HOME/.bashrc"; then
-    # Append the CBC script to the end of the .bashrc file
-    echo "###################################################################################################################################################################" >>"$HOME/.bashrc"
-    echo "# Custom Additions" >>"$HOME/.bashrc"
-    echo "###################################################################################################################################################################" >>"$HOME/.bashrc"
-    echo " " >>"$HOME/.bashrc"
-    echo "source ~/.custom_bash_commands.sh" >>"$HOME/.bashrc"
-  fi
-}
-
-# Call the append_to_bashrc function
-append_to_bashrc
-
-################################################################################
 # WIKI
 ################################################################################
 
@@ -1265,59 +1245,6 @@ dotfiles() {
   setsid -f xdg-open "$arch_dotfiles_url" >/dev/null 2>&1
 }
 
-################################################################################
-# SETUP_DIRECTORIES
-################################################################################
-
-# Function to set up directories (Temporary, GitHub Repositories)
-setup_directories() {
-  OPTIND=1
-
-  usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Create commonly used directories (Temporary, GitHub Repositories, Grymm's Grimoires)."
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  setup_directories [-h]"
-
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
-
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-      "  setup_directories"
-  }
-
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      usage
-      return 0
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
-      return 1
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  # Create the 'screenshots' directory if it does not exist
-  mkdir -p ~/Documents/Temporary/screenshots/
-
-  # Create the 'recordings/raw' directory if it does not exist
-  mkdir -p ~/Documents/Temporary/recordings/raw/
-
-  # Create the 'recordings/edited' directory if it does not exist
-  mkdir -p ~/Documents/Temporary/recordings/edited/
-
-  # Create the 'github_repositories' directory if it does not exist
-  mkdir -p ~/Documents/github_repositories
-}
-
-# Call the setup_directories function
-setup_directories
-
 ###############################################################################
 # CHECK FOR CBC UPDATES
 ###############################################################################
@@ -1544,7 +1471,6 @@ cbc_list_render() {
     "readme"
     "regex_help"
     "releases"
-    "setup_directories"
     "updatecbc"
     "wiki"
   )
@@ -1559,7 +1485,6 @@ cbc_list_render() {
     "Open the CBC README in a browser"
     "Regex cheat-sheets with flavor selection"
     "Open the CBC releases page"
-    "Create common directories under ~/Documents"
     "Update CBC scripts and reload"
     "Open the CBC wiki"
   )
