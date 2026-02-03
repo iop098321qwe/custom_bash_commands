@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.12.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.12.0...v306.12.1) (2026-02-03)
+
+
+### Bug Fixes
+
+* change ubuntu references to arch ([aa6da09](https://github.com/iop098321qwe/custom_bash_commands/commit/aa6da09eca77e4da5edbd6b7d810e56a53706628))
+
 ## [306.12.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.11.0...v306.12.0) (2026-02-03)
 
 
