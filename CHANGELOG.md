@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.10.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.10.0...v306.10.1) (2026-02-03)
+
+
+### Bug Fixes
+
+* **alias:** remove `dl` alias ([d3ed987](https://github.com/iop098321qwe/custom_bash_commands/commit/d3ed9872d436fb2638c04135985c15d98879b23b))
+
 ## [306.10.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.9.3...v306.10.0) (2026-02-03)
 
 
