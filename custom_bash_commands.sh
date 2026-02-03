@@ -1253,52 +1253,9 @@ dotfiles() {
   shift $((OPTIND - 1))
 
   # Define the dotfiles repository URL
-  dotfiles_url="https://github.com/iop098321qwe/dotfiles"
-
-  # Open the dotfiles repository in the default browser
-  setsid -f xdg-open "$dotfiles_url" >/dev/null 2>&1
-}
-
-################################################################################
-# ARCH_DOTFILES
-################################################################################
-
-arch_dotfiles() {
-  OPTIND=1
-
-  usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Open the arch_dotfiles repository in your default browser."
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  arch_dotfiles [-h]"
-
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
-
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-      "  arch_dotfiles"
-  }
-
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      usage
-      return 0
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
-      return 1
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  # Define the arch_dotfiles repository URL
   arch_dotfiles_url="https://github.com/iop098321qwe/dotfiles-arch"
 
-  # Open the arch_dotfiles repository in the default browser
+  # Open the dotfiles repository in the default browser
   setsid -f xdg-open "$arch_dotfiles_url" >/dev/null 2>&1
 }
 
@@ -1595,7 +1552,7 @@ cbcs() {
   shift $((OPTIND - 1))
 
   local -a functions=(
-    "  arch_dotfiles"
+    "  dotfiles"
     "  cbc"
     "  cbc pkg"
     "  cbcs"
@@ -1658,7 +1615,7 @@ cbcs() {
   )
 
   local -a function_details=(
-    "  arch_dotfiles      Open the arch dotfiles repository"
+    "  dotfiles      Open the arch dotfiles repository"
     "  cbc                Entry point for CBC subcommands"
     "  cbc pkg            Manage CBC modules (install, list, load, uninstall, update)"
     "  cbcs               List CBC functions and aliases"
