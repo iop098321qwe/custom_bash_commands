@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v306.10.0"
+CBC_VERSION="v306.10.1"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -1569,7 +1569,6 @@ cbcs() {
     "  commands"
     "  commandsmore"
     "  di"
-    "  dl"
     "  dv"
     "  editbash"
     "  ext"
@@ -1635,7 +1634,6 @@ cbcs() {
     "  commands           cbcs | batcat"
     "  commandsmore       cbcs -a | batcat"
     "  di                 display_info"
-    "  dl                 downloads"
     "  dv                 display_version"
     "  editbash           \$EDITOR ~/.bashrc"
     "  ext                extract"

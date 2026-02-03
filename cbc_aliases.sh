@@ -8,7 +8,6 @@
 # ALIASES
 ################################################################################
 
-alias dl='downloads'
 alias editbash='$EDITOR ~/.bashrc'
 alias fman='compgen -c | fzf | xargs man'
 alias fzf='fzf -m'
