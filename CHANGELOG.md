@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.16.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.15.0...v306.16.0) (2026-02-03)
+
+
+### Features
+
+* **function:** add `cbc list` instead of `cbcs` function ([cce2941](https://github.com/iop098321qwe/custom_bash_commands/commit/cce29415f0d7cdfcc17614d2ae072763b87e39c3))
+
 ## [306.15.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.14.0...v306.15.0) (2026-02-03)
 
 
