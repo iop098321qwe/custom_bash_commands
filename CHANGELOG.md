@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.17.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.16.0...v306.17.0) (2026-02-03)
+
+
+### Features
+
+* **function:** move setup functions to installation script ([6cd3fb5](https://github.com/iop098321qwe/custom_bash_commands/commit/6cd3fb5a8499a178fbabbe8a2a44362e03b6004e))
+* **function:** remove automatic update checks in favor of manual ([db3aba5](https://github.com/iop098321qwe/custom_bash_commands/commit/db3aba5d8a34dde0daf500acd1ae805731f9d5a3))
+* **source:** guard sourcing for `.cbc_aliases.sh` file ([e50bd8d](https://github.com/iop098321qwe/custom_bash_commands/commit/e50bd8d2c9baf880c593b6dde5d464b8d95d7634))
+* **tool:** utilize wl-copy instead of xclip ([b860f24](https://github.com/iop098321qwe/custom_bash_commands/commit/b860f24d0bd5b88d43e0ddbc9e2863cb1aba9da1))
+
+
+### Bug Fixes
+
+* **timeouts:** add timeouts to update check ([d7fd4f0](https://github.com/iop098321qwe/custom_bash_commands/commit/d7fd4f05f254a6674cf8b6b86874135d786bcb1a))
+
 ## [306.16.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.15.0...v306.16.0) (2026-02-03)
 
 
