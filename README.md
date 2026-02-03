@@ -115,7 +115,8 @@ When the terminal sources CBC it immediately prepares the working environment:
 - `changes [-c]` opens or copies the GitHub changelog before you update so you
   can scan release notes from the terminal.【F:custom_bash_commands.sh†L1483-L1529】
 - `wiki [-c|-C|-A|-F]` opens the project wiki or copies the URL to the
-  clipboard, providing quick access to deeper documentation categories.
+  clipboard, and it can jump to Alias Reference, Command Reference
+  (commands/functions), or the Cheatsheet page.
   【F:custom_bash_commands.sh†L1413-L1477】
 - `cbcs [-a]` lists every custom function and alias CBC provides. The `commands`
   and `commandsmore` aliases pipe that output through `bat` for easier
@@ -176,6 +177,8 @@ When the terminal sources CBC it immediately prepares the working environment:
 Common aliases cover directory jumps (`cbc`, `cdgh`, `vault`, `temp`), Git
 workflows (`cbcc`, `gco`, `gsw`, `gpfom`), fuzzy file launchers (`fo`, `fman`,
 `iopen`), and media helpers (`pron`, `so`, `vopen`).【F:cbc_aliases.sh†L11-L135】
+Single-letter aliases are limited to `c`, `s`, `v`, `x`, and `z` in
+`cbc_aliases.sh`.【F:cbc_aliases.sh†L43-L52】
 Use `commandsmore` for descriptions whenever you need a refresher.
 【F:cbc_aliases.sh†L25-L27】
 
