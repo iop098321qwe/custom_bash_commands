@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v306.15.0"
+CBC_VERSION="v306.16.0"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -914,10 +914,13 @@ cbc() {
       "  cbc [subcommand]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Subcommands:" \
+      "  list   List CBC commands and aliases" \
       "  pkg    Manage CBC modules (install, list, load, uninstall, update)" \
       "  -h     Display this help message"
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc list" \
+      "  cbc list -v" \
       "  cbc pkg" \
       "  cbc pkg install creator/example-module"
   }
@@ -945,6 +948,9 @@ cbc() {
   case "$subcommand" in
   "" | -h | --help)
     usage
+    ;;
+  list)
+    cbc_list "$@"
     ;;
   pkg)
     cbc_pkg "$@"
@@ -1510,36 +1516,223 @@ display_version() {
 }
 
 ################################################################################
-# CBCS
+# CBC LIST
 ################################################################################
 
-cbcs() {
+cbc_list_render() {
+  local filter="$1"
+  local all_info="$2"
+  local show_functions=true
+  local show_aliases=true
+
+  case "$filter" in
+  commands)
+    show_aliases=false
+    ;;
+  aliases)
+    show_functions=false
+    ;;
+  esac
+
+  local -a function_names=(
+    "cbc"
+    "cbc list"
+    "cbc pkg"
+    "changes"
+    "display_version"
+    "dotfiles"
+    "readme"
+    "regex_help"
+    "releases"
+    "setup_directories"
+    "updatecbc"
+    "wiki"
+  )
+
+  local -a function_descs=(
+    "Entry point for CBC subcommands"
+    "List CBC commands and aliases"
+    "Manage CBC modules (install, list, load, uninstall, update)"
+    "Open the CBC changelog in a browser"
+    "Print the current CBC version"
+    "Open the dotfiles repository"
+    "Open the CBC README in a browser"
+    "Regex cheat-sheets with flavor selection"
+    "Open the CBC releases page"
+    "Create common directories under ~/Documents"
+    "Update CBC scripts and reload"
+    "Open the CBC wiki"
+  )
+
+  local -a alias_names=(
+    "bat"
+    "c"
+    "dv"
+    "editbash"
+    "fman"
+    "fzf"
+    "hsearch"
+    "hse"
+    "hs"
+    "historysearch"
+    "historysearchexact"
+    "imv"
+    "la"
+    "lar"
+    "le"
+    "line"
+    "ll"
+    "llt"
+    "lsd"
+    "ls"
+    "lsf"
+    "lsr"
+    "lt"
+    "myip"
+    "nv"
+    "please"
+    "py"
+    "python"
+    "refresh"
+    "rh"
+    "s"
+    "seebash"
+    "test"
+    "ucbc"
+    "v"
+    "vim"
+    "x"
+    "z"
+  )
+
+  local -a alias_descs=(
+    "batcat (Ubuntu only)"
+    "clear"
+    "display_version"
+    "\$EDITOR ~/.bashrc"
+    "compgen -c | fzf | xargs man"
+    "fzf -m"
+    "historysearch"
+    "historysearchexact"
+    "historysearch"
+    "history | sort -nr | fzf ... | xclip"
+    "history | sort -nr | fzf -e ... | xclip"
+    "imv-x11"
+    "eza --icons=always --group-directories-first -a"
+    "eza --icons=always -r --group-directories-first -a"
+    "eza --icons=always --group-directories-first -s extension"
+    "prompt for line + file and open in nvim"
+    "eza --icons=always --group-directories-first --smart-group --total-size -hl"
+    "eza --icons=always --group-directories-first --smart-group --total-size -hlT"
+    "eza --icons=always --group-directories-first -D"
+    "eza --icons=always --group-directories-first"
+    "eza --icons=always --group-directories-first -f"
+    "eza --icons=always --group-directories-first -r"
+    "eza --icons=always --group-directories-first -T"
+    "curl http://ipecho.net/plain; echo"
+    "fzf multi-select into nvim"
+    "sudo \$(history -p !!)"
+    "python3"
+    "python3"
+    "source ~/.bashrc && clear"
+    "regex_help"
+    "sudo"
+    "batcat ~/.bashrc"
+    "source repo scripts for testing"
+    "updatecbc"
+    "nvim"
+    "nvim"
+    "chmod +x"
+    "zellij"
+  )
+
+  cbc_list_format_details() {
+    local -n out_lines="$1"
+    local -n names="$2"
+    local -n descs="$3"
+    local max=0
+    local name
+
+    for name in "${names[@]}"; do
+      local length=${#name}
+      if ((length > max)); then
+        max=$length
+      fi
+    done
+
+    out_lines=()
+    local idx
+    for idx in "${!names[@]}"; do
+      local padded
+      printf -v padded '%-*s' "$max" "${names[$idx]}"
+      out_lines+=("  ${padded}  ${descs[$idx]}")
+    done
+  }
+
+  local -a functions=()
+  local name
+  for name in "${function_names[@]}"; do
+    functions+=("  $name")
+  done
+
+  local -a aliases=()
+  for name in "${alias_names[@]}"; do
+    aliases+=("  $name")
+  done
+
+  local -a function_details=()
+  local -a alias_details=()
+
+  if [ "$all_info" = true ]; then
+    if [ "$show_functions" = true ]; then
+      cbc_list_format_details function_details function_names function_descs
+      cbc_style_box "$CATPPUCCIN_MAUVE" "CBC Functions" "${function_details[@]}"
+    fi
+    if [ "$show_aliases" = true ]; then
+      cbc_list_format_details alias_details alias_names alias_descs
+      cbc_style_box "$CATPPUCCIN_BLUE" "CBC Aliases" "${alias_details[@]}"
+    fi
+  else
+    if [ "$show_functions" = true ]; then
+      cbc_style_box "$CATPPUCCIN_MAUVE" "CBC Functions" \
+        "  Use 'cbc list -v' for descriptions." "${functions[@]}"
+    fi
+    if [ "$show_aliases" = true ]; then
+      cbc_style_box "$CATPPUCCIN_BLUE" "CBC Aliases" "${aliases[@]}"
+    fi
+  fi
+}
+
+cbc_list() {
   OPTIND=1
   local all_info=false
+  local filter="all"
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Display a list of available custom commands in this script."
+      "  List available CBC commands and aliases."
 
     cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  cbcs [-h|-a]"
+      "  cbc list [options] [commands|aliases]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
-      "  -a    Display all available commands with descriptions"
+      "  -v    Show descriptions"
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
-      "  cbcs" \
-      "  cbcs -a"
+      "  cbc list" \
+      "  cbc list -v" \
+      "  cbc list aliases" \
+      "  cbc list commands"
   }
 
-  while getopts ":ha" opt; do
+  while getopts ":hv" opt; do
     case $opt in
     h)
       usage
       return 0
       ;;
-    a)
+    v)
       all_info=true
       ;;
     *)
@@ -1551,136 +1744,38 @@ cbcs() {
 
   shift $((OPTIND - 1))
 
-  local -a functions=(
-    "  dotfiles"
-    "  cbc"
-    "  cbc pkg"
-    "  cbcs"
-    "  changes"
-    "  display_version"
-    "  dotfiles"
-    "  readme"
-    "  regex_help"
-    "  releases"
-    "  setup_directories"
-    "  updatecbc"
-    "  wiki"
-  )
-
-  local -a aliases=(
-    "  bat"
-    "  c"
-    "  comm"
-    "  commm"
-    "  commands"
-    "  commandsmore"
-    "  dv"
-    "  editbash"
-    "  fman"
-    "  fzf"
-    "  hsearch"
-    "  hse"
-    "  hs"
-    "  historysearch"
-    "  historysearchexact"
-    "  imv"
-    "  la"
-    "  lar"
-    "  le"
-    "  line"
-    "  ll"
-    "  llt"
-    "  lsd"
-    "  ls"
-    "  lsf"
-    "  lsr"
-    "  lt"
-    "  myip"
-    "  nv"
-    "  please"
-    "  py"
-    "  python"
-    "  refresh"
-    "  rh"
-    "  s"
-    "  seebash"
-    "  test"
-    "  ucbc"
-    "  v"
-    "  vim"
-    "  x"
-    "  z"
-  )
-
-  local -a function_details=(
-    "  dotfiles      Open the arch dotfiles repository"
-    "  cbc                Entry point for CBC subcommands"
-    "  cbc pkg            Manage CBC modules (install, list, load, uninstall, update)"
-    "  cbcs               List CBC functions and aliases"
-    "  changes            Open the CBC changelog in a browser"
-    "  display_version    Print the current CBC version"
-    "  dotfiles           Open the dotfiles repository"
-    "  readme             Open the CBC README in a browser"
-    "  regex_help         Regex cheat-sheets with flavor selection"
-    "  releases           Open the CBC releases page"
-    "  setup_directories  Create common directories under ~/Documents"
-    "  updatecbc          Update CBC scripts and reload"
-    "  wiki               Open the CBC wiki"
-  )
-
-  local -a alias_details=(
-    "  bat                batcat (Ubuntu only)"
-    "  c                  clear"
-    "  comm               commands"
-    "  commm              commandsmore"
-    "  commands           cbcs | batcat"
-    "  commandsmore       cbcs -a | batcat"
-    "  dv                 display_version"
-    "  editbash           \$EDITOR ~/.bashrc"
-    "  fman               compgen -c | fzf | xargs man"
-    "  fzf                fzf -m"
-    "  hsearch            historysearch"
-    "  hse                historysearchexact"
-    "  hs                 historysearch"
-    "  historysearch      history | sort -nr | fzf ... | xclip"
-    "  historysearchexact  history | sort -nr | fzf -e ... | xclip"
-    "  imv                imv-x11"
-    "  la                 eza --icons=always --group-directories-first -a"
-    "  lar                eza --icons=always -r --group-directories-first -a"
-    "  le                 eza --icons=always --group-directories-first -s extension"
-    "  line               prompt for line + file and open in nvim"
-    "  ll                 eza --icons=always --group-directories-first --smart-group --total-size -hl"
-    "  llt                eza --icons=always --group-directories-first --smart-group --total-size -hlT"
-    "  lsd                eza --icons=always --group-directories-first -D"
-    "  ls                 eza --icons=always --group-directories-first"
-    "  lsf                eza --icons=always --group-directories-first -f"
-    "  lsr                eza --icons=always --group-directories-first -r"
-    "  lt                 eza --icons=always --group-directories-first -T"
-    "  myip               curl http://ipecho.net/plain; echo"
-    "  nv                 fzf multi-select into nvim"
-    "  please             sudo \$(history -p !!)"
-    "  py                 python3"
-    "  python             python3"
-    "  refresh            source ~/.bashrc && clear"
-    "  rh                 regex_help"
-    "  s                  sudo"
-    "  seebash            batcat ~/.bashrc"
-    "  test               source repo scripts for testing"
-    "  ucbc               updatecbc"
-    "  v                  nvim"
-    "  vim                nvim"
-    "  x                  chmod +x"
-    "  z                  zellij"
-  )
-
-  if [ "$all_info" = true ]; then
-    cbc_style_box "$CATPPUCCIN_MAUVE" "CBC Functions" "${function_details[@]}"
-    cbc_style_box "$CATPPUCCIN_BLUE" "CBC Aliases" "${alias_details[@]}"
-  else
-    cbc_style_box "$CATPPUCCIN_MAUVE" "CBC Functions" \
-      "  Use 'cbcs -a' for descriptions." "${functions[@]}"
-    cbc_style_box "$CATPPUCCIN_BLUE" "CBC Aliases" "${aliases[@]}"
+  if [ $# -gt 1 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
   fi
+
+  if [ $# -eq 1 ]; then
+    case "$1" in
+    aliases | alias)
+      filter="aliases"
+      ;;
+    commands | command | functions | function)
+      filter="commands"
+      ;;
+    *)
+      cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc list filter: $1"
+      usage
+      return 1
+      ;;
+    esac
+  fi
+
+  if command -v bat >/dev/null 2>&1; then
+    cbc_list_render "$filter" "$all_info" | bat
+    return
+  fi
+
+  if command -v batcat >/dev/null 2>&1; then
+    cbc_list_render "$filter" "$all_info" | batcat
+    return
+  fi
+
+  cbc_list_render "$filter" "$all_info"
 }
 
 ################################################################################

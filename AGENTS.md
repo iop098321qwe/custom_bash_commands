@@ -76,7 +76,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 - `./install_cbc.sh`: Install the scripts into the home directory.
 - `source ~/.custom_bash_commands.sh`: Load CBC after a manual copy.
-- `cbcs` or `cbcs -a`: List available commands and extended descriptions.
+- `cbc list` or `cbc list -v`: List available commands and descriptions.
 - `updatecbc`: Pull the latest scripts via sparse checkout and reload them.
 - `cbc pkg`: Manage CBC modules (see `custom_bash_commands.sh`).
 - `readme [-c]`: Open the README or copy the README URL.
@@ -105,9 +105,9 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 - Follow `docs/standard_operating_procedures.md` when adding or modifying
   functions and aliases.
-- Keep `cbcs` output in `custom_bash_commands.sh` aligned with current
-  functions and aliases by updating `functions`, `aliases`,
-  `function_details`, and `alias_details`.
+- Keep `cbc list` output in `custom_bash_commands.sh` aligned with current
+  functions and aliases by updating `function_names`, `alias_names`,
+  `function_descs`, and `alias_descs`.
 - Maintain `cbc_aliases.sh` as the alias catalog loaded by the main script.
 - Single-letter aliases in `cbc_aliases.sh` are limited to `c`, `s`, `v`,
   `x`, and `z`.
@@ -151,3 +151,5 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - Update AGENTS.md to resolve mismatches without delay.
 - Update notes: 2026-02-02 - switch to `setsid -f xdg-open` for
   detached link opens in `custom_bash_commands.sh`.
+- Update notes: 2026-02-02 - refresh `cbc list -v` formatting and
+  align `AGENTS.md`.
