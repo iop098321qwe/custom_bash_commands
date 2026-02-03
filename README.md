@@ -44,7 +44,7 @@ CBC targets Debian and Ubuntu-based systems. Install the tools that the scripts
 and aliases call directly so each helper works without manual edits. The
 `docs/dependencies.md` file tracks the primary package list, while the main
 script and alias catalog reference additional utilities such as Git, curl,
-`batcat`, `fzf`, `yt-dlp`, `xclip`, Obsidian, Lazygit, Zellij, and the Catppuccin
+`bat`, `fzf`, `yt-dlp`, `xclip`, Obsidian, Lazygit, Zellij, and the Catppuccin
 friendly `eza` file lister.【F:docs/dependencies.md†L1-L24】【F:custom_bash_commands.sh†L145-L1106】【F:cbc_aliases.sh†L11-L135】 Gum is optional but unlocks the
 styled UI experience.【F:custom_bash_commands.sh†L1-L129】
 
@@ -122,7 +122,7 @@ When the terminal sources CBC it immediately prepares the working environment:
   clipboard, providing quick access to deeper documentation categories.
   【F:custom_bash_commands.sh†L1413-L1477】
 - `cbcs [-a]` lists every custom function and alias CBC provides. The `commands`
-  and `commandsmore` aliases pipe that output through `batcat` for easier
+  and `commandsmore` aliases pipe that output through `bat` for easier
   browsing.【F:custom_bash_commands.sh†L1835-L2626】【F:cbc_aliases.sh†L19-L36】
 
 ### Update CBC
@@ -222,5 +222,5 @@ may exceed that limit when readability would otherwise suffer:
   remove the extra lines.【F:install_cbc.sh†L24-L29】【F:cbc_aliases.sh†L19-L36】
 - **Dependencies missing or failing silently:** Compare your environment against
   the dependency list and confirm helpers such as `fzf`, `yt-dlp`, `xclip`, and
-  `batcat` are installed. CBC leans on these binaries in both scripts and alias
+  `bat` are installed. CBC leans on these binaries in both scripts and alias
   definitions.【F:docs/dependencies.md†L1-L24】【F:custom_bash_commands.sh†L145-L1529】【F:cbc_aliases.sh†L11-L135】
