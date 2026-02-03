@@ -94,11 +94,11 @@ When the terminal sources CBC it immediately prepares the working environment:
 - `setup_directories` creates the Temporary workspace (with screenshot and
   recording subfolders), the GitHub repositories directory, and the Grymm's
   Grimoires vault if they do not already exist.【F:custom_bash_commands.sh†L1579-L1629】
-- `check_cbc_update` polls the GitHub Releases API on a configurable interval,
-  caches the response, uses `curl` with `--connect-timeout 2` and
-  `--max-time 4` to avoid startup hangs, and surfaces styled upgrade
-  notifications when a newer tag is available.
-  【F:custom_bash_commands.sh†L1635-L1781】
+- CBC does not check for updates automatically. Run `cbc update check` when you
+  want to query the GitHub Releases API. The command uses `curl` with
+  `--connect-timeout 10` and `--max-time 30` to avoid hangs, and it reports
+  whether you are up to date or if an update is available.
+  【F:custom_bash_commands.sh†L1275-L1408】
 - `display_version` runs automatically once per interactive session to show the
   current version, discovery hints, and removal instructions, while
   `cbc_aliases.sh` is sourced to expose every alias. If `.bash_aliases` exists
@@ -125,6 +125,10 @@ When the terminal sources CBC it immediately prepares the working environment:
 
 ### Update CBC
 
+- `cbc update check` queries the latest GitHub release and reports whether your
+  local version is current or if a new release is available. When a newer
+  release exists it points to `updatecbc` for the current update workflow.
+  【F:custom_bash_commands.sh†L1275-L1408】
 - `updatecbc` (alias `ucbc`) now presents a gum-styled confirmation (with a
   plain-text fallback) before performing a sparse checkout of the repository.
   It shows spinners while preparing the temporary clone, pulling the latest

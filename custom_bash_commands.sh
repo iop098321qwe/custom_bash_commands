@@ -916,13 +916,15 @@ cbc() {
     cbc_style_box "$CATPPUCCIN_TEAL" "Subcommands:" \
       "  list   List CBC commands and aliases" \
       "  pkg    Manage CBC modules (install, list, load, uninstall, update)" \
+      "  update Check for CBC updates" \
       "  -h     Display this help message"
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
       "  cbc list" \
       "  cbc list -v" \
       "  cbc pkg" \
-      "  cbc pkg install creator/example-module"
+      "  cbc pkg install creator/example-module" \
+      "  cbc update check"
   }
 
   while getopts ":h" opt; do
@@ -954,6 +956,9 @@ cbc() {
     ;;
   pkg)
     cbc_pkg "$@"
+    ;;
+  update)
+    cbc_update "$@"
     ;;
   *)
     cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc subcommand: $subcommand"
@@ -1252,7 +1257,7 @@ dotfiles() {
 }
 
 ###############################################################################
-# CHECK FOR CBC UPDATES
+# CBC UPDATE CHECK
 ###############################################################################
 
 cbc_version_is_newer() {
@@ -1267,141 +1272,187 @@ cbc_version_is_newer() {
   [[ "$newest" == "$candidate" && "$candidate" != "$current" ]]
 }
 
-# Check GitHub release for newer version of the script
-check_cbc_update() {
+cbc_json_get_string() {
+  local key="$1"
+  local json="$2"
+  local raw=""
+
+  raw=$(printf '%s' "$json" | tr -d '\n' | awk -v key="$key" '
+    BEGIN {
+      pattern="\"" key "\"[[:space:]]*:[[:space:]]*\""
+    }
+    {
+      if (match($0, pattern)) {
+        i = RSTART + RLENGTH
+        out = ""
+        esc = 0
+        while (i <= length($0)) {
+          c = substr($0, i, 1)
+          if (esc == 1) {
+            out = out c
+            esc = 0
+            i++
+            continue
+          }
+          if (c == "\\") {
+            esc = 1
+            i++
+            continue
+          }
+          if (c == "\"") {
+            print out
+            exit
+          }
+          out = out c
+          i++
+        }
+      }
+    }
+  ')
+
+  printf '%s' "$raw"
+}
+
+cbc_json_unescape() {
+  local value="$1"
+
+  printf '%s' "$value" | sed \
+    -e 's/\\\\/\\/g' \
+    -e 's/\\"/"/g' \
+    -e 's/\\n/ /g' \
+    -e 's/\\r/ /g' \
+    -e 's/\\t/ /g'
+}
+
+cbc_update_check() {
   local current_version="$CBC_VERSION"
   local release_api_url="https://api.github.com/repos/iop098321qwe/custom_bash_commands/releases/latest"
-  local now check_interval notify_interval
 
-  # Allow opt-in overrides while keeping sane defaults
-  check_interval=${CBC_UPDATE_CHECK_INTERVAL:-43200}
-  notify_interval=${CBC_UPDATE_NOTIFY_INTERVAL:-21600}
-  [[ "$check_interval" =~ ^[0-9]+$ ]] || check_interval=43200
-  [[ "$notify_interval" =~ ^[0-9]+$ ]] || notify_interval=21600
+  local response status body
+  response=$(curl -sSL --connect-timeout 10 --max-time 30 -w "\n%{http_code}" \
+    "$release_api_url" 2>/dev/null || true)
+  status=$(printf '%s\n' "$response" | tail -n1)
+  body=$(printf '%s\n' "$response" | sed '$d')
 
-  local cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/custom_bash_commands"
-  local cache_file="$cache_dir/update_check"
-  local cache_timestamp="0" cached_version="" cached_name="" cached_summary="" cached_url="" last_notified="0"
-
-  if [[ -r "$cache_file" ]]; then
-    mapfile -t _cbc_cache_data <"$cache_file"
-    cache_timestamp="${_cbc_cache_data[0]:-0}"
-    cached_version="${_cbc_cache_data[1]}"
-    cached_name="${_cbc_cache_data[2]}"
-    cached_summary="${_cbc_cache_data[3]}"
-    cached_url="${_cbc_cache_data[4]}"
-    last_notified="${_cbc_cache_data[5]:-0}"
-  fi
-
-  now=$(date +%s)
-  local should_refresh=1
-
-  if [[ "$cache_timestamp" =~ ^[0-9]+$ ]] && ((now - cache_timestamp < check_interval)); then
-    should_refresh=0
-  fi
-
-  if [[ -z "$cached_version" ]]; then
-    should_refresh=1
-  fi
-
-  if ((should_refresh)); then
-    local response status body
-    response=$(curl -sSL --connect-timeout 2 --max-time 4 -w "\n%{http_code}" "$release_api_url" 2>/dev/null || true)
-    status=$(printf '%s\n' "$response" | tail -n1)
-    body=$(printf '%s\n' "$response" | sed '$d')
-
-    if [[ "$status" == "200" && -n "$body" ]]; then
-      mapfile -t _cbc_parsed_release < <(
-        python - <<'PY_HELPER'
-import json
-import re
-import sys
-
-try:
-    data = json.load(sys.stdin)
-except Exception:
-    sys.exit(1)
-
-def clean(value: str) -> str:
-    if not value:
-        return ""
-    # Normalize whitespace to keep everything on one line
-    return re.sub(r"\s+", " ", value.strip())[:200]
-
-tag = clean(data.get("tag_name") or "")
-name = clean(data.get("name") or "")
-
-summary = ""
-for line in (data.get("body") or "").splitlines():
-    stripped = line.strip()
-    if stripped:
-        summary = stripped
-        break
-summary = clean(summary)
-
-url = data.get("html_url") or ""
-
-print(tag)
-print(name)
-print(summary)
-print(url)
-PY_HELPER
-        <<<"$body"
-      )
-
-      if ((${#_cbc_parsed_release[@]} >= 1)) && [[ -n "${_cbc_parsed_release[0]}" ]]; then
-        cache_timestamp=$now
-        cached_version="${_cbc_parsed_release[0]}"
-        cached_name="${_cbc_parsed_release[1]}"
-        cached_summary="${_cbc_parsed_release[2]}"
-        cached_url="${_cbc_parsed_release[3]}"
-      fi
-    elif [[ "$status" =~ ^[0-9]+$ ]]; then
-      cache_timestamp=$now
+  if [[ "$status" != "200" || -z "$body" ]]; then
+    local error_message=""
+    if [[ -n "$body" ]]; then
+      error_message="$(cbc_json_get_string "message" "$body")"
     fi
-  fi
-
-  local should_notify=0
-  if cbc_version_is_newer "$current_version" "$cached_version"; then
-    [[ "$last_notified" =~ ^[0-9]+$ ]] || last_notified=0
-    if ((now - last_notified >= notify_interval)); then
-      should_notify=1
+    if [[ -n "$error_message" ]]; then
+      error_message="$(cbc_json_unescape "$error_message")"
+      cbc_style_message "$CATPPUCCIN_RED" \
+        "Unable to check for updates: $error_message"
+    else
+      cbc_style_message "$CATPPUCCIN_RED" \
+        "Unable to check for updates right now."
     fi
+    return 1
   fi
 
-  if ((should_notify)); then
-    local notification_lines=(
+  local latest_version_raw=""
+  local latest_name_raw=""
+  local latest_url_raw=""
+  local body_raw=""
+
+  latest_version_raw="$(cbc_json_get_string "tag_name" "$body")"
+  latest_name_raw="$(cbc_json_get_string "name" "$body")"
+  latest_url_raw="$(cbc_json_get_string "html_url" "$body")"
+  body_raw="$(cbc_json_get_string "body" "$body")"
+
+  local latest_version="$(cbc_json_unescape "$latest_version_raw")"
+  local latest_name="$(cbc_json_unescape "$latest_name_raw")"
+  local latest_url="$(cbc_json_unescape "$latest_url_raw")"
+
+  local summary_raw=""
+  summary_raw=$(printf '%s' "$body_raw" | awk -v RS='\\n' 'NF {print; exit}')
+  local latest_summary="$(cbc_json_unescape "$summary_raw")"
+  latest_summary=$(printf '%s' "$latest_summary" | awk '{$1=$1; print}')
+  latest_summary="${latest_summary:0:200}"
+
+  if [[ -z "$latest_version" ]]; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "Unable to parse the latest release information."
+    return 1
+  fi
+
+  if cbc_version_is_newer "$current_version" "$latest_version"; then
+    local update_lines=(
       "Custom Bash Commands update available!"
       "  Current: $current_version"
-      "  Latest:  $cached_version${cached_name:+ ($cached_name)}"
+      "  Latest:  $latest_version${latest_name:+ ($latest_name)}"
     )
-    [[ -n "$cached_summary" ]] && notification_lines+=("  Summary: $cached_summary")
-    notification_lines+=("  Update with: updatecbc")
-    [[ -n "$cached_url" ]] && notification_lines+=("  Release: $cached_url")
-
-    if [[ "$CBC_HAS_GUM" -eq 1 ]]; then
-      cbc_style_box "$CATPPUCCIN_SKY" "${notification_lines[@]}"
-    else
-      printf '%s\n' "${notification_lines[@]}"
-    fi
-
-    last_notified=$now
-  fi
-
-  if [[ -n "$cached_version" ]]; then
-    mkdir -p "$cache_dir"
-    printf '%s\n' \
-      "$cache_timestamp" \
-      "$cached_version" \
-      "$cached_name" \
-      "$cached_summary" \
-      "$cached_url" \
-      "$last_notified" \
-      >"$cache_file"
+    [[ -n "$latest_summary" ]] && update_lines+=("  Summary: $latest_summary")
+    update_lines+=("  Update with: updatecbc")
+    [[ -n "$latest_url" ]] && update_lines+=("  Release: $latest_url")
+    cbc_style_box "$CATPPUCCIN_SKY" "${update_lines[@]}"
+  else
+    cbc_style_box "$CATPPUCCIN_GREEN" \
+      "Custom Bash Commands is up to date." \
+      "  Current: $current_version" \
+      "  Latest:  $latest_version${latest_name:+ ($latest_name)}"
   fi
 }
-# Automatically check for updates when the script is sourced
-check_cbc_update
+
+cbc_update() {
+  OPTIND=1
+  local show_help=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Check for CBC updates."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc update check"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  cbc update check"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  local subcommand="$1"
+  if [ -n "$subcommand" ]; then
+    shift
+  fi
+
+  case "$subcommand" in
+  check)
+    cbc_update_check
+    ;;
+  "" | -h | --help)
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "cbc update is reserved. Use 'cbc update check' for now."
+    usage
+    return 1
+    ;;
+  *)
+    cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc update command: $subcommand"
+    usage
+    return 1
+    ;;
+  esac
+}
 
 ################################################################################
 # DISPLAY VERSION
@@ -1471,6 +1522,8 @@ cbc_list_render() {
     "cbc"
     "cbc list"
     "cbc pkg"
+    "cbc update"
+    "cbc update check"
     "changes"
     "display_version"
     "dotfiles"
@@ -1485,6 +1538,8 @@ cbc_list_render() {
     "Entry point for CBC subcommands"
     "List CBC commands and aliases"
     "Manage CBC modules (install, list, load, uninstall, update)"
+    "Check for CBC updates"
+    "Check for CBC updates"
     "Open the CBC changelog in a browser"
     "Print the current CBC version"
     "Open the dotfiles repository"
