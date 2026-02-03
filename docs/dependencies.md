@@ -19,6 +19,7 @@
 - bat or batcat
 - eza
 - nvim
+- wl-copy
 
 ## Optional
 

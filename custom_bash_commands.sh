@@ -1005,7 +1005,7 @@ wiki() {
       return 0
       ;;
     c)
-      echo "$wiki_url" | xclip -selection clipboard
+      echo "$wiki_url" | wl-copy
       cbc_style_message "$CATPPUCCIN_GREEN" "Wiki URL copied to clipboard."
       return 0
       ;;
@@ -1079,7 +1079,7 @@ changes() {
       return 0
       ;;
     c)
-      echo "$changelog_url" | xclip -selection clipboard
+      echo "$changelog_url" | wl-copy
       cbc_style_message "$CATPPUCCIN_GREEN" "Changelog URL copied to clipboard."
       return 0
       ;;
@@ -1131,7 +1131,7 @@ readme() {
       return 0
       ;;
     c)
-      echo "$readme_url" | xclip -selection clipboard
+      echo "$readme_url" | wl-copy
       cbc_style_message "$CATPPUCCIN_GREEN" "README URL copied to clipboard."
       return 0
       ;;
@@ -1181,7 +1181,7 @@ releases() {
       return 0
       ;;
     c)
-      echo "$releases_url" | xclip -selection clipboard
+      echo "$releases_url" | wl-copy
       cbc_style_message "$CATPPUCCIN_GREEN" "Changelog URL copied to clipboard."
       return 0
       ;;
@@ -1540,8 +1540,8 @@ cbc_list_render() {
     "historysearch"
     "historysearchexact"
     "historysearch"
-    "history | sort -nr | fzf ... | xclip"
-    "history | sort -nr | fzf -e ... | xclip"
+    "history | sort -nr | fzf ... | wl-copy"
+    "history | sort -nr | fzf -e ... | wl-copy"
     "imv-x11"
     "eza --icons=always --group-directories-first -a"
     "eza --icons=always -r --group-directories-first -a"
