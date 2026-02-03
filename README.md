@@ -187,8 +187,9 @@ Use `commandsmore` for descriptions whenever you need a refresher.
 
 - `docs/dependencies.md` lists the baseline package set CBC expects to find on a
   workstation.【F:docs/dependencies.md†L1-L24】
-- `docs/standard_operating_procedures.md` documents the preferred structure for
-  new functions, aliases, and manual testing workflows.【F:docs/standard_operating_procedures.md†L1-L72】
+- [Standard Operating Procedures](docs/standard_operating_procedures.md)
+  documents the preferred structure for new functions, aliases, and manual
+  testing workflows.【F:docs/standard_operating_procedures.md†L1-L118】
 - `docs/todo.md` tracks outstanding cleanup and feature work, including plans to
   reorganize the `cbcs` catalog output.【F:docs/todo.md†L1-L34】
 
