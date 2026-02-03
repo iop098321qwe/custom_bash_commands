@@ -23,11 +23,14 @@ echo "Copied custom_bash_commands.sh to home directory"
 cp cbc_aliases.sh ~/.cbc_aliases.sh && chmod +x ~/.cbc_aliases.sh
 echo "Copied cbc_aliases.sh to home directory"
 
-# Add source command to .bashrc file
-echo "source ~/.custom_bash_commands.sh" >>~/.bashrc
-
-# Print completion message
-echo "Added source commands to .bashrc"
+# Add source command to .bashrc file if missing
+touch ~/.bashrc
+if ! grep -qx "source ~/.custom_bash_commands.sh" ~/.bashrc; then
+  echo "source ~/.custom_bash_commands.sh" >>~/.bashrc
+  echo "Added source command to .bashrc"
+else
+  echo "Source command already present in .bashrc"
+fi
 
 # Countdown from 5 seconds
 echo "Refreshing in 5 seconds..."

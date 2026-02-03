@@ -69,7 +69,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
   command functions, and `updatecbc`, then sources `~/.cbc_aliases.sh`.
 - `cbc_aliases.sh` defines aliases that the main script loads during startup.
 - `install_cbc.sh` copies scripts into `~` and appends a sourcing line to
-  `~/.bashrc` for automatic loading.
+  `~/.bashrc` when missing for automatic loading.
 - `docs/` captures dependencies, SOP guidance, and open tasks.
 
 ## Commands
@@ -126,8 +126,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 - Installer path errors: `install_cbc.sh` requires the repo at
   `~/Documents/github_repositories/custom_bash_commands`.
-- Duplicate sourcing lines: rerunning the installer appends another
-  `source ~/.custom_bash_commands.sh` line to `~/.bashrc`.
+- Sourcing line missing: rerun `install_cbc.sh` or add the
+  `source ~/.custom_bash_commands.sh` line manually.
 
 ## Refining Existing AGENTS.md
 
