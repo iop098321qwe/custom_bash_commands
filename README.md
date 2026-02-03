@@ -46,10 +46,7 @@ and aliases call directly so each helper works without manual edits. The
 script and alias catalog reference additional utilities such as Git, curl,
 `batcat`, `fzf`, `yt-dlp`, `xclip`, Obsidian, Lazygit, Zellij, and the Catppuccin
 friendly `eza` file lister.【F:docs/dependencies.md†L1-L24】【F:custom_bash_commands.sh†L145-L1106】【F:cbc_aliases.sh†L11-L135】 Gum is optional but unlocks the
-styled UI experience.【F:custom_bash_commands.sh†L1-L129】 The `cbcs` output also
-documents release shortcuts (`ver`, `verg`) that call
-`npx commit-and-tag-version`, so ensure `npx` is available if you use them.
-【F:custom_bash_commands.sh†L2139-L2147】
+styled UI experience.【F:custom_bash_commands.sh†L1-L129】
 
 ## Installation
 
@@ -183,10 +180,8 @@ When the terminal sources CBC it immediately prepares the working environment:
 Common aliases cover directory jumps (`cbc`, `cdgh`, `vault`, `temp`), Git
 workflows (`cbcc`, `gco`, `gsw`, `gpfom`), fuzzy file launchers (`fo`, `fman`,
 `iopen`), and media helpers (`pron`, `so`, `vopen`).【F:cbc_aliases.sh†L11-L135】
-The `cbcs` output also documents release shortcuts (`ver`, `verg`) that call
-`npx commit-and-tag-version` if you choose to use them.
-【F:custom_bash_commands.sh†L2139-L2147】 Use `commandsmore` for descriptions
-whenever you need a refresher.【F:cbc_aliases.sh†L25-L27】
+Use `commandsmore` for descriptions whenever you need a refresher.
+【F:cbc_aliases.sh†L25-L27】
 
 ## Supporting Docs & Utilities
 
