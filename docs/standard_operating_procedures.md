@@ -7,7 +7,7 @@
 3. [Guiding Principles](#guiding-principles)
 4. [Creating New Functions](#creating-new-functions)
 5. [Creating New Aliases](#creating-new-aliases)
-6. [Keeping `cbcs` Accurate](#keeping-cbcs-accurate)
+6. [Keeping `cbc list` Accurate](#keeping-cbc-list-accurate)
 7. [Documentation Updates](#documentation-updates)
 8. [Manual Testing Checklist](#manual-testing-checklist)
 
@@ -28,7 +28,7 @@ These procedures apply to updates in:
 
 - Keep changes grouped with related commands for faster discovery.
 - Provide clear, user-facing help text for every function.
-- Ensure `cbcs` remains the single source of truth for command discovery.
+- Ensure `cbc list` remains the single source of truth for command discovery.
 - Update docs whenever behavior changes or new workflows are added.
 
 ## Creating New Functions
@@ -68,7 +68,7 @@ Steps:
 
 1. Add the function near related functions in `custom_bash_commands.sh`.
 2. Include `usage()` and `-h` handling consistent with existing patterns.
-3. Update the `cbcs` arrays so the function appears in both the catalog and
+3. Update the `cbc list` arrays so the function appears in both the catalog and
    detailed descriptions.
 4. Update `docs/` if the new function changes usage, dependencies, or user
    workflow.
@@ -85,13 +85,14 @@ alias alias_name='alias_command'
 Steps:
 
 1. Add the alias near related aliases in `cbc_aliases.sh`.
-2. Update the alias lists in `cbcs` so `cbcs` and `cbcs -a` stay accurate.
+2. Update the alias lists in `cbc list` so `cbc list` and `cbc list -v` stay
+   accurate.
 3. Update `docs/` if the alias changes workflows or expected dependencies.
 
-## Keeping `cbcs` Accurate
+## Keeping `cbc list` Accurate
 
-`cbcs` is the primary discovery command. When adding or removing functions or
-aliases, update these arrays in `custom_bash_commands.sh`:
+`cbc list` is the primary discovery command. When adding or removing functions
+or aliases, update these arrays in `custom_bash_commands.sh`:
 
 - `functions`
 - `aliases`
@@ -113,5 +114,5 @@ No automated tests are tracked. Validate changes manually:
 
 1. Source the updated scripts or open a new shell session.
 2. Run the new function or alias with `-h` to confirm usage text.
-3. Run `cbcs` and `cbcs -a` to confirm catalogs are current.
+3. Run `cbc list` and `cbc list -v` to confirm catalogs are current.
 4. Verify any external commands used by the change are available.

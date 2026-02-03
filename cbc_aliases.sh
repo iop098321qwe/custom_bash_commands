@@ -23,8 +23,6 @@ alias refresh='source ~/.bashrc && clear'
 # CBC SPECIFIC
 ################################################################################
 
-alias comm='commands'
-alias commm='commandsmore'
 alias dv='display_version'
 alias rh='regex_help'
 alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh; source ~/Documents/github_repositories/custom_bash_commands/cbc_aliases.sh'
@@ -82,8 +80,6 @@ if [ -f /etc/os-release ]; then
   esac
 fi
 
-alias commands='cbcs | bat'
-alias commandsmore='cbcs -a | bat'
 alias seebash='bat ~/.bashrc'
 
 ################################################################################
