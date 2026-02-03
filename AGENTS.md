@@ -68,8 +68,9 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `custom_bash_commands.sh` is the main entry point. It defines UI helpers,
   command functions, and `updatecbc`, then sources `~/.cbc_aliases.sh`.
 - `cbc_aliases.sh` defines aliases that the main script loads during startup.
-- `install_cbc.sh` copies scripts into `~` and appends a sourcing line to
-  `~/.bashrc` when missing for automatic loading.
+- `install_cbc.sh` copies scripts into `~`, appends a sourcing block to
+  `~/.bashrc` when missing, and creates common directories under
+  `~/Documents/Temporary` and `~/Documents/github_repositories`.
 - `docs/` captures dependencies, SOP guidance, and open tasks.
 
 ## Commands
@@ -153,3 +154,4 @@ cd ~/Documents/github_repositories/custom_bash_commands
   detached link opens in `custom_bash_commands.sh`.
 - Update notes: 2026-02-02 - refresh `cbc list -v` formatting and
   align `AGENTS.md`.
+- Update notes: 2026-02-03 - move bootstrap steps into `install_cbc.sh`.

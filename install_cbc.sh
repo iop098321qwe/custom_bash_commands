@@ -25,12 +25,22 @@ echo "Copied cbc_aliases.sh to home directory"
 
 # Add source command to .bashrc file if missing
 touch ~/.bashrc
-if ! grep -qx "source ~/.custom_bash_commands.sh" ~/.bashrc; then
+if ! grep -q ".custom_bash_commands.sh" ~/.bashrc; then
+  echo "###################################################################################################################################################################" >>~/.bashrc
+  echo "# Custom Additions" >>~/.bashrc
+  echo "###################################################################################################################################################################" >>~/.bashrc
+  echo " " >>~/.bashrc
   echo "source ~/.custom_bash_commands.sh" >>~/.bashrc
   echo "Added source command to .bashrc"
 else
   echo "Source command already present in .bashrc"
 fi
+
+# Create common directories (Temporary, GitHub Repositories)
+mkdir -p ~/Documents/Temporary/screenshots/
+mkdir -p ~/Documents/Temporary/recordings/raw/
+mkdir -p ~/Documents/Temporary/recordings/edited/
+mkdir -p ~/Documents/github_repositories
 
 # Countdown from 5 seconds
 echo "Refreshing in 5 seconds..."
