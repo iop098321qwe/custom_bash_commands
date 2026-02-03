@@ -79,6 +79,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `cbcs` or `cbcs -a`: List available commands and extended descriptions.
 - `updatecbc`: Pull the latest scripts via sparse checkout and reload them.
 - `cbc pkg`: Manage CBC modules (see `custom_bash_commands.sh`).
+- `readme [-c]`: Open the README or copy the README URL.
 - `wiki [-c|-C|-A|-F]`: Open the wiki or jump to reference pages.
 
 ## Testing

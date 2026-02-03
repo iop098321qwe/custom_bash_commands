@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v306.12.1"
+CBC_VERSION="v306.13.0"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -1115,6 +1115,55 @@ changes() {
 }
 
 ################################################################################
+# README
+################################################################################
+
+readme() {
+  OPTIND=1
+
+  local readme_url="https://github.com/iop098321qwe/custom_bash_commands/blob/main/README.md"
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the Custom Bash Commands README in your default browser."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  readme [-h|-c]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -c    Copy the README URL to the clipboard"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  readme"
+  }
+
+  while getopts ":hc" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    c)
+      echo "$readme_url" | xclip -selection clipboard
+      cbc_style_message "$CATPPUCCIN_GREEN" "README URL copied to clipboard."
+      return 0
+      ;;
+    *)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  open_readme() {
+    nohup xdg-open "$readme_url" >/dev/null 2>&1 &
+  }
+
+  open_readme
+}
+
+################################################################################
 # RELEASES
 ################################################################################
 
@@ -1554,6 +1603,7 @@ cbcs() {
     "  display_info"
     "  display_version"
     "  dotfiles"
+    "  readme"
     "  regex_help"
     "  releases"
     "  setup_directories"
@@ -1618,6 +1668,7 @@ cbcs() {
     "  display_info       Show CBC version info"
     "  display_version    Print the current CBC version"
     "  dotfiles           Open the dotfiles repository"
+    "  readme             Open the CBC README in a browser"
     "  regex_help         Regex cheat-sheets with flavor selection"
     "  releases           Open the CBC releases page"
     "  setup_directories  Create common directories under ~/Documents"
