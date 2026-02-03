@@ -117,9 +117,9 @@ When the terminal sources CBC it immediately prepares the working environment:
   clipboard, and it can jump to Alias Reference, Command Reference
   (commands/functions), or the Cheatsheet page.
   【F:custom_bash_commands.sh†L1413-L1477】
-- `cbcs [-a]` lists every custom function and alias CBC provides. The `commands`
-  and `commandsmore` aliases pipe that output through `bat` for easier
-  browsing.【F:custom_bash_commands.sh†L1835-L2626】【F:cbc_aliases.sh†L19-L36】
+- `cbc list [-v]` lists every custom function and alias CBC provides. Use
+  `cbc list -v` when you want descriptions alongside each entry.
+  【F:custom_bash_commands.sh†L1835-L2626】
 
 ### Update CBC
 
@@ -177,8 +177,8 @@ workflows (`cbcc`, `gco`, `gsw`, `gpfom`), fuzzy file launchers (`fo`, `fman`,
 `iopen`), and media helpers (`pron`, `so`, `vopen`).【F:cbc_aliases.sh†L11-L135】
 Single-letter aliases are limited to `c`, `s`, `v`, `x`, and `z` in
 `cbc_aliases.sh`.【F:cbc_aliases.sh†L43-L52】
-Use `commandsmore` for descriptions whenever you need a refresher.
-【F:cbc_aliases.sh†L25-L27】
+Use `cbc list -v` for descriptions whenever you need a refresher.
+【F:custom_bash_commands.sh†L1835-L2626】
 
 ## Supporting Docs & Utilities
 
@@ -188,7 +188,7 @@ Use `commandsmore` for descriptions whenever you need a refresher.
   documents the preferred structure for new functions, aliases, and manual
   testing workflows.【F:docs/standard_operating_procedures.md†L1-L118】
 - `docs/todo.md` tracks outstanding cleanup and feature work, including plans to
-  reorganize the `cbcs` catalog output.【F:docs/todo.md†L1-L34】
+  reorganize the `cbc list` catalog output.【F:docs/todo.md†L1-L34】
 
 ## Documentation Style
 
