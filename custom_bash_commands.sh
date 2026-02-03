@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v306.14.0"
+CBC_VERSION="v306.15.0"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -1253,52 +1253,9 @@ dotfiles() {
   shift $((OPTIND - 1))
 
   # Define the dotfiles repository URL
-  dotfiles_url="https://github.com/iop098321qwe/dotfiles"
-
-  # Open the dotfiles repository in the default browser
-  setsid -f xdg-open "$dotfiles_url" >/dev/null 2>&1
-}
-
-################################################################################
-# ARCH_DOTFILES
-################################################################################
-
-arch_dotfiles() {
-  OPTIND=1
-
-  usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Open the arch_dotfiles repository in your default browser."
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  arch_dotfiles [-h]"
-
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
-
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-      "  arch_dotfiles"
-  }
-
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      usage
-      return 0
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
-      return 1
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  # Define the arch_dotfiles repository URL
   arch_dotfiles_url="https://github.com/iop098321qwe/dotfiles-arch"
 
-  # Open the arch_dotfiles repository in the default browser
+  # Open the dotfiles repository in the default browser
   setsid -f xdg-open "$arch_dotfiles_url" >/dev/null 2>&1
 }
 
@@ -1595,12 +1552,11 @@ cbcs() {
   shift $((OPTIND - 1))
 
   local -a functions=(
-    "  arch_dotfiles"
+    "  dotfiles"
     "  cbc"
     "  cbc pkg"
     "  cbcs"
     "  changes"
-    "  display_info"
     "  display_version"
     "  dotfiles"
     "  readme"
@@ -1618,11 +1574,8 @@ cbcs() {
     "  commm"
     "  commands"
     "  commandsmore"
-    "  di"
     "  dv"
     "  editbash"
-    "  ext"
-    "  fh"
     "  fman"
     "  fzf"
     "  hsearch"
@@ -1660,12 +1613,11 @@ cbcs() {
   )
 
   local -a function_details=(
-    "  arch_dotfiles      Open the arch dotfiles repository"
+    "  dotfiles      Open the arch dotfiles repository"
     "  cbc                Entry point for CBC subcommands"
     "  cbc pkg            Manage CBC modules (install, list, load, uninstall, update)"
     "  cbcs               List CBC functions and aliases"
     "  changes            Open the CBC changelog in a browser"
-    "  display_info       Show CBC version info"
     "  display_version    Print the current CBC version"
     "  dotfiles           Open the dotfiles repository"
     "  readme             Open the CBC README in a browser"
@@ -1683,11 +1635,8 @@ cbcs() {
     "  commm              commandsmore"
     "  commands           cbcs | batcat"
     "  commandsmore       cbcs -a | batcat"
-    "  di                 display_info"
     "  dv                 display_version"
     "  editbash           \$EDITOR ~/.bashrc"
-    "  ext                extract"
-    "  fh                 filehash"
     "  fman               compgen -c | fzf | xargs man"
     "  fzf                fzf -m"
     "  hsearch            historysearch"
@@ -2106,40 +2055,6 @@ regex_help() {
 }
 
 ################################################################################
-# DISPLAY INFO
-################################################################################
-
-display_info() {
-  usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Display key information about the Custom Bash Commands setup."
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  display_info [-h]"
-
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
-
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-      "  display_info"
-  }
-
-  while getopts ":h" opt; do
-    case ${opt} in
-    h)
-      usage
-      return 0
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
-      ;;
-    esac
-  done
-
-  display_version
-}
-
-################################################################################
 # UPDATECBC
 ################################################################################
 
@@ -2248,7 +2163,7 @@ updatecbc() {
 
   # Source the updated commands
   source ~/.custom_bash_commands.sh
-  display_info
+  display_version
 }
 
 ###############################################################################
@@ -2265,19 +2180,13 @@ if [[ $- == *i* ]]; then
   if [ -z "${CBC_INFO_SHOWN:-}" ]; then
     CBC_INFO_SHOWN=1
     export CBC_INFO_SHOWN
-    display_info
+    display_version
   fi
 fi
 
 ###############################################################################
 # Source the aliases file if it exists
 ###############################################################################
-
-# The following lines allows previously defined aliases and functions to be
-# used in the terminal after the custom_bash_commands.sh script is run. This
-# allows the script to not overwrite previously defined aliases and functions
-# by the user. This command must remain at the end of the
-# custom_bash_commands.sh script.
 
 # If the .bash_aliases file exists, source it
 if [ -f ~/.bash_aliases ]; then
