@@ -88,9 +88,9 @@ if [ -f /etc/os-release ]; then
   esac
 fi
 
-alias commands='cbcs | batcat'
-alias commandsmore='cbcs -a | batcat'
-alias seebash='batcat ~/.bashrc'
+alias commands='cbcs | bat'
+alias commandsmore='cbcs -a | bat'
+alias seebash='bat ~/.bashrc'
 
 ################################################################################
 # HISTORY
