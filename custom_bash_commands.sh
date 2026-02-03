@@ -1306,7 +1306,7 @@ check_cbc_update() {
 
   if ((should_refresh)); then
     local response status body
-    response=$(curl -sSL -w "\n%{http_code}" "$release_api_url" 2>/dev/null || true)
+    response=$(curl -sSL --connect-timeout 2 --max-time 4 -w "\n%{http_code}" "$release_api_url" 2>/dev/null || true)
     status=$(printf '%s\n' "$response" | tail -n1)
     body=$(printf '%s\n' "$response" | sed '$d')
 
