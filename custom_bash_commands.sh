@@ -1003,9 +1003,9 @@ wiki() {
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message" \
       "  -c    Copy the wiki URL to the clipboard" \
-      "  -C    Open the wiki to the commands section" \
-      "  -A    Open the wiki to the aliases section" \
-      "  -F    Open the wiki to the functions section"
+      "  -C    Open the wiki to the cheatsheet page" \
+      "  -A    Open the wiki to the aliases page" \
+      "  -F    Open the wiki to the command reference page"
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
       "  wiki" \
@@ -1024,18 +1024,18 @@ wiki() {
       return 0
       ;;
     C)
-      cbc_style_message "$CATPPUCCIN_SKY" "Opening Commands documentation..."
-      nohup xdg-open "$wiki_url/Commands" >/dev/null 2>&1 &
+      cbc_style_message "$CATPPUCCIN_SKY" "Opening Cheatsheet..."
+      nohup xdg-open "$wiki_url/Cheatsheet" >/dev/null 2>&1 &
       return 0
       ;;
     A)
-      cbc_style_message "$CATPPUCCIN_SKY" "Opening Aliases documentation..."
-      nohup xdg-open "$wiki_url/Aliases" >/dev/null 2>&1 &
+      cbc_style_message "$CATPPUCCIN_SKY" "Opening Alias Reference..."
+      nohup xdg-open "$wiki_url/Alias-Reference" >/dev/null 2>&1 &
       return 0
       ;;
     F)
-      cbc_style_message "$CATPPUCCIN_SKY" "Opening Functions documentation..."
-      nohup xdg-open "$wiki_url/Functions" >/dev/null 2>&1 &
+      cbc_style_message "$CATPPUCCIN_SKY" "Opening Command Reference..."
+      nohup xdg-open "$wiki_url/Command-Reference" >/dev/null 2>&1 &
       return 0
       ;;
     \?)
