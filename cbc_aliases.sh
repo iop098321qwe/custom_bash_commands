@@ -44,7 +44,6 @@ alias vim='nvim'
 ################################################################################
 
 alias c='clear'
-alias i='sudo apt install'
 alias s='sudo'
 alias v='nvim'
 alias x='chmod +x'

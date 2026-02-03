@@ -107,6 +107,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
   functions and aliases by updating `functions`, `aliases`,
   `function_details`, and `alias_details`.
 - Maintain `cbc_aliases.sh` as the alias catalog loaded by the main script.
+- Single-letter aliases in `cbc_aliases.sh` are limited to `c`, `s`, `v`,
+  `x`, and `z`.
 
 ## Security and Compliance
 
