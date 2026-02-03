@@ -44,7 +44,7 @@ CBC targets Arch Linux systems. Install the tools that the scripts and aliases
 call directly so each helper works without manual edits. The
 `docs/dependencies.md` file tracks the primary package list, while the main
 script and alias catalog reference additional utilities such as Git, curl,
-`bat`, `fzf`, `yt-dlp`, `xclip`, Obsidian, Lazygit, Zellij, and the Catppuccin
+`bat`, `fzf`, `yt-dlp`, `wl-copy`, Obsidian, Lazygit, Zellij, and the Catppuccin
 friendly `eza` file lister.【F:docs/dependencies.md†L1-L24】【F:custom_bash_commands.sh†L145-L1106】【F:cbc_aliases.sh†L11-L135】 Gum is optional but unlocks the
 styled UI experience.【F:custom_bash_commands.sh†L1-L129】
 
@@ -216,6 +216,6 @@ may exceed that limit when readability would otherwise suffer:
   aborts if it does not. Move the clone into the expected location and rerun the
   script.【F:install_cbc.sh†L1-L21】
 - **Dependencies missing or failing silently:** Compare your environment against
-  the dependency list and confirm helpers such as `fzf`, `yt-dlp`, `xclip`, and
+  the dependency list and confirm helpers such as `fzf`, `yt-dlp`, `wl-copy`, and
   `bat` are installed. CBC leans on these binaries in both scripts and alias
   definitions.【F:docs/dependencies.md†L1-L24】【F:custom_bash_commands.sh†L145-L1529】【F:cbc_aliases.sh†L11-L135】
