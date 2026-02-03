@@ -19,7 +19,6 @@ alias myip='curl http://ipecho.net/plain; echo'
 alias nv='files=$(fzf --multi --prompt="Select files/dirs for nvim: " --bind "enter:accept") && [ -n "$files" ] && nvim $files'
 alias please='sudo $(history -p !!)'
 alias refresh='source ~/.bashrc && clear'
-alias rma='rm -rfI'
 
 ################################################################################
 # CBC SPECIFIC
