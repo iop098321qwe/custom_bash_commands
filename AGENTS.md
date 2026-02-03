@@ -120,8 +120,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
 ## Dependencies and Services
 
 - `docs/dependencies.md` required tools: bash, git, curl, python3, sed,
-  awk, sha256sum, find, sort, xargs, xdg-open, gum, fzf, bat or
-  batcat, eza, nvim.
+  awk, sha256sum, find, sort, xargs, xdg-open, setsid, gum, fzf,
+  bat or batcat, eza, nvim.
 - `docs/dependencies.md` optional tools: zellij, sudo.
 - External service: GitHub is used by `updatecbc` for sparse checkout
   updates.
@@ -149,4 +149,5 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - Re-scan tracked files and update the file list immediately.
 - Re-verify commands, paths, and workflows for accuracy.
 - Update AGENTS.md to resolve mismatches without delay.
-- Do not record AGENTS.md changes inside this file.
+- Update notes: 2026-02-02 - switch to `setsid -f xdg-open` for
+  detached link opens in `custom_bash_commands.sh`.
