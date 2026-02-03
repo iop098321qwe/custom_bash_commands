@@ -30,7 +30,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 ## Environment
 
-- Targets Debian/Ubuntu-based systems.
+- Targets Arch Linux systems.
 - Requires Bash (`custom_bash_commands.sh` and `cbc_aliases.sh` use bash).
 - `docs/dependencies.md` lists `gum` as required, while
   `custom_bash_commands.sh` falls back when `gum` is missing.

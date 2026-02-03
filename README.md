@@ -40,8 +40,8 @@ users know which features loaded successfully.【F:custom_bash_commands.sh†L15
 
 ## Prerequisites
 
-CBC targets Debian and Ubuntu-based systems. Install the tools that the scripts
-and aliases call directly so each helper works without manual edits. The
+CBC targets Arch Linux systems. Install the tools that the scripts and aliases
+call directly so each helper works without manual edits. The
 `docs/dependencies.md` file tracks the primary package list, while the main
 script and alias catalog reference additional utilities such as Git, curl,
 `bat`, `fzf`, `yt-dlp`, `xclip`, Obsidian, Lazygit, Zellij, and the Catppuccin
