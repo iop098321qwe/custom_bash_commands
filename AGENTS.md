@@ -32,16 +32,11 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 - Targets Arch Linux systems.
 - Requires Bash (`custom_bash_commands.sh` and `cbc_aliases.sh` use bash).
-- Update check cache defaults to
-  `${XDG_CACHE_HOME:-$HOME/.cache}/custom_bash_commands`.
 - Config variables set in `custom_bash_commands.sh`:
   - `CBC_CONFIG_DIR` (default `~/.config/cbc`)
   - `CBC_MODULE_ROOT` (default `~/.config/cbc/modules`)
   - `CBC_PACKAGE_MANIFEST` (default `~/.config/cbc/packages.toml`)
   - `CBC_MODULE_ENTRYPOINT` (default `cbc-module.sh`)
-- Update check intervals (seconds) set in `custom_bash_commands.sh`:
-  - `CBC_UPDATE_CHECK_INTERVAL` (default `43200`)
-  - `CBC_UPDATE_NOTIFY_INTERVAL` (default `21600`)
 
 ## Repository Overview
 
@@ -69,15 +64,11 @@ cd ~/Documents/github_repositories/custom_bash_commands
 ## Architecture
 
 - `custom_bash_commands.sh` is the main entry point. It defines UI helpers,
-  command functions, and `updatecbc`, then sources `~/.cbc_aliases.sh` if
+  command functions, and update helpers, then sources `~/.cbc_aliases.sh` if
   present and warns when missing.
-- `check_cbc_update` polls the GitHub Releases API, caches results under
-  `${XDG_CACHE_HOME:-$HOME/.cache}/custom_bash_commands`.
-  It uses `curl` with `--connect-timeout 2` and `--max-time 4`.
-  It parses JSON with `python`.
-- The update cache file is `update_check`. It stores the last check
-  timestamp, release tag, release name, summary, URL, and last notified
-  timestamp.
+  It uses `curl` with `--connect-timeout 10` and `--max-time 30` for update
+  checks.
+  It parses JSON with `awk` and `sed` for update checks.
 - `cbc_aliases.sh` defines aliases that the main script loads during startup.
 - `install_cbc.sh` copies scripts into `~`, appends a sourcing block to
   `~/.bashrc` when missing, and creates common directories under
@@ -90,6 +81,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `./install_cbc.sh`: Install the scripts into the home directory.
 - `source ~/.custom_bash_commands.sh`: Load CBC after a manual copy.
 - `cbc list` or `cbc list -v`: List available commands and descriptions.
+- `cbc update check`: Query the latest GitHub release and report status.
 - `updatecbc`: Pull the latest scripts via sparse checkout and reload them.
 - `cbc pkg`: Manage CBC modules (see `custom_bash_commands.sh`).
 - `readme [-c]`: Open the README or copy the README URL.
@@ -132,11 +124,11 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 ## Dependencies and Services
 
-- `docs/dependencies.md` required tools: bash, git, curl, python3, sed,
-  awk, sha256sum, find, sort, xargs, xdg-open, setsid, gum, fzf,
+- `docs/dependencies.md` required tools: bash, git, curl, sed, awk, sha256sum,
+  find, sort, xargs, xdg-open, setsid, gum, fzf,
   bat or batcat, eza, nvim, wl-copy.
 - `docs/dependencies.md` optional tools: zellij, sudo.
-- External service: GitHub is used by `updatecbc` and `check_cbc_update`.
+- External service: GitHub is used by `cbc update check` and `updatecbc`.
 
 ## Troubleshooting
 
