@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.15.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.14.0...v306.15.0) (2026-02-03)
+
+
+### Features
+
+* **alias:** remove the `fh` and `ext` aliases ([18cde56](https://github.com/iop098321qwe/custom_bash_commands/commit/18cde56e2b6e6931aa2cede455b014d168924f28))
+
+
+### Bug Fixes
+
+* **function:** change arch_dotfiles to dotfiles ([303ebd3](https://github.com/iop098321qwe/custom_bash_commands/commit/303ebd38cfe5fd6d165e2b343b10994955b965e5))
+* remove `display_info` and `di` alias in favor of `display_version` and `dv` ([d513863](https://github.com/iop098321qwe/custom_bash_commands/commit/d513863b17cd8ce9fd4579a381e8cc6f6e74311f))
+
 ## [306.14.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.13.0...v306.14.0) (2026-02-03)
 
 
