@@ -1,24 +1,25 @@
-# Here is a list of dependencies for the custom_bash_commands.sh script:
+# Dependencies
 
-* zellij
-* zoxide
-* fzf
-* stacer
-* eza
-* neofetch
-* figlet
-* neovim
-* tldr
-* btop
-* brave-browser
-* vscode
-* python3
-* chezmoi
-* thefuck
-* fd
-* ripgrep
-* starship
-* ranger
-* lazygit
-* tree
-* obsidian
+## Required
+
+- bash
+- git
+- curl
+- python3
+- sed
+- awk
+- sha256sum
+- find
+- sort
+- xargs
+- xdg-open
+- gum
+- fzf
+- bat or batcat
+- eza
+- nvim
+
+## Optional
+
+- zellij
+- sudo
