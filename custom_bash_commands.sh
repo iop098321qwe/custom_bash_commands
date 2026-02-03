@@ -2188,12 +2188,6 @@ fi
 # Source the aliases file if it exists
 ###############################################################################
 
-# The following lines allows previously defined aliases and functions to be
-# used in the terminal after the custom_bash_commands.sh script is run. This
-# allows the script to not overwrite previously defined aliases and functions
-# by the user. This command must remain at the end of the
-# custom_bash_commands.sh script.
-
 # If the .bash_aliases file exists, source it
 if [ -f ~/.bash_aliases ]; then
   . ~/.bash_aliases
