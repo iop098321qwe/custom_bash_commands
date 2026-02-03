@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.14.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.13.0...v306.14.0) (2026-02-03)
+
+
+### Features
+
+* **links:** utilize a better method to open links cleaner ([0fc3b6c](https://github.com/iop098321qwe/custom_bash_commands/commit/0fc3b6c2c0c12ca6ca83805067fe06ad263cdec2))
+
 ## [306.13.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.12.1...v306.13.0) (2026-02-03)
 
 
