@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.18.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.17.0...v306.18.0) (2026-02-04)
+
+
+### Features
+
+* **function:** change `updatecbc` to `cbc update` ([356b140](https://github.com/iop098321qwe/custom_bash_commands/commit/356b140eb64959e7e7d624197664f97ab1694cd9))
+* **trap:** add trap to `cbc update` to better cleanup ([809c83c](https://github.com/iop098321qwe/custom_bash_commands/commit/809c83c78dd005cd0384c7ca684311841f1eeecb))
+
+
+### Bug Fixes
+
+* **alias:** remove fzf -m and other unused aliases ([942860f](https://github.com/iop098321qwe/custom_bash_commands/commit/942860f0b64d674e9c928b9db66fb4541faf1777))
+* **function:** fix `regex_help` function ([076a49b](https://github.com/iop098321qwe/custom_bash_commands/commit/076a49b59dddeb97810532e7860ce6b833d15d75))
+* **function:** fix cbc update check function to now show excess info ([dd77292](https://github.com/iop098321qwe/custom_bash_commands/commit/dd7729293a705d6a1f22675783d5c80126177002))
+* **variables:** ensure variables are local where necessary ([d5ea1f4](https://github.com/iop098321qwe/custom_bash_commands/commit/d5ea1f4add9cbf8032ba4a65eb3c9bddf4f4389f))
+
 ## [306.17.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.16.0...v306.17.0) (2026-02-03)
 
 
