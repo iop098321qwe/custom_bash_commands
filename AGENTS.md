@@ -83,7 +83,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `cbc list` or `cbc list -v`: List available commands and descriptions.
 - `cbc update check`: Query the latest GitHub release and report the current
   and latest versions plus the release link.
-- `updatecbc`: Pull the latest scripts via sparse checkout and reload them.
+- `cbc update`: Pull the latest scripts via sparse checkout and reload them.
 - `cbc pkg`: Manage CBC modules (see `custom_bash_commands.sh`).
 - `readme [-c]`: Open the README or copy the README URL.
 - `wiki [-c|-C|-A|-F]`: Open the wiki or jump to reference pages.
@@ -129,7 +129,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
   find, sort, xargs, xdg-open, setsid, gum, fzf,
   bat or batcat, eza, nvim, wl-copy.
 - `docs/dependencies.md` optional tools: zellij, sudo.
-- External service: GitHub is used by `cbc update check` and `updatecbc`.
+- External service: GitHub is used by `cbc update check` and `cbc update`.
 
 ## Troubleshooting
 
