@@ -10,12 +10,10 @@
 
 alias editbash='$EDITOR ~/.bashrc'
 alias fman='compgen -c | fzf | xargs man'
-alias fzf='fzf -m'
 # TODO: add if statement to check for wayland or x11 and alias accordingly
 alias imv='imv-x11'
-alias line='read -p "Enter line number: " line && file=$(fzf --prompt="Select a file: ") && nvim +$line "$file"'
 alias myip='curl http://ipecho.net/plain; echo'
-alias nv='files=$(fzf --multi --prompt="Select files/dirs for nvim: " --bind "enter:accept") && [ -n "$files" ] && nvim $files'
+alias nv='files=$(fzf -m --prompt="Select files/dirs for nvim: " --bind "enter:accept") && [ -n "$files" ] && nvim $files'
 alias please='sudo $(history -p !!)'
 alias refresh='source ~/.bashrc && clear'
 
@@ -81,13 +79,3 @@ if [ -f /etc/os-release ]; then
 fi
 
 alias seebash='bat ~/.bashrc'
-
-################################################################################
-# HISTORY
-################################################################################
-
-alias historysearchexact='history | sort -nr | fzf -m -e --query="$1" --no-sort --preview="echo {}" --preview-window=down:20%:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | wl-copy'
-alias historysearch='history | sort -nr | fzf -m --query="$1" --no-sort --preview="echo {}" --preview-window=down:20%:wrap | awk '\''{ $1=""; sub(/^ /, ""); print }'\'' | xargs -d "\n" echo -n | wl-copy'
-alias hsearch='historysearch'
-alias hse='historysearchexact'
-alias hs='historysearch'
