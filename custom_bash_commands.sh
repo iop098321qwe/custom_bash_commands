@@ -1364,12 +1364,6 @@ cbc_update_check() {
   local latest_name="$(cbc_json_unescape "$latest_name_raw")"
   local latest_url="$(cbc_json_unescape "$latest_url_raw")"
 
-  local summary_raw=""
-  summary_raw=$(printf '%s' "$body_raw" | awk -v RS='\\n' 'NF {print; exit}')
-  local latest_summary="$(cbc_json_unescape "$summary_raw")"
-  latest_summary=$(printf '%s' "$latest_summary" | awk '{$1=$1; print}')
-  latest_summary="${latest_summary:0:200}"
-
   if [[ -z "$latest_version" ]]; then
     cbc_style_message "$CATPPUCCIN_RED" \
       "Unable to parse the latest release information."
@@ -1382,8 +1376,6 @@ cbc_update_check() {
       "  Current: $current_version"
       "  Latest:  $latest_version${latest_name:+ ($latest_name)}"
     )
-    [[ -n "$latest_summary" ]] && update_lines+=("  Summary: $latest_summary")
-    update_lines+=("  Update with: updatecbc")
     [[ -n "$latest_url" ]] && update_lines+=("  Release: $latest_url")
     cbc_style_box "$CATPPUCCIN_SKY" "${update_lines[@]}"
   else
