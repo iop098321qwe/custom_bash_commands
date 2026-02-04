@@ -988,7 +988,7 @@ wiki() {
   OPTIND=1
 
   # Define the CBC wiki URL
-  wiki_url="https://github.com/iop098321qwe/custom_bash_commands/wiki"
+  local wiki_url="https://github.com/iop098321qwe/custom_bash_commands/wiki"
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
@@ -1250,7 +1250,7 @@ dotfiles() {
   shift $((OPTIND - 1))
 
   # Define the dotfiles repository URL
-  arch_dotfiles_url="https://github.com/iop098321qwe/dotfiles-arch"
+  local arch_dotfiles_url="https://github.com/iop098321qwe/dotfiles-arch"
 
   # Open the dotfiles repository in the default browser
   setsid -f xdg-open "$arch_dotfiles_url" >/dev/null 2>&1
