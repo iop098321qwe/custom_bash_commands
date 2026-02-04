@@ -1393,8 +1393,15 @@ cbc_update_run() {
   local new_filename
   local copy_errors=0
 
+  cleanup_sparse_dir() {
+    if [ -n "$SPARSE_DIR" ] && [ -d "$SPARSE_DIR" ]; then
+      rm -rf "$SPARSE_DIR"
+    fi
+  }
+
   # Temporary directory for sparse checkout
   SPARSE_DIR=$(mktemp -d)
+  trap cleanup_sparse_dir EXIT INT TERM
 
   # URL of the GitHub repository
   REPO_URL=https://github.com/iop098321qwe/custom_bash_commands.git
@@ -1409,16 +1416,15 @@ cbc_update_run() {
 
   if ! cbc_confirm "Pull the latest version and overwrite local files?"; then
     cbc_style_message "$CATPPUCCIN_YELLOW" "Update cancelled."
-    rm -rf "$SPARSE_DIR"
     return 0
   fi
 
   # Initialize an empty git repository and configure for sparse checkout
   if ! cbc_spinner "Preparing temporary checkout" \
-    bash -c "cd '$SPARSE_DIR' && git init -q && git remote add origin '$REPO_URL' \
-    && git config core.sparseCheckout true"; then
+    git -C "$SPARSE_DIR" init -q &&
+    git -C "$SPARSE_DIR" remote add origin "$REPO_URL" &&
+    git -C "$SPARSE_DIR" config core.sparseCheckout true; then
     cbc_style_message "$CATPPUCCIN_RED" "Failed to prepare sparse checkout."
-    rm -rf "$SPARSE_DIR"
     return 1
   fi
 
@@ -1427,9 +1433,8 @@ cbc_update_run() {
   done
 
   if ! cbc_spinner "Downloading updates" \
-    bash -c "cd '$SPARSE_DIR' && git pull origin main -q"; then
+    git -C "$SPARSE_DIR" pull origin main -q; then
     cbc_style_message "$CATPPUCCIN_RED" "Unable to download updates from the repository."
-    rm -rf "$SPARSE_DIR"
     return 1
   fi
 
@@ -1446,14 +1451,13 @@ cbc_update_run() {
     fi
   done
 
-  rm -rf "$SPARSE_DIR"
-  cd ~ || return
-  clear
-
   if [ $copy_errors -eq 1 ]; then
     cbc_style_message "$CATPPUCCIN_RED" "Update incomplete. Please retry."
     return 1
   fi
+
+  trap - EXIT INT TERM
+  cleanup_sparse_dir
 
   cbc_style_message "$CATPPUCCIN_GREEN" "Custom Bash Commands updated. Reloading..."
 
