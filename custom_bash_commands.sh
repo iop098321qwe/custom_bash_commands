@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v306.17.0"
+CBC_VERSION="v306.18.0"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -988,7 +988,7 @@ wiki() {
   OPTIND=1
 
   # Define the CBC wiki URL
-  wiki_url="https://github.com/iop098321qwe/custom_bash_commands/wiki"
+  local wiki_url="https://github.com/iop098321qwe/custom_bash_commands/wiki"
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
@@ -1250,7 +1250,7 @@ dotfiles() {
   shift $((OPTIND - 1))
 
   # Define the dotfiles repository URL
-  arch_dotfiles_url="https://github.com/iop098321qwe/dotfiles-arch"
+  local arch_dotfiles_url="https://github.com/iop098321qwe/dotfiles-arch"
 
   # Open the dotfiles repository in the default browser
   setsid -f xdg-open "$arch_dotfiles_url" >/dev/null 2>&1
@@ -1364,12 +1364,6 @@ cbc_update_check() {
   local latest_name="$(cbc_json_unescape "$latest_name_raw")"
   local latest_url="$(cbc_json_unescape "$latest_url_raw")"
 
-  local summary_raw=""
-  summary_raw=$(printf '%s' "$body_raw" | awk -v RS='\\n' 'NF {print; exit}')
-  local latest_summary="$(cbc_json_unescape "$summary_raw")"
-  latest_summary=$(printf '%s' "$latest_summary" | awk '{$1=$1; print}')
-  latest_summary="${latest_summary:0:200}"
-
   if [[ -z "$latest_version" ]]; then
     cbc_style_message "$CATPPUCCIN_RED" \
       "Unable to parse the latest release information."
@@ -1382,8 +1376,6 @@ cbc_update_check() {
       "  Current: $current_version"
       "  Latest:  $latest_version${latest_name:+ ($latest_name)}"
     )
-    [[ -n "$latest_summary" ]] && update_lines+=("  Summary: $latest_summary")
-    update_lines+=("  Update with: updatecbc")
     [[ -n "$latest_url" ]] && update_lines+=("  Release: $latest_url")
     cbc_style_box "$CATPPUCCIN_SKY" "${update_lines[@]}"
   else
@@ -1394,21 +1386,103 @@ cbc_update_check() {
   fi
 }
 
+cbc_update_run() {
+  local SPARSE_DIR
+  local REPO_URL
+  local FILE_PATHS
+  local new_filename
+  local copy_errors=0
+
+  cleanup_sparse_dir() {
+    if [ -n "$SPARSE_DIR" ] && [ -d "$SPARSE_DIR" ]; then
+      rm -rf "$SPARSE_DIR"
+    fi
+  }
+
+  # Temporary directory for sparse checkout
+  SPARSE_DIR=$(mktemp -d)
+  trap cleanup_sparse_dir EXIT INT TERM
+
+  # URL of the GitHub repository
+  REPO_URL=https://github.com/iop098321qwe/custom_bash_commands.git
+
+  # List of file paths to download and move
+  FILE_PATHS=(
+    custom_bash_commands.sh
+    cbc_aliases.sh
+  )
+
+  cbc_style_box "$CATPPUCCIN_BLUE" "Updating Custom Bash Commands"
+
+  if ! cbc_confirm "Pull the latest version and overwrite local files?"; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" "Update cancelled."
+    return 0
+  fi
+
+  # Initialize an empty git repository and configure for sparse checkout
+  if ! cbc_spinner "Preparing temporary checkout" \
+    git -C "$SPARSE_DIR" init -q &&
+    git -C "$SPARSE_DIR" remote add origin "$REPO_URL" &&
+    git -C "$SPARSE_DIR" config core.sparseCheckout true; then
+    cbc_style_message "$CATPPUCCIN_RED" "Failed to prepare sparse checkout."
+    return 1
+  fi
+
+  for path in "${FILE_PATHS[@]}"; do
+    echo "$path" >>"$SPARSE_DIR/.git/info/sparse-checkout"
+  done
+
+  if ! cbc_spinner "Downloading updates" \
+    git -C "$SPARSE_DIR" pull origin main -q; then
+    cbc_style_message "$CATPPUCCIN_RED" "Unable to download updates from the repository."
+    return 1
+  fi
+
+  for path in "${FILE_PATHS[@]}"; do
+    new_filename="$(basename "$path")"
+    if [[ $new_filename != .* ]]; then
+      new_filename=".$new_filename"
+    fi
+
+    if ! cbc_spinner "Updating $new_filename" \
+      cp "$SPARSE_DIR/$path" "$HOME/$new_filename"; then
+      cbc_style_message "$CATPPUCCIN_RED" "Failed to copy $path."
+      copy_errors=1
+    fi
+  done
+
+  if [ $copy_errors -eq 1 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Update incomplete. Please retry."
+    return 1
+  fi
+
+  trap - EXIT INT TERM
+  cleanup_sparse_dir
+
+  cbc_style_message "$CATPPUCCIN_GREEN" "Custom Bash Commands updated. Reloading..."
+
+  # Source the updated commands
+  source ~/.custom_bash_commands.sh
+  display_version
+}
+
 cbc_update() {
   OPTIND=1
   local show_help=false
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Check for CBC updates."
+      "  Update CBC or check for updates."
 
     cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc update" \
       "  cbc update check"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc update" \
       "  cbc update check"
   }
 
@@ -1441,10 +1515,7 @@ cbc_update() {
     cbc_update_check
     ;;
   "" | -h | --help)
-    cbc_style_message "$CATPPUCCIN_YELLOW" \
-      "cbc update is reserved. Use 'cbc update check' for now."
-    usage
-    return 1
+    cbc_update_run
     ;;
   *)
     cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc update command: $subcommand"
@@ -1530,7 +1601,6 @@ cbc_list_render() {
     "readme"
     "regex_help"
     "releases"
-    "updatecbc"
     "wiki"
   )
 
@@ -1538,7 +1608,7 @@ cbc_list_render() {
     "Entry point for CBC subcommands"
     "List CBC commands and aliases"
     "Manage CBC modules (install, list, load, uninstall, update)"
-    "Check for CBC updates"
+    "Update CBC scripts and reload"
     "Check for CBC updates"
     "Open the CBC changelog in a browser"
     "Print the current CBC version"
@@ -1546,7 +1616,6 @@ cbc_list_render() {
     "Open the CBC README in a browser"
     "Regex cheat-sheets with flavor selection"
     "Open the CBC releases page"
-    "Update CBC scripts and reload"
     "Open the CBC wiki"
   )
 
@@ -1556,17 +1625,10 @@ cbc_list_render() {
     "dv"
     "editbash"
     "fman"
-    "fzf"
-    "hsearch"
-    "hse"
-    "hs"
-    "historysearch"
-    "historysearchexact"
     "imv"
     "la"
     "lar"
     "le"
-    "line"
     "ll"
     "llt"
     "lsd"
@@ -1597,17 +1659,10 @@ cbc_list_render() {
     "display_version"
     "\$EDITOR ~/.bashrc"
     "compgen -c | fzf | xargs man"
-    "fzf -m"
-    "historysearch"
-    "historysearchexact"
-    "historysearch"
-    "history | sort -nr | fzf ... | wl-copy"
-    "history | sort -nr | fzf -e ... | wl-copy"
     "imv-x11"
     "eza --icons=always --group-directories-first -a"
     "eza --icons=always -r --group-directories-first -a"
     "eza --icons=always --group-directories-first -s extension"
-    "prompt for line + file and open in nvim"
     "eza --icons=always --group-directories-first --smart-group --total-size -hl"
     "eza --icons=always --group-directories-first --smart-group --total-size -hlT"
     "eza --icons=always --group-directories-first -D"
@@ -1625,7 +1680,7 @@ cbc_list_render() {
     "sudo"
     "batcat ~/.bashrc"
     "source repo scripts for testing"
-    "updatecbc"
+    "cbc update"
     "nvim"
     "nvim"
     "chmod +x"
@@ -1841,16 +1896,16 @@ regex_help() {
     [pcre]="PCRE (Perl compatible regular expressions)"
     [python]="Python (re module)"
     [javascript]="JavaScript / ECMAScript"
-    [posix - extended]="POSIX Extended (ERE)"
-    [posix - basic]="POSIX Basic (BRE)"
+    [posix-extended]="POSIX Extended (ERE)"
+    [posix-basic]="POSIX Basic (BRE)"
   )
 
   local -A flavor_tools=(
     [pcre]="ripgrep, grep -P, Perl, PHP, VS Code, most editors"
     [python]="Python's re module, Django URL routing, pytest"
     [javascript]="Browsers, Node.js, frontend build tools"
-    [posix - extended]="egrep, awk, modern sed -E"
-    [posix - basic]="grep, traditional sed, legacy Unix utilities"
+    [posix-extended]="egrep, awk, modern sed -E"
+    [posix-basic]="grep, traditional sed, legacy Unix utilities"
   )
 
   regex_normalize_flavor() {
@@ -2133,118 +2188,6 @@ regex_help() {
   cbc_style_note "Need more?" \
     "  Combine 'rg --pcre2', 'python -m re', or 'node --eval' with these" \
     "  snippets to test patterns quickly in your favorite environment."
-}
-
-################################################################################
-# UPDATECBC
-################################################################################
-
-updatecbc() {
-  # Initialize OPTIND to 1 since it is a global variable within the script
-  OPTIND=1
-
-  usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Update the Custom Bash Commands repository and reload configuration."
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  updatecbc [-h]"
-
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
-
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-      "  updatecbc"
-  }
-
-  # Parse options using getopts
-  while getopts ":h" opt; do
-    case ${opt} in
-    h)
-      usage
-      return 0
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  local SPARSE_DIR
-  local REPO_URL
-  local FILE_PATHS
-  local new_filename
-  local copy_errors=0
-
-  # Temporary directory for sparse checkout
-  SPARSE_DIR=$(mktemp -d)
-
-  # URL of the GitHub repository
-  REPO_URL=https://github.com/iop098321qwe/custom_bash_commands.git
-
-  # List of file paths to download and move
-  FILE_PATHS=(
-    custom_bash_commands.sh
-    cbc_aliases.sh
-  )
-
-  cbc_style_box "$CATPPUCCIN_BLUE" "Updating Custom Bash Commands"
-
-  if ! cbc_confirm "Pull the latest version and overwrite local files?"; then
-    cbc_style_message "$CATPPUCCIN_YELLOW" "Update cancelled."
-    rm -rf "$SPARSE_DIR"
-    return 0
-  fi
-
-  # Initialize an empty git repository and configure for sparse checkout
-  if ! cbc_spinner "Preparing temporary checkout" \
-    bash -c "cd '$SPARSE_DIR' && git init -q && git remote add origin '$REPO_URL' \
-    && git config core.sparseCheckout true"; then
-    cbc_style_message "$CATPPUCCIN_RED" "Failed to prepare sparse checkout."
-    rm -rf "$SPARSE_DIR"
-    return 1
-  fi
-
-  for path in "${FILE_PATHS[@]}"; do
-    echo "$path" >>"$SPARSE_DIR/.git/info/sparse-checkout"
-  done
-
-  if ! cbc_spinner "Downloading updates" \
-    bash -c "cd '$SPARSE_DIR' && git pull origin main -q"; then
-    cbc_style_message "$CATPPUCCIN_RED" "Unable to download updates from the repository."
-    rm -rf "$SPARSE_DIR"
-    return 1
-  fi
-
-  for path in "${FILE_PATHS[@]}"; do
-    new_filename="$(basename "$path")"
-    if [[ $new_filename != .* ]]; then
-      new_filename=".$new_filename"
-    fi
-
-    if ! cbc_spinner "Updating $new_filename" \
-      cp "$SPARSE_DIR/$path" "$HOME/$new_filename"; then
-      cbc_style_message "$CATPPUCCIN_RED" "Failed to copy $path."
-      copy_errors=1
-    fi
-  done
-
-  rm -rf "$SPARSE_DIR"
-  cd ~ || return
-  clear
-
-  if [ $copy_errors -eq 1 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Update incomplete. Please retry."
-    return 1
-  fi
-
-  cbc_style_message "$CATPPUCCIN_GREEN" "Custom Bash Commands updated. Reloading..."
-
-  # Source the updated commands
-  source ~/.custom_bash_commands.sh
-  display_version
 }
 
 ###############################################################################

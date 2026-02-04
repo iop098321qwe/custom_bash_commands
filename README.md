@@ -98,7 +98,7 @@ When the terminal sources CBC it immediately prepares the working environment:
   want to query the GitHub Releases API. The command uses `curl` with
   `--connect-timeout 10` and `--max-time 30` to avoid hangs, and it reports
   whether you are up to date or if an update is available.
-  【F:custom_bash_commands.sh†L1275-L1408】
+  【F:custom_bash_commands.sh†L1327-L1386】
 - `display_version` runs automatically once per interactive session to show the
   current version, discovery hints, and removal instructions, while
   `cbc_aliases.sh` is sourced to expose every alias. If `.bash_aliases` exists
@@ -126,15 +126,15 @@ When the terminal sources CBC it immediately prepares the working environment:
 ### Update CBC
 
 - `cbc update check` queries the latest GitHub release and reports whether your
-  local version is current or if a new release is available. When a newer
-  release exists it points to `updatecbc` for the current update workflow.
-  【F:custom_bash_commands.sh†L1275-L1408】
-- `updatecbc` (alias `ucbc`) now presents a gum-styled confirmation (with a
+  local version is current or if a new release is available, along with the
+  current and latest version numbers plus the release link.
+  【F:custom_bash_commands.sh†L1327-L1386】
+- `cbc update` (alias `ucbc`) presents a gum-styled confirmation (with a
   plain-text fallback) before performing a sparse checkout of the repository.
   It shows spinners while preparing the temporary clone, pulling the latest
   files, and overwriting `~/.custom_bash_commands.sh` and
   `~/.cbc_aliases.sh` in place. After a successful copy, the script reloads the
-  updated commands automatically.【F:custom_bash_commands.sh†L2736-L2850】
+  updated commands automatically.【F:custom_bash_commands.sh†L1389-L1462】
 
 ### Manage CBC modules
 
