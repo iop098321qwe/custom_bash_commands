@@ -81,7 +81,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `./install_cbc.sh`: Install the scripts into the home directory.
 - `source ~/.custom_bash_commands.sh`: Load CBC after a manual copy.
 - `cbc list` or `cbc list -v`: List available commands and descriptions.
-- `cbc update check`: Query the latest GitHub release and report status.
+- `cbc update check`: Query the latest GitHub release and report the current
+  and latest versions plus the release link.
 - `updatecbc`: Pull the latest scripts via sparse checkout and reload them.
 - `cbc pkg`: Manage CBC modules (see `custom_bash_commands.sh`).
 - `readme [-c]`: Open the README or copy the README URL.

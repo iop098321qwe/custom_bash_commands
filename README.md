@@ -126,8 +126,8 @@ When the terminal sources CBC it immediately prepares the working environment:
 ### Update CBC
 
 - `cbc update check` queries the latest GitHub release and reports whether your
-  local version is current or if a new release is available. When a newer
-  release exists it points to `updatecbc` for the current update workflow.
+  local version is current or if a new release is available, along with the
+  current and latest version numbers plus the release link.
   【F:custom_bash_commands.sh†L1275-L1408】
 - `updatecbc` (alias `ucbc`) now presents a gum-styled confirmation (with a
   plain-text fallback) before performing a sparse checkout of the repository.
