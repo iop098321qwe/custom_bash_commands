@@ -1593,6 +1593,30 @@ cbc_update_run() {
   local FILE_PATHS
   local new_filename
   local copy_errors=0
+  local verbose=false
+  local can_spin=true
+  local source_path=""
+  local target_script="$HOME/.custom_bash_commands.sh"
+  local log_time_format="%Y-%m-%d %H:%M:%S"
+  local git_env="GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=true GIT_PAGER=cat"
+
+  if [ "${1:-}" = "true" ]; then
+    verbose=true
+  fi
+
+  if ! command -v gum >/dev/null 2>&1; then
+    can_spin=false
+  fi
+
+  if [ ! -t 0 ] || [ ! -t 1 ]; then
+    can_spin=false
+  fi
+
+  if [ "$verbose" = true ]; then
+    can_spin=false
+  fi
+
+  source_path="${BASH_SOURCE[0]}"
 
   cleanup_sparse_dir() {
     if [ -n "$SPARSE_DIR" ] && [ -d "$SPARSE_DIR" ]; then
@@ -1615,29 +1639,134 @@ cbc_update_run() {
 
   cbc_style_box "$CATPPUCCIN_BLUE" "Updating Custom Bash Commands"
 
+  if [ "$verbose" = true ]; then
+    local stdin_tty="no"
+    local stdout_tty="no"
+    if [ -t 0 ]; then
+      stdin_tty="yes"
+    fi
+    if [ -t 1 ]; then
+      stdout_tty="yes"
+    fi
+    printf '[%s] verbose: enabled\n' "$(date +"$log_time_format")"
+    printf '[%s] tty: stdin=%s stdout=%s\n' \
+      "$(date +"$log_time_format")" "$stdin_tty" "$stdout_tty"
+    printf '[%s] can_spin: %s\n' "$(date +"$log_time_format")" "$can_spin"
+    printf '[%s] gum: %s\n' "$(date +"$log_time_format")" \
+      "$(command -v gum 2>/dev/null || printf '%s' 'missing')"
+    printf '[%s] git: %s\n' "$(date +"$log_time_format")" \
+      "$(command git --version 2>/dev/null || printf '%s' 'missing')"
+    printf '[%s] repo_url: %s\n' "$(date +"$log_time_format")" "$REPO_URL"
+    printf '[%s] sparse_dir: %s\n' "$(date +"$log_time_format")" "$SPARSE_DIR"
+    printf '[%s] source_path: %s\n' "$(date +"$log_time_format")" "$source_path"
+    printf '[%s] target_script: %s\n' \
+      "$(date +"$log_time_format")" "$target_script"
+    printf '[%s] file_paths: %s\n' \
+      "$(date +"$log_time_format")" "${FILE_PATHS[*]}"
+    printf '[%s] cp resolution:\n' "$(date +"$log_time_format")"
+    type -a cp 2>/dev/null || true
+    printf '[%s] git resolution:\n' "$(date +"$log_time_format")"
+    type -a git 2>/dev/null || true
+  fi
+
   if ! cbc_confirm "Pull the latest version and overwrite local files?"; then
     cbc_style_message "$CATPPUCCIN_YELLOW" "Update cancelled."
     return 0
   fi
 
   # Initialize an empty git repository and configure for sparse checkout
-  if ! cbc_spinner "Preparing temporary checkout" \
-    git -C "$SPARSE_DIR" init -q &&
-    git -C "$SPARSE_DIR" remote add origin "$REPO_URL" &&
-    git -C "$SPARSE_DIR" config core.sparseCheckout true; then
+  local prep_log="$SPARSE_DIR/.cbc_update_prepare.log"
+  local prep_cmd=""
+  local prep_status=0
+  rm -f "$prep_log"
+
+  prep_cmd="{ $git_env command git -C \"$SPARSE_DIR\" init -q && \
+  $git_env command git -C \"$SPARSE_DIR\" remote add origin \"$REPO_URL\" && \
+  $git_env command git -C \"$SPARSE_DIR\" config core.sparseCheckout true; } \
+  >\"$prep_log\" 2>&1"
+
+  if [ "$verbose" = true ]; then
+    printf '[%s] step: prepare sparse checkout\n' "$(date +"$log_time_format")"
+    printf '[%s] command: %s\n' "$(date +"$log_time_format")" "$prep_cmd"
+  fi
+
+  if [ "$can_spin" = true ]; then
+    cbc_spinner "Preparing temporary checkout" bash -c "$prep_cmd"
+    prep_status=$?
+  else
+    bash -c "$prep_cmd"
+    prep_status=$?
+  fi
+
+  if [ "$verbose" = true ]; then
+    printf '[%s] prepare exit: %s\n' "$(date +"$log_time_format")" "$prep_status"
+    if [ -s "$prep_log" ]; then
+      printf '[%s] prepare output:\n' "$(date +"$log_time_format")"
+      command cat "$prep_log"
+    else
+      printf '[%s] prepare output: (none)\n' "$(date +"$log_time_format")"
+    fi
+  fi
+
+  if [ $prep_status -ne 0 ]; then
     cbc_style_message "$CATPPUCCIN_RED" "Failed to prepare sparse checkout."
+    if [ -s "$prep_log" ]; then
+      cbc_style_message "$CATPPUCCIN_RED" "Git error:"
+      command cat "$prep_log"
+    fi
+    rm -f "$prep_log"
     return 1
   fi
+
+  rm -f "$prep_log"
 
   for path in "${FILE_PATHS[@]}"; do
     echo "$path" >>"$SPARSE_DIR/.git/info/sparse-checkout"
   done
 
-  if ! cbc_spinner "Downloading updates" \
-    git -C "$SPARSE_DIR" pull origin main -q; then
-    cbc_style_message "$CATPPUCCIN_RED" "Unable to download updates from the repository."
+  local pull_log="$SPARSE_DIR/.cbc_update_pull.log"
+  local pull_cmd=""
+  local pull_status=0
+  rm -f "$pull_log"
+
+  pull_cmd="$git_env command git -C \"$SPARSE_DIR\" pull origin main \
+  >\"$pull_log\" 2>&1"
+
+  if [ "$verbose" = true ]; then
+    printf '[%s] step: git pull\n' "$(date +"$log_time_format")"
+    printf '[%s] command: %s\n' "$(date +"$log_time_format")" "$pull_cmd"
+  fi
+
+  if [ "$can_spin" = true ]; then
+    cbc_spinner "Downloading updates" bash -c "$pull_cmd"
+    pull_status=$?
+  else
+    bash -c "$pull_cmd"
+    pull_status=$?
+  fi
+
+  if [ "$verbose" = true ]; then
+    printf '[%s] git pull exit: %s\n' "$(date +"$log_time_format")" "$pull_status"
+    if [ -s "$pull_log" ]; then
+      printf '[%s] git pull output:\n' "$(date +"$log_time_format")"
+      command cat "$pull_log"
+    else
+      printf '[%s] git pull output: (none)\n' "$(date +"$log_time_format")"
+    fi
+  fi
+
+  if [ $pull_status -ne 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "Unable to download updates from the repository."
+    if [ -s "$pull_log" ]; then
+      cbc_style_message "$CATPPUCCIN_RED" "Git error:"
+      command cat "$pull_log"
+    fi
+    rm -f "$pull_log"
     return 1
   fi
+
+  rm -f "$pull_log"
 
   for path in "${FILE_PATHS[@]}"; do
     new_filename="$(basename "$path")"
@@ -1645,11 +1774,51 @@ cbc_update_run() {
       new_filename=".$new_filename"
     fi
 
-    if ! cbc_spinner "Updating $new_filename" \
-      cp "$SPARSE_DIR/$path" "$HOME/$new_filename"; then
+    local copy_log="$SPARSE_DIR/.cbc_update_copy_${new_filename}.log"
+    local copy_cmd=""
+    local copy_status=0
+    rm -f "$copy_log"
+
+    if [ "$verbose" = true ]; then
+      printf '[%s] step: copy %s\n' \
+        "$(date +"$log_time_format")" "$new_filename"
+    fi
+
+    copy_cmd="command cp -f -- \"$SPARSE_DIR/$path\" \"$HOME/$new_filename\" \
+    >\"$copy_log\" 2>&1"
+
+    if [ "$verbose" = true ]; then
+      printf '[%s] command: %s\n' "$(date +"$log_time_format")" "$copy_cmd"
+    fi
+
+    if [ "$can_spin" = true ]; then
+      cbc_spinner "Updating $new_filename" bash -c "$copy_cmd"
+      copy_status=$?
+    else
+      bash -c "$copy_cmd"
+      copy_status=$?
+    fi
+
+    if [ "$verbose" = true ]; then
+      printf '[%s] copy exit: %s\n' "$(date +"$log_time_format")" "$copy_status"
+      if [ -s "$copy_log" ]; then
+        printf '[%s] copy output:\n' "$(date +"$log_time_format")"
+        command cat "$copy_log"
+      else
+        printf '[%s] copy output: (none)\n' "$(date +"$log_time_format")"
+      fi
+    fi
+
+    if [ $copy_status -ne 0 ]; then
       cbc_style_message "$CATPPUCCIN_RED" "Failed to copy $path."
+      if [ -s "$copy_log" ]; then
+        cbc_style_message "$CATPPUCCIN_RED" "Copy error:"
+        command cat "$copy_log"
+      fi
       copy_errors=1
     fi
+
+    rm -f "$copy_log"
   done
 
   if [ $copy_errors -eq 1 ]; then
@@ -1670,27 +1839,33 @@ cbc_update_run() {
 cbc_update() {
   OPTIND=1
   local show_help=false
+  local verbose=false
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Update CBC or check for updates."
 
     cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  cbc update" \
+      "  cbc update [-v]" \
       "  cbc update check"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
+      "  -h    Display this help message" \
+      "  -v    Show verbose update output"
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
       "  cbc update" \
+      "  cbc update -v" \
       "  cbc update check"
   }
 
-  while getopts ":h" opt; do
+  while getopts ":hv" opt; do
     case $opt in
     h)
       show_help=true
+      ;;
+    v)
+      verbose=true
       ;;
     \?)
       cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
@@ -1716,7 +1891,7 @@ cbc_update() {
     cbc_update_check
     ;;
   "" | -h | --help)
-    cbc_update_run
+    cbc_update_run "$verbose"
     ;;
   *)
     cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc update command: $subcommand"
