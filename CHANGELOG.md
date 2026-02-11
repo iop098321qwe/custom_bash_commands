@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.19.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.18.0...v306.19.0) (2026-02-11)
+
+
+### Features
+
+* **config:** add cbc.config file to allow configs ([c48c0da](https://github.com/iop098321qwe/custom_bash_commands/commit/c48c0da85518e855d9f9814cf2bdd9366f178416))
+* **function:** remove `regex_help` function ([068b2c3](https://github.com/iop098321qwe/custom_bash_commands/commit/068b2c3294e789f0257204c117721c40d15179a3))
+
 ## [306.18.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.17.0...v306.18.0) (2026-02-04)
 
 
