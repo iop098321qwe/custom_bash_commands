@@ -11,12 +11,14 @@
 - find
 - sort
 - xargs
+- man
 - xdg-open
 - setsid
 - gum
 - fzf
 - bat or batcat
 - eza
+- imv-x11
 - nvim
 - wl-copy
 
