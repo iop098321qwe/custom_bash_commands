@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.19.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.19.0...v306.19.1) (2026-02-11)
+
+
+### Bug Fixes
+
+* **function:** fix update function using `cbc update` ([afb3d15](https://github.com/iop098321qwe/custom_bash_commands/commit/afb3d158d8b0a14f9ea240be360f6e098a670e24))
+* **function:** fix verbose mode to `cbc update` ([cca8972](https://github.com/iop098321qwe/custom_bash_commands/commit/cca8972b12cc11b5da52d569936f21e9e6825ba9))
+
 ## [306.19.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.18.0...v306.19.0) (2026-02-11)
 
 
