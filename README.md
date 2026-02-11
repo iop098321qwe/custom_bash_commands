@@ -179,9 +179,6 @@ When the terminal sources CBC it immediately prepares the working environment:
   automate repetitive tasks safely.【F:custom_bash_commands.sh†L702-L780】
 - `backup` and `makeman` provide lightweight utilities for backups and
   documentation. 【F:custom_bash_commands.sh†L2631-L3141】
-- `regex_help` defaults to a PCRE cheat-sheet and can list or interactively
-  display other regex flavors so the syntax you need is always in reach.
-  【F:custom_bash_commands.sh†L2827-L3164】
 
 ### Aliases and navigation
 
