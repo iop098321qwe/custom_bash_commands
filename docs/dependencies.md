@@ -20,9 +20,6 @@
 - nvim
 - wl-copy
 
-Note: Python is not required for update checks; `regex_help` examples mention
-Python but it is not needed to run CBC.
-
 ## Optional
 
 - zellij
