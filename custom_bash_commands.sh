@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v306.18.0"
+CBC_VERSION="v306.19.0"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -9,6 +9,102 @@ CBC_CONFIG_DIR="${CBC_CONFIG_DIR:-$HOME/.config/cbc}"
 CBC_MODULE_ROOT="${CBC_MODULE_ROOT:-$CBC_CONFIG_DIR/modules}"
 CBC_PACKAGE_MANIFEST="${CBC_PACKAGE_MANIFEST:-$CBC_CONFIG_DIR/packages.toml}"
 CBC_MODULE_ENTRYPOINT="cbc-module.sh"
+CBC_CONFIG_FILE="$CBC_CONFIG_DIR/cbc.config"
+
+CBC_SHOW_BANNER="true"
+CBC_BANNER_MODE="full"
+CBC_SOURCE_BASH_ALIASES="true"
+CBC_LIST_SHOW_DESCRIPTIONS="false"
+
+################################################################################
+# CBC CONFIG
+################################################################################
+
+cbc_config_trim() {
+  local text="$1"
+  printf "%s" "$text" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+}
+
+cbc_config_normalize_bool() {
+  local value="${1,,}"
+
+  case "$value" in
+  true | yes | 1)
+    printf '%s' "true"
+    return 0
+    ;;
+  false | no | 0)
+    printf '%s' "false"
+    return 0
+    ;;
+  *)
+    return 1
+    ;;
+  esac
+}
+
+cbc_config_apply() {
+  local key="$1"
+  local value="$2"
+  local normalized=""
+
+  case "$key" in
+  CBC_SHOW_BANNER)
+    if normalized=$(cbc_config_normalize_bool "$value"); then
+      CBC_SHOW_BANNER="$normalized"
+    fi
+    ;;
+  CBC_BANNER_MODE)
+    value="${value,,}"
+    case "$value" in
+    full | minimal)
+      CBC_BANNER_MODE="$value"
+      ;;
+    esac
+    ;;
+  CBC_SOURCE_BASH_ALIASES)
+    if normalized=$(cbc_config_normalize_bool "$value"); then
+      CBC_SOURCE_BASH_ALIASES="$normalized"
+    fi
+    ;;
+  CBC_LIST_SHOW_DESCRIPTIONS)
+    if normalized=$(cbc_config_normalize_bool "$value"); then
+      CBC_LIST_SHOW_DESCRIPTIONS="$normalized"
+    fi
+    ;;
+  esac
+}
+
+cbc_config_load() {
+  [ -f "$CBC_CONFIG_FILE" ] || return 0
+
+  local line=""
+  local key=""
+  local value=""
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%%#*}"
+    line="$(cbc_config_trim "$line")"
+
+    if [ -z "$line" ]; then
+      continue
+    fi
+
+    case "$line" in
+    *=*)
+      key="$(cbc_config_trim "${line%%=*}")"
+      value="$(cbc_config_trim "${line#*=}")"
+      value="${value%\"}"
+      value="${value#\"}"
+      value="${value%\'}"
+      value="${value#\'}"
+      cbc_config_apply "$key" "$value"
+      ;;
+    esac
+  done <"$CBC_CONFIG_FILE"
+}
+
+cbc_config_load
 
 ###############################################################################
 # GUM HELPERS
@@ -36,77 +132,50 @@ CATPPUCCIN_SURFACE1="#45475a"
 CATPPUCCIN_SURFACE2="#585b70"
 CATPPUCCIN_BASE="#1e1e2e"
 
-if command -v gum >/dev/null 2>&1; then
-  CBC_HAS_GUM=1
-else
-  CBC_HAS_GUM=0
-fi
-
 cbc_style_box() {
   local border_color="$1"
   shift
-  if [ "$CBC_HAS_GUM" -eq 1 ]; then
-    gum style \
-      --border rounded \
-      --border-foreground "$border_color" \
-      --foreground "$CATPPUCCIN_TEXT" \
-      --background "$CATPPUCCIN_SURFACE0" \
-      --padding "0 2" \
-      --margin "0 0 1 0" \
-      "$@"
-  else
-    printf '%s\n' "$@"
-  fi
+  gum style \
+    --border rounded \
+    --border-foreground "$border_color" \
+    --foreground "$CATPPUCCIN_TEXT" \
+    --background "$CATPPUCCIN_SURFACE0" \
+    --padding "0 2" \
+    --margin "0 0 1 0" \
+    "$@"
 }
 
 cbc_style_message() {
   local color="$1"
   shift
-  if [ "$CBC_HAS_GUM" -eq 1 ]; then
-    gum style \
-      --foreground "$color" \
-      --background "$CATPPUCCIN_BASE" \
-      "$@"
-  else
-    printf '%s\n' "$*"
-  fi
+  gum style \
+    --foreground "$color" \
+    --background "$CATPPUCCIN_BASE" \
+    "$@"
 }
 
 cbc_style_note() {
   local title="$1"
   shift
-  if [ "$CBC_HAS_GUM" -eq 1 ]; then
-    gum style \
-      --border normal \
-      --border-foreground "$CATPPUCCIN_LAVENDER" \
-      --foreground "$CATPPUCCIN_TEXT" \
-      --background "$CATPPUCCIN_SURFACE1" \
-      --padding "0 2" \
-      --margin "0 0 1 0" \
-      "$title" "$@"
-  else
-    printf '%s\n' "$title" "$@"
-  fi
+  gum style \
+    --border normal \
+    --border-foreground "$CATPPUCCIN_LAVENDER" \
+    --foreground "$CATPPUCCIN_TEXT" \
+    --background "$CATPPUCCIN_SURFACE1" \
+    --padding "0 2" \
+    --margin "0 0 1 0" \
+    "$title" "$@"
 }
 
 cbc_confirm() {
   local prompt="$1"
   shift
-  if [ "$CBC_HAS_GUM" -eq 1 ]; then
-    gum confirm \
-      --prompt.foreground "$CATPPUCCIN_LAVENDER" \
-      --selected.foreground "$CATPPUCCIN_GREEN" \
-      --selected.background "$CATPPUCCIN_SURFACE1" \
-      --unselected.foreground "$CATPPUCCIN_RED" \
-      "$prompt"
-  else
-    local response
-    read -r -p "$prompt [y/N]: " response
-    case "${response,,}" in
-    y | yes) return 0 ;;
-    *) return 1 ;;
-    esac
-  fi
+  gum confirm \
+    --prompt.foreground "$CATPPUCCIN_LAVENDER" \
+    --selected.foreground "$CATPPUCCIN_GREEN" \
+    --selected.background "$CATPPUCCIN_SURFACE1" \
+    --unselected.foreground "$CATPPUCCIN_RED" \
+    "$prompt"
 }
 
 cbc_input() {
@@ -114,27 +183,17 @@ cbc_input() {
   shift
   local placeholder="$1"
   shift
-  if [ "$CBC_HAS_GUM" -eq 1 ]; then
-    gum input \
-      --prompt.foreground "$CATPPUCCIN_LAVENDER" \
-      --cursor.foreground "$CATPPUCCIN_GREEN" \
-      --prompt "$prompt" \
-      --placeholder "$placeholder"
-  else
-    local input_value
-    read -r -p "$prompt" input_value
-    printf '%s' "$input_value"
-  fi
+  gum input \
+    --prompt.foreground "$CATPPUCCIN_LAVENDER" \
+    --cursor.foreground "$CATPPUCCIN_GREEN" \
+    --prompt "$prompt" \
+    --placeholder "$placeholder"
 }
 
 cbc_spinner() {
   local title="$1"
   shift
-  if [ "$CBC_HAS_GUM" -eq 1 ]; then
-    gum spin --spinner dot --title "$title" --title.foreground "$CATPPUCCIN_MAUVE" -- "$@"
-  else
-    "$@"
-  fi
+  gum spin --spinner dot --title "$title" --title.foreground "$CATPPUCCIN_MAUVE" -- "$@"
 }
 
 ################################################################################
@@ -903,6 +962,143 @@ cbc_pkg() {
   esac
 }
 
+################################################################################
+# CBC CONFIG
+################################################################################
+
+cbc_config() {
+  OPTIND=1
+  local force=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Generate the CBC config file with documented defaults."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc config [-f]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -f    Overwrite the existing config file"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc config" \
+      "  cbc config -f"
+  }
+
+  while getopts ":hf" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    f)
+      force=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ $# -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
+  mkdir -p "$CBC_CONFIG_DIR"
+
+  if [ -f "$CBC_CONFIG_FILE" ] && [ "$force" = false ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Config already exists at $CBC_CONFIG_FILE." \
+      "Use 'cbc config -f' to overwrite."
+    return 0
+  fi
+
+  cat <<'EOF' >"$CBC_CONFIG_FILE"
+# CBC configuration file
+# Location: ~/.config/cbc/cbc.config
+#
+# Format:
+#   KEY=VALUE
+#
+# Rules:
+# - Lines starting with '#' are comments.
+# - Blank lines are ignored.
+# - Unknown keys are ignored.
+# - Values are case-insensitive for booleans.
+#
+# Boolean values:
+#   true | false | yes | no | 1 | 0
+#
+# Notes:
+# - This file is read when CBC loads.
+# - If a value is invalid, CBC keeps its default.
+# - Only the settings below are supported right now.
+#
+# -------------------------------------------------------------------
+# 1) Startup banner
+# -------------------------------------------------------------------
+#
+# CBC_SHOW_BANNER
+# Controls whether CBC prints the banner when a new interactive shell
+# session starts.
+#
+# - true  = show the banner (default)
+# - false = do not show the banner
+#
+# Default: true
+#
+CBC_SHOW_BANNER=true
+#
+# CBC_BANNER_MODE
+# Controls how much banner information is printed.
+#
+# - full    = current behavior (two lines, including version + links)
+# - minimal = a single line with the version only
+#
+# Default: full
+#
+CBC_BANNER_MODE=full
+#
+# -------------------------------------------------------------------
+# 2) Alias sourcing
+# -------------------------------------------------------------------
+#
+# CBC_SOURCE_BASH_ALIASES
+# Controls whether CBC will source ~/.bash_aliases after loading
+# CBC functions and aliases.
+#
+# - true  = source ~/.bash_aliases (default)
+# - false = skip sourcing ~/.bash_aliases
+#
+# Default: true
+#
+CBC_SOURCE_BASH_ALIASES=true
+#
+# -------------------------------------------------------------------
+# 3) cbc list output
+# -------------------------------------------------------------------
+#
+# CBC_LIST_SHOW_DESCRIPTIONS
+# Controls whether `cbc list` defaults to showing descriptions (the
+# same output you get from `cbc list -v`).
+#
+# - true  = behave like `cbc list -v`
+# - false = behave like `cbc list` (default)
+#
+# Default: false
+#
+CBC_LIST_SHOW_DESCRIPTIONS=false
+EOF
+
+  cbc_style_message "$CATPPUCCIN_GREEN" \
+    "Wrote CBC config to $CBC_CONFIG_FILE."
+}
+
 cbc() {
   OPTIND=1
 
@@ -914,12 +1110,14 @@ cbc() {
       "  cbc [subcommand]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Subcommands:" \
+      "  config Generate the CBC configuration file" \
       "  list   List CBC commands and aliases" \
       "  pkg    Manage CBC modules (install, list, load, uninstall, update)" \
       "  update Check for CBC updates" \
       "  -h     Display this help message"
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc config" \
       "  cbc list" \
       "  cbc list -v" \
       "  cbc pkg" \
@@ -950,6 +1148,9 @@ cbc() {
   case "$subcommand" in
   "" | -h | --help)
     usage
+    ;;
+  config)
+    cbc_config "$@"
     ;;
   list)
     cbc_list "$@"
@@ -1565,9 +1766,17 @@ display_version() {
 
   shift $((OPTIND - 1))
 
-  # Display version details in a fancy box
-  cbc_style_message "$CATPPUCCIN_GREEN" "CUSTOM BASH COMMANDS (by iop098321qwe)"
-  cbc_style_message "$CATPPUCCIN_YELLOW" "🔹🔹$CBC_VERSION🔹🔹CHANGELOG: 'changes'🔹🔹RELEASES: 'releases'🔹🔹WIKI: 'wiki'🔹🔹"
+  local banner_mode="${CBC_BANNER_MODE,,}"
+
+  case "$banner_mode" in
+  minimal)
+    cbc_style_message "$CATPPUCCIN_YELLOW" "$CBC_VERSION"
+    ;;
+  *)
+    cbc_style_message "$CATPPUCCIN_GREEN" "CUSTOM BASH COMMANDS (by iop098321qwe)"
+    cbc_style_message "$CATPPUCCIN_YELLOW" "🔹🔹$CBC_VERSION🔹🔹CHANGELOG: 'changes'🔹🔹RELEASES: 'releases'🔹🔹WIKI: 'wiki'🔹🔹"
+    ;;
+  esac
 }
 
 ################################################################################
@@ -1591,6 +1800,7 @@ cbc_list_render() {
 
   local -a function_names=(
     "cbc"
+    "cbc config"
     "cbc list"
     "cbc pkg"
     "cbc update"
@@ -1599,13 +1809,13 @@ cbc_list_render() {
     "display_version"
     "dotfiles"
     "readme"
-    "regex_help"
     "releases"
     "wiki"
   )
 
   local -a function_descs=(
     "Entry point for CBC subcommands"
+    "Generate the CBC config file"
     "List CBC commands and aliases"
     "Manage CBC modules (install, list, load, uninstall, update)"
     "Update CBC scripts and reload"
@@ -1614,7 +1824,6 @@ cbc_list_render() {
     "Print the current CBC version"
     "Open the dotfiles repository"
     "Open the CBC README in a browser"
-    "Regex cheat-sheets with flavor selection"
     "Open the CBC releases page"
     "Open the CBC wiki"
   )
@@ -1642,7 +1851,6 @@ cbc_list_render() {
     "py"
     "python"
     "refresh"
-    "rh"
     "s"
     "seebash"
     "test"
@@ -1676,7 +1884,6 @@ cbc_list_render() {
     "python3"
     "python3"
     "source ~/.bashrc && clear"
-    "regex_help"
     "sudo"
     "batcat ~/.bashrc"
     "source repo scripts for testing"
@@ -1785,6 +1992,10 @@ cbc_list() {
 
   shift $((OPTIND - 1))
 
+  if [ "$all_info" = false ] && [ "$CBC_LIST_SHOW_DESCRIPTIONS" = true ]; then
+    all_info=true
+  fi
+
   if [ $# -gt 1 ]; then
     cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
     return 1
@@ -1819,377 +2030,6 @@ cbc_list() {
   cbc_list_render "$filter" "$all_info"
 }
 
-################################################################################
-# REGEX HELP
-################################################################################
-
-regex_help() {
-  OPTIND=1
-
-  local default_flavor="pcre"
-  local requested_flavor=""
-  local interactive=false
-  local list_only=false
-
-  usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Display regex cheat-sheets for popular flavors with rich examples."
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  regex_help [-f <flavor>] [-i] [-l] [-h]"
-
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -f <flavor>    Show the cheat-sheet for a specific regex flavor" \
-      "  -i             Interactively choose a flavor (gum, fzf, or select)" \
-      "  -l             List the available flavors and their typical tools" \
-      "  -h             Display this help message"
-
-    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
-      "  regex_help                    # Defaults to PCRE" \
-      "  regex_help -i                 # Pick a flavor interactively" \
-      "  regex_help -f posix-basic     # Show the POSIX Basic overview"
-  }
-
-  while getopts ":hf:il" opt; do
-    case "$opt" in
-    h)
-      usage
-      return 0
-      ;;
-    f)
-      requested_flavor="$OPTARG"
-      ;;
-    i)
-      interactive=true
-      ;;
-    l)
-      list_only=true
-      ;;
-    :) # Missing argument
-      cbc_style_message "$CATPPUCCIN_RED" "Error: -$OPTARG requires a value"
-      return 1
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Error: Unsupported flag -$OPTARG"
-      usage
-      return 1
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  if [ $# -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
-    return 1
-  fi
-
-  local -a flavor_order=(
-    pcre
-    python
-    javascript
-    posix-extended
-    posix-basic
-  )
-
-  local -A flavor_names=(
-    [pcre]="PCRE (Perl compatible regular expressions)"
-    [python]="Python (re module)"
-    [javascript]="JavaScript / ECMAScript"
-    [posix-extended]="POSIX Extended (ERE)"
-    [posix-basic]="POSIX Basic (BRE)"
-  )
-
-  local -A flavor_tools=(
-    [pcre]="ripgrep, grep -P, Perl, PHP, VS Code, most editors"
-    [python]="Python's re module, Django URL routing, pytest"
-    [javascript]="Browsers, Node.js, frontend build tools"
-    [posix-extended]="egrep, awk, modern sed -E"
-    [posix-basic]="grep, traditional sed, legacy Unix utilities"
-  )
-
-  regex_normalize_flavor() {
-    local raw="${1,,}"
-    raw=${raw// /}
-    raw=${raw//_/}
-    raw=${raw//-/}
-    case "$raw" in
-    "") return 1 ;;
-    pcre | perl | perlcompatible | perlregex | perlcompatibleregex)
-      printf '%s' "pcre"
-      ;;
-    python | py)
-      printf '%s' "python"
-      ;;
-    javascript | js | ecmascript | node | nodejs)
-      printf '%s' "javascript"
-      ;;
-    posixextended | extended | ere)
-      printf '%s' "posix-extended"
-      ;;
-    posixbasic | basic | bre)
-      printf '%s' "posix-basic"
-      ;;
-    *)
-      return 1
-      ;;
-    esac
-  }
-
-  regex_print_section() {
-    local title="$1"
-    shift
-    cbc_style_box "$CATPPUCCIN_TEAL" "$title" "$@"
-  }
-
-  regex_select_flavor() {
-    local selection=""
-    local -a options=()
-    local entry
-
-    for entry in "${flavor_order[@]}"; do
-      options+=("$entry|${flavor_names[$entry]} — ${flavor_tools[$entry]}")
-    done
-
-    if [ "$CBC_HAS_GUM" -eq 1 ]; then
-      selection=$(printf '%s\n' "${options[@]}" |
-        gum choose --header "Select a regex flavor" --limit 1 2>/dev/null)
-    elif command -v fzf >/dev/null 2>&1; then
-      selection=$(printf '%s\n' "${options[@]}" |
-        fzf --prompt="Regex flavor > " \
-          --header="TAB or arrows to move, ENTER to confirm" \
-          --delimiter='|' --with-nth=2.. 2>/dev/null)
-    fi
-
-    if [ -z "$selection" ] && [ -t 0 ] && [ -t 1 ]; then
-      local PS3="Choose a regex flavor (default ${flavor_names[$default_flavor]}): "
-      select selection in "${options[@]}"; do
-        if [ -n "$selection" ]; then
-          break
-        fi
-      done
-    fi
-
-    if [ -z "$selection" ]; then
-      return 1
-    fi
-
-    printf '%s\n' "${selection%%|*}"
-  }
-
-  regex_show_flavor() {
-    local flavor="$1"
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "${flavor_names[$flavor]}" \
-      "  Typical tools: ${flavor_tools[$flavor]}" \
-      "  Tip: Use 'regex_help -l' to explore every option."
-
-    case "$flavor" in
-    pcre)
-      regex_print_section "Anchors" \
-        "  ^  Start of string (or line with (?m))" \
-        "  $  End of string (or line with (?m))" \
-        "  \\A  Absolute start of string" \
-        "  \\z  Absolute end of string" \
-        "  \\b  Word boundary" \
-        "  \\B  Non-word boundary"
-
-      regex_print_section "Quantifiers" \
-        "  *   Zero or more" \
-        "  +   One or more" \
-        "  ?   Zero or one" \
-        "  {m,n}  Between m and n (omit n for open range)" \
-        "  *?, +?, ??  Lazy versions" \
-        "  {m,n}?  Lazy bounded quantifier"
-
-      regex_print_section "Character classes" \
-        "  .        Any char except newline (use (?s) for dotall)" \
-        "  \\d / \\D  Digit / not digit" \
-        "  \\w / \\W  Word / not word" \
-        "  \\s / \\S  Whitespace / not whitespace" \
-        "  \\h / \\v  Horizontal / vertical whitespace" \
-        "  \\p{L}    Unicode property (letters, numbers, etc.)"
-
-      regex_print_section "Grouping & references" \
-        "  (...)        Capturing group" \
-        "  (?:...)      Non-capturing group" \
-        "  (?<name>...) Named capturing group" \
-        "  \\1, \\g<name>  Backreferences" \
-        "  (?=...), (?!...)  Lookahead" \
-        "  (?<=...), (?<!...) Lookbehind"
-
-      regex_print_section "Flags" \
-        "  (?i) case-insensitive   (?m) multiline ^/$" \
-        "  (?s) dotall             (?x) verbose mode" \
-        "  (?U) swap greedy/lazy   (?J) duplicate names"
-
-      cbc_style_note "Example:" \
-        "  (?i)^(?<user>[\\w.-]+)@(?<domain>[\\w.-]+\\.[A-Za-z]{2,})$" \
-        "  • Captures case-insensitive emails with named groups."
-      ;;
-    python)
-      regex_print_section "Anchors" \
-        "  ^ / $    Start or end of string (line with re.MULTILINE)" \
-        "  \\A / \\Z  Start / end of string regardless of flags" \
-        "  \\b / \\B  Word boundary / non-boundary"
-
-      regex_print_section "Quantifiers" \
-        "  * 0+   + 1+   ? 0 or 1   {m,n} bounded" \
-        "  Append ? for lazy variants (e.g., *?, +?, {m,n}?)"
-
-      regex_print_section "Character classes" \
-        "  . matches any char except newline (unless re.DOTALL)" \
-        "  \\d, \\w, \\s mirror Unicode sets with re.UNICODE (default)" \
-        "  \\N matches any char except newline" \
-        "  Classes like [[:alpha:]] need re module's re.ASCII flag"
-
-      regex_print_section "Grouping & references" \
-        "  (?P<name>...)    Named capture" \
-        "  (?P=name)        Named backreference" \
-        "  (?=...), (?!...) Lookahead" \
-        "  (?<=...), (?<!...) Lookbehind (fixed-width)" \
-        "  (?(id)yes|no)    Conditional on group matched"
-
-      regex_print_section "Flags" \
-        "  re.I / (?i) ignore case    re.M / (?m) multiline" \
-        "  re.S / (?s) dotall        re.X / (?x) verbose" \
-        "  re.A / (?a) ASCII classes  re.U legacy alias"
-
-      cbc_style_note "Example:" \
-        "  (?P<slug>[a-z0-9-]+)(?:/(?P<page>\\d+))?$" \
-        "  • Django-friendly URL slug with optional page number."
-      ;;
-    javascript)
-      regex_print_section "Anchors" \
-        "  ^ / $  Start / end of string" \
-        "  \\b / \\B  Word boundary / non-boundary" \
-        "  (?<=^|\\s) simulate start-of-word when \\b is insufficient"
-
-      regex_print_section "Quantifiers" \
-        "  * 0+   + 1+   ? 0 or 1   {m,n} bounded" \
-        "  Lazy versions use ? (e.g., .*?)" \
-        "  Possessive quantifiers x*+ available in modern engines"
-
-      regex_print_section "Character classes" \
-        "  . matches any char except newline (use [\\s\\S] for dotall)" \
-        "  \\d, \\w, \\s follow ECMAScript definitions" \
-        "  \\p{Letter} requires the /u flag for Unicode sets" \
-        "  Character class escapes like [\u{1F4A9}] need /u"
-
-      regex_print_section "Grouping & references" \
-        "  (?<name>...) Named capture (ES2018+)" \
-        "  \\1 or \\k<name> Backreferences" \
-        "  (?=...), (?!...) Lookahead" \
-        "  (?<=...), (?<!...) Lookbehind (modern runtimes only)"
-
-      regex_print_section "Flags" \
-        "  /i ignore case   /m multiline ^/$" \
-        "  /s dotall        /u Unicode" \
-        "  /g global match  /y sticky (anchor to lastIndex)"
-
-      cbc_style_note "Example:" \
-        "  const rx = /^(?<tag>[a-z]+)(?:-(?<variant>\\w+))?$/i;" \
-        "  // Capture <tag>-<variant> attributes case-insensitively."
-      ;;
-    posix-extended)
-      regex_print_section "Anchors" \
-        "  ^ start of line    $ end of line" \
-        "  Use \\b inside character classes (e.g., [[:<:]]) for words"
-
-      regex_print_section "Quantifiers" \
-        "  * 0+   + 1+   ? 0 or 1   {m,n} bounded" \
-        "  No lazy or possessive variants"
-
-      regex_print_section "Character classes" \
-        "  . matches any char except newline" \
-        "  [:class:] named classes: [:alpha:], [:digit:], [:alnum:], [:space:]" \
-        "  Bracket expressions like [^abc] negate character sets" \
-        "  No \\d / \\w shortcuts—use [:digit:], [:alnum:], etc."
-
-      regex_print_section "Grouping & alternation" \
-        "  (...) capture group    (?:...) unavailable" \
-        "  | alternation          Backreferences with \\1, \\2" \
-        "  No lookaround or named groups"
-
-      regex_print_section "Usage notes" \
-        "  Works with egrep, awk, and sed -E" \
-        "  Portable across most Unix-like systems" \
-        "  Ideal when scripting with POSIX tools that support ERE"
-
-      cbc_style_note "Example:" \
-        "  egrep '^[[:alnum:]_]+@[[:alnum:].-]+\\.[[:alpha:]]{2,}$' file" \
-        "  • Email validation using portable character classes."
-      ;;
-    posix-basic)
-      regex_print_section "Anchors" \
-        "  ^ start of line    $ end of line" \
-        "  [[:<:]] and [[:>:]] for word boundaries (GNU extensions)"
-
-      regex_print_section "Quantifiers" \
-        "  * 0+   \{m,n\} bounded" \
-        "  +, ?, |, () are literals unless escaped" \
-        "  Use \+, \?, \|, \(, \) for regex operators"
-
-      regex_print_section "Character classes" \
-        "  . matches any char except newline" \
-        "  [:class:] works inside [] just like ERE" \
-        "  Escapes like \\d or \\w are not supported"
-
-      regex_print_section "Grouping & references" \
-        "  \( ... \) capture group" \
-        "  \{m\} literal braces require escaping: \\{" \
-        "  Backreferences: \\1, \\2" \
-        "  No alternation without \| and no non-capturing groups"
-
-      regex_print_section "Usage notes" \
-        "  Default for grep and sed without -E" \
-        "  Preferred when targeting the most portable scripts" \
-        "  Escaping operators is the most common pitfall"
-
-      cbc_style_note "Example:" \
-        "  grep '\\<[[:digit:]]\\{3\\}\\>' numbers.txt" \
-        "  • Find three-digit numbers in GNU grep (word boundaries)."
-      ;;
-    esac
-  }
-
-  if $list_only; then
-    local -a lines=("  Available regex flavors:")
-    local key
-    for key in "${flavor_order[@]}"; do
-      lines+=("    - ${flavor_names[$key]} [${key}] — ${flavor_tools[$key]}")
-    done
-    cbc_style_box "$CATPPUCCIN_BLUE" "Regex flavors" "${lines[@]}"
-    return 0
-  fi
-
-  local normalized=""
-
-  if [ -n "$requested_flavor" ]; then
-    if ! normalized=$(regex_normalize_flavor "$requested_flavor"); then
-      cbc_style_message "$CATPPUCCIN_RED" \
-        "Error: Unknown regex flavor '$requested_flavor'"
-      cbc_style_note "Hint:" \
-        "  Use 'regex_help -l' to see supported flavors." \
-        "  Examples: pcre, python, javascript, posix-extended, posix-basic."
-      return 1
-    fi
-  elif $interactive; then
-    if ! normalized=$(regex_select_flavor); then
-      cbc_style_message "$CATPPUCCIN_RED" "No selection made; showing default."
-      normalized="$default_flavor"
-    fi
-  else
-    normalized="$default_flavor"
-  fi
-
-  regex_show_flavor "$normalized"
-
-  cbc_style_note "Need more?" \
-    "  Combine 'rg --pcre2', 'python -m re', or 'node --eval' with these" \
-    "  snippets to test patterns quickly in your favorite environment."
-}
-
 ###############################################################################
 # Auto-load installed CBC modules
 ###############################################################################
@@ -2200,7 +2040,7 @@ cbc_pkg_load_modules auto
 # Call the function to display information once per interactive session
 ###############################################################################
 
-if [[ $- == *i* ]]; then
+if [[ $- == *i* ]] && [ "$CBC_SHOW_BANNER" = true ]; then
   if [ -z "${CBC_INFO_SHOWN:-}" ]; then
     CBC_INFO_SHOWN=1
     export CBC_INFO_SHOWN
@@ -2213,6 +2053,6 @@ fi
 ###############################################################################
 
 # If the .bash_aliases file exists, source it
-if [ -f ~/.bash_aliases ]; then
+if [ "$CBC_SOURCE_BASH_ALIASES" = true ] && [ -f ~/.bash_aliases ]; then
   . ~/.bash_aliases
 fi

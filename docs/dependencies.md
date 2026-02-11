@@ -11,17 +11,16 @@
 - find
 - sort
 - xargs
+- man
 - xdg-open
 - setsid
 - gum
 - fzf
 - bat or batcat
 - eza
+- imv-x11
 - nvim
 - wl-copy
-
-Note: Python is not required for update checks; `regex_help` examples mention
-Python but it is not needed to run CBC.
 
 ## Optional
 

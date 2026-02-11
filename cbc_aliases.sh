@@ -22,7 +22,6 @@ alias refresh='source ~/.bashrc && clear'
 ################################################################################
 
 alias dv='display_version'
-alias rh='regex_help'
 alias test='source ~/Documents/github_repositories/custom_bash_commands/custom_bash_commands.sh; source ~/Documents/github_repositories/custom_bash_commands/cbc_aliases.sh'
 alias ucbc='cbc update'
 
