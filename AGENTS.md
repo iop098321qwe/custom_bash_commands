@@ -34,6 +34,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - Requires Bash (`custom_bash_commands.sh` and `cbc_aliases.sh` use bash).
 - Config variables set in `custom_bash_commands.sh`:
   - `CBC_CONFIG_DIR` (default `~/.config/cbc`)
+  - `CBC_CONFIG_FILE` (default `~/.config/cbc/cbc.config`)
   - `CBC_MODULE_ROOT` (default `~/.config/cbc/modules`)
   - `CBC_PACKAGE_MANIFEST` (default `~/.config/cbc/packages.toml`)
   - `CBC_MODULE_ENTRYPOINT` (default `cbc-module.sh`)
@@ -64,10 +65,10 @@ cd ~/Documents/github_repositories/custom_bash_commands
 ## Architecture
 
 - `custom_bash_commands.sh` is the main entry point. It defines UI helpers,
-  command functions, and update helpers, then sources `~/.cbc_aliases.sh` if
-  present and warns when missing.
-  It uses `curl` with `--connect-timeout 10` and `--max-time 30` for update
-  checks.
+  command functions, and update helpers. It loads
+  `~/.config/cbc/cbc.config` when present, then sources `~/.cbc_aliases.sh`
+  if present and warns when missing. It uses `curl` with
+  `--connect-timeout 10` and `--max-time 30` for update checks.
   It parses JSON with `awk` and `sed` for update checks.
 - `cbc_aliases.sh` defines aliases that the main script loads during startup.
 - `install_cbc.sh` copies scripts into `~`, appends a sourcing block to
@@ -81,6 +82,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `./install_cbc.sh`: Install the scripts into the home directory.
 - `source ~/.custom_bash_commands.sh`: Load CBC after a manual copy.
 - `cbc list` or `cbc list -v`: List available commands and descriptions.
+- `cbc config [-f]`: Write the CBC config file to
+  `~/.config/cbc/cbc.config`.
 - `cbc update check`: Query the latest GitHub release and report the current
   and latest versions plus the release link.
 - `cbc update`: Pull the latest scripts via sparse checkout and reload them.

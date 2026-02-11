@@ -20,19 +20,18 @@ new environments aligned with the toolkit's expectations.【F:cbc_aliases.sh†L
 
 ## Overview
 
-The core script detects whether [Charmbracelet gum](<https://github.com/>
-charmbracelet/gum) is available before exposing a Catppuccin-themed set of
-styling helpers and gracefully falling back to plain `printf` and `read` when
-gum is absent.【F:custom_bash_commands.sh†L1-L129】 A startup routine creates the
-Temporary, GitHub, and Grymm's Grimoires working directories, checks GitHub for
-new CBC releases with cached polling rules, and prints a version dashboard so
-users know which features loaded successfully.【F:custom_bash_commands.sh†L1579-L1781】【F:custom_bash_commands.sh†L1787-L1829】【F:custom_bash_commands.sh†L3220-L3342】
+The core script uses [Charmbracelet gum](<https://github.com/charmbracelet/gum>)
+for Catppuccin-themed styling helpers and interactive prompts.
+【F:custom_bash_commands.sh†L1-L129】 A startup routine creates the Temporary,
+GitHub, and Grymm's Grimoires working directories, checks GitHub for new CBC
+releases with cached polling rules, and prints a version dashboard so users know
+which features loaded successfully.【F:custom_bash_commands.sh†L1579-L1781】【F:custom_bash_commands.sh†L1787-L1829】【F:custom_bash_commands.sh†L3220-L3342】
 
 ## Key Components
 
 | Path | Purpose |
 | --- | --- |
-| `custom_bash_commands.sh` | Main entry point. Defines gum-aware UI helpers, configures onboarding tasks, implements feature functions, and triggers the initial status output when sourced.【F:custom_bash_commands.sh†L1-L3357】 |
+| `custom_bash_commands.sh` | Main entry point. Defines gum-driven UI helpers, configures onboarding tasks, implements feature functions, and triggers the initial status output when sourced.【F:custom_bash_commands.sh†L1-L3357】 |
 | `cbc_aliases.sh` | Catalog of navigation shortcuts, Git aliases, fuzzy wrappers, media launchers, and helper shorthands that keep the main script modular.【F:cbc_aliases.sh†L1-L135】 |
 | `install_cbc.sh` | Installer that validates the repository path, copies the main script and aliases into the home directory, and appends sourcing lines to `.bashrc` when missing before reloading the shell.【F:install_cbc.sh†L1-L34】 |
 | `docs/` | Reference documentation covering dependency expectations, SOPs for adding functions or aliases, and the current TODO backlog.【F:docs/dependencies.md†L1-L24】【F:docs/standard_operating_procedures.md†L1-L72】【F:docs/todo.md†L1-L81】 |
@@ -45,8 +44,8 @@ call directly so each helper works without manual edits. The
 `docs/dependencies.md` file tracks the primary package list, while the main
 script and alias catalog reference additional utilities such as Git, curl,
 `bat`, `fzf`, `yt-dlp`, `wl-copy`, Obsidian, Lazygit, Zellij, and the Catppuccin
-friendly `eza` file lister.【F:docs/dependencies.md†L1-L24】【F:custom_bash_commands.sh†L145-L1106】【F:cbc_aliases.sh†L11-L135】 Gum is optional but unlocks the
-styled UI experience.【F:custom_bash_commands.sh†L1-L129】
+friendly `eza` file lister.【F:docs/dependencies.md†L1-L24】【F:custom_bash_commands.sh†L145-L1106】【F:cbc_aliases.sh†L11-L135】 Gum is required for
+the styled UI experience.【F:custom_bash_commands.sh†L1-L129】
 
 ## Installation
 
@@ -100,10 +99,10 @@ When the terminal sources CBC it immediately prepares the working environment:
   whether you are up to date or if an update is available.
   【F:custom_bash_commands.sh†L1327-L1386】
 - `display_version` runs automatically once per interactive session to show the
-  current version, discovery hints, and removal instructions, while
-  `cbc_aliases.sh` is sourced to expose every alias. If `.bash_aliases` exists
-  it is sourced as well so user-defined shortcuts remain available.
-  【F:custom_bash_commands.sh†L3220-L3357】【F:cbc_aliases.sh†L1-L135】
+  current version, discovery hints, and removal instructions unless disabled in
+  `~/.config/cbc/cbc.config`. `cbc_aliases.sh` is sourced to expose every alias.
+  If `.bash_aliases` exists it is sourced as well unless disabled in
+  `cbc.config`.【F:custom_bash_commands.sh†L3220-L3357】【F:cbc_aliases.sh†L1-L135】
 
 ## Daily Usage
 
@@ -129,12 +128,20 @@ When the terminal sources CBC it immediately prepares the working environment:
   local version is current or if a new release is available, along with the
   current and latest version numbers plus the release link.
   【F:custom_bash_commands.sh†L1327-L1386】
-- `cbc update` (alias `ucbc`) presents a gum-styled confirmation (with a
-  plain-text fallback) before performing a sparse checkout of the repository.
+- `cbc update` (alias `ucbc`) presents a gum-styled confirmation before
+  performing a sparse checkout of the repository.
   It shows spinners while preparing the temporary clone, pulling the latest
   files, and overwriting `~/.custom_bash_commands.sh` and
   `~/.cbc_aliases.sh` in place. After a successful copy, the script reloads the
   updated commands automatically.【F:custom_bash_commands.sh†L1389-L1462】
+
+### Configure CBC
+
+- `cbc config` writes `~/.config/cbc/cbc.config` with documented defaults for
+  startup banners and list output.
+- Update `cbc.config` to toggle `CBC_SHOW_BANNER`, set `CBC_BANNER_MODE` to
+  `full` or `minimal`, control `CBC_SOURCE_BASH_ALIASES`, or enable
+  `CBC_LIST_SHOW_DESCRIPTIONS`. Use `cbc config -f` to overwrite the file.
 
 ### Manage CBC modules
 

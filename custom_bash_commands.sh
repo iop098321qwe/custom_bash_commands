@@ -9,6 +9,102 @@ CBC_CONFIG_DIR="${CBC_CONFIG_DIR:-$HOME/.config/cbc}"
 CBC_MODULE_ROOT="${CBC_MODULE_ROOT:-$CBC_CONFIG_DIR/modules}"
 CBC_PACKAGE_MANIFEST="${CBC_PACKAGE_MANIFEST:-$CBC_CONFIG_DIR/packages.toml}"
 CBC_MODULE_ENTRYPOINT="cbc-module.sh"
+CBC_CONFIG_FILE="$CBC_CONFIG_DIR/cbc.config"
+
+CBC_SHOW_BANNER="true"
+CBC_BANNER_MODE="full"
+CBC_SOURCE_BASH_ALIASES="true"
+CBC_LIST_SHOW_DESCRIPTIONS="false"
+
+################################################################################
+# CBC CONFIG
+################################################################################
+
+cbc_config_trim() {
+  local text="$1"
+  printf "%s" "$text" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+}
+
+cbc_config_normalize_bool() {
+  local value="${1,,}"
+
+  case "$value" in
+  true | yes | 1)
+    printf '%s' "true"
+    return 0
+    ;;
+  false | no | 0)
+    printf '%s' "false"
+    return 0
+    ;;
+  *)
+    return 1
+    ;;
+  esac
+}
+
+cbc_config_apply() {
+  local key="$1"
+  local value="$2"
+  local normalized=""
+
+  case "$key" in
+  CBC_SHOW_BANNER)
+    if normalized=$(cbc_config_normalize_bool "$value"); then
+      CBC_SHOW_BANNER="$normalized"
+    fi
+    ;;
+  CBC_BANNER_MODE)
+    value="${value,,}"
+    case "$value" in
+    full | minimal)
+      CBC_BANNER_MODE="$value"
+      ;;
+    esac
+    ;;
+  CBC_SOURCE_BASH_ALIASES)
+    if normalized=$(cbc_config_normalize_bool "$value"); then
+      CBC_SOURCE_BASH_ALIASES="$normalized"
+    fi
+    ;;
+  CBC_LIST_SHOW_DESCRIPTIONS)
+    if normalized=$(cbc_config_normalize_bool "$value"); then
+      CBC_LIST_SHOW_DESCRIPTIONS="$normalized"
+    fi
+    ;;
+  esac
+}
+
+cbc_config_load() {
+  [ -f "$CBC_CONFIG_FILE" ] || return 0
+
+  local line=""
+  local key=""
+  local value=""
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%%#*}"
+    line="$(cbc_config_trim "$line")"
+
+    if [ -z "$line" ]; then
+      continue
+    fi
+
+    case "$line" in
+    *=*)
+      key="$(cbc_config_trim "${line%%=*}")"
+      value="$(cbc_config_trim "${line#*=}")"
+      value="${value%\"}"
+      value="${value#\"}"
+      value="${value%\'}"
+      value="${value#\'}"
+      cbc_config_apply "$key" "$value"
+      ;;
+    esac
+  done <"$CBC_CONFIG_FILE"
+}
+
+cbc_config_load
 
 ###############################################################################
 # GUM HELPERS
@@ -36,77 +132,50 @@ CATPPUCCIN_SURFACE1="#45475a"
 CATPPUCCIN_SURFACE2="#585b70"
 CATPPUCCIN_BASE="#1e1e2e"
 
-if command -v gum >/dev/null 2>&1; then
-  CBC_HAS_GUM=1
-else
-  CBC_HAS_GUM=0
-fi
-
 cbc_style_box() {
   local border_color="$1"
   shift
-  if [ "$CBC_HAS_GUM" -eq 1 ]; then
-    gum style \
-      --border rounded \
-      --border-foreground "$border_color" \
-      --foreground "$CATPPUCCIN_TEXT" \
-      --background "$CATPPUCCIN_SURFACE0" \
-      --padding "0 2" \
-      --margin "0 0 1 0" \
-      "$@"
-  else
-    printf '%s\n' "$@"
-  fi
+  gum style \
+    --border rounded \
+    --border-foreground "$border_color" \
+    --foreground "$CATPPUCCIN_TEXT" \
+    --background "$CATPPUCCIN_SURFACE0" \
+    --padding "0 2" \
+    --margin "0 0 1 0" \
+    "$@"
 }
 
 cbc_style_message() {
   local color="$1"
   shift
-  if [ "$CBC_HAS_GUM" -eq 1 ]; then
-    gum style \
-      --foreground "$color" \
-      --background "$CATPPUCCIN_BASE" \
-      "$@"
-  else
-    printf '%s\n' "$*"
-  fi
+  gum style \
+    --foreground "$color" \
+    --background "$CATPPUCCIN_BASE" \
+    "$@"
 }
 
 cbc_style_note() {
   local title="$1"
   shift
-  if [ "$CBC_HAS_GUM" -eq 1 ]; then
-    gum style \
-      --border normal \
-      --border-foreground "$CATPPUCCIN_LAVENDER" \
-      --foreground "$CATPPUCCIN_TEXT" \
-      --background "$CATPPUCCIN_SURFACE1" \
-      --padding "0 2" \
-      --margin "0 0 1 0" \
-      "$title" "$@"
-  else
-    printf '%s\n' "$title" "$@"
-  fi
+  gum style \
+    --border normal \
+    --border-foreground "$CATPPUCCIN_LAVENDER" \
+    --foreground "$CATPPUCCIN_TEXT" \
+    --background "$CATPPUCCIN_SURFACE1" \
+    --padding "0 2" \
+    --margin "0 0 1 0" \
+    "$title" "$@"
 }
 
 cbc_confirm() {
   local prompt="$1"
   shift
-  if [ "$CBC_HAS_GUM" -eq 1 ]; then
-    gum confirm \
-      --prompt.foreground "$CATPPUCCIN_LAVENDER" \
-      --selected.foreground "$CATPPUCCIN_GREEN" \
-      --selected.background "$CATPPUCCIN_SURFACE1" \
-      --unselected.foreground "$CATPPUCCIN_RED" \
-      "$prompt"
-  else
-    local response
-    read -r -p "$prompt [y/N]: " response
-    case "${response,,}" in
-    y | yes) return 0 ;;
-    *) return 1 ;;
-    esac
-  fi
+  gum confirm \
+    --prompt.foreground "$CATPPUCCIN_LAVENDER" \
+    --selected.foreground "$CATPPUCCIN_GREEN" \
+    --selected.background "$CATPPUCCIN_SURFACE1" \
+    --unselected.foreground "$CATPPUCCIN_RED" \
+    "$prompt"
 }
 
 cbc_input() {
@@ -114,27 +183,17 @@ cbc_input() {
   shift
   local placeholder="$1"
   shift
-  if [ "$CBC_HAS_GUM" -eq 1 ]; then
-    gum input \
-      --prompt.foreground "$CATPPUCCIN_LAVENDER" \
-      --cursor.foreground "$CATPPUCCIN_GREEN" \
-      --prompt "$prompt" \
-      --placeholder "$placeholder"
-  else
-    local input_value
-    read -r -p "$prompt" input_value
-    printf '%s' "$input_value"
-  fi
+  gum input \
+    --prompt.foreground "$CATPPUCCIN_LAVENDER" \
+    --cursor.foreground "$CATPPUCCIN_GREEN" \
+    --prompt "$prompt" \
+    --placeholder "$placeholder"
 }
 
 cbc_spinner() {
   local title="$1"
   shift
-  if [ "$CBC_HAS_GUM" -eq 1 ]; then
-    gum spin --spinner dot --title "$title" --title.foreground "$CATPPUCCIN_MAUVE" -- "$@"
-  else
-    "$@"
-  fi
+  gum spin --spinner dot --title "$title" --title.foreground "$CATPPUCCIN_MAUVE" -- "$@"
 }
 
 ################################################################################
@@ -903,6 +962,143 @@ cbc_pkg() {
   esac
 }
 
+################################################################################
+# CBC CONFIG
+################################################################################
+
+cbc_config() {
+  OPTIND=1
+  local force=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Generate the CBC config file with documented defaults."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc config [-f]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message" \
+      "  -f    Overwrite the existing config file"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc config" \
+      "  cbc config -f"
+  }
+
+  while getopts ":hf" opt; do
+    case $opt in
+    h)
+      usage
+      return 0
+      ;;
+    f)
+      force=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ $# -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
+  mkdir -p "$CBC_CONFIG_DIR"
+
+  if [ -f "$CBC_CONFIG_FILE" ] && [ "$force" = false ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Config already exists at $CBC_CONFIG_FILE." \
+      "Use 'cbc config -f' to overwrite."
+    return 0
+  fi
+
+  cat <<'EOF' >"$CBC_CONFIG_FILE"
+# CBC configuration file
+# Location: ~/.config/cbc/cbc.config
+#
+# Format:
+#   KEY=VALUE
+#
+# Rules:
+# - Lines starting with '#' are comments.
+# - Blank lines are ignored.
+# - Unknown keys are ignored.
+# - Values are case-insensitive for booleans.
+#
+# Boolean values:
+#   true | false | yes | no | 1 | 0
+#
+# Notes:
+# - This file is read when CBC loads.
+# - If a value is invalid, CBC keeps its default.
+# - Only the settings below are supported right now.
+#
+# -------------------------------------------------------------------
+# 1) Startup banner
+# -------------------------------------------------------------------
+#
+# CBC_SHOW_BANNER
+# Controls whether CBC prints the banner when a new interactive shell
+# session starts.
+#
+# - true  = show the banner (default)
+# - false = do not show the banner
+#
+# Default: true
+#
+CBC_SHOW_BANNER=true
+#
+# CBC_BANNER_MODE
+# Controls how much banner information is printed.
+#
+# - full    = current behavior (two lines, including version + links)
+# - minimal = a single line with the version only
+#
+# Default: full
+#
+CBC_BANNER_MODE=full
+#
+# -------------------------------------------------------------------
+# 2) Alias sourcing
+# -------------------------------------------------------------------
+#
+# CBC_SOURCE_BASH_ALIASES
+# Controls whether CBC will source ~/.bash_aliases after loading
+# CBC functions and aliases.
+#
+# - true  = source ~/.bash_aliases (default)
+# - false = skip sourcing ~/.bash_aliases
+#
+# Default: true
+#
+CBC_SOURCE_BASH_ALIASES=true
+#
+# -------------------------------------------------------------------
+# 3) cbc list output
+# -------------------------------------------------------------------
+#
+# CBC_LIST_SHOW_DESCRIPTIONS
+# Controls whether `cbc list` defaults to showing descriptions (the
+# same output you get from `cbc list -v`).
+#
+# - true  = behave like `cbc list -v`
+# - false = behave like `cbc list` (default)
+#
+# Default: false
+#
+CBC_LIST_SHOW_DESCRIPTIONS=false
+EOF
+
+  cbc_style_message "$CATPPUCCIN_GREEN" \
+    "Wrote CBC config to $CBC_CONFIG_FILE."
+}
+
 cbc() {
   OPTIND=1
 
@@ -914,12 +1110,14 @@ cbc() {
       "  cbc [subcommand]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Subcommands:" \
+      "  config Generate the CBC configuration file" \
       "  list   List CBC commands and aliases" \
       "  pkg    Manage CBC modules (install, list, load, uninstall, update)" \
       "  update Check for CBC updates" \
       "  -h     Display this help message"
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc config" \
       "  cbc list" \
       "  cbc list -v" \
       "  cbc pkg" \
@@ -950,6 +1148,9 @@ cbc() {
   case "$subcommand" in
   "" | -h | --help)
     usage
+    ;;
+  config)
+    cbc_config "$@"
     ;;
   list)
     cbc_list "$@"
@@ -1565,9 +1766,17 @@ display_version() {
 
   shift $((OPTIND - 1))
 
-  # Display version details in a fancy box
-  cbc_style_message "$CATPPUCCIN_GREEN" "CUSTOM BASH COMMANDS (by iop098321qwe)"
-  cbc_style_message "$CATPPUCCIN_YELLOW" "🔹🔹$CBC_VERSION🔹🔹CHANGELOG: 'changes'🔹🔹RELEASES: 'releases'🔹🔹WIKI: 'wiki'🔹🔹"
+  local banner_mode="${CBC_BANNER_MODE,,}"
+
+  case "$banner_mode" in
+  minimal)
+    cbc_style_message "$CATPPUCCIN_YELLOW" "$CBC_VERSION"
+    ;;
+  *)
+    cbc_style_message "$CATPPUCCIN_GREEN" "CUSTOM BASH COMMANDS (by iop098321qwe)"
+    cbc_style_message "$CATPPUCCIN_YELLOW" "🔹🔹$CBC_VERSION🔹🔹CHANGELOG: 'changes'🔹🔹RELEASES: 'releases'🔹🔹WIKI: 'wiki'🔹🔹"
+    ;;
+  esac
 }
 
 ################################################################################
@@ -1591,6 +1800,7 @@ cbc_list_render() {
 
   local -a function_names=(
     "cbc"
+    "cbc config"
     "cbc list"
     "cbc pkg"
     "cbc update"
@@ -1606,6 +1816,7 @@ cbc_list_render() {
 
   local -a function_descs=(
     "Entry point for CBC subcommands"
+    "Generate the CBC config file"
     "List CBC commands and aliases"
     "Manage CBC modules (install, list, load, uninstall, update)"
     "Update CBC scripts and reload"
@@ -1785,6 +1996,10 @@ cbc_list() {
 
   shift $((OPTIND - 1))
 
+  if [ "$all_info" = false ] && [ "$CBC_LIST_SHOW_DESCRIPTIONS" = true ]; then
+    all_info=true
+  fi
+
   if [ $# -gt 1 ]; then
     cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
     return 1
@@ -1840,7 +2055,7 @@ regex_help() {
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -f <flavor>    Show the cheat-sheet for a specific regex flavor" \
-      "  -i             Interactively choose a flavor (gum, fzf, or select)" \
+      "  -i             Interactively choose a flavor (gum)" \
       "  -l             List the available flavors and their typical tools" \
       "  -h             Display this help message"
 
@@ -1951,24 +2166,8 @@ regex_help() {
       options+=("$entry|${flavor_names[$entry]} — ${flavor_tools[$entry]}")
     done
 
-    if [ "$CBC_HAS_GUM" -eq 1 ]; then
-      selection=$(printf '%s\n' "${options[@]}" |
-        gum choose --header "Select a regex flavor" --limit 1 2>/dev/null)
-    elif command -v fzf >/dev/null 2>&1; then
-      selection=$(printf '%s\n' "${options[@]}" |
-        fzf --prompt="Regex flavor > " \
-          --header="TAB or arrows to move, ENTER to confirm" \
-          --delimiter='|' --with-nth=2.. 2>/dev/null)
-    fi
-
-    if [ -z "$selection" ] && [ -t 0 ] && [ -t 1 ]; then
-      local PS3="Choose a regex flavor (default ${flavor_names[$default_flavor]}): "
-      select selection in "${options[@]}"; do
-        if [ -n "$selection" ]; then
-          break
-        fi
-      done
-    fi
+    selection=$(printf '%s\n' "${options[@]}" |
+      gum choose --header "Select a regex flavor" --limit 1 2>/dev/null)
 
     if [ -z "$selection" ]; then
       return 1
@@ -2200,7 +2399,7 @@ cbc_pkg_load_modules auto
 # Call the function to display information once per interactive session
 ###############################################################################
 
-if [[ $- == *i* ]]; then
+if [[ $- == *i* ]] && [ "$CBC_SHOW_BANNER" = true ]; then
   if [ -z "${CBC_INFO_SHOWN:-}" ]; then
     CBC_INFO_SHOWN=1
     export CBC_INFO_SHOWN
@@ -2213,6 +2412,6 @@ fi
 ###############################################################################
 
 # If the .bash_aliases file exists, source it
-if [ -f ~/.bash_aliases ]; then
+if [ "$CBC_SOURCE_BASH_ALIASES" = true ] && [ -f ~/.bash_aliases ]; then
   . ~/.bash_aliases
 fi
