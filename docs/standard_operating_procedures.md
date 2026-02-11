@@ -94,10 +94,10 @@ Steps:
 `cbc list` is the primary discovery command. When adding or removing functions
 or aliases, update these arrays in `custom_bash_commands.sh`:
 
-- `functions`
-- `aliases`
-- `function_details`
-- `alias_details`
+- `function_names`
+- `alias_names`
+- `function_descs`
+- `alias_descs`
 
 ## Documentation Updates
 
