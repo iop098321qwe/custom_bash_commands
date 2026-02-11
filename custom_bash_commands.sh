@@ -1593,6 +1593,19 @@ cbc_update_run() {
   local FILE_PATHS
   local new_filename
   local copy_errors=0
+  local can_spin=true
+  local source_path=""
+  local target_script="$HOME/.custom_bash_commands.sh"
+
+  if ! command -v gum >/dev/null 2>&1; then
+    can_spin=false
+  fi
+
+  if [ ! -t 0 ] || [ ! -t 1 ]; then
+    can_spin=false
+  fi
+
+  source_path="${BASH_SOURCE[0]}"
 
   cleanup_sparse_dir() {
     if [ -n "$SPARSE_DIR" ] && [ -d "$SPARSE_DIR" ]; then
@@ -1615,29 +1628,71 @@ cbc_update_run() {
 
   cbc_style_box "$CATPPUCCIN_BLUE" "Updating Custom Bash Commands"
 
+  if [ -n "$source_path" ] && [ "$source_path" != "$target_script" ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "CBC is sourced from $source_path."
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Updates overwrite $target_script."
+  fi
+
   if ! cbc_confirm "Pull the latest version and overwrite local files?"; then
     cbc_style_message "$CATPPUCCIN_YELLOW" "Update cancelled."
     return 0
   fi
 
   # Initialize an empty git repository and configure for sparse checkout
-  if ! cbc_spinner "Preparing temporary checkout" \
-    git -C "$SPARSE_DIR" init -q &&
-    git -C "$SPARSE_DIR" remote add origin "$REPO_URL" &&
-    git -C "$SPARSE_DIR" config core.sparseCheckout true; then
-    cbc_style_message "$CATPPUCCIN_RED" "Failed to prepare sparse checkout."
-    return 1
+  if [ "$can_spin" = true ]; then
+    if ! cbc_spinner "Preparing temporary checkout" \
+      bash -c "git -C \"$SPARSE_DIR\" init -q && \
+      git -C \"$SPARSE_DIR\" remote add origin \"$REPO_URL\" && \
+      git -C \"$SPARSE_DIR\" config core.sparseCheckout true"; then
+      cbc_style_message "$CATPPUCCIN_RED" "Failed to prepare sparse checkout."
+      return 1
+    fi
+  else
+    if ! git -C "$SPARSE_DIR" init -q ||
+      ! git -C "$SPARSE_DIR" remote add origin "$REPO_URL" ||
+      ! git -C "$SPARSE_DIR" config core.sparseCheckout true; then
+      cbc_style_message "$CATPPUCCIN_RED" "Failed to prepare sparse checkout."
+      return 1
+    fi
   fi
 
   for path in "${FILE_PATHS[@]}"; do
     echo "$path" >>"$SPARSE_DIR/.git/info/sparse-checkout"
   done
 
-  if ! cbc_spinner "Downloading updates" \
-    git -C "$SPARSE_DIR" pull origin main -q; then
-    cbc_style_message "$CATPPUCCIN_RED" "Unable to download updates from the repository."
-    return 1
+  local pull_log="$SPARSE_DIR/.cbc_update_pull.log"
+  rm -f "$pull_log"
+
+  if [ "$can_spin" = true ]; then
+    if ! cbc_spinner "Downloading updates" \
+      bash -c "git -C \"$SPARSE_DIR\" pull origin main \
+      >\"$pull_log\" 2>&1"; then
+      cbc_style_message "$CATPPUCCIN_RED" \
+        "Unable to download updates from the repository."
+      if [ -s "$pull_log" ]; then
+        cbc_style_message "$CATPPUCCIN_RED" "Git error:"
+        cat "$pull_log"
+      fi
+      rm -f "$pull_log"
+      return 1
+    fi
+  else
+    if ! git -C "$SPARSE_DIR" pull origin main \
+      >"$pull_log" 2>&1; then
+      cbc_style_message "$CATPPUCCIN_RED" \
+        "Unable to download updates from the repository."
+      if [ -s "$pull_log" ]; then
+        cbc_style_message "$CATPPUCCIN_RED" "Git error:"
+        cat "$pull_log"
+      fi
+      rm -f "$pull_log"
+      return 1
+    fi
   fi
+
+  rm -f "$pull_log"
 
   for path in "${FILE_PATHS[@]}"; do
     new_filename="$(basename "$path")"
@@ -1645,10 +1700,17 @@ cbc_update_run() {
       new_filename=".$new_filename"
     fi
 
-    if ! cbc_spinner "Updating $new_filename" \
-      cp "$SPARSE_DIR/$path" "$HOME/$new_filename"; then
-      cbc_style_message "$CATPPUCCIN_RED" "Failed to copy $path."
-      copy_errors=1
+    if [ "$can_spin" = true ]; then
+      if ! cbc_spinner "Updating $new_filename" \
+        cp "$SPARSE_DIR/$path" "$HOME/$new_filename"; then
+        cbc_style_message "$CATPPUCCIN_RED" "Failed to copy $path."
+        copy_errors=1
+      fi
+    else
+      if ! cp "$SPARSE_DIR/$path" "$HOME/$new_filename"; then
+        cbc_style_message "$CATPPUCCIN_RED" "Failed to copy $path."
+        copy_errors=1
+      fi
     fi
   done
 
