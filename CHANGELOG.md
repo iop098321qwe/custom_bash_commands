@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.19.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.19.1...v306.19.2) (2026-02-12)
+
+
+### Bug Fixes
+
+* **update:** the update should use spinners when loading ([c283c41](https://github.com/iop098321qwe/custom_bash_commands/commit/c283c41f0ac04f2ec54c41212392b96a5a653eb1))
+
 ## [306.19.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.19.0...v306.19.1) (2026-02-11)
 
 
