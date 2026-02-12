@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v306.19.1"
+CBC_VERSION="v306.19.2"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -1829,10 +1829,35 @@ cbc_update_run() {
   trap - EXIT INT TERM
   cleanup_sparse_dir
 
-  cbc_style_message "$CATPPUCCIN_GREEN" "Custom Bash Commands updated. Reloading..."
+  local reload_cmd="source \"$target_script\""
+  local reload_status=0
 
-  # Source the updated commands
-  source ~/.custom_bash_commands.sh
+  if [ "$verbose" = true ]; then
+    printf '[%s] step: reload\n' "$(date +"$log_time_format")"
+    printf '[%s] command: %s\n' "$(date +"$log_time_format")" "$reload_cmd"
+  fi
+
+  if [ "$can_spin" = true ]; then
+    cbc_spinner "Custom Bash Commands updated. Reloading..." bash -c "$reload_cmd"
+    reload_status=$?
+  else
+    cbc_style_message "$CATPPUCCIN_GREEN" \
+      "Custom Bash Commands updated. Reloading..."
+    bash -c "$reload_cmd"
+    reload_status=$?
+  fi
+
+  if [ "$verbose" = true ]; then
+    printf '[%s] reload exit: %s\n' "$(date +"$log_time_format")" "$reload_status"
+  fi
+
+  if [ $reload_status -ne 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Failed to reload CBC."
+    return 1
+  fi
+
+  # Source the updated commands in the current shell
+  source "$target_script"
   display_version
 }
 
