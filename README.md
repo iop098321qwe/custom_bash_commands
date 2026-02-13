@@ -107,6 +107,8 @@ When the terminal sources CBC:
 ### Discover and monitor CBC
 
 - `display_version` (alias `dv`) prints the version banner.
+- `cbc doctor` runs diagnostics for dependencies, config, modules, and
+  GitHub update access.
 - `readme`, `wiki`, `changes`, `releases`, and `dotfiles` open project
   resources in the default browser. Use `-c` to copy URLs where supported.
 - `cbc list [-v]` lists available functions and aliases; it uses `bat` or
