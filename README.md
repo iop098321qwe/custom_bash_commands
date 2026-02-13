@@ -136,6 +136,7 @@ When the terminal sources CBC:
 - `cbc pkg uninstall <creator/repo|module-name>` removes the manifest
   entry and local module folder.
 - `cbc pkg list` shows module status and last update dates.
+- Subcommands support `-h` for help (for example, `cbc pkg install -h`).
 
 ### Aliases and navigation
 
