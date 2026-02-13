@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.20.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.19.2...v306.20.0) (2026-02-13)
+
+
+### Features
+
+* **function:** add `cbc doctor` function for diagnostics ([f940c8a](https://github.com/iop098321qwe/custom_bash_commands/commit/f940c8a88b978ed6c595c368c8f9fe0e3012e5cf))
+
+
+### Bug Fixes
+
+* **subcommand:** fix `-h` flag for help in subcommands ([af41d3a](https://github.com/iop098321qwe/custom_bash_commands/commit/af41d3ab553ef5a51016c4af0792ad350d8b38bd))
+
 ## [306.19.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.19.1...v306.19.2) (2026-02-12)
 
 
