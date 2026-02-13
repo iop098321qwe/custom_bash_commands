@@ -85,10 +85,12 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `cbc list` or `cbc list -v`: List available commands and descriptions.
 - `cbc config [-f]`: Write the CBC config file to
   `~/.config/cbc/cbc.config`.
+- `cbc doctor`: Run diagnostics for config, dependencies, modules, and update
+  access.
 - `cbc update check`: Query the latest GitHub release and report the current
   and latest versions plus the release link.
 - `cbc update`: Pull the latest scripts via sparse checkout and reload them.
-- `cbc pkg`: Manage CBC modules (see `custom_bash_commands.sh`).
+- `cbc pkg`: Manage CBC modules (subcommands support `-h`).
 - `display_version` or `dv`: Print the current CBC version banner.
 - `changes [-c]`: Open the changelog or copy the URL.
 - `releases [-c]`: Open the releases page or copy the URL.
@@ -154,7 +156,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
   - nvim
   - wl-copy
 - `docs/dependencies.md` optional tools: zellij, sudo.
-- External service: GitHub is used by `cbc update check` and `cbc update`.
+- External service: GitHub is used by `cbc update check`, `cbc update`,
+  and `cbc doctor`.
 
 ## Troubleshooting
 

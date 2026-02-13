@@ -107,6 +107,8 @@ When the terminal sources CBC:
 ### Discover and monitor CBC
 
 - `display_version` (alias `dv`) prints the version banner.
+- `cbc doctor` runs diagnostics for dependencies, config, modules, and
+  GitHub update access.
 - `readme`, `wiki`, `changes`, `releases`, and `dotfiles` open project
   resources in the default browser. Use `-c` to copy URLs where supported.
 - `cbc list [-v]` lists available functions and aliases; it uses `bat` or
@@ -134,6 +136,7 @@ When the terminal sources CBC:
 - `cbc pkg uninstall <creator/repo|module-name>` removes the manifest
   entry and local module folder.
 - `cbc pkg list` shows module status and last update dates.
+- Subcommands support `-h` for help (for example, `cbc pkg install -h`).
 
 ### Aliases and navigation
 

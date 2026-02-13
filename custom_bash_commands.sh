@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v306.19.2"
+CBC_VERSION="v306.20.0"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -558,11 +558,58 @@ cbc_pkg_align_with_manifest() {
 }
 
 cbc_pkg_install() {
-  local use="$1"
+  OPTIND=1
+  local show_help=false
 
-  if [ -z "$use" ]; then
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Record a CBC module source in packages.toml."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc pkg install <creator/repo|git-url|path>"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc pkg install creator/example-module" \
+      "  cbc pkg install https://github.com/creator/example-module.git" \
+      "  cbc pkg install ~/dev/example-module"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ $# -eq 0 ]; then
     cbc_style_message "$CATPPUCCIN_RED" \
       "No module source provided. Use 'cbc pkg install <creator/repo>' or a git URL."
+    return 1
+  fi
+
+  if [ $# -gt 1 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
+  local use="$1"
+  if [[ "$use" == -* ]]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Invalid option: $use"
     return 1
   fi
 
@@ -593,11 +640,57 @@ cbc_pkg_install() {
 }
 
 cbc_pkg_uninstall() {
-  local use="$1"
+  OPTIND=1
+  local show_help=false
 
-  if [ -z "$use" ]; then
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Remove a CBC module from packages.toml and local modules."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc pkg uninstall <creator/repo|module-name>"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc pkg uninstall creator/example-module" \
+      "  cbc pkg uninstall example-module"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ $# -eq 0 ]; then
     cbc_style_message "$CATPPUCCIN_RED" \
       "No module provided. Use 'cbc pkg uninstall <creator/repo|module-name>'."
+    return 1
+  fi
+
+  if [ $# -gt 1 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
+  local use="$1"
+  if [[ "$use" == -* ]]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Invalid option: $use"
     return 1
   fi
 
@@ -665,6 +758,47 @@ cbc_pkg_uninstall() {
 }
 
 cbc_pkg_list() {
+  OPTIND=1
+  local show_help=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  List CBC modules and their update status."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc pkg list"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  cbc pkg list"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ $# -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
   cbc_pkg_ensure_config
   cbc_pkg_read_manifest
 
@@ -738,6 +872,47 @@ cbc_pkg_list() {
 }
 
 cbc_pkg_update() {
+  OPTIND=1
+  local show_help=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Update installed CBC modules and refresh the manifest."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc pkg update"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  cbc pkg update"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ $# -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
   if ! command -v git >/dev/null 2>&1; then
     cbc_style_message "$CATPPUCCIN_RED" \
       "Git is required to update modules. Install git and try again."
@@ -887,6 +1062,51 @@ cbc_pkg_load_modules() {
   fi
 }
 
+cbc_pkg_load() {
+  OPTIND=1
+  local show_help=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Load CBC modules from packages.toml and local modules."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc pkg load"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  cbc pkg load"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ $# -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
+  cbc_pkg_load_modules
+}
+
 cbc_pkg() {
   OPTIND=1
   local show_help=false
@@ -940,19 +1160,19 @@ cbc_pkg() {
 
   case "$subcommand" in
   install)
-    cbc_pkg_install "$1"
+    cbc_pkg_install "$@"
     ;;
   list)
-    cbc_pkg_list
+    cbc_pkg_list "$@"
     ;;
   load)
-    cbc_pkg_load_modules
+    cbc_pkg_load "$@"
     ;;
   uninstall)
-    cbc_pkg_uninstall "$1"
+    cbc_pkg_uninstall "$@"
     ;;
   update)
-    cbc_pkg_update
+    cbc_pkg_update "$@"
     ;;
   *)
     cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc pkg command: $subcommand"
@@ -1111,6 +1331,7 @@ cbc() {
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Subcommands:" \
       "  config Generate the CBC configuration file" \
+      "  doctor Run CBC diagnostics" \
       "  list   List CBC commands and aliases" \
       "  pkg    Manage CBC modules (install, list, load, uninstall, update)" \
       "  update Check for CBC updates" \
@@ -1118,6 +1339,7 @@ cbc() {
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
       "  cbc config" \
+      "  cbc doctor" \
       "  cbc list" \
       "  cbc list -v" \
       "  cbc pkg" \
@@ -1151,6 +1373,9 @@ cbc() {
     ;;
   config)
     cbc_config "$@"
+    ;;
+  doctor)
+    cbc_doctor "$@"
     ;;
   list)
     cbc_list "$@"
@@ -1927,6 +2152,419 @@ cbc_update() {
 }
 
 ################################################################################
+# CBC DOCTOR
+################################################################################
+
+cbc_doctor() {
+  OPTIND=1
+  local show_help=false
+  local has_gum=true
+
+  if ! command -v gum >/dev/null 2>&1; then
+    has_gum=false
+  fi
+
+  usage() {
+    if [ "$has_gum" = true ]; then
+      cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+        "  Run diagnostics for CBC configuration, dependencies, and updates."
+
+      cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+        "  cbc doctor [-h]"
+
+      cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+        "  -h    Display this help message"
+
+      cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+        "  cbc doctor"
+      return
+    fi
+
+    printf '%s\n' "Description: Run diagnostics for CBC configuration, dependencies, and updates."
+    printf '%s\n' "Usage: cbc doctor [-h]"
+    printf '%s\n' "Options: -h  Display this help message"
+    printf '%s\n' "Example: cbc doctor"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      if [ "$has_gum" = true ]; then
+        cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      else
+        printf '%s\n' "Invalid option: -$OPTARG"
+      fi
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ $# -gt 0 ]; then
+    if [ "$has_gum" = true ]; then
+      cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    else
+      printf '%s\n' "Error: Unexpected arguments: $*"
+    fi
+    return 1
+  fi
+
+  local ok=0
+  local warn=0
+  local fail=0
+
+  local -a summary_lines=()
+  local -a dependency_lines=()
+  local -a file_lines=()
+  local -a module_lines=()
+  local -a network_lines=()
+
+  cbc_doctor_pretty_path() {
+    local path="$1"
+
+    if [[ "$path" == "$HOME"* ]]; then
+      printf '~%s' "${path#$HOME}"
+      return
+    fi
+
+    printf '%s' "$path"
+  }
+
+  cbc_doctor_add_result() {
+    local status="$1"
+    local label="$2"
+    local detail="$3"
+    local -n out="$4"
+    local line=""
+
+    case "$status" in
+    OK)
+      ok=$((ok + 1))
+      ;;
+    WARN)
+      warn=$((warn + 1))
+      ;;
+    FAIL)
+      fail=$((fail + 1))
+      ;;
+    esac
+
+    if [ -n "$detail" ]; then
+      printf -v line '%-4s %s - %s' "$status" "$label" "$detail"
+    else
+      printf -v line '%-4s %s' "$status" "$label"
+    fi
+
+    out+=("$line")
+  }
+
+  cbc_doctor_print_box() {
+    local color="$1"
+    local title="$2"
+    shift 2
+    local -a lines=("$@")
+
+    if [ "$has_gum" = true ]; then
+      cbc_style_box "$color" "$title" "${lines[@]}"
+      return
+    fi
+
+    printf '%s\n' "$title"
+    local line
+    for line in "${lines[@]}"; do
+      printf '  %s\n' "$line"
+    done
+    printf '\n'
+  }
+
+  cbc_doctor_check_tool() {
+    local cmd="$1"
+    local label="$2"
+    local required="$3"
+    local out_name="$4"
+    local resolved=""
+
+    resolved="$(command -v "$cmd" 2>/dev/null || true)"
+
+    if [ -n "$resolved" ]; then
+      cbc_doctor_add_result "OK" "$label" "$resolved" "$out_name"
+      return
+    fi
+
+    if [ "$required" = true ]; then
+      cbc_doctor_add_result "FAIL" "$label" "missing" "$out_name"
+      return
+    fi
+
+    cbc_doctor_add_result "WARN" "$label" "missing (optional)" "$out_name"
+  }
+
+  cbc_doctor_check_file() {
+    local label="$1"
+    local path="$2"
+    local required="$3"
+    local out_name="$4"
+    local display
+
+    display="$(cbc_doctor_pretty_path "$path")"
+
+    if [ -f "$path" ]; then
+      cbc_doctor_add_result "OK" "$label" "$display" "$out_name"
+      return
+    fi
+
+    if [ "$required" = true ]; then
+      cbc_doctor_add_result "FAIL" "$label" "missing: $display" "$out_name"
+      return
+    fi
+
+    cbc_doctor_add_result "WARN" "$label" "missing: $display" "$out_name"
+  }
+
+  cbc_doctor_check_dir() {
+    local label="$1"
+    local path="$2"
+    local required="$3"
+    local out_name="$4"
+    local display
+
+    display="$(cbc_doctor_pretty_path "$path")"
+
+    if [ -d "$path" ]; then
+      cbc_doctor_add_result "OK" "$label" "$display" "$out_name"
+      return
+    fi
+
+    if [ "$required" = true ]; then
+      cbc_doctor_add_result "FAIL" "$label" "missing: $display" "$out_name"
+      return
+    fi
+
+    cbc_doctor_add_result "WARN" "$label" "missing: $display" "$out_name"
+  }
+
+  cbc_doctor_check_tool "bash" "bash" true dependency_lines
+  cbc_doctor_check_tool "git" "git" true dependency_lines
+  cbc_doctor_check_tool "curl" "curl" true dependency_lines
+  cbc_doctor_check_tool "sed" "sed" true dependency_lines
+  cbc_doctor_check_tool "awk" "awk" true dependency_lines
+  cbc_doctor_check_tool "sha256sum" "sha256sum" true dependency_lines
+  cbc_doctor_check_tool "find" "find" true dependency_lines
+  cbc_doctor_check_tool "sort" "sort" true dependency_lines
+  cbc_doctor_check_tool "xargs" "xargs" true dependency_lines
+  cbc_doctor_check_tool "man" "man" true dependency_lines
+  cbc_doctor_check_tool "xdg-open" "xdg-open" true dependency_lines
+  cbc_doctor_check_tool "setsid" "setsid" true dependency_lines
+  cbc_doctor_check_tool "gum" "gum" true dependency_lines
+  cbc_doctor_check_tool "fzf" "fzf" true dependency_lines
+
+  if command -v bat >/dev/null 2>&1; then
+    cbc_doctor_add_result "OK" "bat/batcat" "$(command -v bat)" dependency_lines
+  elif command -v batcat >/dev/null 2>&1; then
+    cbc_doctor_add_result "OK" "bat/batcat" "$(command -v batcat)" dependency_lines
+  else
+    cbc_doctor_add_result "FAIL" "bat/batcat" "missing" dependency_lines
+  fi
+
+  cbc_doctor_check_tool "eza" "eza" true dependency_lines
+  cbc_doctor_check_tool "imv-x11" "imv-x11" true dependency_lines
+  cbc_doctor_check_tool "nvim" "nvim" true dependency_lines
+  cbc_doctor_check_tool "wl-copy" "wl-copy" true dependency_lines
+  cbc_doctor_check_tool "zellij" "zellij" false dependency_lines
+  cbc_doctor_check_tool "sudo" "sudo" false dependency_lines
+
+  cbc_doctor_check_file "Main script" "$HOME/.custom_bash_commands.sh" true file_lines
+  cbc_doctor_check_file "Alias catalog" "$HOME/.cbc_aliases.sh" false file_lines
+  cbc_doctor_check_dir "Config dir" "$CBC_CONFIG_DIR" false file_lines
+  cbc_doctor_check_file "Config file" "$CBC_CONFIG_FILE" false file_lines
+
+  if [ "$CBC_SOURCE_BASH_ALIASES" = true ]; then
+    local bash_aliases="$HOME/.bash_aliases"
+    local bash_aliases_display
+    bash_aliases_display="$(cbc_doctor_pretty_path "$bash_aliases")"
+
+    if [ -f "$bash_aliases" ]; then
+      cbc_doctor_add_result "OK" "Bash aliases" "$bash_aliases_display" file_lines
+    else
+      cbc_doctor_add_result "WARN" "Bash aliases" "missing: $bash_aliases_display" file_lines
+    fi
+  else
+    cbc_doctor_add_result "OK" "Bash aliases" "disabled by config" file_lines
+  fi
+
+  local module_root_display
+  module_root_display="$(cbc_doctor_pretty_path "$CBC_MODULE_ROOT")"
+  if [ -d "$CBC_MODULE_ROOT" ]; then
+    cbc_doctor_add_result "OK" "Module root" "$module_root_display" module_lines
+  else
+    cbc_doctor_add_result "FAIL" "Module root" "missing: $module_root_display" module_lines
+  fi
+
+  local manifest_display
+  manifest_display="$(cbc_doctor_pretty_path "$CBC_PACKAGE_MANIFEST")"
+  if [ -f "$CBC_PACKAGE_MANIFEST" ]; then
+    cbc_doctor_add_result "OK" "Packages manifest" "$manifest_display" module_lines
+  else
+    cbc_doctor_add_result "OK" "Packages manifest" "not found (no modules tracked)" module_lines
+  fi
+
+  cbc_pkg_read_manifest
+
+  local -a manifest_modules=()
+  local idx
+  for idx in "${!CBC_MANIFEST_USES[@]}"; do
+    local use="${CBC_MANIFEST_USES[$idx]}"
+    local source=""
+    local module_name=""
+    cbc_pkg_resolve_source "$use" source module_name
+    manifest_modules+=("$module_name")
+
+    local module_dir="$CBC_MODULE_ROOT/$module_name"
+    if [ ! -d "$module_dir" ]; then
+      cbc_doctor_add_result "WARN" "Module $module_name" \
+        "missing; run 'cbc pkg load'" module_lines
+      continue
+    fi
+
+    local entrypoint="$module_dir/$CBC_MODULE_ENTRYPOINT"
+    if [ -f "$entrypoint" ]; then
+      cbc_doctor_add_result "OK" "Module $module_name" "entrypoint ok" module_lines
+    else
+      cbc_doctor_add_result "WARN" "Module $module_name" \
+        "missing $CBC_MODULE_ENTRYPOINT" module_lines
+    fi
+  done
+
+  local local_modules=false
+  shopt -s nullglob
+  for module_dir in "$CBC_MODULE_ROOT"/*; do
+    [ -d "$module_dir" ] || continue
+    local_modules=true
+
+    local module_name
+    module_name="$(basename "$module_dir")"
+
+    if [[ " ${manifest_modules[*]} " == *" $module_name "* ]]; then
+      continue
+    fi
+
+    cbc_doctor_add_result "WARN" "Module $module_name" \
+      "not tracked in packages.toml" module_lines
+  done
+  shopt -u nullglob
+
+  if [ ${#CBC_MANIFEST_USES[@]} -eq 0 ] && [ "$local_modules" = false ]; then
+    if [ -d "$CBC_MODULE_ROOT" ]; then
+      cbc_doctor_add_result "OK" "Modules" "none installed" module_lines
+    fi
+  fi
+
+  local github_api_url="https://api.github.com/repos/iop098321qwe/custom_bash_commands/releases/latest"
+  if command -v curl >/dev/null 2>&1; then
+    local response status body
+    response=$(curl -sSL --connect-timeout 5 --max-time 10 -w "\n%{http_code}" \
+      "$github_api_url" 2>/dev/null || true)
+    status=$(printf '%s\n' "$response" | tail -n1)
+    body=$(printf '%s\n' "$response" | sed '$d')
+
+    if [ "$status" = "200" ]; then
+      local latest_tag_raw=""
+      local latest_tag=""
+      latest_tag_raw="$(cbc_json_get_string "tag_name" "$body")"
+      latest_tag="$(cbc_json_unescape "$latest_tag_raw")"
+
+      if [ -n "$latest_tag" ]; then
+        cbc_doctor_add_result "OK" "GitHub API" "latest release $latest_tag" network_lines
+      else
+        cbc_doctor_add_result "WARN" "GitHub API" "reachable; release tag missing" network_lines
+      fi
+    else
+      local error_message=""
+      local status_label="$status"
+
+      if [ -n "$body" ]; then
+        error_message="$(cbc_json_get_string "message" "$body")"
+        error_message="$(cbc_json_unescape "$error_message")"
+      fi
+
+      if [ -z "$status_label" ]; then
+        status_label="no response"
+      fi
+
+      if [ -n "$error_message" ]; then
+        cbc_doctor_add_result "FAIL" "GitHub API" \
+          "http $status_label: $error_message" network_lines
+      else
+        cbc_doctor_add_result "FAIL" "GitHub API" "http $status_label" network_lines
+      fi
+    fi
+  else
+    cbc_doctor_add_result "FAIL" "GitHub API" "curl missing" network_lines
+  fi
+
+  local github_repo_url="https://github.com/iop098321qwe/custom_bash_commands.git"
+  if command -v git >/dev/null 2>&1; then
+    local git_out=""
+    local git_hash=""
+    git_out="$(GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=true git ls-remote \
+      "$github_repo_url" HEAD 2>/dev/null || true)"
+    git_hash="${git_out%%[[:space:]]*}"
+
+    if [ -n "$git_hash" ]; then
+      cbc_doctor_add_result "OK" "GitHub git" "HEAD $git_hash" network_lines
+    else
+      cbc_doctor_add_result "FAIL" "GitHub git" "ls-remote failed" network_lines
+    fi
+  else
+    cbc_doctor_add_result "FAIL" "GitHub git" "git missing" network_lines
+  fi
+
+  local overall="OK"
+  if [ "$fail" -gt 0 ]; then
+    overall="FAIL"
+  elif [ "$warn" -gt 0 ]; then
+    overall="WARN"
+  fi
+
+  local source_path="${BASH_SOURCE[0]}"
+  local source_display
+  local config_display
+  source_display="$(cbc_doctor_pretty_path "$source_path")"
+  config_display="$(cbc_doctor_pretty_path "$CBC_CONFIG_FILE")"
+
+  summary_lines=(
+    "Overall: $overall"
+    "Version: $CBC_VERSION"
+    "Script: $source_display"
+    "Config: $config_display"
+    "Checks: OK=$ok WARN=$warn FAIL=$fail"
+  )
+
+  local -a file_module_lines=()
+  file_module_lines+=("${file_lines[@]}")
+  file_module_lines+=("${module_lines[@]}")
+
+  cbc_doctor_print_box "$CATPPUCCIN_MAUVE" "Summary" "${summary_lines[@]}"
+  cbc_doctor_print_box "$CATPPUCCIN_BLUE" "Dependencies" "${dependency_lines[@]}"
+  cbc_doctor_print_box "$CATPPUCCIN_TEAL" "Files and Modules" \
+    "${file_module_lines[@]}"
+  cbc_doctor_print_box "$CATPPUCCIN_SAPPHIRE" "Network" "${network_lines[@]}"
+
+  if [ "$fail" -gt 0 ]; then
+    return 1
+  fi
+}
+
+################################################################################
 # DISPLAY VERSION
 ################################################################################
 
@@ -2001,6 +2639,7 @@ cbc_list_render() {
   local -a function_names=(
     "cbc"
     "cbc config"
+    "cbc doctor"
     "cbc list"
     "cbc pkg"
     "cbc update"
@@ -2016,6 +2655,7 @@ cbc_list_render() {
   local -a function_descs=(
     "Entry point for CBC subcommands"
     "Generate the CBC config file"
+    "Run CBC diagnostics"
     "List CBC commands and aliases"
     "Manage CBC modules (install, list, load, uninstall, update)"
     "Update CBC scripts and reload"
