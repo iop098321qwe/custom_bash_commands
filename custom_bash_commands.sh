@@ -558,11 +558,58 @@ cbc_pkg_align_with_manifest() {
 }
 
 cbc_pkg_install() {
-  local use="$1"
+  OPTIND=1
+  local show_help=false
 
-  if [ -z "$use" ]; then
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Record a CBC module source in packages.toml."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc pkg install <creator/repo|git-url|path>"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc pkg install creator/example-module" \
+      "  cbc pkg install https://github.com/creator/example-module.git" \
+      "  cbc pkg install ~/dev/example-module"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ $# -eq 0 ]; then
     cbc_style_message "$CATPPUCCIN_RED" \
       "No module source provided. Use 'cbc pkg install <creator/repo>' or a git URL."
+    return 1
+  fi
+
+  if [ $# -gt 1 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
+  local use="$1"
+  if [[ "$use" == -* ]]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Invalid option: $use"
     return 1
   fi
 
@@ -593,11 +640,57 @@ cbc_pkg_install() {
 }
 
 cbc_pkg_uninstall() {
-  local use="$1"
+  OPTIND=1
+  local show_help=false
 
-  if [ -z "$use" ]; then
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Remove a CBC module from packages.toml and local modules."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc pkg uninstall <creator/repo|module-name>"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc pkg uninstall creator/example-module" \
+      "  cbc pkg uninstall example-module"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ $# -eq 0 ]; then
     cbc_style_message "$CATPPUCCIN_RED" \
       "No module provided. Use 'cbc pkg uninstall <creator/repo|module-name>'."
+    return 1
+  fi
+
+  if [ $# -gt 1 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
+  local use="$1"
+  if [[ "$use" == -* ]]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Invalid option: $use"
     return 1
   fi
 
@@ -665,6 +758,47 @@ cbc_pkg_uninstall() {
 }
 
 cbc_pkg_list() {
+  OPTIND=1
+  local show_help=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  List CBC modules and their update status."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc pkg list"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  cbc pkg list"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ $# -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
   cbc_pkg_ensure_config
   cbc_pkg_read_manifest
 
@@ -738,6 +872,47 @@ cbc_pkg_list() {
 }
 
 cbc_pkg_update() {
+  OPTIND=1
+  local show_help=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Update installed CBC modules and refresh the manifest."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc pkg update"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  cbc pkg update"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ $# -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
   if ! command -v git >/dev/null 2>&1; then
     cbc_style_message "$CATPPUCCIN_RED" \
       "Git is required to update modules. Install git and try again."
@@ -887,6 +1062,51 @@ cbc_pkg_load_modules() {
   fi
 }
 
+cbc_pkg_load() {
+  OPTIND=1
+  local show_help=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Load CBC modules from packages.toml and local modules."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc pkg load"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  cbc pkg load"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ $# -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
+  cbc_pkg_load_modules
+}
+
 cbc_pkg() {
   OPTIND=1
   local show_help=false
@@ -940,19 +1160,19 @@ cbc_pkg() {
 
   case "$subcommand" in
   install)
-    cbc_pkg_install "$1"
+    cbc_pkg_install "$@"
     ;;
   list)
-    cbc_pkg_list
+    cbc_pkg_list "$@"
     ;;
   load)
-    cbc_pkg_load_modules
+    cbc_pkg_load "$@"
     ;;
   uninstall)
-    cbc_pkg_uninstall "$1"
+    cbc_pkg_uninstall "$@"
     ;;
   update)
-    cbc_pkg_update
+    cbc_pkg_update "$@"
     ;;
   *)
     cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc pkg command: $subcommand"

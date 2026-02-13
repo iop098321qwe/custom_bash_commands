@@ -90,7 +90,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `cbc update check`: Query the latest GitHub release and report the current
   and latest versions plus the release link.
 - `cbc update`: Pull the latest scripts via sparse checkout and reload them.
-- `cbc pkg`: Manage CBC modules (see `custom_bash_commands.sh`).
+- `cbc pkg`: Manage CBC modules (subcommands support `-h`).
 - `display_version` or `dv`: Print the current CBC version banner.
 - `changes [-c]`: Open the changelog or copy the URL.
 - `releases [-c]`: Open the releases page or copy the URL.
