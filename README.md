@@ -142,8 +142,8 @@ When the terminal sources CBC:
 
 ### Aliases and navigation
 
-- Editor and shell helpers: `editbash`, `refresh`, `fman`, `nv`,
-  `please`, `myip`, `imv`.
+- Editor and shell helpers: `editbash`, `refresh`, `fman`, `please`,
+  `myip`, `imv`.
 - `eza` wrappers for directory listings such as `la`, `ll`, and `lt`.
 - Python and editor shortcuts: `py`, `python`, `vim`, `v`.
 - Single-letter aliases are limited to `c`, `s`, `v`, `x`, and `z`.

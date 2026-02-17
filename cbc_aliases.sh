@@ -13,7 +13,6 @@ alias fman='compgen -c | fzf | xargs man'
 # TODO: add if statement to check for wayland or x11 and alias accordingly
 alias imv='imv-x11'
 alias myip='curl http://ipecho.net/plain; echo'
-alias nv='files=$(fzf -m --prompt="Select files/dirs for nvim: " --bind "enter:accept") && [ -n "$files" ] && nvim $files'
 alias please='sudo $(history -p !!)'
 alias refresh='source ~/.bashrc && clear'
 
