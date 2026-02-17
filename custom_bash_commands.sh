@@ -1334,6 +1334,7 @@ cbc() {
       "  doctor Run CBC diagnostics" \
       "  list   List CBC commands and aliases" \
       "  pkg    Manage CBC modules (install, list, load, uninstall, update)" \
+      "  test   Reload CBC from a local repo" \
       "  update Check for CBC updates" \
       "  -h     Display this help message"
 
@@ -1344,6 +1345,7 @@ cbc() {
       "  cbc list -v" \
       "  cbc pkg" \
       "  cbc pkg install creator/example-module" \
+      "  cbc test" \
       "  cbc update check"
   }
 
@@ -1382,6 +1384,9 @@ cbc() {
     ;;
   pkg)
     cbc_pkg "$@"
+    ;;
+  test)
+    cbc_test "$@"
     ;;
   update)
     cbc_update "$@"
@@ -2152,6 +2157,87 @@ cbc_update() {
 }
 
 ################################################################################
+# CBC TEST
+################################################################################
+
+cbc_test() {
+  OPTIND=1
+  local show_help=false
+  local repo_path="$HOME/Documents/github_repositories/custom_bash_commands"
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Reload CBC scripts from a local repository."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc test [repo-path]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_LAVENDER" "Notes:" \
+      "  Defaults to ~/Documents/github_repositories/custom_bash_commands."
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc test" \
+      "  cbc test ~/dev/custom_bash_commands"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ $# -gt 1 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
+  if [ $# -eq 1 ]; then
+    repo_path="$1"
+  fi
+
+  repo_path="${repo_path/#\~/$HOME}"
+
+  local script_path="$repo_path/custom_bash_commands.sh"
+  local alias_path="$repo_path/cbc_aliases.sh"
+
+  if [ ! -f "$script_path" ]; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "Missing $script_path. Check the repo path and try again."
+    return 1
+  fi
+
+  if [ ! -f "$alias_path" ]; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "Missing $alias_path. Check the repo path and try again."
+    return 1
+  fi
+
+  # shellcheck disable=SC1090
+  source "$script_path"
+  # shellcheck disable=SC1090
+  source "$alias_path"
+
+  cbc_style_message "$CATPPUCCIN_GREEN" \
+    "Reloaded CBC from $repo_path."
+}
+
+################################################################################
 # CBC DOCTOR
 ################################################################################
 
@@ -2642,6 +2728,7 @@ cbc_list_render() {
     "cbc doctor"
     "cbc list"
     "cbc pkg"
+    "cbc test"
     "cbc update"
     "cbc update check"
     "changes"
@@ -2658,6 +2745,7 @@ cbc_list_render() {
     "Run CBC diagnostics"
     "List CBC commands and aliases"
     "Manage CBC modules (install, list, load, uninstall, update)"
+    "Reload CBC scripts from a local repo"
     "Update CBC scripts and reload"
     "Check for CBC updates"
     "Open the CBC changelog in a browser"
@@ -2693,7 +2781,6 @@ cbc_list_render() {
     "refresh"
     "s"
     "seebash"
-    "test"
     "ucbc"
     "v"
     "vim"
@@ -2726,7 +2813,6 @@ cbc_list_render() {
     "source ~/.bashrc && clear"
     "sudo"
     "batcat ~/.bashrc"
-    "source repo scripts for testing"
     "cbc update"
     "nvim"
     "nvim"

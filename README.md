@@ -119,6 +119,8 @@ When the terminal sources CBC:
 - `cbc update check` queries the latest GitHub release.
 - `cbc update` (alias `ucbc`) pulls the latest scripts via sparse checkout
   and reloads CBC.
+- `cbc test [repo-path]` reloads CBC from a local repo (useful for
+  development).
 
 ### Configure CBC
 
