@@ -91,6 +91,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
   and latest versions plus the release link.
 - `cbc update`: Pull the latest scripts via sparse checkout and reload them.
 - `cbc pkg`: Manage CBC modules (subcommands support `-h`).
+- `cbc test [repo-path]`: Reload CBC scripts from a local repo.
 - `display_version` or `dv`: Print the current CBC version banner.
 - `changes [-c]`: Open the changelog or copy the URL.
 - `releases [-c]`: Open the releases page or copy the URL.
