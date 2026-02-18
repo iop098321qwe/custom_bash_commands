@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [306.21.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.20.0...v306.21.0) (2026-02-18)
+
+
+### Features
+
+* **alias:** remove the `nv` alias ([0dc59b4](https://github.com/iop098321qwe/custom_bash_commands/commit/0dc59b45b06a6e6f685c1d7a9cc0859b5e7afbf8))
+* **function:** add `cbc config edit` command ([59998d2](https://github.com/iop098321qwe/custom_bash_commands/commit/59998d275a450018738f050727b788496f43e414))
+* **function:** replace `test` alias with `cbc test` function ([ffdcab5](https://github.com/iop098321qwe/custom_bash_commands/commit/ffdcab51f05a495a3c95f83a92622564cbde3664))
+
 ## [306.20.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.19.2...v306.20.0) (2026-02-13)
 
 
