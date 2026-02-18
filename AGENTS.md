@@ -85,6 +85,9 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `cbc list` or `cbc list -v`: List available commands and descriptions.
 - `cbc config [-f]`: Write the CBC config file to
   `~/.config/cbc/cbc.config`.
+- `cbc config edit [--reset]` or `cbc config -e [--reset]`: Open the
+  CBC config file in an editor, writing defaults when missing or
+  resetting.
 - `cbc doctor`: Run diagnostics for config, dependencies, modules, and update
   access.
 - `cbc update check`: Query the latest GitHub release and report the current

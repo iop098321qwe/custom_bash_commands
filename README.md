@@ -125,6 +125,9 @@ When the terminal sources CBC:
 ### Configure CBC
 
 - `cbc config [-f]` writes `~/.config/cbc/cbc.config` with defaults.
+- `cbc config edit [--reset]` opens the config in your editor, writing
+  defaults when missing or when `--reset` is used.
+- `cbc config -e [--reset]` is shorthand for the edit workflow.
 - Config keys include `CBC_SHOW_BANNER`, `CBC_BANNER_MODE`,
   `CBC_SOURCE_BASH_ALIASES`, and `CBC_LIST_SHOW_DESCRIPTIONS`.
 

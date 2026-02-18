@@ -1186,57 +1186,8 @@ cbc_pkg() {
 # CBC CONFIG
 ################################################################################
 
-cbc_config() {
-  OPTIND=1
-  local force=false
-
-  usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Generate the CBC config file with documented defaults."
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  cbc config [-f]"
-
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message" \
-      "  -f    Overwrite the existing config file"
-
-    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
-      "  cbc config" \
-      "  cbc config -f"
-  }
-
-  while getopts ":hf" opt; do
-    case $opt in
-    h)
-      usage
-      return 0
-      ;;
-    f)
-      force=true
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
-      return 1
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  if [ $# -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
-    return 1
-  fi
-
+cbc_config_write_defaults() {
   mkdir -p "$CBC_CONFIG_DIR"
-
-  if [ -f "$CBC_CONFIG_FILE" ] && [ "$force" = false ]; then
-    cbc_style_message "$CATPPUCCIN_YELLOW" \
-      "Config already exists at $CBC_CONFIG_FILE." \
-      "Use 'cbc config -f' to overwrite."
-    return 0
-  fi
 
   cat <<'EOF' >"$CBC_CONFIG_FILE"
 # CBC configuration file
@@ -1314,7 +1265,171 @@ CBC_SOURCE_BASH_ALIASES=true
 #
 CBC_LIST_SHOW_DESCRIPTIONS=false
 EOF
+}
 
+cbc_config_edit() {
+  local reset=false
+  local show_help=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Open the CBC config file in your editor."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc config edit [--reset]" \
+      "  cbc config -e [--reset]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h, --help  Display this help message" \
+      "  --reset     Overwrite the config with defaults before editing"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc config edit" \
+      "  cbc config edit --reset" \
+      "  cbc config -e"
+
+    cbc_style_box "$CATPPUCCIN_LAVENDER" "Notes:" \
+      "  Uses \$EDITOR when available and falls back to nvim."
+  }
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+    -h | --help)
+      show_help=true
+      shift
+      ;;
+    --reset)
+      reset=true
+      shift
+      ;;
+    *)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: $1"
+      return 1
+      ;;
+    esac
+  done
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ ! -f "$CBC_CONFIG_FILE" ] || [ "$reset" = true ]; then
+    cbc_config_write_defaults
+    cbc_style_message "$CATPPUCCIN_GREEN" \
+      "Wrote CBC config to $CBC_CONFIG_FILE."
+  fi
+
+  local -a editor_cmd=()
+  if [ -n "${EDITOR:-}" ]; then
+    read -r -a editor_cmd <<<"$EDITOR"
+    if [ ${#editor_cmd[@]} -eq 0 ] || ! command -v "${editor_cmd[0]}" >/dev/null 2>&1; then
+      editor_cmd=()
+    fi
+  fi
+
+  if [ ${#editor_cmd[@]} -eq 0 ] && command -v nvim >/dev/null 2>&1; then
+    editor_cmd=(nvim)
+  fi
+
+  if [ ${#editor_cmd[@]} -eq 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" \
+      "No editor found. Set \$EDITOR or install nvim."
+    return 1
+  fi
+
+  "${editor_cmd[@]}" "$CBC_CONFIG_FILE"
+}
+
+cbc_config() {
+  local force=false
+  local edit=false
+  local show_help=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Generate or edit the CBC config file."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc config [-f]" \
+      "  cbc config edit [--reset]" \
+      "  cbc config -e [--reset]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h, --help  Display this help message" \
+      "  -f          Overwrite the existing config file" \
+      "  -e          Edit the config file" \
+      "  edit        Edit the config file"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+      "  cbc config" \
+      "  cbc config -f" \
+      "  cbc config edit" \
+      "  cbc config edit --reset" \
+      "  cbc config -e"
+  }
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+    -h | --help)
+      show_help=true
+      shift
+      ;;
+    -f)
+      force=true
+      shift
+      ;;
+    -e)
+      edit=true
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      break
+      ;;
+    esac
+  done
+
+  if [ "$show_help" = true ]; then
+    if [ "$edit" = true ] || [ "${1:-}" = "edit" ]; then
+      cbc_config_edit --help
+    else
+      usage
+    fi
+    return 0
+  fi
+
+  if [ "$edit" = true ] || [ "${1:-}" = "edit" ]; then
+    if [ "$force" = true ]; then
+      cbc_style_message "$CATPPUCCIN_RED" \
+        "Option -f cannot be used with 'cbc config edit'."
+      return 1
+    fi
+
+    if [ "${1:-}" = "edit" ]; then
+      shift
+    fi
+
+    cbc_config_edit "$@"
+    return
+  fi
+
+  if [ $# -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
+  if [ -f "$CBC_CONFIG_FILE" ] && [ "$force" = false ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Config already exists at $CBC_CONFIG_FILE." \
+      "Use 'cbc config -f' to overwrite."
+    return 0
+  fi
+
+  cbc_config_write_defaults
   cbc_style_message "$CATPPUCCIN_GREEN" \
     "Wrote CBC config to $CBC_CONFIG_FILE."
 }
@@ -1330,7 +1445,7 @@ cbc() {
       "  cbc [subcommand]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Subcommands:" \
-      "  config Generate the CBC configuration file" \
+      "  config Manage the CBC configuration file" \
       "  doctor Run CBC diagnostics" \
       "  list   List CBC commands and aliases" \
       "  pkg    Manage CBC modules (install, list, load, uninstall, update)" \
@@ -1340,6 +1455,7 @@ cbc() {
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
       "  cbc config" \
+      "  cbc config edit" \
       "  cbc doctor" \
       "  cbc list" \
       "  cbc list -v" \
@@ -2725,6 +2841,7 @@ cbc_list_render() {
   local -a function_names=(
     "cbc"
     "cbc config"
+    "cbc config edit"
     "cbc doctor"
     "cbc list"
     "cbc pkg"
@@ -2742,6 +2859,7 @@ cbc_list_render() {
   local -a function_descs=(
     "Entry point for CBC subcommands"
     "Generate the CBC config file"
+    "Edit the CBC config file"
     "Run CBC diagnostics"
     "List CBC commands and aliases"
     "Manage CBC modules (install, list, load, uninstall, update)"
