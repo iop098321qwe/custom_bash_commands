@@ -119,10 +119,15 @@ When the terminal sources CBC:
 - `cbc update check` queries the latest GitHub release.
 - `cbc update` (alias `ucbc`) pulls the latest scripts via sparse checkout
   and reloads CBC.
+- `cbc test [repo-path]` reloads CBC from a local repo (useful for
+  development).
 
 ### Configure CBC
 
 - `cbc config [-f]` writes `~/.config/cbc/cbc.config` with defaults.
+- `cbc config edit [--reset]` opens the config in your editor, writing
+  defaults when missing or when `--reset` is used.
+- `cbc config -e [--reset]` is shorthand for the edit workflow.
 - Config keys include `CBC_SHOW_BANNER`, `CBC_BANNER_MODE`,
   `CBC_SOURCE_BASH_ALIASES`, and `CBC_LIST_SHOW_DESCRIPTIONS`.
 
@@ -140,8 +145,8 @@ When the terminal sources CBC:
 
 ### Aliases and navigation
 
-- Editor and shell helpers: `editbash`, `refresh`, `fman`, `nv`,
-  `please`, `myip`, `imv`.
+- Editor and shell helpers: `editbash`, `refresh`, `fman`, `please`,
+  `myip`, `imv`.
 - `eza` wrappers for directory listings such as `la`, `ll`, and `lt`.
 - Python and editor shortcuts: `py`, `python`, `vim`, `v`.
 - Single-letter aliases are limited to `c`, `s`, `v`, `x`, and `z`.
