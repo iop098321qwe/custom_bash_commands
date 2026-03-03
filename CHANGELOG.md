@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.21.0...v3.0.0) (2026-03-03)
+
+
+### Features
+
+* **theme:** sync gum colors with Omarchy palette ([2cd4819](https://github.com/iop098321qwe/custom_bash_commands/commit/2cd481943c53fd0ec0840fb40611c3c21650be4b))
+
 ## [306.21.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.20.0...v306.21.0) (2026-02-18)
 
 
