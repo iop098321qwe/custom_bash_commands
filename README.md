@@ -100,6 +100,8 @@ When the terminal sources CBC:
 - `~/.cbc_aliases.sh` is sourced if it exists; missing files trigger a
   warning. When `CBC_SOURCE_BASH_ALIASES=true` (default),
   `~/.bash_aliases` is sourced afterward.
+- Gum-styled output reads Omarchy theme colors from
+  `~/.config/omarchy/current/theme/colors.toml` when available.
 - CBC does not check for updates automatically; use `cbc update check`.
 
 ## Daily Usage
@@ -129,7 +131,9 @@ When the terminal sources CBC:
   defaults when missing or when `--reset` is used.
 - `cbc config -e [--reset]` is shorthand for the edit workflow.
 - Config keys include `CBC_SHOW_BANNER`, `CBC_BANNER_MODE`,
-  `CBC_SOURCE_BASH_ALIASES`, and `CBC_LIST_SHOW_DESCRIPTIONS`.
+  `CBC_SOURCE_BASH_ALIASES`, `CBC_LIST_SHOW_DESCRIPTIONS`, and
+  `CBC_THEME_SOURCE`.
+- `CBC_THEME_SOURCE` accepts `auto`, `catppuccin`, or `omarchy`.
 
 ### Manage CBC modules
 
