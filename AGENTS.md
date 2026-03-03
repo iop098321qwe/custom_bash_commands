@@ -39,7 +39,6 @@ cd ~/Documents/github_repositories/custom_bash_commands
   - `CBC_MODULE_ROOT` (default `~/.config/cbc/modules`)
   - `CBC_PACKAGE_MANIFEST` (default `~/.config/cbc/packages.toml`)
   - `CBC_MODULE_ENTRYPOINT` (default `cbc-module.sh`)
-  - `CBC_THEME_SOURCE` (default `auto`)
   - `CBC_OMARCHY_COLORS_FILE` (default
     `~/.config/omarchy/current/theme/colors.toml`)
 
@@ -74,8 +73,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
   if present and warns when missing. It uses `curl` with
   `--connect-timeout 10` and `--max-time 30` for update checks. Gum helpers
   read Omarchy colors from `~/.config/omarchy/current/theme/colors.toml`
-  when present and fall back to the built-in Catppuccin palette. It parses
-  JSON with `awk` and `sed` for update checks.
+  when present and fall back to the built-in Catppuccin-Mocha palette.
+  It parses JSON with `awk` and `sed` for update checks.
 - `cbc_aliases.sh` defines aliases that the main script loads during startup.
 - `install_cbc.sh` copies scripts into `~`, appends a sourcing block to
   `~/.bashrc` when missing, and creates common directories under
