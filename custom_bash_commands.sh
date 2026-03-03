@@ -15,7 +15,6 @@ CBC_SHOW_BANNER="true"
 CBC_BANNER_MODE="full"
 CBC_SOURCE_BASH_ALIASES="true"
 CBC_LIST_SHOW_DESCRIPTIONS="false"
-CBC_THEME_SOURCE="auto"
 CBC_OMARCHY_COLORS_FILE="$HOME/.config/omarchy/current/theme/colors.toml"
 CBC_THEME_CACHE_FILE=""
 CBC_THEME_CACHE_MTIME=""
@@ -76,14 +75,6 @@ cbc_config_apply() {
       CBC_LIST_SHOW_DESCRIPTIONS="$normalized"
     fi
     ;;
-  CBC_THEME_SOURCE)
-    value="${value,,}"
-    case "$value" in
-    auto | catppuccin | omarchy)
-      CBC_THEME_SOURCE="$value"
-      ;;
-    esac
-    ;;
   esac
 }
 
@@ -122,27 +113,31 @@ cbc_config_load
 # GUM HELPERS
 ###############################################################################
 
-CATPPUCCIN_ROSEWATER="#f5e0dc"
-CATPPUCCIN_FLAMINGO="#f2cdcd"
-CATPPUCCIN_PINK="#f5c2e7"
-CATPPUCCIN_MAUVE="#cba6f7"
-CATPPUCCIN_RED="#f38ba8"
-CATPPUCCIN_MAROON="#eba0ac"
-CATPPUCCIN_PEACH="#fab387"
-CATPPUCCIN_YELLOW="#f9e2af"
-CATPPUCCIN_GREEN="#a6e3a1"
-CATPPUCCIN_TEAL="#94e2d5"
-CATPPUCCIN_SKY="#89dceb"
-CATPPUCCIN_SAPPHIRE="#74c7ec"
-CATPPUCCIN_BLUE="#89b4fa"
-CATPPUCCIN_LAVENDER="#b4befe"
-CATPPUCCIN_TEXT="#cdd6f4"
-CATPPUCCIN_SUBTEXT="#a6adc8"
-CATPPUCCIN_OVERLAY="#6c7086"
-CATPPUCCIN_SURFACE0="#313244"
-CATPPUCCIN_SURFACE1="#45475a"
-CATPPUCCIN_SURFACE2="#585b70"
-CATPPUCCIN_BASE="#1e1e2e"
+cbc_theme_set_catppuccin_palette() {
+  CATPPUCCIN_ROSEWATER="#f5e0dc"
+  CATPPUCCIN_FLAMINGO="#f2cdcd"
+  CATPPUCCIN_PINK="#f5c2e7"
+  CATPPUCCIN_MAUVE="#cba6f7"
+  CATPPUCCIN_RED="#f38ba8"
+  CATPPUCCIN_MAROON="#eba0ac"
+  CATPPUCCIN_PEACH="#fab387"
+  CATPPUCCIN_YELLOW="#f9e2af"
+  CATPPUCCIN_GREEN="#a6e3a1"
+  CATPPUCCIN_TEAL="#94e2d5"
+  CATPPUCCIN_SKY="#89dceb"
+  CATPPUCCIN_SAPPHIRE="#74c7ec"
+  CATPPUCCIN_BLUE="#89b4fa"
+  CATPPUCCIN_LAVENDER="#b4befe"
+  CATPPUCCIN_TEXT="#cdd6f4"
+  CATPPUCCIN_SUBTEXT="#a6adc8"
+  CATPPUCCIN_OVERLAY="#6c7086"
+  CATPPUCCIN_SURFACE0="#313244"
+  CATPPUCCIN_SURFACE1="#45475a"
+  CATPPUCCIN_SURFACE2="#585b70"
+  CATPPUCCIN_BASE="#1e1e2e"
+}
+
+cbc_theme_set_catppuccin_palette
 
 cbc_theme_get_file_mtime() {
   local file="$1"
@@ -159,13 +154,11 @@ cbc_theme_set_color_if_valid() {
 }
 
 cbc_theme_refresh_palette() {
-  local theme_source="${CBC_THEME_SOURCE,,}"
-  if [ "$theme_source" = "catppuccin" ]; then
-    return 0
-  fi
-
   local colors_file="$CBC_OMARCHY_COLORS_FILE"
   if [ ! -f "$colors_file" ]; then
+    cbc_theme_set_catppuccin_palette
+    CBC_THEME_CACHE_FILE=""
+    CBC_THEME_CACHE_MTIME=""
     return 0
   fi
 
@@ -176,6 +169,8 @@ cbc_theme_refresh_palette() {
     [ "$CBC_THEME_CACHE_MTIME" = "$mtime" ]; then
     return 0
   fi
+
+  cbc_theme_set_catppuccin_palette
 
   local line=""
   local key=""
@@ -201,29 +196,21 @@ cbc_theme_refresh_palette() {
   local color14=""
 
   while IFS= read -r line || [ -n "$line" ]; do
-    line="${line%%#*}"
     line="$(cbc_config_trim "$line")"
 
-    if [ -z "$line" ]; then
+    if [ -z "$line" ] || [[ "$line" == \#* ]]; then
       continue
     fi
 
     case "$line" in
     *=*)
       key="$(cbc_config_trim "${line%%=*}")"
-      value="$(cbc_config_trim "${line#*=}")"
-      value="${value%\"}"
-      value="${value#\"}"
-      value="${value%\'}"
-      value="${value#\'}"
-      value="${value#\#}"
-      value="${value,,}"
 
-      if [[ ! "$value" =~ ^[0-9a-f]{6}$ ]]; then
+      if [[ "$line" =~ \#([0-9a-fA-F]{6}) ]]; then
+        value="#${BASH_REMATCH[1],,}"
+      else
         continue
       fi
-
-      value="#$value"
 
       case "${key,,}" in
       accent)
@@ -1464,21 +1451,6 @@ CBC_SOURCE_BASH_ALIASES=true
 # Default: false
 #
 CBC_LIST_SHOW_DESCRIPTIONS=false
-#
-# -------------------------------------------------------------------
-# 4) Theme color source
-# -------------------------------------------------------------------
-#
-# CBC_THEME_SOURCE
-# Controls how CBC chooses colors for gum-styled output.
-#
-# - auto       = use Omarchy colors.toml when available (default)
-# - catppuccin = force the built-in Catppuccin palette
-# - omarchy    = read only from Omarchy colors.toml when present
-#
-# Default: auto
-#
-CBC_THEME_SOURCE=auto
 EOF
 }
 
