@@ -100,6 +100,8 @@ When the terminal sources CBC:
 - `~/.cbc_aliases.sh` is sourced if it exists; missing files trigger a
   warning. When `CBC_SOURCE_BASH_ALIASES=true` (default),
   `~/.bash_aliases` is sourced afterward.
+- Gum-styled output follows Omarchy theme colors on Omarchy systems and
+  falls back to the built-in Catppuccin-Mocha palette elsewhere.
 - CBC does not check for updates automatically; use `cbc update check`.
 
 ## Daily Usage

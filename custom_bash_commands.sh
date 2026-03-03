@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v306.21.0"
+CBC_VERSION="v3.0.0"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -15,6 +15,9 @@ CBC_SHOW_BANNER="true"
 CBC_BANNER_MODE="full"
 CBC_SOURCE_BASH_ALIASES="true"
 CBC_LIST_SHOW_DESCRIPTIONS="false"
+CBC_OMARCHY_COLORS_FILE="$HOME/.config/omarchy/current/theme/colors.toml"
+CBC_THEME_CACHE_FILE=""
+CBC_THEME_CACHE_MTIME=""
 
 ################################################################################
 # CBC CONFIG
@@ -110,29 +113,203 @@ cbc_config_load
 # GUM HELPERS
 ###############################################################################
 
-CATPPUCCIN_ROSEWATER="#f5e0dc"
-CATPPUCCIN_FLAMINGO="#f2cdcd"
-CATPPUCCIN_PINK="#f5c2e7"
-CATPPUCCIN_MAUVE="#cba6f7"
-CATPPUCCIN_RED="#f38ba8"
-CATPPUCCIN_MAROON="#eba0ac"
-CATPPUCCIN_PEACH="#fab387"
-CATPPUCCIN_YELLOW="#f9e2af"
-CATPPUCCIN_GREEN="#a6e3a1"
-CATPPUCCIN_TEAL="#94e2d5"
-CATPPUCCIN_SKY="#89dceb"
-CATPPUCCIN_SAPPHIRE="#74c7ec"
-CATPPUCCIN_BLUE="#89b4fa"
-CATPPUCCIN_LAVENDER="#b4befe"
-CATPPUCCIN_TEXT="#cdd6f4"
-CATPPUCCIN_SUBTEXT="#a6adc8"
-CATPPUCCIN_OVERLAY="#6c7086"
-CATPPUCCIN_SURFACE0="#313244"
-CATPPUCCIN_SURFACE1="#45475a"
-CATPPUCCIN_SURFACE2="#585b70"
-CATPPUCCIN_BASE="#1e1e2e"
+cbc_theme_set_catppuccin_palette() {
+  CATPPUCCIN_ROSEWATER="#f5e0dc"
+  CATPPUCCIN_FLAMINGO="#f2cdcd"
+  CATPPUCCIN_PINK="#f5c2e7"
+  CATPPUCCIN_MAUVE="#cba6f7"
+  CATPPUCCIN_RED="#f38ba8"
+  CATPPUCCIN_MAROON="#eba0ac"
+  CATPPUCCIN_PEACH="#fab387"
+  CATPPUCCIN_YELLOW="#f9e2af"
+  CATPPUCCIN_GREEN="#a6e3a1"
+  CATPPUCCIN_TEAL="#94e2d5"
+  CATPPUCCIN_SKY="#89dceb"
+  CATPPUCCIN_SAPPHIRE="#74c7ec"
+  CATPPUCCIN_BLUE="#89b4fa"
+  CATPPUCCIN_LAVENDER="#b4befe"
+  CATPPUCCIN_TEXT="#cdd6f4"
+  CATPPUCCIN_SUBTEXT="#a6adc8"
+  CATPPUCCIN_OVERLAY="#6c7086"
+  CATPPUCCIN_SURFACE0="#313244"
+  CATPPUCCIN_SURFACE1="#45475a"
+  CATPPUCCIN_SURFACE2="#585b70"
+  CATPPUCCIN_BASE="#1e1e2e"
+}
+
+cbc_theme_set_catppuccin_palette
+
+cbc_theme_get_file_mtime() {
+  local file="$1"
+  stat -c %Y "$file" 2>/dev/null || true
+}
+
+cbc_theme_set_color_if_valid() {
+  local var_name="$1"
+  local value="${2,,}"
+
+  if [[ "$value" =~ ^#[0-9a-f]{6}$ ]]; then
+    printf -v "$var_name" '%s' "$value"
+  fi
+}
+
+cbc_theme_refresh_palette() {
+  local colors_file="$CBC_OMARCHY_COLORS_FILE"
+  if [ ! -f "$colors_file" ]; then
+    cbc_theme_set_catppuccin_palette
+    CBC_THEME_CACHE_FILE=""
+    CBC_THEME_CACHE_MTIME=""
+    return 0
+  fi
+
+  local mtime=""
+  mtime="$(cbc_theme_get_file_mtime "$colors_file")"
+  if [ "$CBC_THEME_CACHE_FILE" = "$colors_file" ] &&
+    [ -n "$mtime" ] &&
+    [ "$CBC_THEME_CACHE_MTIME" = "$mtime" ]; then
+    return 0
+  fi
+
+  cbc_theme_set_catppuccin_palette
+
+  local line=""
+  local key=""
+  local value=""
+  local accent=""
+  local cursor=""
+  local foreground=""
+  local background=""
+  local color0=""
+  local color1=""
+  local color2=""
+  local color3=""
+  local color4=""
+  local color5=""
+  local color6=""
+  local color7=""
+  local color8=""
+  local color9=""
+  local color10=""
+  local color11=""
+  local color12=""
+  local color13=""
+  local color14=""
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="$(cbc_config_trim "$line")"
+
+    if [ -z "$line" ] || [[ "$line" == \#* ]]; then
+      continue
+    fi
+
+    case "$line" in
+    *=*)
+      key="$(cbc_config_trim "${line%%=*}")"
+
+      if [[ "$line" =~ \#([0-9a-fA-F]{6}) ]]; then
+        value="#${BASH_REMATCH[1],,}"
+      else
+        continue
+      fi
+
+      case "${key,,}" in
+      accent)
+        accent="$value"
+        ;;
+      cursor)
+        cursor="$value"
+        ;;
+      foreground)
+        foreground="$value"
+        ;;
+      background)
+        background="$value"
+        ;;
+      color0)
+        color0="$value"
+        ;;
+      color1)
+        color1="$value"
+        ;;
+      color2)
+        color2="$value"
+        ;;
+      color3)
+        color3="$value"
+        ;;
+      color4)
+        color4="$value"
+        ;;
+      color5)
+        color5="$value"
+        ;;
+      color6)
+        color6="$value"
+        ;;
+      color7)
+        color7="$value"
+        ;;
+      color8)
+        color8="$value"
+        ;;
+      color9)
+        color9="$value"
+        ;;
+      color10)
+        color10="$value"
+        ;;
+      color11)
+        color11="$value"
+        ;;
+      color12)
+        color12="$value"
+        ;;
+      color13)
+        color13="$value"
+        ;;
+      color14)
+        color14="$value"
+        ;;
+      esac
+      ;;
+    esac
+  done <"$colors_file"
+
+  local accent_or_blue="$accent"
+  if [ -z "$accent_or_blue" ]; then
+    accent_or_blue="$color4"
+  fi
+
+  cbc_theme_set_color_if_valid "CATPPUCCIN_TEXT" "$foreground"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_SUBTEXT" "${color7:-$foreground}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_OVERLAY" "${color8:-$color7}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_BASE" "$background"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_SURFACE0" "${color0:-$background}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_SURFACE1" "${color8:-$color0}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_SURFACE2" "${color8:-$color0}"
+
+  cbc_theme_set_color_if_valid "CATPPUCCIN_RED" "$color1"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_MAROON" "${color9:-$color1}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_GREEN" "$color2"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_YELLOW" "$color3"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_PEACH" "${color11:-$color3}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_TEAL" "$color6"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_SKY" "${color14:-$color6}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_SAPPHIRE" "${color14:-$color6}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_BLUE" "$accent_or_blue"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_LAVENDER" "${color12:-$accent_or_blue}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_MAUVE" "${color5:-$accent_or_blue}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_PINK" "${color13:-$color5}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_FLAMINGO" "${color13:-$cursor}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_ROSEWATER" "${cursor:-$foreground}"
+
+  CBC_THEME_CACHE_FILE="$colors_file"
+  CBC_THEME_CACHE_MTIME="$mtime"
+}
 
 cbc_style_box() {
+  cbc_theme_refresh_palette
+
   local border_color="$1"
   shift
   gum style \
@@ -146,6 +323,8 @@ cbc_style_box() {
 }
 
 cbc_style_message() {
+  cbc_theme_refresh_palette
+
   local color="$1"
   shift
   gum style \
@@ -155,6 +334,8 @@ cbc_style_message() {
 }
 
 cbc_style_note() {
+  cbc_theme_refresh_palette
+
   local title="$1"
   shift
   gum style \
@@ -168,6 +349,8 @@ cbc_style_note() {
 }
 
 cbc_confirm() {
+  cbc_theme_refresh_palette
+
   local prompt="$1"
   shift
   gum confirm \
@@ -179,6 +362,8 @@ cbc_confirm() {
 }
 
 cbc_input() {
+  cbc_theme_refresh_palette
+
   local prompt="$1"
   shift
   local placeholder="$1"
@@ -191,6 +376,8 @@ cbc_input() {
 }
 
 cbc_spinner() {
+  cbc_theme_refresh_palette
+
   local title="$1"
   shift
   gum spin --spinner dot --title "$title" --title.foreground "$CATPPUCCIN_MAUVE" -- "$@"
