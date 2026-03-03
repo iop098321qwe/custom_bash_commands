@@ -76,6 +76,14 @@ cbc_config_apply() {
       CBC_LIST_SHOW_DESCRIPTIONS="$normalized"
     fi
     ;;
+  CBC_THEME_SOURCE)
+    value="${value,,}"
+    case "$value" in
+    auto | catppuccin | omarchy)
+      CBC_THEME_SOURCE="$value"
+      ;;
+    esac
+    ;;
   esac
 }
 
@@ -1456,6 +1464,21 @@ CBC_SOURCE_BASH_ALIASES=true
 # Default: false
 #
 CBC_LIST_SHOW_DESCRIPTIONS=false
+#
+# -------------------------------------------------------------------
+# 4) Theme color source
+# -------------------------------------------------------------------
+#
+# CBC_THEME_SOURCE
+# Controls how CBC chooses colors for gum-styled output.
+#
+# - auto       = use Omarchy colors.toml when available (default)
+# - catppuccin = force the built-in Catppuccin palette
+# - omarchy    = read only from Omarchy colors.toml when present
+#
+# Default: auto
+#
+CBC_THEME_SOURCE=auto
 EOF
 }
 
