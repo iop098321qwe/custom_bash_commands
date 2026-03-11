@@ -20,19 +20,20 @@ is sourced at shell startup.
 
 ## Overview
 
-The core script uses [Charmbracelet gum](https://github.com/charmbracelet/gum)
-for styled prompts and messages. When sourced in an interactive shell, it
-loads config from `~/.config/cbc/cbc.config`, aligns modules listed in
-`~/.config/cbc/packages.toml`, and prints a version banner once per
-session (unless disabled). It sources `~/.cbc_aliases.sh` if present and
-warns when missing, then optionally sources `~/.bash_aliases` when
-enabled in config.
+The core script can use [Charmbracelet gum](https://github.com/charmbracelet/gum)
+for styled prompts and messages. The `CBC_USE_GUM` config key controls
+whether gum is auto-detected, required, or disabled. When sourced in an
+interactive shell, CBC loads config from `~/.config/cbc/cbc.config`,
+aligns modules listed in `~/.config/cbc/packages.toml`, and prints a
+version banner once per session (unless disabled). It sources
+`~/.cbc_aliases.sh` if present and warns when missing, then optionally
+sources `~/.bash_aliases` when enabled in config.
 
 ## Key Components
 
 | Path | Purpose |
 | --- | --- |
-| `custom_bash_commands.sh` | Main entry point. Defines `cbc` subcommands, gum-based styling helpers, update checks, and module management. |
+| `custom_bash_commands.sh` | Main entry point. Defines `cbc` subcommands, styled output helpers, update checks, and module management. |
 | `cbc_aliases.sh` | Alias catalog loaded by the main script. |
 | `install_cbc.sh` | Installer that validates the repository path, copies scripts into `~`, appends a sourcing line to `.bashrc` when missing, and creates common directories under `~/Documents`. |
 | `docs/` | Reference documentation for dependencies, SOPs, and the TODO list. |
@@ -42,7 +43,7 @@ enabled in config.
 
 CBC expects the tools listed in `docs/dependencies.md`. Highlights include:
 
-- `gum` for styled UI output.
+- `gum` for styled UI output (strongly recommended, optional).
 - `git` and `curl` for update checks and module management.
 - `fzf`, `eza`, and `bat`/`batcat` for aliases and formatted output.
 - `nvim` for editor shortcuts.
@@ -100,8 +101,14 @@ When the terminal sources CBC:
 - `~/.cbc_aliases.sh` is sourced if it exists; missing files trigger a
   warning. When `CBC_SOURCE_BASH_ALIASES=true` (default),
   `~/.bash_aliases` is sourced afterward.
-- Gum-styled output follows Omarchy theme colors on Omarchy systems and
-  falls back to the built-in Catppuccin-Mocha palette elsewhere.
+- `CBC_USE_GUM=auto` (default) uses gum when installed and plain text
+  otherwise.
+- `CBC_USE_GUM=true` requires gum and blocks command execution when gum
+  is missing.
+- `CBC_USE_GUM=false` always uses plain text output.
+- When gum is active, styled output follows Omarchy theme colors on
+  Omarchy systems and falls back to the built-in Catppuccin-Mocha
+  palette elsewhere.
 - CBC does not check for updates automatically; use `cbc update check`.
 
 ## Daily Usage
@@ -131,7 +138,8 @@ When the terminal sources CBC:
   defaults when missing or when `--reset` is used.
 - `cbc config -e [--reset]` is shorthand for the edit workflow.
 - Config keys include `CBC_SHOW_BANNER`, `CBC_BANNER_MODE`,
-  `CBC_SOURCE_BASH_ALIASES`, and `CBC_LIST_SHOW_DESCRIPTIONS`.
+  `CBC_SOURCE_BASH_ALIASES`, `CBC_LIST_SHOW_DESCRIPTIONS`, and
+  `CBC_USE_GUM`.
 
 ### Manage CBC modules
 
@@ -157,7 +165,8 @@ When the terminal sources CBC:
 
 ## Supporting Docs & Utilities
 
-- `docs/dependencies.md` lists required and optional tools.
+- `docs/dependencies.md` lists required, strongly recommended, and
+  optional tools.
 - `docs/standard_operating_procedures.md` documents how to add functions
   and aliases and keep `cbc list` accurate.
 - `docs/todo.md` tracks outstanding cleanup and feature work.
@@ -188,3 +197,6 @@ cases may exceed that limit when readability would otherwise suffer:
 - **Dependencies missing or failing silently:** Compare your environment
   against `docs/dependencies.md` and confirm helpers such as `gum`, `fzf`,
   `wl-copy`, `eza`, `nvim`, and `imv-x11` are installed.
+- **Gum required but missing:** If `CBC_USE_GUM=true`, install `gum` or
+  set `CBC_USE_GUM=auto` or `CBC_USE_GUM=false` in
+  `~/.config/cbc/cbc.config`.
