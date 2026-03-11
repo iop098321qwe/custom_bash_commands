@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.0.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v3.0.0...v3.0.1) (2026-03-11)
+
+
+### Bug Fixes
+
+* **gum:** add config-driven fallback behavior ([8056932](https://github.com/iop098321qwe/custom_bash_commands/commit/80569321f5b150f7db145442a169f13c8fe04790))
+
 ## [3.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v306.21.0...v3.0.0) (2026-03-03)
 
 
