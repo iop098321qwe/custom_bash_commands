@@ -14,13 +14,16 @@
 - man
 - xdg-open
 - setsid
-- gum
 - fzf
 - bat or batcat
 - eza
 - imv-x11
 - nvim
 - wl-copy
+
+## Strongly Recommended
+
+- gum (required when `CBC_USE_GUM=true`)
 
 ## Optional
 
