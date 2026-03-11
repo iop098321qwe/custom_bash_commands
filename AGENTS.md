@@ -39,6 +39,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
   - `CBC_MODULE_ROOT` (default `~/.config/cbc/modules`)
   - `CBC_PACKAGE_MANIFEST` (default `~/.config/cbc/packages.toml`)
   - `CBC_MODULE_ENTRYPOINT` (default `cbc-module.sh`)
+  - `CBC_USE_GUM` (default `auto`)
   - `CBC_OMARCHY_COLORS_FILE` (default
     `~/.config/omarchy/current/theme/colors.toml`)
 
@@ -71,10 +72,11 @@ cd ~/Documents/github_repositories/custom_bash_commands
   command functions, and update helpers. It loads
   `~/.config/cbc/cbc.config` when present, then sources `~/.cbc_aliases.sh`
   if present and warns when missing. It uses `curl` with
-  `--connect-timeout 10` and `--max-time 30` for update checks. Gum helpers
-  read Omarchy colors from `~/.config/omarchy/current/theme/colors.toml`
-  when present and fall back to the built-in Catppuccin-Mocha palette.
-  It parses JSON with `awk` and `sed` for update checks.
+  `--connect-timeout 10` and `--max-time 30` for update checks. Gum usage is
+  controlled by `CBC_USE_GUM` (`auto`, `true`, or `false`). Gum helpers read
+  Omarchy colors from `~/.config/omarchy/current/theme/colors.toml` when
+  present and fall back to plain-text output when gum is inactive. It parses
+  JSON with `awk` and `sed` for update checks.
 - `cbc_aliases.sh` defines aliases that the main script loads during startup.
 - `install_cbc.sh` copies scripts into `~`, appends a sourcing block to
   `~/.bashrc` when missing, and creates common directories under
@@ -156,13 +158,13 @@ cd ~/Documents/github_repositories/custom_bash_commands
   - man
   - xdg-open
   - setsid
-  - gum
   - fzf
   - bat or batcat
   - eza
   - imv-x11
   - nvim
   - wl-copy
+- `docs/dependencies.md` strongly recommended tools: gum.
 - `docs/dependencies.md` optional tools: zellij, sudo.
 - External service: GitHub is used by `cbc update check`, `cbc update`,
   and `cbc doctor`.
