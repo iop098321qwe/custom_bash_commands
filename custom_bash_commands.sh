@@ -15,6 +15,7 @@ CBC_SHOW_BANNER="true"
 CBC_BANNER_MODE="full"
 CBC_SOURCE_BASH_ALIASES="true"
 CBC_LIST_SHOW_DESCRIPTIONS="false"
+CBC_USE_GUM="auto"
 CBC_OMARCHY_COLORS_FILE="$HOME/.config/omarchy/current/theme/colors.toml"
 CBC_THEME_CACHE_FILE=""
 CBC_THEME_CACHE_MTIME=""
@@ -75,6 +76,14 @@ cbc_config_apply() {
       CBC_LIST_SHOW_DESCRIPTIONS="$normalized"
     fi
     ;;
+  CBC_USE_GUM)
+    value="${value,,}"
+    case "$value" in
+    true | false | auto)
+      CBC_USE_GUM="$value"
+      ;;
+    esac
+    ;;
   esac
 }
 
@@ -109,6 +118,22 @@ cbc_config_load() {
 
 cbc_config_load
 
+cbc_gum_guard() {
+  if [ "$CBC_GUM_ACTIVE" = true ]; then
+    return 0
+  fi
+
+  if [ "$CBC_USE_GUM" = "true" ]; then
+    printf '%s\n' \
+      "Error: CBC_USE_GUM=true but gum is not installed." \
+      "Install gum or set CBC_USE_GUM=auto (default)" \
+      "or CBC_USE_GUM=false in $CBC_CONFIG_FILE."
+    return 1
+  fi
+
+  return 0
+}
+
 ###############################################################################
 # GUM HELPERS
 ###############################################################################
@@ -138,6 +163,24 @@ cbc_theme_set_catppuccin_palette() {
 }
 
 cbc_theme_set_catppuccin_palette
+
+CBC_GUM_AVAILABLE="false"
+CBC_GUM_ACTIVE="false"
+if command -v gum >/dev/null 2>&1; then
+  CBC_GUM_AVAILABLE="true"
+fi
+
+case "$CBC_USE_GUM" in
+true)
+  CBC_GUM_ACTIVE="$CBC_GUM_AVAILABLE"
+  ;;
+false)
+  CBC_GUM_ACTIVE="false"
+  ;;
+*)
+  CBC_GUM_ACTIVE="$CBC_GUM_AVAILABLE"
+  ;;
+esac
 
 cbc_theme_get_file_mtime() {
   local file="$1"
@@ -310,6 +353,18 @@ cbc_theme_refresh_palette() {
 cbc_style_box() {
   cbc_theme_refresh_palette
 
+  if [ "$CBC_GUM_ACTIVE" != true ]; then
+    if [ $# -gt 0 ]; then
+      shift
+    fi
+    local line=""
+    for line in "$@"; do
+      printf '%s\n' "$line"
+    done
+    printf '\n'
+    return 0
+  fi
+
   local border_color="$1"
   shift
   gum style \
@@ -325,6 +380,17 @@ cbc_style_box() {
 cbc_style_message() {
   cbc_theme_refresh_palette
 
+  if [ "$CBC_GUM_ACTIVE" != true ]; then
+    if [ $# -gt 0 ]; then
+      shift
+    fi
+    local line=""
+    for line in "$@"; do
+      printf '%s\n' "$line"
+    done
+    return 0
+  fi
+
   local color="$1"
   shift
   gum style \
@@ -335,6 +401,18 @@ cbc_style_message() {
 
 cbc_style_note() {
   cbc_theme_refresh_palette
+
+  if [ "$CBC_GUM_ACTIVE" != true ]; then
+    local title="$1"
+    shift
+    printf '%s\n' "$title"
+    local line=""
+    for line in "$@"; do
+      printf '%s\n' "$line"
+    done
+    printf '\n'
+    return 0
+  fi
 
   local title="$1"
   shift
@@ -351,6 +429,14 @@ cbc_style_note() {
 cbc_confirm() {
   cbc_theme_refresh_palette
 
+  if [ "$CBC_GUM_ACTIVE" != true ]; then
+    local prompt="$1"
+    local answer=""
+    read -r -p "$prompt [y/N]: " answer
+    [[ "${answer,,}" == y || "${answer,,}" == yes ]]
+    return
+  fi
+
   local prompt="$1"
   shift
   gum confirm \
@@ -363,6 +449,21 @@ cbc_confirm() {
 
 cbc_input() {
   cbc_theme_refresh_palette
+
+  if [ "$CBC_GUM_ACTIVE" != true ]; then
+    local prompt="$1"
+    shift
+    local placeholder="$1"
+    shift
+    local answer=""
+    read -r -p "$prompt" answer
+    if [ -n "$answer" ]; then
+      printf '%s\n' "$answer"
+    else
+      printf '%s\n' "$placeholder"
+    fi
+    return 0
+  fi
 
   local prompt="$1"
   shift
@@ -377,6 +478,14 @@ cbc_input() {
 
 cbc_spinner() {
   cbc_theme_refresh_palette
+
+  if [ "$CBC_GUM_ACTIVE" != true ]; then
+    local title="$1"
+    shift
+    printf '%s...\n' "$title"
+    "$@"
+    return $?
+  fi
 
   local title="$1"
   shift
@@ -1392,6 +1501,9 @@ cbc_config_write_defaults() {
 # Boolean values:
 #   true | false | yes | no | 1 | 0
 #
+# CBC_USE_GUM values:
+#   auto | true | false
+#
 # Notes:
 # - This file is read when CBC loads.
 # - If a value is invalid, CBC keeps its default.
@@ -1438,7 +1550,22 @@ CBC_BANNER_MODE=full
 CBC_SOURCE_BASH_ALIASES=true
 #
 # -------------------------------------------------------------------
-# 3) cbc list output
+# 3) Gum styled output
+# -------------------------------------------------------------------
+#
+# CBC_USE_GUM
+# Controls whether CBC uses gum for styled terminal output.
+#
+# - auto  = use gum when installed, plain text otherwise (default)
+# - true  = require gum; commands fail if gum is missing
+# - false = always use plain text, even if gum is installed
+#
+# Default: auto
+#
+CBC_USE_GUM=auto
+#
+# -------------------------------------------------------------------
+# 4) cbc list output
 # -------------------------------------------------------------------
 #
 # CBC_LIST_SHOW_DESCRIPTIONS
@@ -1676,28 +1803,34 @@ cbc() {
   "" | -h | --help)
     usage
     ;;
-  config)
-    cbc_config "$@"
-    ;;
   doctor)
     cbc_doctor "$@"
     ;;
-  list)
-    cbc_list "$@"
-    ;;
-  pkg)
-    cbc_pkg "$@"
-    ;;
-  test)
-    cbc_test "$@"
-    ;;
-  update)
-    cbc_update "$@"
-    ;;
   *)
-    cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc subcommand: $subcommand"
-    usage
-    return 1
+    cbc_gum_guard || return 1
+    case "$subcommand" in
+    config)
+      cbc_config "$@"
+      ;;
+    list)
+      cbc_list "$@"
+      ;;
+    pkg)
+      cbc_pkg "$@"
+      ;;
+    test)
+      cbc_test "$@"
+      ;;
+    update)
+      cbc_update "$@"
+      ;;
+    *)
+      cbc_style_message "$CATPPUCCIN_RED" \
+        "Unknown cbc subcommand: $subcommand"
+      usage
+      return 1
+      ;;
+    esac
     ;;
   esac
 }
@@ -1742,6 +1875,10 @@ wiki() {
       "  wiki" \
       "  wiki -A"
   }
+
+  if [ "${1:-}" != "-h" ] && [ "${1:-}" != "--help" ]; then
+    cbc_gum_guard || return 1
+  fi
 
   while getopts ":hcCAF" opt; do
     case $opt in
@@ -1817,6 +1954,10 @@ changes() {
       "  changes"
   }
 
+  if [ "${1:-}" != "-h" ] && [ "${1:-}" != "--help" ]; then
+    cbc_gum_guard || return 1
+  fi
+
   while getopts ":hc" opt; do
     case $opt in
     h)
@@ -1869,6 +2010,10 @@ readme() {
       "  readme"
   }
 
+  if [ "${1:-}" != "-h" ] && [ "${1:-}" != "--help" ]; then
+    cbc_gum_guard || return 1
+  fi
+
   while getopts ":hc" opt; do
     case $opt in
     h)
@@ -1919,6 +2064,10 @@ releases() {
       "  releases"
   }
 
+  if [ "${1:-}" != "-h" ] && [ "${1:-}" != "--help" ]; then
+    cbc_gum_guard || return 1
+  fi
+
   while getopts ":hc" opt; do
     case $opt in
     h)
@@ -1967,6 +2116,10 @@ dotfiles() {
     cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
       "  dotfiles"
   }
+
+  if [ "${1:-}" != "-h" ] && [ "${1:-}" != "--help" ]; then
+    cbc_gum_guard || return 1
+  fi
 
   while getopts ":h" opt; do
     case $opt in
@@ -2753,7 +2906,11 @@ cbc_doctor() {
   cbc_doctor_check_tool "man" "man" true dependency_lines
   cbc_doctor_check_tool "xdg-open" "xdg-open" true dependency_lines
   cbc_doctor_check_tool "setsid" "setsid" true dependency_lines
-  cbc_doctor_check_tool "gum" "gum" true dependency_lines
+  if [ "$CBC_USE_GUM" = "true" ]; then
+    cbc_doctor_check_tool "gum" "gum" true dependency_lines
+  else
+    cbc_doctor_check_tool "gum" "gum" false dependency_lines
+  fi
   cbc_doctor_check_tool "fzf" "fzf" true dependency_lines
 
   if command -v bat >/dev/null 2>&1; then
@@ -2992,6 +3149,8 @@ display_version() {
   done
 
   shift $((OPTIND - 1))
+
+  cbc_gum_guard || return 1
 
   local banner_mode="${CBC_BANNER_MODE,,}"
 
