@@ -1320,15 +1320,14 @@ cbc_pkg_update() {
   cbc_pkg_load_modules auto
 }
 
-cbc_pkg_load_modules() {
+cbc_pkg_source_modules() {
   local auto_load="$1"
   shift || true
 
-  cbc_pkg_ensure_config
-  cbc_pkg_align_with_manifest
-
   local loaded_any=false
   local skipped_modules=()
+
+  [ -d "$CBC_MODULE_ROOT" ] || return 0
 
   shopt -s nullglob
   for module_dir in "$CBC_MODULE_ROOT"/*; do
@@ -1358,13 +1357,22 @@ cbc_pkg_load_modules() {
   fi
 }
 
+cbc_pkg_load_modules() {
+  local auto_load="$1"
+  shift || true
+
+  cbc_pkg_ensure_config
+  cbc_pkg_align_with_manifest
+  cbc_pkg_source_modules "$auto_load"
+}
+
 cbc_pkg_load() {
   OPTIND=1
   local show_help=false
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Load CBC modules from packages.toml and local modules."
+      "  Install missing manifest modules and source local modules."
 
     cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
       "  cbc pkg load"
@@ -3422,7 +3430,7 @@ cbc_list() {
 # Auto-load installed CBC modules
 ###############################################################################
 
-cbc_pkg_load_modules auto
+cbc_pkg_source_modules auto
 
 ###############################################################################
 # Call the function to display information once per interactive session
