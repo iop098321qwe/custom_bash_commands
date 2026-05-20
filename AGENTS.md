@@ -76,7 +76,9 @@ cd ~/Documents/github_repositories/custom_bash_commands
   controlled by `CBC_USE_GUM` (`auto`, `true`, or `false`). Gum helpers read
   Omarchy colors from `~/.config/omarchy/current/theme/colors.toml` when
   present and fall back to plain-text output when gum is inactive. It parses
-  JSON with `awk` and `sed` for update checks.
+  JSON with `awk` and `sed` for update checks. Startup sources installed
+  module entrypoints from `~/.config/cbc/modules`; manifest alignment runs
+  only when users call `cbc pkg load` or related package commands.
 - `cbc_aliases.sh` defines aliases that the main script loads during startup.
 - `install_cbc.sh` copies scripts into `~`, appends a sourcing block to
   `~/.bashrc` when missing, and creates common directories under
@@ -100,6 +102,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
   and latest versions plus the release link.
 - `cbc update`: Pull the latest scripts via sparse checkout and reload them.
 - `cbc pkg`: Manage CBC modules (subcommands support `-h`).
+- `cbc pkg load`: Install missing manifest modules, refresh metadata, and
+  source installed module entrypoints.
 - `cbc test [repo-path]`: Reload CBC scripts from a local repo.
 - `display_version` or `dv`: Print the current CBC version banner.
 - `changes [-c]`: Open the changelog or copy the URL.
@@ -167,7 +171,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `docs/dependencies.md` strongly recommended tools: gum.
 - `docs/dependencies.md` optional tools: zellij, sudo.
 - External service: GitHub is used by `cbc update check`, `cbc update`,
-  and `cbc doctor`.
+  `cbc pkg load`, and `cbc doctor`.
 
 ## Troubleshooting
 
@@ -175,6 +179,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
   `~/Documents/github_repositories/custom_bash_commands`.
 - Sourcing line missing: rerun `install_cbc.sh` or add the
   `source ~/.custom_bash_commands.sh` line manually.
+- Manifest modules missing after startup: run `cbc pkg load` to install
+  packages listed in `~/.config/cbc/packages.toml`.
 
 ## Refining Existing AGENTS.md
 
