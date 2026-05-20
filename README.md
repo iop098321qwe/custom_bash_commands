@@ -24,10 +24,11 @@ The core script can use [Charmbracelet gum](https://github.com/charmbracelet/gum
 for styled prompts and messages. The `CBC_USE_GUM` config key controls
 whether gum is auto-detected, required, or disabled. When sourced in an
 interactive shell, CBC loads config from `~/.config/cbc/cbc.config`,
-aligns modules listed in `~/.config/cbc/packages.toml`, and prints a
-version banner once per session (unless disabled). It sources
-`~/.cbc_aliases.sh` if present and warns when missing, then optionally
-sources `~/.bash_aliases` when enabled in config.
+sources installed module entrypoints from `~/.config/cbc/modules`, and
+prints a version banner once per session (unless disabled). Manifest
+packages are installed or repaired only when users run `cbc pkg load`.
+It sources `~/.cbc_aliases.sh` if present and warns when missing, then
+optionally sources `~/.bash_aliases` when enabled in config.
 
 ## Key Components
 
@@ -96,8 +97,10 @@ When the terminal sources CBC:
 - Config is loaded from `~/.config/cbc/cbc.config` when present.
 - A version banner prints once per interactive session when
   `CBC_SHOW_BANNER=true`.
-- Modules listed in `~/.config/cbc/packages.toml` are aligned and loaded
-  from `~/.config/cbc/modules` when possible.
+- Installed module entrypoints in `~/.config/cbc/modules` are sourced
+  when present.
+- Packages listed in `~/.config/cbc/packages.toml` are not aligned during
+  startup. Run `cbc pkg load` to install or repair manifest modules.
 - `~/.cbc_aliases.sh` is sourced if it exists; missing files trigger a
   warning. When `CBC_SOURCE_BASH_ALIASES=true` (default),
   `~/.bash_aliases` is sourced afterward.
@@ -145,7 +148,8 @@ When the terminal sources CBC:
 
 - `cbc pkg` stores module metadata in `~/.config/cbc/packages.toml`.
 - `cbc pkg install <creator/repo|git-url|path>` records a module source.
-- `cbc pkg load` installs missing modules and sources entrypoints.
+- `cbc pkg load` installs missing manifest modules, refreshes metadata,
+  and sources entrypoints.
 - `cbc pkg update` fast-forwards installed module repos and refreshes the
   manifest.
 - `cbc pkg uninstall <creator/repo|module-name>` removes the manifest
@@ -200,3 +204,6 @@ cases may exceed that limit when readability would otherwise suffer:
 - **Gum required but missing:** If `CBC_USE_GUM=true`, install `gum` or
   set `CBC_USE_GUM=auto` or `CBC_USE_GUM=false` in
   `~/.config/cbc/cbc.config`.
+- **Manifest modules missing after startup:** run `cbc pkg load` to
+  install packages listed in `~/.config/cbc/packages.toml` and source
+  their entrypoints in the current shell.
