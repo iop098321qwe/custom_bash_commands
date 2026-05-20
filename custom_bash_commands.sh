@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v3.1.0"
+CBC_VERSION="v3.2.0"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -24,9 +24,11 @@ CBC_THEME_CACHE_MTIME=""
 # CBC CONFIG
 ################################################################################
 
-cbc_config_trim() {
-  local text="$1"
-  printf "%s" "$text" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+cbc_trim_in_place() {
+  local -n value_ref="$1"
+
+  value_ref="${value_ref#"${value_ref%%[![:space:]]*}"}"
+  value_ref="${value_ref%"${value_ref##*[![:space:]]}"}"
 }
 
 cbc_config_normalize_bool() {
@@ -96,7 +98,7 @@ cbc_config_load() {
 
   while IFS= read -r line || [ -n "$line" ]; do
     line="${line%%#*}"
-    line="$(cbc_config_trim "$line")"
+    cbc_trim_in_place line
 
     if [ -z "$line" ]; then
       continue
@@ -104,8 +106,10 @@ cbc_config_load() {
 
     case "$line" in
     *=*)
-      key="$(cbc_config_trim "${line%%=*}")"
-      value="$(cbc_config_trim "${line#*=}")"
+      key="${line%%=*}"
+      value="${line#*=}"
+      cbc_trim_in_place key
+      cbc_trim_in_place value
       value="${value%\"}"
       value="${value#\"}"
       value="${value%\'}"
@@ -239,7 +243,7 @@ cbc_theme_refresh_palette() {
   local color14=""
 
   while IFS= read -r line || [ -n "$line" ]; do
-    line="$(cbc_config_trim "$line")"
+    cbc_trim_in_place line
 
     if [ -z "$line" ] || [[ "$line" == \#* ]]; then
       continue
@@ -247,7 +251,8 @@ cbc_theme_refresh_palette() {
 
     case "$line" in
     *=*)
-      key="$(cbc_config_trim "${line%%=*}")"
+      key="${line%%=*}"
+      cbc_trim_in_place key
 
       if [[ "$line" =~ \#([0-9a-fA-F]{6}) ]]; then
         value="#${BASH_REMATCH[1],,}"
@@ -496,11 +501,6 @@ cbc_spinner() {
 # CBC MODULE LOADER
 ################################################################################
 
-cbc_pkg_trim() {
-  local text="$1"
-  printf "%s" "$text" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
-}
-
 cbc_pkg_ensure_config() {
   mkdir -p "$CBC_CONFIG_DIR" "$CBC_MODULE_ROOT"
 }
@@ -613,7 +613,7 @@ cbc_pkg_read_manifest() {
 
   while IFS= read -r line || [ -n "$line" ]; do
     line="${line%%#*}"
-    line="$(cbc_pkg_trim "$line")"
+    cbc_trim_in_place line
 
     if [ -z "$line" ]; then
       continue
@@ -632,8 +632,10 @@ cbc_pkg_read_manifest() {
       continue
     fi
 
-    local key="$(cbc_pkg_trim "${line%%=*}")"
-    local value="$(cbc_pkg_trim "${line#*=}")"
+    local key="${line%%=*}"
+    local value="${line#*=}"
+    cbc_trim_in_place key
+    cbc_trim_in_place value
 
     value="${value%\"}"
     value="${value#\"}"
