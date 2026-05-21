@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v3.2.0"
+CBC_VERSION="v3.3.0"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -1781,6 +1781,7 @@ cbc() {
       "  cbc config" \
       "  cbc config edit" \
       "  cbc doctor" \
+      "  cbc doctor startup" \
       "  cbc list" \
       "  cbc list -v" \
       "  cbc pkg" \
@@ -2707,6 +2708,276 @@ cbc_test() {
 # CBC DOCTOR
 ################################################################################
 
+cbc_doctor_now_us() {
+  local now="${EPOCHREALTIME:-}"
+  if [ -n "$now" ]; then
+    local seconds="${now%.*}"
+    local micros="${now#*.}"
+
+    if [ "$micros" = "$seconds" ]; then
+      micros="0"
+    fi
+
+    micros="${micros:0:6}"
+    while [ ${#micros} -lt 6 ]; do
+      micros="${micros}0"
+    done
+
+    printf '%s' "$((10#$seconds * 1000000 + 10#$micros))"
+    return 0
+  fi
+
+  printf '%s' "$((SECONDS * 1000000))"
+}
+
+cbc_doctor_format_us() {
+  local elapsed_us="${1:-0}"
+  local elapsed_ms=$((elapsed_us / 1000))
+  local elapsed_remainder=$((elapsed_us % 1000))
+
+  printf '%d.%03dms' "$elapsed_ms" "$elapsed_remainder"
+}
+
+cbc_doctor_time_call() {
+  local -n out_elapsed_us="$1"
+  shift
+
+  local start_us=""
+  local end_us=""
+  local status=0
+
+  start_us="$(cbc_doctor_now_us)"
+  "$@"
+  status=$?
+  end_us="$(cbc_doctor_now_us)"
+
+  out_elapsed_us=$((end_us - start_us))
+  return "$status"
+}
+
+cbc_doctor_startup() {
+  OPTIND=1
+  local show_help=false
+
+  usage() {
+    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      "  Profile CBC startup timing and print troubleshooting hints."
+
+    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      "  cbc doctor startup [-h]"
+
+    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      "  -h    Display this help message"
+
+    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      "  cbc doctor startup"
+  }
+
+  while getopts ":h" opt; do
+    case $opt in
+    h)
+      show_help=true
+      ;;
+    \?)
+      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      return 1
+      ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
+  if [ "$show_help" = true ]; then
+    usage
+    return 0
+  fi
+
+  if [ $# -gt 0 ]; then
+    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    return 1
+  fi
+
+  local source_path="${BASH_SOURCE[0]}"
+  if [[ "$source_path" != /* ]] && [ -f "$source_path" ]; then
+    source_path="$PWD/${source_path#./}"
+  fi
+
+  local source_display="$source_path"
+  if [[ "$source_display" == "$HOME"* ]]; then
+    source_display="~${source_display#$HOME}"
+  fi
+
+  local config_display="$CBC_CONFIG_FILE"
+  if [[ "$config_display" == "$HOME"* ]]; then
+    config_display="~${config_display#$HOME}"
+  fi
+
+  local module_count=0
+  local entrypoint_count=0
+  local module_dir=""
+  shopt -s nullglob
+  for module_dir in "$CBC_MODULE_ROOT"/*; do
+    [ -d "$module_dir" ] || continue
+    module_count=$((module_count + 1))
+
+    if [ -f "$module_dir/$CBC_MODULE_ENTRYPOINT" ]; then
+      entrypoint_count=$((entrypoint_count + 1))
+    fi
+  done
+  shopt -u nullglob
+
+  local config_us=0
+  local module_us=0
+  local theme_cold_us=0
+  local theme_cached_us=0
+  local banner_us=0
+  local fresh_source_us=0
+  local fresh_interactive_us=0
+  local config_status=0
+  local module_status=0
+  local theme_cold_status=0
+  local theme_cached_status=0
+  local banner_status=0
+  local fresh_source_status=0
+  local fresh_interactive_status=0
+  local saved_show_banner="$CBC_SHOW_BANNER"
+  local saved_banner_mode="$CBC_BANNER_MODE"
+  local saved_source_bash_aliases="$CBC_SOURCE_BASH_ALIASES"
+  local saved_list_show_descriptions="$CBC_LIST_SHOW_DESCRIPTIONS"
+  local saved_use_gum="$CBC_USE_GUM"
+
+  cbc_doctor_time_call config_us cbc_config_load >/dev/null 2>&1
+  config_status=$?
+  CBC_SHOW_BANNER="$saved_show_banner"
+  CBC_BANNER_MODE="$saved_banner_mode"
+  CBC_SOURCE_BASH_ALIASES="$saved_source_bash_aliases"
+  CBC_LIST_SHOW_DESCRIPTIONS="$saved_list_show_descriptions"
+  CBC_USE_GUM="$saved_use_gum"
+
+  cbc_doctor_time_call module_us cbc_pkg_source_modules auto >/dev/null 2>&1
+  module_status=$?
+
+  CBC_THEME_CACHE_FILE=""
+  CBC_THEME_CACHE_MTIME=""
+  cbc_doctor_time_call theme_cold_us cbc_theme_refresh_palette >/dev/null 2>&1
+  theme_cold_status=$?
+  cbc_doctor_time_call theme_cached_us cbc_theme_refresh_palette >/dev/null 2>&1
+  theme_cached_status=$?
+
+  if [ "$CBC_SHOW_BANNER" = true ]; then
+    cbc_doctor_time_call banner_us display_version >/dev/null 2>&1
+    banner_status=$?
+  fi
+
+  cbc_doctor_time_call fresh_source_us \
+    bash -lc 'source "$1" >/dev/null' _ "$source_path" >/dev/null 2>&1
+  fresh_source_status=$?
+
+  cbc_doctor_time_call fresh_interactive_us \
+    bash --noprofile --norc -ic 'source "$1" >/dev/null' \
+    _ "$source_path" >/dev/null 2>&1
+  fresh_interactive_status=$?
+
+  local config_state="missing (defaults active)"
+  if [ -f "$CBC_CONFIG_FILE" ]; then
+    config_state="present"
+  fi
+
+  local gum_available="false"
+  if [ "$CBC_GUM_AVAILABLE" = true ]; then
+    gum_available="true"
+  fi
+
+  local banner_line="Startup banner: skipped"
+  if [ "$CBC_SHOW_BANNER" = true ]; then
+    banner_line="Startup banner: $(cbc_doctor_format_us "$banner_us")"
+    if [ "$banner_status" -ne 0 ]; then
+      banner_line="$banner_line (failed)"
+    fi
+  fi
+
+  local fresh_source_line="Fresh source: $(cbc_doctor_format_us "$fresh_source_us")"
+  if [ "$fresh_source_status" -ne 0 ]; then
+    fresh_source_line="$fresh_source_line (failed)"
+  fi
+
+  local fresh_interactive_line="Fresh interactive source: $(cbc_doctor_format_us "$fresh_interactive_us")"
+  if [ "$fresh_interactive_status" -ne 0 ]; then
+    fresh_interactive_line="$fresh_interactive_line (failed)"
+  fi
+
+  local config_line="Config load: $(cbc_doctor_format_us "$config_us")"
+  if [ "$config_status" -ne 0 ]; then
+    config_line="$config_line (failed)"
+  fi
+
+  local module_line="Module source: $(cbc_doctor_format_us "$module_us")"
+  if [ "$module_status" -ne 0 ]; then
+    module_line="$module_line (failed)"
+  fi
+
+  local theme_cold_line="Theme refresh cold: $(cbc_doctor_format_us "$theme_cold_us")"
+  if [ "$theme_cold_status" -ne 0 ]; then
+    theme_cold_line="$theme_cold_line (failed)"
+  fi
+
+  local theme_cached_line="Theme refresh cached: $(cbc_doctor_format_us "$theme_cached_us")"
+  if [ "$theme_cached_status" -ne 0 ]; then
+    theme_cached_line="$theme_cached_line (failed)"
+  fi
+
+  local -a summary_lines=(
+    "Version: $CBC_VERSION"
+    "Script: $source_display"
+    "Config: $config_display ($config_state)"
+    "$fresh_source_line"
+    "$fresh_interactive_line"
+  )
+
+  local -a timing_lines=(
+    "$config_line"
+    "$module_line"
+    "$theme_cold_line"
+    "$theme_cached_line"
+    "$banner_line"
+  )
+
+  local -a settings_lines=(
+    "CBC_SHOW_BANNER=$CBC_SHOW_BANNER"
+    "CBC_BANNER_MODE=$CBC_BANNER_MODE"
+    "CBC_USE_GUM=$CBC_USE_GUM"
+    "CBC_GUM_AVAILABLE=$gum_available"
+    "CBC_GUM_ACTIVE=$CBC_GUM_ACTIVE"
+    "CBC_SOURCE_BASH_ALIASES=$CBC_SOURCE_BASH_ALIASES"
+    "Modules: $module_count installed, $entrypoint_count entrypoints"
+  )
+
+  local -a hint_lines=()
+  if [ "$CBC_SHOW_BANNER" = true ] && [ "$CBC_GUM_ACTIVE" = true ]; then
+    hint_lines+=("Disable CBC_SHOW_BANNER or CBC_USE_GUM for fastest startup.")
+  fi
+  if [ "$banner_us" -gt 50000 ]; then
+    hint_lines+=("Startup banner is over 50ms; consider a plain or disabled banner.")
+  fi
+  if [ "$module_us" -gt 50000 ] || [ "$entrypoint_count" -gt 10 ]; then
+    hint_lines+=("Many modules are sourced; consider disabling or lazy-loading modules.")
+  fi
+  if [ "$CBC_SOURCE_BASH_ALIASES" = true ] && [ ! -f "$HOME/.bash_aliases" ]; then
+    hint_lines+=("~/.bash_aliases is missing; set CBC_SOURCE_BASH_ALIASES=false if unused.")
+  fi
+  if [ "$fresh_interactive_us" -gt 200000 ]; then
+    hint_lines+=("Fresh interactive source exceeds 200ms; profile shell config too.")
+  fi
+  if [ ${#hint_lines[@]} -eq 0 ]; then
+    hint_lines+=("No high-impact CBC startup issues detected.")
+  fi
+
+  cbc_style_box "$CATPPUCCIN_MAUVE" "Startup Summary" "${summary_lines[@]}"
+  cbc_style_box "$CATPPUCCIN_BLUE" "Measured Steps" "${timing_lines[@]}"
+  cbc_style_box "$CATPPUCCIN_TEAL" "Startup Settings" "${settings_lines[@]}"
+  cbc_style_box "$CATPPUCCIN_PEACH" "Hints" "${hint_lines[@]}"
+}
+
 cbc_doctor() {
   OPTIND=1
   local show_help=false
@@ -2722,20 +2993,27 @@ cbc_doctor() {
         "  Run diagnostics for CBC configuration, dependencies, and updates."
 
       cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-        "  cbc doctor [-h]"
+        "  cbc doctor [-h]" \
+        "  cbc doctor startup [-h]"
 
       cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
         "  -h    Display this help message"
 
+      cbc_style_box "$CATPPUCCIN_SAPPHIRE" "Subcommands:" \
+        "  startup  Profile CBC startup timing"
+
       cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-        "  cbc doctor"
+        "  cbc doctor" \
+        "  cbc doctor startup"
       return
     fi
 
     printf '%s\n' "Description: Run diagnostics for CBC configuration, dependencies, and updates."
     printf '%s\n' "Usage: cbc doctor [-h]"
+    printf '%s\n' "Usage: cbc doctor startup [-h]"
     printf '%s\n' "Options: -h  Display this help message"
-    printf '%s\n' "Example: cbc doctor"
+    printf '%s\n' "Subcommands: startup  Profile CBC startup timing"
+    printf '%s\n' "Examples: cbc doctor; cbc doctor startup"
   }
 
   while getopts ":h" opt; do
@@ -2759,6 +3037,12 @@ cbc_doctor() {
   if [ "$show_help" = true ]; then
     usage
     return 0
+  fi
+
+  if [ "${1:-}" = "startup" ]; then
+    shift
+    cbc_doctor_startup "$@"
+    return
   fi
 
   if [ $# -gt 0 ]; then
@@ -3199,6 +3483,7 @@ cbc_list_render() {
     "cbc config"
     "cbc config edit"
     "cbc doctor"
+    "cbc doctor startup"
     "cbc list"
     "cbc pkg"
     "cbc test"
@@ -3217,6 +3502,7 @@ cbc_list_render() {
     "Generate the CBC config file"
     "Edit the CBC config file"
     "Run CBC diagnostics"
+    "Profile CBC startup timing"
     "List CBC commands and aliases"
     "Manage CBC modules (install, list, load, uninstall, update)"
     "Reload CBC scripts from a local repo"

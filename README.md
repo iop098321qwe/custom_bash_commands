@@ -121,6 +121,8 @@ When the terminal sources CBC:
 - `display_version` (alias `dv`) prints the version banner.
 - `cbc doctor` runs diagnostics for dependencies, config, modules, and
   GitHub update access.
+- `cbc doctor startup` profiles CBC startup timing and prints hints for
+  reducing terminal initialization delay.
 - `readme`, `wiki`, `changes`, `releases`, and `dotfiles` open project
   resources in the default browser. Use `-c` to copy URLs where supported.
 - `cbc list [-v]` lists available functions and aliases; it uses `bat` or
@@ -207,3 +209,5 @@ cases may exceed that limit when readability would otherwise suffer:
 - **Manifest modules missing after startup:** run `cbc pkg load` to
   install packages listed in `~/.config/cbc/packages.toml` and source
   their entrypoints in the current shell.
+- **Terminal startup feels slow:** run `cbc doctor startup` to measure CBC
+  source time, module loading, banner rendering, and related settings.
