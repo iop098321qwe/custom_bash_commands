@@ -98,6 +98,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
   resetting.
 - `cbc doctor`: Run diagnostics for config, dependencies, modules, and update
   access.
+- `cbc doctor startup`: Profile CBC startup timing and print troubleshooting
+  hints.
 - `cbc update check`: Query the latest GitHub release and report the current
   and latest versions plus the release link.
 - `cbc update`: Pull the latest scripts via sparse checkout and reload them.
