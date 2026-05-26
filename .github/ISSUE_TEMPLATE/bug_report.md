@@ -1,38 +1,88 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Report a CBC command, alias, installer, config, module, or docs bug
 title: ''
 labels: ''
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## Summary
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+Describe the failing Custom Bash Commands (CBC) behavior and the affected
+workflow.
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## Affected Area
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+Select all that apply:
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+- `cbc` subcommand or helper function
+- `cbc_aliases.sh` alias
+- `install_cbc.sh` installer
+- `cbc config` or `~/.config/cbc/cbc.config`
+- `cbc pkg` module management
+- Startup sourcing or shell initialization
+- Documentation, links, or release references
+- Other:
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+## Environment
 
-**Additional context**
-Add any other context about the problem here.
+- CBC version (`display_version` or `dv`):
+- Linux distribution and version:
+- Bash version (`bash --version`):
+- Terminal emulator:
+- Install method (`./install_cbc.sh`, manual copy, or `cbc update`):
+- Repository path:
+- Config path if customized:
+- Relevant config values (`CBC_USE_GUM`, banner settings, and aliases):
+
+## Dependencies
+
+Mention any relevant tool versions, missing commands, or path issues.
+
+- `gum`:
+- `git`:
+- `curl`:
+- `fzf`:
+- `eza`:
+- `bat` or `batcat`:
+- `wl-copy`:
+- Other:
+
+## Steps To Reproduce
+
+1. Start a new shell or source `~/.custom_bash_commands.sh`.
+2. Run `...`.
+3. Observe `...`.
+
+## Actual Behavior
+
+Paste the exact output, error message, or terminal behavior.
+
+```text
+...
+```
+
+## Expected Behavior
+
+Describe what CBC should have done instead.
+
+## Diagnostics
+
+If the bug involves startup, config, modules, updates, dependencies, or styled
+output, include relevant command output.
+
+```bash
+cbc doctor
+cbc doctor startup
+cbc list -v
+```
+
+```text
+Paste output here.
+```
+
+## Additional Context
+
+Add screenshots, recordings, module manifest entries, config snippets, or links
+when they help explain the bug.
