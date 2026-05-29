@@ -14,6 +14,7 @@ is sourced at shell startup.
 - [Post-Installation Behavior](#post-installation-behavior)
 - [Daily Usage](#daily-usage)
 - [Supporting Docs & Utilities](#supporting-docs--utilities)
+- [Documentation Site](#documentation-site)
 - [Documentation Style](#documentation-style)
 - [Contribution Workflow](#contribution-workflow)
 - [Troubleshooting](#troubleshooting)
@@ -38,6 +39,8 @@ optionally sources `~/.bash_aliases` when enabled in config.
 | `cbc_aliases.sh` | Alias catalog loaded by the main script. |
 | `install_cbc.sh` | Installer that validates the repository path, copies scripts into `~`, appends a sourcing line to `.bashrc` when missing, and creates common directories under `~/Documents`. |
 | `docs/` | Reference documentation for dependencies, SOPs, and the TODO list. |
+| `zensical.toml` | Zensical configuration for the documentation site. |
+| `requirements-docs.txt` | Pinned Python package list for documentation builds. |
 | `CHANGELOG.md` & `cbc_logo_00001.png` | Release history file and branding asset used in documentation. |
 
 ## Prerequisites
@@ -51,6 +54,7 @@ CBC expects the tools listed in `docs/dependencies.md`. Highlights include:
 - `wl-copy` for clipboard options in `readme`, `wiki`, `changes`, and
   `releases`.
 - `imv-x11` for the `imv` alias and `man` for `fman`.
+- Python 3.10 or newer for Zensical documentation builds.
 
 ## Installation
 
@@ -173,9 +177,39 @@ When the terminal sources CBC:
 
 - `docs/dependencies.md` lists required, strongly recommended, and
   optional tools.
+- `docs/index.md` is the Zensical landing page for GitHub Pages.
 - `docs/standard_operating_procedures.md` documents how to add functions
   and aliases and keep `cbc list` accurate.
 - `docs/todo.md` tracks outstanding cleanup and feature work.
+- `zensical.toml` configures the documentation site.
+- `requirements-docs.txt` pins Zensical for reproducible docs builds.
+
+## Documentation Site
+
+The documentation site uses Zensical with source files in `docs/` and output in
+`site/`. Install the docs dependencies in a virtual environment before serving
+or building the site locally:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-docs.txt
+```
+
+Preview the site locally:
+
+```bash
+zensical serve
+```
+
+Build the static site:
+
+```bash
+zensical build --clean
+```
+
+GitHub Pages deployment is handled by `.github/workflows/docs.yml` when changes
+are pushed to `main` or when the workflow is run manually.
 
 ## Documentation Style
 
@@ -193,6 +227,7 @@ cases may exceed that limit when readability would otherwise suffer:
 - Keep `cbc list` arrays in sync (`function_names`, `function_descs`,
   `alias_names`, `alias_descs`).
 - Update documentation whenever behavior or dependencies change.
+- Run `zensical build --clean` after changing documentation site files.
 
 ## Troubleshooting
 
@@ -211,3 +246,6 @@ cases may exceed that limit when readability would otherwise suffer:
   their entrypoints in the current shell.
 - **Terminal startup feels slow:** run `cbc doctor startup` to measure CBC
   source time, module loading, banner rendering, and related settings.
+- **Zensical command missing:** activate `.venv` or run
+  `.venv/bin/zensical build --clean` after installing
+  `requirements-docs.txt`.

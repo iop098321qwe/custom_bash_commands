@@ -14,6 +14,7 @@
 - man
 - xdg-open
 - setsid
+- Python 3.10 or newer
 - fzf
 - bat or batcat
 - eza
@@ -29,3 +30,8 @@
 
 - zellij
 - sudo
+
+## Documentation Builds
+
+- pip, installed inside the Python virtual environment
+- Zensical, installed from `requirements-docs.txt`
