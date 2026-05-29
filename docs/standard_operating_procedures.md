@@ -9,7 +9,8 @@
 5. [Creating New Aliases](#creating-new-aliases)
 6. [Keeping `cbc list` Accurate](#keeping-cbc-list-accurate)
 7. [Documentation Updates](#documentation-updates)
-8. [Manual Testing Checklist](#manual-testing-checklist)
+8. [Documentation Site Checks](#documentation-site-checks)
+9. [Manual Testing Checklist](#manual-testing-checklist)
 
 ## Purpose
 
@@ -23,6 +24,9 @@ These procedures apply to updates in:
 - `custom_bash_commands.sh` (functions and helper logic)
 - `cbc_aliases.sh` (alias catalog)
 - `docs/` (supporting documentation)
+- `zensical.toml` (documentation site configuration)
+- `requirements-docs.txt` (documentation site dependencies)
+- `.github/workflows/docs.yml` (GitHub Pages deployment)
 
 ## Guiding Principles
 
@@ -106,7 +110,22 @@ workflows:
 
 - `docs/standard_operating_procedures.md` for process changes.
 - `docs/dependencies.md` when new tools are required or removed.
+- `docs/index.md` when site navigation or landing-page content changes.
 - `README.md` when the user-facing workflow changes or new commands are added.
+- `zensical.toml` when the documentation site configuration changes.
+- `.github/workflows/docs.yml` when GitHub Pages deployment changes.
+
+## Documentation Site Checks
+
+The documentation site uses Zensical. Validate site changes locally before
+opening a pull request:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-docs.txt
+zensical build --clean
+```
 
 ## Manual Testing Checklist
 
@@ -115,4 +134,5 @@ No automated tests are tracked. Validate changes manually:
 1. Source the updated scripts or open a new shell session.
 2. Run the new function or alias with `-h` to confirm usage text.
 3. Run `cbc list` and `cbc list -v` to confirm catalogs are current.
-4. Verify any external commands used by the change are available.
+4. Run `zensical build --clean` when documentation site files change.
+5. Verify any external commands used by the change are available.

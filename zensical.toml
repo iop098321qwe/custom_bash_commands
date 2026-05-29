@@ -1,0 +1,9 @@
+[project]
+site_name = "Custom Bash Commands"
+site_description = "Documentation for the Custom Bash Commands toolkit."
+site_url = "https://iop098321qwe.github.io/custom_bash_commands/"
+docs_dir = "docs"
+site_dir = "site"
+
+[project.theme]
+variant = "classic"
