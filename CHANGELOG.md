@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.4.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v3.3.0...v3.4.0) (2026-06-15)
+
+
+### Features
+
+* **docs:** add zensical site scaffold ([dc51a01](https://github.com/iop098321qwe/custom_bash_commands/commit/dc51a01e411be4ed0ad395d9ad67031501c231db))
+* **pages:** add CHANGELOG and AGENTS to Zensical documentation ([ab05e4c](https://github.com/iop098321qwe/custom_bash_commands/commit/ab05e4cf5f17dd0ada37628b8c11a1430c4ccd2a))
+* **zensical:** add light/dark mode toggle to Zensical documentation ([214ec03](https://github.com/iop098321qwe/custom_bash_commands/commit/214ec0311b140ad5de1ba7c0457a736d9527eeb8))
+
+
+### Bug Fixes
+
+* **CHANGELOG:** fix incorrect linking of version comparison in CHANGELOG ([202057b](https://github.com/iop098321qwe/custom_bash_commands/commit/202057b59b1dd9da6d7221a93e20f74681737d4b))
+
 ## [3.3.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v3.2.0...v3.3.0) (2026-05-21)
 
 ### Features
