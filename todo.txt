@@ -1,1 +1,2 @@
-(A) 2026-06-16 rebuild zensical docs high priority @docs @website due:2026-06-21
+(B) 2026-06-16 rebuild zensical docs due:2026-06-21 +docs-site @docs
+(B) create modules page +docs-site due:2026-06-22 @docs
