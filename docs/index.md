@@ -6,10 +6,6 @@ ready for GitHub Pages.
 
 ## Available Pages
 
-- [Dependencies](dependencies.md)
-- [Standard Operating Procedures](standard_operating_procedures.md)
-- [TODO](todo.md)
-
 ## Local Preview
 
 ```bash
