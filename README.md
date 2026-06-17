@@ -13,7 +13,6 @@ is sourced at shell startup.
 - [Installation](#installation)
 - [Post-Installation Behavior](#post-installation-behavior)
 - [Daily Usage](#daily-usage)
-- [Supporting Docs & Utilities](#supporting-docs--utilities)
 - [Documentation Site](#documentation-site)
 - [Documentation Style](#documentation-style)
 - [Contribution Workflow](#contribution-workflow)
@@ -172,17 +171,6 @@ When the terminal sources CBC:
 - Single-letter aliases are limited to `c`, `s`, `v`, `x`, and `z`.
 - On Ubuntu-like systems, `bat` is aliased to `batcat`.
 - Use `cbc list -v` to see the full alias catalog.
-
-## Supporting Docs & Utilities
-
-- `docs/dependencies.md` lists required, strongly recommended, and
-  optional tools.
-- `docs/index.md` is the Zensical landing page for GitHub Pages.
-- `docs/standard_operating_procedures.md` documents how to add functions
-  and aliases and keep `cbc list` accurate.
-- `docs/todo.md` tracks outstanding cleanup and feature work.
-- `zensical.toml` configures the documentation site.
-- `requirements-docs.txt` pins Zensical for reproducible docs builds.
 
 ## Documentation Site
 
