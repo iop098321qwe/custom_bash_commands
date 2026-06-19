@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CBC_VERSION="v3.4.0"
+CBC_VERSION="v3.5.0"
 
 ################################################################################
 # CUSTOM BASH COMMANDS (by iop098321qwe)
@@ -2105,53 +2105,6 @@ releases() {
 
   # Call the open_releases function
   open_releases
-}
-
-################################################################################
-# DOTFILES
-################################################################################
-
-dotfiles() {
-  OPTIND=1
-
-  usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Open the dotfiles repository in your default browser."
-
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  dotfiles [-h]"
-
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
-
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
-      "  dotfiles"
-  }
-
-  if [ "${1:-}" != "-h" ] && [ "${1:-}" != "--help" ]; then
-    cbc_gum_guard || return 1
-  fi
-
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      usage
-      return 0
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
-      return 1
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
-
-  # Define the dotfiles repository URL
-  local arch_dotfiles_url="https://github.com/iop098321qwe/dotfiles-arch"
-
-  # Open the dotfiles repository in the default browser
-  setsid -f xdg-open "$arch_dotfiles_url" >/dev/null 2>&1
 }
 
 ###############################################################################
