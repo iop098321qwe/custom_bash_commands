@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.5.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v3.4.0...v3.5.0) (2026-06-19)
+
+
+### Features
+
+* **function:** move `dotfiles` function to `chezmod` module ([3d298ca](https://github.com/iop098321qwe/custom_bash_commands/commit/3d298ca439fa991567f968628bd6a00fbe0074ae))
+
 ## [3.4.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v3.3.0...v3.4.0) (2026-06-15)
 
 
