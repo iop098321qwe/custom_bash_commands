@@ -7,9 +7,7 @@
 - curl
 - sed
 - awk
-- sha256sum
 - find
-- sort
 - xargs
 - man
 - xdg-open
@@ -25,11 +23,6 @@
 ## Strongly Recommended
 
 - gum (required when `CBC_USE_GUM=true`)
-
-## Optional
-
-- zellij
-- sudo
 
 ## Documentation Builds
 
