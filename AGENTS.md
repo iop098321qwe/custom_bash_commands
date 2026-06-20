@@ -48,7 +48,10 @@ cd ~/Documents/github_repositories/custom_bash_commands
 ## Repository Overview
 
 - `.github/` holds issue templates and the GitHub Pages workflow.
-- `docs/` holds Zensical source files, dependency lists, SOPs, and backlog.
+- `docs/commands/` holds command reference pages.
+- `docs/operations/` holds SOP guidance.
+- `docs/repository_docs/` holds documentation-site symlinks to root docs.
+- `docs/wip/` holds work-in-progress docs such as dependencies.
 - Repository root holds scripts, docs config, installer, and branding assets.
 
 ## Tracked Files Overview
@@ -64,12 +67,23 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `cbc_aliases.sh`: Alias catalog sourced by the main script.
 - `cbc_logo_00001.png`: CBC logo asset.
 - `custom_bash_commands.sh`: Main entry point script.
-- `docs/dependencies.md`: Baseline dependency list.
+- `docs/commands/command_changes.md`: Reference page for `changes`.
+- `docs/commands/command_display_version.md`: Reference page for
+  `display_version`.
+- `docs/commands/command_readme.md`: Reference page for `readme`.
+- `docs/commands/command_releases.md`: Reference page for `releases`.
+- `docs/commands/command_wiki.md`: Reference page for `wiki`.
 - `docs/index.md`: Zensical documentation landing page.
-- `docs/standard_operating_procedures.md`: SOPs for changes.
-- `docs/todo.md`: Outstanding work list.
+- `docs/operations/standard_operating_procedures.md`: SOPs for changes.
+- `docs/repository_docs/AGENTS.md`: Symlink to root agent instructions.
+- `docs/repository_docs/CHANGELOG.md`: Symlink to the root changelog.
+- `docs/repository_docs/README.md`: Symlink to the root README.
+- `docs/wip/dependencies.md`: Work-in-progress dependency list.
+- `done.txt`: Completed todo.txt task entries.
+- `inbox.txt.tuxedo-lock`: Empty todo.txt lock file.
 - `install_cbc.sh`: Installer script for local setup.
 - `requirements-docs.txt`: Pinned Zensical dependency list.
+- `todo.txt`: Open todo.txt task entries.
 - `zensical.toml`: Zensical documentation site configuration.
 
 ## Architecture
@@ -90,7 +104,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
   `~/.bashrc` when missing, and creates common directories under
   `~/Documents/Temporary` and
   `~/Documents/github_repositories`.
-- `docs/` captures dependencies, SOP guidance, and open tasks.
+- `docs/` captures command references, SOP guidance, repository docs, and WIP
+  dependency notes.
 - `zensical.toml` configures the documentation site with `docs/` as source
   and `site/` as generated output.
 
@@ -130,7 +145,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
 ## Testing
 
 - No automated tests are tracked.
-- Follow `docs/standard_operating_procedures.md` for manual test guidance.
+- Follow `docs/operations/standard_operating_procedures.md` for manual test
+  guidance.
 - For documentation site changes, run `zensical build --clean` after
   installing `requirements-docs.txt` in `.venv`.
 
@@ -151,14 +167,14 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 ## Conventions
 
-- Follow `docs/standard_operating_procedures.md` when adding or modifying
-  functions and aliases.
+- Follow `docs/operations/standard_operating_procedures.md` when adding or
+  modifying functions and aliases.
 - Keep `cbc list` output in `custom_bash_commands.sh` aligned with current
   functions and aliases by updating `function_names`, `alias_names`,
   `function_descs`, and `alias_descs`.
 - Maintain `cbc_aliases.sh` as the alias catalog loaded by the main script.
 - Single-letter aliases in `cbc_aliases.sh` are limited to `c`, `s`, `v`,
-  `x`, and `z`.
+  and `x`.
 
 ## Security and Compliance
 
@@ -167,15 +183,13 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 ## Dependencies and Services
 
-- `docs/dependencies.md` required tools:
+- `docs/wip/dependencies.md` required tools:
   - bash
   - git
   - curl
   - sed
   - awk
-  - sha256sum
   - find
-  - sort
   - xargs
   - man
   - xdg-open
@@ -187,9 +201,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
   - imv-x11
   - nvim
   - wl-copy
-- `docs/dependencies.md` strongly recommended tools: gum.
-- `docs/dependencies.md` documentation build tools: pip and Zensical.
-- `docs/dependencies.md` optional tools: zellij, sudo.
+- `docs/wip/dependencies.md` strongly recommended tools: gum.
+- `docs/wip/dependencies.md` documentation build tools: pip and Zensical.
 - External service: GitHub is used by `cbc update check`, `cbc update`,
   `cbc pkg load`, `cbc doctor`, and GitHub Pages deployment.
 

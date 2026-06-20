@@ -37,7 +37,6 @@ alias c='clear'
 alias s='sudo'
 alias v='nvim'
 alias x='chmod +x'
-alias z='zellij'
 
 ################################################################################
 # EZA
