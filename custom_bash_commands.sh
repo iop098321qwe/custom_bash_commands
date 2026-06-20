@@ -3172,7 +3172,6 @@ cbc_doctor() {
   cbc_doctor_check_tool "imv-x11" "imv-x11" true dependency_lines
   cbc_doctor_check_tool "nvim" "nvim" true dependency_lines
   cbc_doctor_check_tool "wl-copy" "wl-copy" true dependency_lines
-  cbc_doctor_check_tool "zellij" "zellij" false dependency_lines
   cbc_doctor_check_tool "sudo" "sudo" false dependency_lines
 
   cbc_doctor_check_file "Main script" "$HOME/.custom_bash_commands.sh" true file_lines
@@ -3497,7 +3496,6 @@ cbc_list_render() {
     "v"
     "vim"
     "x"
-    "z"
   )
 
   local -a alias_descs=(
@@ -3528,7 +3526,6 @@ cbc_list_render() {
     "nvim"
     "nvim"
     "chmod +x"
-    "zellij"
   )
 
   cbc_list_format_details() {
