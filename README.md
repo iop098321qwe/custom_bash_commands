@@ -44,7 +44,7 @@ optionally sources `~/.bash_aliases` when enabled in config.
 
 ## Prerequisites
 
-CBC expects the tools listed in `docs/dependencies.md`. Highlights include:
+CBC expects the tools listed in `docs/wip/dependencies.md`. Highlights include:
 
 - `gum` for styled UI output (strongly recommended, optional).
 - `git` and `curl` for update checks and module management.
@@ -224,7 +224,7 @@ cases may exceed that limit when readability would otherwise suffer:
   and aborts if it does not. Move the clone into the expected location and
   rerun the script.
 - **Dependencies missing or failing silently:** Compare your environment
-  against `docs/dependencies.md` and confirm helpers such as `gum`, `fzf`,
+  against `docs/wip/dependencies.md` and confirm helpers such as `gum`, `fzf`,
   `wl-copy`, `eza`, `nvim`, and `imv-x11` are installed.
 - **Gum required but missing:** If `CBC_USE_GUM=true`, install `gum` or
   set `CBC_USE_GUM=auto` or `CBC_USE_GUM=false` in
