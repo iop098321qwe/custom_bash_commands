@@ -135,7 +135,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
   source installed module entrypoints.
 - `cbc pkg uninstall <creator/repo|module-name>`: Remove a module.
 - `cbc pkg update`: Fast-forward modules and show results in a table.
-- `cbc test [repo-path]`: Reload CBC scripts from a local repo.
+- `cbc test`: Reload CBC scripts from the current repository root.
 - `python3 -m venv .venv`: Create the docs virtual environment.
 - `source .venv/bin/activate`: Activate the docs virtual environment.
 - `python -m pip install -r requirements-docs.txt`: Install Zensical.
