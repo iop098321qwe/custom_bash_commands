@@ -1998,7 +1998,7 @@ cbc() {
       "  doctor Run CBC diagnostics" \
       "  list   List CBC commands and aliases" \
       "  pkg    Manage CBC modules (install, list, load, uninstall, update)" \
-      "  test   Reload CBC from a local repo" \
+      "  test   Reload CBC from the current repo root" \
       "  update Check for CBC updates" \
       "  -h     Display this help message"
 
@@ -2808,24 +2808,24 @@ cbc_update() {
 cbc_test() {
   OPTIND=1
   local show_help=false
-  local repo_path="$HOME/Documents/github_repositories/custom_bash_commands"
+  local repo_path=""
+  local git_root=""
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Reload CBC scripts from a local repository."
+      "  Reload CBC scripts from the current repository root."
 
     cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  cbc test [repo-path]"
+      "  cbc test"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message"
 
     cbc_style_box "$CATPPUCCIN_LAVENDER" "Notes:" \
-      "  Defaults to ~/Documents/github_repositories/custom_bash_commands."
+      "  Run from the root of the custom_bash_commands repository."
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
-      "  cbc test" \
-      "  cbc test ~/dev/custom_bash_commands"
+      "  cbc test"
   }
 
   while getopts ":h" opt; do
@@ -2847,29 +2847,45 @@ cbc_test() {
     return 0
   fi
 
-  if [ $# -gt 1 ]; then
+  if [ $# -gt 0 ]; then
     cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Warning: run cbc test from the custom_bash_commands repo root."
     return 1
   fi
 
-  if [ $# -eq 1 ]; then
-    repo_path="$1"
+  repo_path="$(pwd -P)"
+
+  if ! git_root="$(
+    git -C "$repo_path" rev-parse --show-toplevel 2>/dev/null
+  )"; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Warning: cbc test must run from the custom_bash_commands repo root."
+    return 1
   fi
 
-  repo_path="${repo_path/#\~/$HOME}"
+  if [ "$git_root" != "$repo_path" ]; then
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Warning: cbc test must run from the custom_bash_commands repo root."
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Current directory is not the repository root: $repo_path"
+    return 1
+  fi
 
   local script_path="$repo_path/custom_bash_commands.sh"
   local alias_path="$repo_path/cbc_aliases.sh"
 
   if [ ! -f "$script_path" ]; then
-    cbc_style_message "$CATPPUCCIN_RED" \
-      "Missing $script_path. Check the repo path and try again."
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Warning: run cbc test from the custom_bash_commands repo root."
+    cbc_style_message "$CATPPUCCIN_RED" "Missing $script_path."
     return 1
   fi
 
   if [ ! -f "$alias_path" ]; then
-    cbc_style_message "$CATPPUCCIN_RED" \
-      "Missing $alias_path. Check the repo path and try again."
+    cbc_style_message "$CATPPUCCIN_YELLOW" \
+      "Warning: run cbc test from the custom_bash_commands repo root."
+    cbc_style_message "$CATPPUCCIN_RED" "Missing $alias_path."
     return 1
   fi
 
@@ -3681,7 +3697,7 @@ cbc_list_render() {
     "Profile CBC startup timing"
     "List CBC commands and aliases"
     "Manage CBC modules (install, list, load, uninstall, update)"
-    "Reload CBC scripts from a local repo"
+    "Reload CBC scripts from the current repo root"
     "Update CBC scripts and reload"
     "Check for CBC updates"
     "Open the CBC changelog in a browser"
