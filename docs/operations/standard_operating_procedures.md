@@ -108,9 +108,8 @@ or aliases, update these arrays in `custom_bash_commands.sh`:
 Update documentation whenever you change behavior, dependencies, or user
 workflows:
 
-- `docs/standard_operating_procedures.md` for process changes.
-- `docs/wip/dependencies.md` when new tools are required or removed.
-- `docs/index.md` when site navigation or landing-page content changes.
+- `docs/operations/standard_operating_procedures.md` for process changes.
+- `docs/dependencies.md` when new tools are required or removed.
 - `README.md` when the user-facing workflow changes or new commands are added.
 - `zensical.toml` when the documentation site configuration changes.
 - `.github/workflows/docs.yml` when GitHub Pages deployment changes.
