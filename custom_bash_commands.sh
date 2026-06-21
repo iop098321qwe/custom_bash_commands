@@ -494,7 +494,62 @@ cbc_spinner() {
 
   local title="$1"
   shift
-  gum spin --spinner dot --title "$title" --title.foreground "$CATPPUCCIN_MAUVE" -- "$@"
+  gum spin \
+    --spinner dot \
+    --title "$title" \
+    --title.foreground "$CATPPUCCIN_MAUVE" \
+    -- "$@"
+}
+
+cbc_gum_spinner_start() {
+  local -n out_pid="$1"
+  local -n out_done_file="$2"
+  local title="$3"
+
+  out_pid=""
+  out_done_file=""
+
+  if [ "$CBC_GUM_ACTIVE" != true ]; then
+    return 0
+  fi
+
+  if ! command -v mktemp >/dev/null 2>&1; then
+    return 0
+  fi
+
+  cbc_theme_refresh_palette
+
+  out_done_file="$(mktemp "${TMPDIR:-/tmp}/cbc-spinner.XXXXXX")" || {
+    out_done_file=""
+    return 0
+  }
+  rm -f "$out_done_file"
+
+  gum spin \
+    --spinner dot \
+    --title "$title" \
+    --title.foreground "$CATPPUCCIN_MAUVE" \
+    -- bash -c \
+    'while [ ! -e "$1" ]; do sleep 0.1; done' \
+    _ "$out_done_file" &
+  out_pid="$!"
+}
+
+cbc_gum_spinner_stop() {
+  local spinner_pid="$1"
+  local done_file="$2"
+
+  if [ -n "$done_file" ]; then
+    : >"$done_file"
+  fi
+
+  if [ -n "$spinner_pid" ]; then
+    wait "$spinner_pid" 2>/dev/null || true
+  fi
+
+  if [ -n "$done_file" ]; then
+    rm -f "$done_file"
+  fi
 }
 
 cbc_table_sanitize_field() {
@@ -1226,6 +1281,13 @@ cbc_pkg_list() {
   local found=false
   local manifest_modules=()
   local table_rows=()
+  local spinner_pid=""
+  local spinner_done_file=""
+
+  cbc_gum_spinner_start \
+    spinner_pid \
+    spinner_done_file \
+    "Loading package list..."
 
   for idx in "${!CBC_MANIFEST_USES[@]}"; do
     local use="${CBC_MANIFEST_USES[$idx]}"
@@ -1297,6 +1359,7 @@ cbc_pkg_list() {
       "$status_line")")
   done
   shopt -u nullglob
+  cbc_gum_spinner_stop "$spinner_pid" "$spinner_done_file"
 
   if [ "$found" = false ]; then
     cbc_style_message "$CATPPUCCIN_YELLOW" \
