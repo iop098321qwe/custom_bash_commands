@@ -525,14 +525,16 @@ cbc_gum_spinner_start() {
   }
   rm -f "$out_done_file"
 
-  gum spin \
-    --spinner dot \
-    --title "$title" \
-    --title.foreground "$CATPPUCCIN_MAUVE" \
-    -- bash -c \
-    'while [ ! -e "$1" ]; do sleep 0.1; done' \
-    _ "$out_done_file" &
-  out_pid="$!"
+  {
+    gum spin \
+      --spinner dot \
+      --title "$title" \
+      --title.foreground "$CATPPUCCIN_MAUVE" \
+      -- bash -c \
+      'while [ ! -e "$1" ]; do sleep 0.1; done' \
+      _ "$out_done_file" 2>&3 &
+    out_pid="$!"
+  } 3>&2 2>/dev/null
 }
 
 cbc_gum_spinner_stop() {
