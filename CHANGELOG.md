@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.6.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v3.5.0...v3.6.0) (2026-06-21)
+
+
+### Features
+
+* **cbc:** restrict test reloads to repo root ([98e3ade](https://github.com/iop098321qwe/custom_bash_commands/commit/98e3ade1b8c21b8de2b8bdf7c79f8383694b562b))
+* **pkg:** render package output as tables ([73035d1](https://github.com/iop098321qwe/custom_bash_commands/commit/73035d1da1dec4d37819ec499741a752962c5289))
+* **pkg:** show spinner while listing packages ([9e74569](https://github.com/iop098321qwe/custom_bash_commands/commit/9e74569e0d1dc5efabc8205688199869697af744))
+
+
+### Bug Fixes
+
+* **pkg:** hide package list spinner job output ([15d977f](https://github.com/iop098321qwe/custom_bash_commands/commit/15d977f526dc6119a75dd722b46e24d36afc9584))
+
 ## [3.5.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v3.4.0...v3.5.0) (2026-06-19)
 
 
