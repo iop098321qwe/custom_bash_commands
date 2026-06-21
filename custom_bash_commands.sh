@@ -494,7 +494,187 @@ cbc_spinner() {
 
   local title="$1"
   shift
-  gum spin --spinner dot --title "$title" --title.foreground "$CATPPUCCIN_MAUVE" -- "$@"
+  gum spin \
+    --spinner dot \
+    --title "$title" \
+    --title.foreground "$CATPPUCCIN_MAUVE" \
+    -- "$@"
+}
+
+cbc_gum_spinner_start() {
+  local -n out_pid="$1"
+  local -n out_done_file="$2"
+  local title="$3"
+
+  out_pid=""
+  out_done_file=""
+
+  if [ "$CBC_GUM_ACTIVE" != true ]; then
+    return 0
+  fi
+
+  if ! command -v mktemp >/dev/null 2>&1; then
+    return 0
+  fi
+
+  cbc_theme_refresh_palette
+
+  out_done_file="$(mktemp "${TMPDIR:-/tmp}/cbc-spinner.XXXXXX")" || {
+    out_done_file=""
+    return 0
+  }
+  rm -f "$out_done_file"
+
+  {
+    gum spin \
+      --spinner dot \
+      --title "$title" \
+      --title.foreground "$CATPPUCCIN_MAUVE" \
+      -- bash -c \
+      'while [ ! -e "$1" ]; do sleep 0.1; done' \
+      _ "$out_done_file" 2>&3 &
+    out_pid="$!"
+  } 3>&2 2>/dev/null
+}
+
+cbc_gum_spinner_stop() {
+  local spinner_pid="$1"
+  local done_file="$2"
+
+  if [ -n "$done_file" ]; then
+    : >"$done_file"
+  fi
+
+  if [ -n "$spinner_pid" ]; then
+    wait "$spinner_pid" 2>/dev/null || true
+  fi
+
+  if [ -n "$done_file" ]; then
+    rm -f "$done_file"
+  fi
+}
+
+cbc_table_sanitize_field() {
+  local value="$1"
+
+  value="${value//$'\t'/ }"
+  value="${value//$'\n'/ }"
+  value="${value//$'\r'/ }"
+  printf '%s' "$value"
+}
+
+cbc_table_row() {
+  local row=""
+  local field=""
+  local sanitized=""
+
+  for field in "$@"; do
+    sanitized="$(cbc_table_sanitize_field "$field")"
+
+    if [ -n "$row" ]; then
+      row+=$'\t'
+    fi
+
+    row+="$sanitized"
+  done
+
+  printf '%s' "$row"
+}
+
+cbc_style_table() {
+  local columns="$1"
+  local widths="$2"
+  shift 2
+  local rows=("$@")
+
+  cbc_theme_refresh_palette
+
+  if [ "$CBC_GUM_ACTIVE" = true ]; then
+    printf '%s\n' "${rows[@]}" | gum table \
+      --print \
+      --separator $'\t' \
+      --columns "$columns" \
+      --widths "$widths" \
+      --border rounded \
+      --border.foreground "$CATPPUCCIN_LAVENDER" \
+      --cell.foreground "$CATPPUCCIN_TEXT" \
+      --header.foreground "$CATPPUCCIN_BASE" \
+      --header.background "$CATPPUCCIN_LAVENDER" \
+      --padding "0 1"
+    return 0
+  fi
+
+  local headers=()
+  local column_widths=()
+  IFS=',' read -r -a headers <<<"$columns"
+  IFS=',' read -r -a column_widths <<<"$widths"
+
+  local idx=0
+  local width=0
+  local field=""
+  local divider=""
+
+  for idx in "${!headers[@]}"; do
+    field="${headers[$idx]}"
+    width="${column_widths[$idx]}"
+
+    if ((${#field} > width)); then
+      column_widths[$idx]="${#field}"
+    fi
+  done
+
+  local row=""
+  for row in "${rows[@]}"; do
+    local cells=()
+    IFS=$'\t' read -r -a cells <<<"$row"
+
+    for idx in "${!headers[@]}"; do
+      field="${cells[$idx]}"
+      width="${column_widths[$idx]}"
+
+      if ((${#field} > width)); then
+        column_widths[$idx]="${#field}"
+      fi
+    done
+  done
+
+  for idx in "${!headers[@]}"; do
+    width="${column_widths[$idx]}"
+    field="${headers[$idx]}"
+    printf '%-*s' "$width" "$field"
+
+    if ((idx < ${#headers[@]} - 1)); then
+      printf '  '
+    fi
+  done
+  printf '\n'
+
+  for idx in "${!headers[@]}"; do
+    width="${column_widths[$idx]}"
+    printf -v divider '%*s' "$width" ''
+    printf '%s' "${divider// /-}"
+
+    if ((idx < ${#headers[@]} - 1)); then
+      printf '  '
+    fi
+  done
+  printf '\n'
+
+  for row in "${rows[@]}"; do
+    local cells=()
+    IFS=$'\t' read -r -a cells <<<"$row"
+
+    for idx in "${!headers[@]}"; do
+      width="${column_widths[$idx]}"
+      field="${cells[$idx]}"
+      printf '%-*s' "$width" "$field"
+
+      if ((idx < ${#headers[@]} - 1)); then
+        printf '  '
+      fi
+    done
+    printf '\n'
+  done
 }
 
 ################################################################################
@@ -1102,6 +1282,14 @@ cbc_pkg_list() {
 
   local found=false
   local manifest_modules=()
+  local table_rows=()
+  local spinner_pid=""
+  local spinner_done_file=""
+
+  cbc_gum_spinner_start \
+    spinner_pid \
+    spinner_done_file \
+    "Loading package list..."
 
   for idx in "${!CBC_MANIFEST_USES[@]}"; do
     local use="${CBC_MANIFEST_USES[$idx]}"
@@ -1124,19 +1312,22 @@ cbc_pkg_list() {
 
     local status_line
     status_line="$(cbc_pkg_update_status_line "$use" "$module_dir" "$manifest_rev" "$manifest_hash")"
+    status_line="${status_line#Status: }"
 
     if [ -d "$module_dir" ]; then
-      cbc_style_box "$CATPPUCCIN_BLUE" "Module: $module_name" \
-        "  Use: $use" \
-        "  Recorded rev: ${manifest_rev:-unknown}" \
-        "  Last update: $last_update" \
-        "  $status_line"
+      table_rows+=("$(cbc_table_row \
+        "$module_name" \
+        "$use" \
+        "${manifest_rev:-unknown}" \
+        "$last_update" \
+        "$status_line")")
     else
-      cbc_style_box "$CATPPUCCIN_SAPPHIRE" "Module: $module_name" \
-        "  Use: $use" \
-        "  Recorded rev: ${manifest_rev:-unknown}" \
-        "  Last update: $last_update" \
-        "  Status: Not present locally; will synchronize on next load."
+      table_rows+=("$(cbc_table_row \
+        "$module_name" \
+        "$use" \
+        "${manifest_rev:-unknown}" \
+        "$last_update" \
+        "Not present locally; load will sync")")
     fi
 
     found=true
@@ -1155,18 +1346,33 @@ cbc_pkg_list() {
 
     local status_line
     status_line="$(cbc_pkg_update_status_line "$module_name" "$module_dir" "" "")"
+    status_line="${status_line#Status: }"
 
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Module: $module_name" \
-      "  Use: Local install (not tracked in packages.toml)" \
-      "  Last update: $(date -r "$module_dir" +%Y-%m-%d 2>/dev/null || echo "Unknown")" \
-      "  $status_line"
+    local last_update="Unknown"
+    last_update="$(
+      date -r "$module_dir" +%Y-%m-%d 2>/dev/null || echo "Unknown"
+    )"
+
+    table_rows+=("$(cbc_table_row \
+      "$module_name" \
+      "Local install (not tracked)" \
+      "-" \
+      "$last_update" \
+      "$status_line")")
   done
   shopt -u nullglob
+  cbc_gum_spinner_stop "$spinner_pid" "$spinner_done_file"
 
   if [ "$found" = false ]; then
     cbc_style_message "$CATPPUCCIN_YELLOW" \
       "No CBC modules installed. Use 'cbc pkg install <creator/repo>' to add one."
+    return 0
   fi
+
+  cbc_style_table \
+    "Module,Use,Recorded Rev,Last Update,Status" \
+    "24,38,14,12,42" \
+    "${table_rows[@]}"
 }
 
 cbc_pkg_update() {
@@ -1220,8 +1426,7 @@ cbc_pkg_update() {
   cbc_pkg_ensure_config
   cbc_pkg_read_manifest
 
-  local updated_modules=()
-  local skipped_modules=()
+  local update_rows=()
   local manifest_changed=false
 
   for idx in "${!CBC_MANIFEST_USES[@]}"; do
@@ -1234,18 +1439,30 @@ cbc_pkg_update() {
     local module_dir="$CBC_MODULE_ROOT/$module_name"
 
     if [ ! -d "$module_dir" ]; then
-      skipped_modules+=("$module_name (not installed; run 'cbc pkg load')")
+      update_rows+=("$(cbc_table_row \
+        "$module_name" \
+        "Skipped" \
+        "-" \
+        "Not installed; run 'cbc pkg load'")")
       continue
     fi
 
     if [ ! -d "$module_dir/.git" ]; then
-      skipped_modules+=("$module_name (not a git repository)")
+      update_rows+=("$(cbc_table_row \
+        "$module_name" \
+        "Skipped" \
+        "local" \
+        "Not a git repository")")
       continue
     fi
 
     if ! cbc_spinner "Checking $module_name for updates..." \
       git -C "$module_dir" fetch --quiet --prune; then
-      skipped_modules+=("$module_name (unable to refresh remote)")
+      update_rows+=("$(cbc_table_row \
+        "$module_name" \
+        "Failed" \
+        "-" \
+        "Unable to refresh remote")")
       continue
     fi
 
@@ -1257,36 +1474,59 @@ cbc_pkg_update() {
     cbc_pkg_capture_state "$module_dir" current_rev current_hash
 
     if [ -z "$remote_head" ]; then
-      skipped_modules+=("$module_name (no upstream detected)")
+      update_rows+=("$(cbc_table_row \
+        "$module_name" \
+        "Skipped" \
+        "${current_rev:-unknown}" \
+        "No upstream detected")")
       continue
     fi
 
     if [ "$remote_head" = "$current_hash" ]; then
+      local details="Already current"
+
       if [ "$manifest_hash" != "$current_hash" ]; then
         cbc_pkg_record_manifest "$use" "$current_rev" "$current_hash"
         manifest_changed=true
+        details="Already current; manifest refreshed"
       fi
 
-      skipped_modules+=("$module_name (already current)")
+      update_rows+=("$(cbc_table_row \
+        "$module_name" \
+        "Current" \
+        "${current_rev:-unknown}" \
+        "$details")")
       continue
     fi
 
     if [ -n "$manifest_hash" ] && [ "$remote_head" = "$manifest_hash" ]; then
-      skipped_modules+=("$module_name (already matches manifest)")
+      update_rows+=("$(cbc_table_row \
+        "$module_name" \
+        "Skipped" \
+        "${current_rev:-unknown}" \
+        "Already matches manifest")")
       continue
     fi
 
     if cbc_spinner "Updating $module_name" \
       git -C "$module_dir" merge --ff-only --quiet "$remote_head"; then
-      updated_modules+=("$module_name")
-
       local new_rev=""
       local new_hash=""
       cbc_pkg_capture_state "$module_dir" new_rev new_hash
       cbc_pkg_record_manifest "$use" "$new_rev" "$new_hash"
       manifest_changed=true
+
+      update_rows+=("$(cbc_table_row \
+        "$module_name" \
+        "Updated" \
+        "${new_rev:-unknown}" \
+        "Fast-forwarded to latest remote")")
     else
-      skipped_modules+=("$module_name (update failed)")
+      update_rows+=("$(cbc_table_row \
+        "$module_name" \
+        "Failed" \
+        "${current_rev:-unknown}" \
+        "Update failed")")
     fi
   done
 
@@ -1294,27 +1534,12 @@ cbc_pkg_update() {
     cbc_pkg_write_manifest
   fi
 
-  if [ ${#updated_modules[@]} -gt 0 ]; then
-    local updated_body="Updated Modules"
-
-    for module_name in "${updated_modules[@]}"; do
-      updated_body+=$'\n'"  - $module_name"
-    done
-
-    cbc_style_message "$CATPPUCCIN_GREEN" "$updated_body"
-  fi
-
-  if [ ${#skipped_modules[@]} -gt 0 ]; then
-    local skipped_body="Skipped Modules"
-
-    for module_name in "${skipped_modules[@]}"; do
-      skipped_body+=$'\n'"  - $module_name"
-    done
-
-    cbc_style_message "$CATPPUCCIN_MAROON" "$skipped_body"
-  fi
-
-  if [ ${#updated_modules[@]} -eq 0 ] && [ ${#skipped_modules[@]} -eq 0 ]; then
+  if [ ${#update_rows[@]} -gt 0 ]; then
+    cbc_style_table \
+      "Module,Result,Rev,Details" \
+      "24,10,12,52" \
+      "${update_rows[@]}"
+  else
     cbc_style_message "$CATPPUCCIN_YELLOW" \
       "No CBC modules installed. Use 'cbc pkg install <creator/repo>' to add one."
   fi
