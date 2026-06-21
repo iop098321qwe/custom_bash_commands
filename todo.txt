@@ -1,3 +1,3 @@
-(B) 2026-06-16 rebuild zensical docs due:2026-06-21 +docs-site @docs
-(B) create modules page +docs-site due:2026-06-22 @docs
-(A) change `cbc test` to source from current directory +fixes @command @fix due:2026-06-22
+(B) 2026-06-16 rebuild zensical docs +docs-site @docs
+(B) create modules page +docs-site @docs
+(A) `cbc pkg update` should show latest release tag in output @feature
