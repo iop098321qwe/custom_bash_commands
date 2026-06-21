@@ -35,14 +35,14 @@ optionally sources `~/.bash_aliases` when enabled in config.
 | `custom_bash_commands.sh` | Main entry point. Defines `cbc` subcommands, styled output helpers, update checks, and module management. |
 | `cbc_aliases.sh` | Alias catalog loaded by the main script. |
 | `install_cbc.sh` | Installer that validates the repository path, copies scripts into `~`, appends a sourcing line to `.bashrc` when missing, and creates common directories under `~/Documents`. |
-| `docs/` | Reference documentation for dependencies, SOPs, and the TODO list. |
+| `docs/` | Reference documentation for dependencies, SOPs, and commands. |
 | `zensical.toml` | Zensical configuration for the documentation site. |
 | `requirements-docs.txt` | Pinned Python package list for documentation builds. |
 | `CHANGELOG.md` & `cbc_logo_00001.png` | Release history file and branding asset used in documentation. |
 
 ## Prerequisites
 
-CBC expects the tools listed in `docs/wip/dependencies.md`. Highlights include:
+CBC expects the tools listed in `docs/dependencies.md`. Highlights include:
 
 - `gum` for styled UI output (strongly recommended, optional).
 - `git` and `curl` for update checks and module management.
@@ -153,11 +153,11 @@ When the terminal sources CBC:
 - `cbc pkg install <creator/repo|git-url|path>` records a module source.
 - `cbc pkg load` installs missing manifest modules, refreshes metadata,
   and sources entrypoints.
-- `cbc pkg update` fast-forwards installed module repos and refreshes the
-  manifest.
+- `cbc pkg update` fast-forwards installed module repos, refreshes the
+  manifest, and renders update results in a table.
 - `cbc pkg uninstall <creator/repo|module-name>` removes the manifest
   entry and local module folder.
-- `cbc pkg list` shows module status and last update dates.
+- `cbc pkg list` shows module status and last update dates in a table.
 - Subcommands support `-h` for help (for example, `cbc pkg install -h`).
 
 ### Aliases and navigation
@@ -208,8 +208,8 @@ cases may exceed that limit when readability would otherwise suffer:
 
 ## Contribution Workflow
 
-- Follow `docs/standard_operating_procedures.md` when adding functions or
-  aliases.
+- Follow `docs/operations/standard_operating_procedures.md` when adding
+  functions or aliases.
 - Keep `cbc list` arrays in sync (`function_names`, `function_descs`,
   `alias_names`, `alias_descs`).
 - Update documentation whenever behavior or dependencies change.
@@ -222,7 +222,7 @@ cases may exceed that limit when readability would otherwise suffer:
   and aborts if it does not. Move the clone into the expected location and
   rerun the script.
 - **Dependencies missing or failing silently:** Compare your environment
-  against `docs/wip/dependencies.md` and confirm helpers such as `gum`, `fzf`,
+  against `docs/dependencies.md` and confirm helpers such as `gum`, `fzf`,
   `wl-copy`, `eza`, `nvim`, and `imv-x11` are installed.
 - **Gum required but missing:** If `CBC_USE_GUM=true`, install `gum` or
   set `CBC_USE_GUM=auto` or `CBC_USE_GUM=false` in

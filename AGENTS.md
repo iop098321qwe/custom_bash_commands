@@ -51,7 +51,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `docs/commands/` holds command reference pages.
 - `docs/operations/` holds SOP guidance.
 - `docs/repository_docs/` holds documentation-site symlinks to root docs.
-- `docs/wip/` holds work-in-progress docs such as dependencies.
+- `docs/` holds dependencies, command references, and root doc symlinks.
 - Repository root holds scripts, docs config, installer, and branding assets.
 
 ## Tracked Files Overview
@@ -67,18 +67,18 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `cbc_aliases.sh`: Alias catalog sourced by the main script.
 - `cbc_logo_00001.png`: CBC logo asset.
 - `custom_bash_commands.sh`: Main entry point script.
+- `docs/LICENSE`: Symlink to the root license.
+- `docs/README.md`: Symlink to the root README.
 - `docs/commands/command_changes.md`: Reference page for `changes`.
 - `docs/commands/command_display_version.md`: Reference page for
   `display_version`.
 - `docs/commands/command_readme.md`: Reference page for `readme`.
 - `docs/commands/command_releases.md`: Reference page for `releases`.
 - `docs/commands/command_wiki.md`: Reference page for `wiki`.
-- `docs/index.md`: Zensical documentation landing page.
+- `docs/dependencies.md`: Dependency list for CBC usage and docs builds.
 - `docs/operations/standard_operating_procedures.md`: SOPs for changes.
 - `docs/repository_docs/AGENTS.md`: Symlink to root agent instructions.
 - `docs/repository_docs/CHANGELOG.md`: Symlink to the root changelog.
-- `docs/repository_docs/README.md`: Symlink to the root README.
-- `docs/wip/dependencies.md`: Work-in-progress dependency list.
 - `done.txt`: Completed todo.txt task entries.
 - `inbox.txt.tuxedo-lock`: Empty todo.txt lock file.
 - `install_cbc.sh`: Installer script for local setup.
@@ -96,16 +96,18 @@ cd ~/Documents/github_repositories/custom_bash_commands
   controlled by `CBC_USE_GUM` (`auto`, `true`, or `false`). Gum helpers read
   Omarchy colors from `~/.config/omarchy/current/theme/colors.toml` when
   present and fall back to plain-text output when gum is inactive. It parses
-  JSON with `awk` and `sed` for update checks. Startup sources installed
-  module entrypoints from `~/.config/cbc/modules`; manifest alignment runs
-  only when users call `cbc pkg load` or related package commands.
+  JSON with `awk` and `sed` for update checks. Package list and update outputs
+  use gum tables when active and plain aligned tables otherwise. Startup
+  sources installed module entrypoints from `~/.config/cbc/modules`; manifest
+  alignment runs only when users call `cbc pkg load` or related package
+  commands.
 - `cbc_aliases.sh` defines aliases that the main script loads during startup.
 - `install_cbc.sh` copies scripts into `~`, appends a sourcing block to
   `~/.bashrc` when missing, and creates common directories under
   `~/Documents/Temporary` and
   `~/Documents/github_repositories`.
-- `docs/` captures command references, SOP guidance, repository docs, and WIP
-  dependency notes.
+- `docs/` captures command references, SOP guidance, repository docs, and
+  dependency guidance.
 - `zensical.toml` configures the documentation site with `docs/` as source
   and `site/` as generated output.
 
@@ -127,8 +129,12 @@ cd ~/Documents/github_repositories/custom_bash_commands
   and latest versions plus the release link.
 - `cbc update`: Pull the latest scripts via sparse checkout and reload them.
 - `cbc pkg`: Manage CBC modules (subcommands support `-h`).
+- `cbc pkg install <creator/repo|git-url|path>`: Record a module source.
+- `cbc pkg list`: Show module status and last update dates in a table.
 - `cbc pkg load`: Install missing manifest modules, refresh metadata, and
   source installed module entrypoints.
+- `cbc pkg uninstall <creator/repo|module-name>`: Remove a module.
+- `cbc pkg update`: Fast-forward modules and show results in a table.
 - `cbc test [repo-path]`: Reload CBC scripts from a local repo.
 - `python3 -m venv .venv`: Create the docs virtual environment.
 - `source .venv/bin/activate`: Activate the docs virtual environment.
@@ -174,7 +180,9 @@ cd ~/Documents/github_repositories/custom_bash_commands
   `function_descs`, and `alias_descs`.
 - Maintain `cbc_aliases.sh` as the alias catalog loaded by the main script.
 - Single-letter aliases in `cbc_aliases.sh` are limited to `c`, `s`, `v`,
-  and `x`.
+  `x`, and `z`.
+- Agents must never read, create, edit, delete, move, stage, commit, or
+  otherwise touch `todo.txt`; only the user may modify it manually.
 
 ## Security and Compliance
 
@@ -183,7 +191,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 ## Dependencies and Services
 
-- `docs/wip/dependencies.md` required tools:
+- `docs/dependencies.md` required tools:
   - bash
   - git
   - curl
@@ -201,10 +209,11 @@ cd ~/Documents/github_repositories/custom_bash_commands
   - imv-x11
   - nvim
   - wl-copy
-- `docs/wip/dependencies.md` strongly recommended tools: gum.
-- `docs/wip/dependencies.md` documentation build tools: pip and Zensical.
+- `docs/dependencies.md` strongly recommended tools: gum.
+- `docs/dependencies.md` documentation build tools: pip and Zensical.
 - External service: GitHub is used by `cbc update check`, `cbc update`,
-  `cbc pkg load`, `cbc doctor`, and GitHub Pages deployment.
+  `cbc pkg load`, `cbc pkg update`, `cbc doctor`, and GitHub Pages
+  deployment.
 
 ## Troubleshooting
 
