@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.7.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v3.6.0...v3.7.0) (2026-06-24)
+
+
+### Features
+
+* **pkg:** show installed module tags ([2b42142](https://github.com/iop098321qwe/custom_bash_commands/commit/2b42142ab64ef12da63d407bccc94dcb42fb16cd))
+
 ## [3.6.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v3.5.0...v3.6.0) (2026-06-21)
 
 
