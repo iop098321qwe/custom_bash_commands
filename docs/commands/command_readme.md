@@ -9,7 +9,7 @@ browser.
 
 ## Options
 
-| Option | Description |
-| --- | --- |
-| `-h` | Show help information for the `readme` command |
-| `-c` | Copy the README URL to the clipboard |
+| Option | Description                                    |
+| ------ | ---------------------------------------------- |
+| `-h`   | Show help information for the `readme` command |
+| `-c`   | Copy the README URL to the clipboard           |

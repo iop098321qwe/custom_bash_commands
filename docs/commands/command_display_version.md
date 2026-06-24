@@ -9,6 +9,6 @@ The `display_version` command will display the version number from the
 
 ## Options
 
-| Option | Description |
-| --- | --- |
-| `-h` | Show help information for the `display_version` command |
+| Option | Description                                             |
+| ------ | ------------------------------------------------------- |
+| `-h`   | Show help information for the `display_version` command |

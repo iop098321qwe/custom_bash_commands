@@ -9,7 +9,7 @@ default browser.
 
 ## Options
 
-| Option | Description |
-| --- | --- |
-| `-h` | Show help information for the `releases` command |
-| `-c` | Copy the releases URL to the clipboard |
+| Option | Description                                      |
+| ------ | ------------------------------------------------ |
+| `-h`   | Show help information for the `releases` command |
+| `-c`   | Copy the releases URL to the clipboard           |

@@ -1,10 +1,9 @@
 ---
 name: Bug report
 about: Report a CBC command, alias, installer, config, module, or docs bug
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 ## Summary
