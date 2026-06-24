@@ -154,10 +154,11 @@ When the terminal sources CBC:
 - `cbc pkg load` installs missing manifest modules, refreshes metadata,
   and sources entrypoints.
 - `cbc pkg update` fast-forwards installed module repos, refreshes the
-  manifest, and renders update results in a table.
+  manifest, and shows the previous and new installed versions in a table.
 - `cbc pkg uninstall <creator/repo|module-name>` removes the manifest
   entry and local module folder.
-- `cbc pkg list` shows module status and last update dates in a table.
+- `cbc pkg list` shows installed module versions, status, and last update
+  dates in a table.
 - Subcommands support `-h` for help (for example, `cbc pkg install -h`).
 
 ### Aliases and navigation

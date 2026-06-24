@@ -780,6 +780,27 @@ cbc_pkg_capture_state() {
   fi
 }
 
+cbc_pkg_installed_tag() {
+  local module_dir="$1"
+  local ref="${2:-HEAD}"
+
+  if [ ! -d "$module_dir/.git" ] || ! command -v git >/dev/null 2>&1; then
+    printf '%s' "N/A"
+    return
+  fi
+
+  local tag=""
+  tag="$(git -C "$module_dir" describe --tags --abbrev=0 "$ref" \
+    2>/dev/null || true)"
+
+  if [ -n "$tag" ]; then
+    printf '%s' "$tag"
+    return
+  fi
+
+  printf '%s' "untagged"
+}
+
 cbc_pkg_read_manifest() {
   CBC_MANIFEST_USES=()
   CBC_MANIFEST_REVS=()
@@ -1241,7 +1262,7 @@ cbc_pkg_list() {
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  List CBC modules and their update status."
+      "  List CBC modules, installed versions, and update status."
 
     cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
       "  cbc pkg list"
@@ -1314,10 +1335,13 @@ cbc_pkg_list() {
     status_line="$(cbc_pkg_update_status_line "$use" "$module_dir" "$manifest_rev" "$manifest_hash")"
     status_line="${status_line#Status: }"
 
+    local installed_tag="N/A"
     if [ -d "$module_dir" ]; then
+      installed_tag="$(cbc_pkg_installed_tag "$module_dir")"
       table_rows+=("$(cbc_table_row \
         "$module_name" \
         "$use" \
+        "$installed_tag" \
         "${manifest_rev:-unknown}" \
         "$last_update" \
         "$status_line")")
@@ -1325,6 +1349,7 @@ cbc_pkg_list() {
       table_rows+=("$(cbc_table_row \
         "$module_name" \
         "$use" \
+        "N/A" \
         "${manifest_rev:-unknown}" \
         "$last_update" \
         "Not present locally; load will sync")")
@@ -1347,6 +1372,8 @@ cbc_pkg_list() {
     local status_line
     status_line="$(cbc_pkg_update_status_line "$module_name" "$module_dir" "" "")"
     status_line="${status_line#Status: }"
+    local installed_tag="N/A"
+    installed_tag="$(cbc_pkg_installed_tag "$module_dir")"
 
     local last_update="Unknown"
     last_update="$(
@@ -1356,6 +1383,7 @@ cbc_pkg_list() {
     table_rows+=("$(cbc_table_row \
       "$module_name" \
       "Local install (not tracked)" \
+      "$installed_tag" \
       "-" \
       "$last_update" \
       "$status_line")")
@@ -1370,8 +1398,8 @@ cbc_pkg_list() {
   fi
 
   cbc_style_table \
-    "Module,Use,Recorded Rev,Last Update,Status" \
-    "24,38,14,12,42" \
+    "Module,Use,Installed Version,Recorded Rev,Last Update,Status" \
+    "20,30,18,14,12,34" \
     "${table_rows[@]}"
 }
 
@@ -1381,7 +1409,7 @@ cbc_pkg_update() {
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  Update installed CBC modules and refresh the manifest."
+      "  Update installed CBC modules and show from/to installed versions."
 
     cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
       "  cbc pkg update"
@@ -1442,15 +1470,22 @@ cbc_pkg_update() {
       update_rows+=("$(cbc_table_row \
         "$module_name" \
         "Skipped" \
+        "N/A" \
+        "N/A" \
         "-" \
         "Not installed; run 'cbc pkg load'")")
       continue
     fi
 
+    local current_tag="N/A"
+    current_tag="$(cbc_pkg_installed_tag "$module_dir")"
+
     if [ ! -d "$module_dir/.git" ]; then
       update_rows+=("$(cbc_table_row \
         "$module_name" \
         "Skipped" \
+        "$current_tag" \
+        "$current_tag" \
         "local" \
         "Not a git repository")")
       continue
@@ -1461,6 +1496,8 @@ cbc_pkg_update() {
       update_rows+=("$(cbc_table_row \
         "$module_name" \
         "Failed" \
+        "$current_tag" \
+        "$current_tag" \
         "-" \
         "Unable to refresh remote")")
       continue
@@ -1477,6 +1514,8 @@ cbc_pkg_update() {
       update_rows+=("$(cbc_table_row \
         "$module_name" \
         "Skipped" \
+        "$current_tag" \
+        "$current_tag" \
         "${current_rev:-unknown}" \
         "No upstream detected")")
       continue
@@ -1494,6 +1533,8 @@ cbc_pkg_update() {
       update_rows+=("$(cbc_table_row \
         "$module_name" \
         "Current" \
+        "$current_tag" \
+        "$current_tag" \
         "${current_rev:-unknown}" \
         "$details")")
       continue
@@ -1503,6 +1544,8 @@ cbc_pkg_update() {
       update_rows+=("$(cbc_table_row \
         "$module_name" \
         "Skipped" \
+        "$current_tag" \
+        "$current_tag" \
         "${current_rev:-unknown}" \
         "Already matches manifest")")
       continue
@@ -1512,19 +1555,25 @@ cbc_pkg_update() {
       git -C "$module_dir" merge --ff-only --quiet "$remote_head"; then
       local new_rev=""
       local new_hash=""
+      local new_tag="N/A"
       cbc_pkg_capture_state "$module_dir" new_rev new_hash
+      new_tag="$(cbc_pkg_installed_tag "$module_dir" "$new_hash")"
       cbc_pkg_record_manifest "$use" "$new_rev" "$new_hash"
       manifest_changed=true
 
       update_rows+=("$(cbc_table_row \
         "$module_name" \
         "Updated" \
+        "$current_tag" \
+        "$new_tag" \
         "${new_rev:-unknown}" \
         "Fast-forwarded to latest remote")")
     else
       update_rows+=("$(cbc_table_row \
         "$module_name" \
         "Failed" \
+        "$current_tag" \
+        "$current_tag" \
         "${current_rev:-unknown}" \
         "Update failed")")
     fi
@@ -1536,8 +1585,8 @@ cbc_pkg_update() {
 
   if [ ${#update_rows[@]} -gt 0 ]; then
     cbc_style_table \
-      "Module,Result,Rev,Details" \
-      "24,10,12,52" \
+      "Module,Result,From Version,To Version,Rev,Details" \
+      "20,10,18,18,12,34" \
       "${update_rows[@]}"
   else
     cbc_style_message "$CATPPUCCIN_YELLOW" \
