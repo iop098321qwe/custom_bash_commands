@@ -1,3 +1,2 @@
 (B) 2026-06-16 rebuild zensical docs +docs-site @docs
 (B) create modules page +docs-site @docs
-(A) `cbc pkg update` should show latest release tag in output @feature
