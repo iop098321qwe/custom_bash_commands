@@ -130,11 +130,13 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `cbc update`: Pull the latest scripts via sparse checkout and reload them.
 - `cbc pkg`: Manage CBC modules (subcommands support `-h`).
 - `cbc pkg install <creator/repo|git-url|path>`: Record a module source.
-- `cbc pkg list`: Show module status and last update dates in a table.
+- `cbc pkg list`: Show installed module versions, status, and last update
+  dates in a table.
 - `cbc pkg load`: Install missing manifest modules, refresh metadata, and
   source installed module entrypoints.
 - `cbc pkg uninstall <creator/repo|module-name>`: Remove a module.
-- `cbc pkg update`: Fast-forward modules and show results in a table.
+- `cbc pkg update`: Fast-forward modules and show from/to installed versions
+  in a table.
 - `cbc test`: Reload CBC scripts from the current repository root.
 - `python3 -m venv .venv`: Create the docs virtual environment.
 - `source .venv/bin/activate`: Activate the docs virtual environment.
