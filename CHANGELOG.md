@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [4.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v3.7.0...v4.0.0) (2026-09-30)
+
+### ⚠ BREAKING CHANGES
+
+* **pkg:** cbc pkg list now uses local refs; use --refresh for live remote checks. Updates fetch with four workers by default; use --jobs 1 when credentials require terminal prompts.
+
+* **pkg:** speed up listing and updates with parallel fetches ([68bbff5](https://github.com/iop098321qwe/custom_bash_commands/commit/68bbff5d2bb711b18501ef9c7d82b921a3ca277b))
+
 ## [3.7.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v3.6.0...v3.7.0) (2026-06-24)
 
 
