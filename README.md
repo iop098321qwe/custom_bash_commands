@@ -155,10 +155,20 @@ When the terminal sources CBC:
   and sources entrypoints.
 - `cbc pkg update` fast-forwards installed module repos, refreshes the
   manifest, and shows the previous and new installed versions in a table.
+- Update fetches up to four repositories concurrently. Use
+  `cbc pkg update --jobs N` to change the limit, or `--jobs 1` for
+  foreground sequential fetches that support terminal authentication.
+  Parallel fetches require credentials available without terminal prompts,
+  such as a credential helper or SSH agent. Merges, manifest writes, and
+  module sourcing remain sequential.
 - `cbc pkg uninstall <creator/repo|module-name>` removes the manifest
   entry and local module folder.
 - `cbc pkg list` shows installed module versions, status, and last update
-  dates in a table.
+  dates in a table without contacting remotes. Status uses locally known
+  refs and manifest metadata, not a fresh remote check.
+- `cbc pkg list --refresh` contacts remotes for live update checks. It
+  refreshes Git refs but does not merge changes. Unavailable remote state
+  is reported as unknown rather than current.
 - Subcommands support `-h` for help (for example, `cbc pkg install -h`).
 
 ### Aliases and navigation
