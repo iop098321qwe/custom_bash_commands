@@ -12,6 +12,8 @@
 - man
 - xdg-open
 - setsid
+- env and external kill (cancel parallel Git fetch process groups)
+- mktemp
 - Python 3.10 or newer
 - fzf
 - bat or batcat

@@ -101,6 +101,11 @@ cd ~/Documents/github_repositories/custom_bash_commands
   sources installed module entrypoints from `~/.config/cbc/modules`; manifest
   alignment runs only when users call `cbc pkg load` or related package
   commands.
+- Package listing uses local refs by default; `--refresh` contacts remotes.
+  Update fetches up to four distinct Git directories concurrently, then
+  merges and writes metadata sequentially. `--jobs 1` fetches in the
+  foreground for terminal authentication. Parallel workers require
+  noninteractive credentials and are stopped as process groups on cancel.
 - `cbc_aliases.sh` defines aliases that the main script loads during startup.
 - `install_cbc.sh` copies scripts into `~`, appends a sourcing block to
   `~/.bashrc` when missing, and creates common directories under
@@ -131,12 +136,14 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `cbc pkg`: Manage CBC modules (subcommands support `-h`).
 - `cbc pkg install <creator/repo|git-url|path>`: Record a module source.
 - `cbc pkg list`: Show installed module versions, status, and last update
-  dates in a table.
+  dates using local metadata without contacting remotes.
+- `cbc pkg list --refresh`: Refresh remote refs for live update checks.
 - `cbc pkg load`: Install missing manifest modules, refresh metadata, and
   source installed module entrypoints.
 - `cbc pkg uninstall <creator/repo|module-name>`: Remove a module.
-- `cbc pkg update`: Fast-forward modules and show from/to installed versions
-  in a table.
+- `cbc pkg update [--jobs N]`: Fetch with four workers by default,
+  fast-forward modules, and show from/to installed versions in a table.
+  Use `--jobs 1` for sequential foreground fetches.
 - `cbc test`: Reload CBC scripts from the current repository root.
 - `python3 -m venv .venv`: Create the docs virtual environment.
 - `source .venv/bin/activate`: Activate the docs virtual environment.
@@ -152,11 +159,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 ## Testing
 
-- No automated tests are tracked.
-- Follow `docs/operations/standard_operating_procedures.md` for manual test
-  guidance.
-- For documentation site changes, run `zensical build --clean` after
-  installing `requirements-docs.txt` in `.venv`.
+- No tests are maintained in this repository.
 
 ## Linting and Formatting
 
@@ -183,6 +186,9 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - Maintain `cbc_aliases.sh` as the alias catalog loaded by the main script.
 - Single-letter aliases in `cbc_aliases.sh` are limited to `c`, `s`, `v`,
   `x`, and `z`.
+- Use Conventional Commits. Prefer amending small related corrections into
+  the relevant current-branch commit only when explicitly authorized;
+  otherwise create a separate commit rather than rewriting history.
 - Agents must never read, create, edit, delete, move, stage, commit, or
   otherwise touch `todo.txt`; only the user may modify it manually.
 
@@ -204,6 +210,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
   - man
   - xdg-open
   - setsid
+  - env and external kill
+  - mktemp
   - Python 3.10 or newer
   - fzf
   - bat or batcat
