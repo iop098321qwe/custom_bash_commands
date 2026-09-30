@@ -569,7 +569,9 @@ cbc_table_row() {
   local sanitized=""
 
   for field in "$@"; do
-    sanitized="$(cbc_table_sanitize_field "$field")"
+    sanitized="${field//$'\t'/ }"
+    sanitized="${sanitized//$'\n'/ }"
+    sanitized="${sanitized//$'\r'/ }"
 
     if [ -n "$row" ]; then
       row+=$'\t'
@@ -698,11 +700,12 @@ cbc_pkg_resolve_source() {
   local -n out_module_name="$3"
 
   out_source="$use"
-  out_module_name="$(cbc_pkg_module_name_from_use "$use")"
+  out_module_name="${use##*/}"
+  out_module_name="${out_module_name%.git}"
 
   if [ -d "$use" ]; then
     out_source="$(cd "$use" && pwd)"
-    out_module_name="$(basename "$out_source")"
+    out_module_name="${out_source##*/}"
     return
   fi
 
@@ -772,8 +775,12 @@ cbc_pkg_capture_state() {
   out_hash=""
 
   if [ -d "$module_dir/.git" ] && command -v git >/dev/null 2>&1; then
-    out_rev="$(git -C "$module_dir" rev-parse --short HEAD 2>/dev/null || true)"
-    out_hash="$(git -C "$module_dir" rev-parse HEAD 2>/dev/null || true)"
+    local head_state=""
+    if head_state="$(git -C "$module_dir" rev-parse HEAD --short HEAD \
+      2>/dev/null)"; then
+      out_hash="${head_state%%$'\n'*}"
+      out_rev="${head_state#*$'\n'}"
+    fi
   else
     out_hash="$(cbc_pkg_directory_checksum "$module_dir")"
     out_rev="local"
@@ -921,10 +928,11 @@ cbc_pkg_resolve_remote_head() {
 
     if [ -n "$upstream" ]; then
       if [ "$refresh_remote" = true ]; then
-        git -C "$module_dir" fetch --quiet 2>/dev/null || true
+        git -C "$module_dir" fetch --quiet 2>/dev/null || return 0
       fi
 
-      out_remote="$(git -C "$module_dir" rev-parse "$upstream" 2>/dev/null || true)"
+      out_remote="$(git -C "$module_dir" rev-parse --verify \
+        "$upstream" 2>/dev/null || true)"
       return
     fi
 
@@ -933,7 +941,8 @@ cbc_pkg_resolve_remote_head() {
       return
     fi
 
-    out_remote="$(git -C "$module_dir" rev-parse origin/HEAD 2>/dev/null || true)"
+    out_remote="$(git -C "$module_dir" rev-parse --verify \
+      origin/HEAD 2>/dev/null || true)"
     return
   fi
 
@@ -951,6 +960,7 @@ cbc_pkg_update_status_line() {
   local module_dir="$2"
   local manifest_rev="$3"
   local manifest_hash="$4"
+  local refresh_remote="${5:-true}"
 
   if [ ! -d "$module_dir" ]; then
     echo "Status: Not installed; run 'cbc pkg load'."
@@ -958,7 +968,7 @@ cbc_pkg_update_status_line() {
   fi
 
   if ! command -v git >/dev/null 2>&1; then
-    echo "Status: Current (git unavailable; update checks skipped.)"
+    echo "Status: Unknown (git unavailable; checks skipped)"
     return
   fi
 
@@ -967,25 +977,37 @@ cbc_pkg_update_status_line() {
   cbc_pkg_capture_state "$module_dir" current_rev current_hash
 
   local remote_head=""
-  cbc_pkg_resolve_remote_head "$use" "$module_dir" remote_head
+  cbc_pkg_resolve_remote_head \
+    "$use" "$module_dir" remote_head "$refresh_remote"
+
+  local status_suffix=""
+  if [ "$refresh_remote" = false ]; then
+    status_suffix=" (local refs)"
+  fi
 
   if [ -n "$remote_head" ] && [ "$remote_head" != "$current_hash" ]; then
-    echo "Status: UPDATE AVAILABLE"
+    echo "Status: UPDATE AVAILABLE$status_suffix"
     return
   fi
 
   if [ -n "$manifest_hash" ] && [ "$current_hash" != "$manifest_hash" ]; then
-    echo "Status: UPDATE AVAILABLE"
+    echo "Status: UPDATE AVAILABLE$status_suffix"
     return
   fi
 
   if [ -n "$manifest_hash" ] && [ -n "$remote_head" ] &&
     [ "$remote_head" != "$manifest_hash" ]; then
-    echo "Status: UPDATE AVAILABLE"
+    echo "Status: UPDATE AVAILABLE$status_suffix"
     return
   fi
 
-  echo "Status: Current"
+  if [ -z "$remote_head" ]; then
+    echo "Status: Unknown (remote unavailable or not checked)"
+  elif [ "$refresh_remote" = false ]; then
+    echo "Status: Current (local refs; not refreshed)"
+  else
+    echo "Status: Current"
+  fi
 }
 
 cbc_pkg_align_with_manifest() {
@@ -1259,43 +1281,39 @@ cbc_pkg_uninstall() {
 cbc_pkg_list() {
   OPTIND=1
   local show_help=false
+  local refresh_remote=false
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
-      "  List CBC modules, installed versions, and update status."
+      "  List CBC modules and update status using local metadata." \
+      "  Use --refresh to check remotes."
 
     cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  cbc pkg list"
+      "  cbc pkg list [--refresh]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
+      "  -h         Display this help message" \
+      "  --refresh  Check remotes for fresh update status"
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
       "  cbc pkg list"
   }
 
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      show_help=true
-      ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+  while [ $# -gt 0 ]; do
+    case "$1" in
+    -h) show_help=true ;;
+    --refresh) refresh_remote=true ;;
+    *)
+      cbc_style_message "$CATPPUCCIN_RED" "Unexpected argument: $1"
       return 1
       ;;
     esac
+    shift
   done
-
-  shift $((OPTIND - 1))
 
   if [ "$show_help" = true ]; then
     usage
     return 0
-  fi
-
-  if [ $# -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
-    return 1
   fi
 
   cbc_pkg_ensure_config
@@ -1332,7 +1350,9 @@ cbc_pkg_list() {
     fi
 
     local status_line
-    status_line="$(cbc_pkg_update_status_line "$use" "$module_dir" "$manifest_rev" "$manifest_hash")"
+    status_line="$(cbc_pkg_update_status_line \
+      "$use" "$module_dir" "$manifest_rev" "$manifest_hash" \
+      "$refresh_remote")"
     status_line="${status_line#Status: }"
 
     local installed_tag="N/A"
@@ -1362,7 +1382,7 @@ cbc_pkg_list() {
   for module_dir in "$CBC_MODULE_ROOT"/*; do
     [ -d "$module_dir" ] || continue
 
-    local module_name="$(basename "$module_dir")"
+    local module_name="${module_dir##*/}"
     if [[ " ${manifest_modules[*]} " == *" $module_name "* ]]; then
       continue
     fi
@@ -1370,7 +1390,8 @@ cbc_pkg_list() {
     found=true
 
     local status_line
-    status_line="$(cbc_pkg_update_status_line "$module_name" "$module_dir" "" "")"
+    status_line="$(cbc_pkg_update_status_line \
+      "$module_name" "$module_dir" "" "" "$refresh_remote")"
     status_line="${status_line#Status: }"
     local installed_tag="N/A"
     installed_tag="$(cbc_pkg_installed_tag "$module_dir")"
@@ -1403,46 +1424,107 @@ cbc_pkg_list() {
     "${table_rows[@]}"
 }
 
+cbc_pkg_fetch_modules() (
+  local result_dir="$1"
+  local jobs="$2"
+  shift 2
+  local directories=("$@")
+  local pids=()
+  local idx=0 next=0 pid="" result=0
+  local spinner_pid="" spinner_done_file=""
+
+  # Isolate traps from the interactive shell and give each fetch its own
+  # process group so cancellation also stops Git's transport subprocesses.
+  set +m
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
+  trap '
+    trap "" INT TERM
+    for pid in "${pids[@]}"; do
+      # The Bash job table predates setsid; use the external group kill.
+      env kill -TERM -- "-$pid" 2>/dev/null || true
+    done
+    for pid in "${pids[@]}"; do
+      wait "$pid" 2>/dev/null || true
+    done
+    cbc_gum_spinner_stop "$spinner_pid" "$spinner_done_file"
+  ' EXIT
+  cbc_gum_spinner_start \
+    spinner_pid spinner_done_file "Checking packages for updates..."
+
+  for idx in "${!directories[@]}"; do
+    if [ "$jobs" -eq 1 ]; then
+      result=0
+      git -C "${directories[$idx]}" fetch --quiet --prune || result=$?
+      printf '%s\n' "$result" >"$result_dir/$idx.status"
+      : >"$result_dir/$idx.log"
+      continue
+    fi
+    GIT_TERMINAL_PROMPT=0 \
+      setsid git -C "${directories[$idx]}" fetch --quiet --prune \
+      >"$result_dir/$idx.log" 2>&1 &
+    pids[$idx]=$!
+    if ((idx - next + 1 >= jobs)); then
+      result=0
+      wait "${pids[$next]}" || result=$?
+      printf '%s\n' "$result" >"$result_dir/$next.status"
+      unset 'pids[next]'
+      next=$((next + 1))
+    fi
+  done
+  for idx in "${!pids[@]}"; do
+    result=0
+    wait "${pids[$idx]}" || result=$?
+    printf '%s\n' "$result" >"$result_dir/$idx.status"
+    unset 'pids[idx]'
+  done
+)
+
 cbc_pkg_update() {
   OPTIND=1
   local show_help=false
+  local jobs=4
 
   usage() {
     cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
       "  Update installed CBC modules and show from/to installed versions."
 
     cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
-      "  cbc pkg update"
+      "  cbc pkg update [--jobs N]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
-      "  -h    Display this help message"
+      "  -h        Display this help message" \
+      "  --jobs N  Concurrent fetches (default: 4; use 1 for serial)" \
+      "            Use 1 when authentication needs terminal prompts."
 
     cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
       "  cbc pkg update"
   }
 
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      show_help=true
+  while [ $# -gt 0 ]; do
+    case "$1" in
+    -h) show_help=true ;;
+    --jobs)
+      if [ $# -lt 2 ] || [[ ! "$2" =~ ^[1-9][0-9]*$ ]] ||
+        [ "${#2}" -gt 6 ]; then
+        cbc_style_message "$CATPPUCCIN_RED" \
+          "--jobs requires a positive integer (1-999999)."
+        return 1
+      fi
+      jobs="$2"
+      shift
       ;;
-    \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+    *)
+      cbc_style_message "$CATPPUCCIN_RED" "Unexpected argument: $1"
       return 1
       ;;
     esac
+    shift
   done
-
-  shift $((OPTIND - 1))
 
   if [ "$show_help" = true ]; then
     usage
     return 0
-  fi
-
-  if [ $# -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
-    return 1
   fi
 
   if ! command -v git >/dev/null 2>&1; then
@@ -1456,6 +1538,45 @@ cbc_pkg_update() {
 
   local update_rows=()
   local manifest_changed=false
+  local current_tags=() fetch_indices=() fetch_dirs=()
+  local -A repository_indices=()
+  local idx source module_name module_dir repository_key fetch_idx
+
+  # Snapshot versions before any fetch can bring in new tags. Deduplicate
+  # physical Git directories to avoid ref-lock races through path aliases.
+  for idx in "${!CBC_MANIFEST_USES[@]}"; do
+    source="" module_name=""
+    cbc_pkg_resolve_source "${CBC_MANIFEST_USES[$idx]}" source module_name
+    module_dir="$CBC_MODULE_ROOT/$module_name"
+    [ -d "$module_dir" ] || continue
+    current_tags[$idx]="$(cbc_pkg_installed_tag "$module_dir")"
+    [ -d "$module_dir/.git" ] || continue
+    repository_key="$(cd "$module_dir/.git" && pwd -P)" || return 1
+    if [[ ! -v repository_indices["$repository_key"] ]]; then
+      repository_indices["$repository_key"]="${#fetch_dirs[@]}"
+      fetch_dirs+=("$module_dir")
+    fi
+    fetch_indices[$idx]="${repository_indices[$repository_key]}"
+  done
+
+  local result_dir=""
+  result_dir="$(mktemp -d "${TMPDIR:-/tmp}/cbc-fetch.XXXXXX")" || return 1
+  local fetch_result=0
+  cbc_pkg_fetch_modules "$result_dir" "$jobs" "${fetch_dirs[@]}" ||
+    fetch_result=$?
+  if [ "$fetch_result" -ne 0 ]; then
+    rm -rf "$result_dir"
+    return "$fetch_result"
+  fi
+  local fetch_status=()
+  for fetch_idx in "${!fetch_dirs[@]}"; do
+    IFS= read -r fetch_status[$fetch_idx] \
+      <"$result_dir/$fetch_idx.status"
+    while IFS= read -r source || [ -n "$source" ]; do
+      printf '%s\n' "$source" >&2
+    done <"$result_dir/$fetch_idx.log"
+  done
+  rm -rf "$result_dir"
 
   for idx in "${!CBC_MANIFEST_USES[@]}"; do
     local use="${CBC_MANIFEST_USES[$idx]}"
@@ -1478,7 +1599,7 @@ cbc_pkg_update() {
     fi
 
     local current_tag="N/A"
-    current_tag="$(cbc_pkg_installed_tag "$module_dir")"
+    current_tag="${current_tags[$idx]}"
 
     if [ ! -d "$module_dir/.git" ]; then
       update_rows+=("$(cbc_table_row \
@@ -1491,8 +1612,7 @@ cbc_pkg_update() {
       continue
     fi
 
-    if ! cbc_spinner "Checking $module_name for updates..." \
-      git -C "$module_dir" fetch --quiet --prune; then
+    if [ "${fetch_status[${fetch_indices[$idx]}]}" -ne 0 ]; then
       update_rows+=("$(cbc_table_row \
         "$module_name" \
         "Failed" \
@@ -1698,10 +1818,10 @@ cbc_pkg() {
     cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
       "  cbc pkg [subcommand]" \
       "  cbc pkg install <creator/repo|git-url|path>" \
-      "  cbc pkg list" \
+      "  cbc pkg list [--refresh]" \
       "  cbc pkg load" \
       "  cbc pkg uninstall <creator/repo|module-name>" \
-      "  cbc pkg update"
+      "  cbc pkg update [--jobs N]"
 
     cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
       "  -h    Display this help message"
