@@ -10,7 +10,6 @@
 6. [Keeping `cbc list` Accurate](#keeping-cbc-list-accurate)
 7. [Documentation Updates](#documentation-updates)
 8. [Documentation Site Checks](#documentation-site-checks)
-9. [Manual Testing Checklist](#manual-testing-checklist)
 
 ## Purpose
 
@@ -125,13 +124,3 @@ source .venv/bin/activate
 python -m pip install -r requirements-docs.txt
 zensical build --clean
 ```
-
-## Manual Testing Checklist
-
-No automated tests are tracked. Validate changes manually:
-
-1. Source the updated scripts or open a new shell session.
-2. Run the new function or alias with `-h` to confirm usage text.
-3. Run `cbc list` and `cbc list -v` to confirm catalogs are current.
-4. Run `zensical build --clean` when documentation site files change.
-5. Verify any external commands used by the change are available.
