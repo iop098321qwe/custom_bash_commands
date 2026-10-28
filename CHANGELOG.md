@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [4.0.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v4.0.1...v4.0.2) (2026-10-28)
+
+### Bug Fixes
+
+* **release:** automatically update CBC_VERSION during releases ([1e696eb](https://github.com/iop098321qwe/custom_bash_commands/commit/1e696eb5ea3c56d8bd73a6417b2e3bd0f1f59712))
+
 ## [4.0.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v4.0.0...v4.0.1) (2026-10-28)
 
 ### Bug Fixes
