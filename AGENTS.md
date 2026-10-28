@@ -42,8 +42,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
   - `CBC_PACKAGE_MANIFEST` (default `~/.config/cbc/packages.toml`)
   - `CBC_MODULE_ENTRYPOINT` (default `cbc-module.sh`)
   - `CBC_USE_GUM` (default `auto`)
-  - `CBC_OMARCHY_COLORS_FILE` (default
-    `~/.config/omarchy/current/theme/colors.toml`)
+  - `CBC_OMARCHY_COLORS_FILE` (empty by default for automatic detection;
+    accepts a shell-variable override before or after sourcing CBC)
 
 ## Repository Overview
 
@@ -52,6 +52,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `docs/operations/` holds SOP guidance.
 - `docs/repository_docs/` holds documentation-site symlinks to root docs.
 - `docs/` holds dependencies, command references, and root doc symlinks.
+- `tests/` holds isolated shell regression checks.
 - Repository root holds scripts, docs config, installer, and branding assets.
 
 ## Tracked Files Overview
@@ -83,6 +84,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `inbox.txt.tuxedo-lock`: Empty todo.txt lock file.
 - `install_cbc.sh`: Installer script for local setup.
 - `requirements-docs.txt`: Pinned Zensical dependency list.
+- `tests/test_theme_reload.sh`: Reload and package-table color regression check.
 - `todo.txt`: Open todo.txt task entries.
 - `zensical.toml`: Zensical documentation site configuration.
 
@@ -94,13 +96,26 @@ cd ~/Documents/github_repositories/custom_bash_commands
   if present and warns when missing. It uses `curl` with
   `--connect-timeout 10` and `--max-time 30` for update checks. Gum usage is
   controlled by `CBC_USE_GUM` (`auto`, `true`, or `false`). Gum helpers read
-  Omarchy colors from `~/.config/omarchy/current/theme/colors.toml` when
-  present and fall back to plain-text output when gum is inactive. It parses
+  Omarchy colors from `~/.local/state/omarchy/current/theme/colors.toml`,
+  then the legacy `~/.config/omarchy/current/theme/colors.toml` when the
+  state file is missing or unreadable. Helpers fall back to plain-text
+  output when gum is inactive. It parses
   JSON with `awk` and `sed` for update checks. Package list and update outputs
   use gum tables when active and plain aligned tables otherwise. Startup
   sources installed module entrypoints from `~/.config/cbc/modules`; manifest
   alignment runs only when users call `cbc pkg load` or related package
   commands.
+- Theme helpers cache palette contents and check them before each render.
+  They accept named and legacy `colorN` palette keys. Missing or invalid
+  values use derived theme colors or Catppuccin-Mocha defaults. Pass palette
+  variable names (for example, `CATPPUCCIN_RED`) to `cbc_style_message` and
+  `cbc_style_box` so roles resolve after refresh. Literal colors remain
+  supported for module compatibility. No theme-change hook is required;
+  active Gum processes retain their launch-time colors. Gum's built-in
+  keybinding help is hidden because its colors are not configurable.
+- Reloading over older CBC versions migrates their inherited legacy palette
+  path to automatic detection and removes `cbc_theme_get_file_mtime`.
+  Custom palette paths and subsequent explicit overrides are preserved.
 - Package listing uses local refs by default; `--refresh` contacts remotes.
   Update fetches up to four distinct Git directories concurrently, then
   merges and writes metadata sequentially. `--jobs 1` fetches in the
@@ -159,7 +174,10 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 ## Testing
 
-- No tests are maintained in this repository.
+- Run `bash tests/test_theme_reload.sh` from the repository root.
+- Theme reload checks use an isolated temporary home and mocked Gum calls.
+  They cover legacy-default migration, package table refresh after a theme
+  change, and preservation of custom overrides without remote access.
 
 ## Linting and Formatting
 
