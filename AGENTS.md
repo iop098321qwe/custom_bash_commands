@@ -44,7 +44,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
   - `CBC_PACKAGE_MANIFEST` (default `~/.config/cbc/packages.toml`)
   - `CBC_MODULE_ENTRYPOINT` (default `cbc-module.sh`)
   - `CBC_USE_GUM` (default `auto`)
-  - `CBC_OMARCHY_COLORS_FILE` (empty by default for automatic detection;
+  - `CBC_OMARCHY_COLORS_FILE` (empty by default for terminal colors;
     accepts a shell-variable override before or after sourcing CBC)
 
 ## Repository Overview
@@ -99,26 +99,29 @@ cd ~/Documents/github_repositories/custom_bash_commands
   `~/.config/cbc/cbc.config` when present, then sources `~/.cbc_aliases.sh`
   if present and warns when missing. It uses `curl` with
   `--connect-timeout 10` and `--max-time 30` for update checks. Gum usage is
-  controlled by `CBC_USE_GUM` (`auto`, `true`, or `false`). Gum helpers read
-  Omarchy colors from `~/.local/state/omarchy/current/theme/colors.toml`,
-  then the legacy `~/.config/omarchy/current/theme/colors.toml` when the
-  state file is missing or unreadable. Helpers fall back to plain-text
+  controlled by `CBC_USE_GUM` (`auto`, `true`, or `false`). Gum helpers use
+  terminal ANSI colors and default foreground/background colors unless
+  `CBC_OMARCHY_COLORS_FILE` explicitly selects an RGB palette file.
+  Helpers fall back to plain-text
   output when gum is inactive. It parses
   JSON with `awk` and `sed` for update checks. Package list and update outputs
   use gum tables when active and plain aligned tables otherwise. Startup
   sources installed module entrypoints from `~/.config/cbc/modules`; manifest
   alignment runs only when users call `cbc pkg load` or related package
   commands.
-- Theme helpers cache palette contents and check them before each render.
+- Terminal palette references allow existing output to recolor when the
+  terminal updates its palette, subject to terminal scrollback support.
+  Explicit RGB palettes are cached and checked before each render.
   They accept named and legacy `colorN` palette keys. Missing or invalid
   values use derived theme colors or Catppuccin-Mocha defaults. Pass palette
   variable names (for example, `CATPPUCCIN_RED`) to `cbc_style_message` and
   `cbc_style_box` so roles resolve after refresh. Literal colors remain
   supported for module compatibility. No theme-change hook is required;
-  active Gum processes retain their launch-time colors. Gum's built-in
+  RGB output and active RGB Gum processes retain their launch-time colors.
+  Gum's built-in
   keybinding help is hidden because its colors are not configurable.
 - Reloading over older CBC versions migrates their inherited legacy palette
-  path to automatic detection and removes `cbc_theme_get_file_mtime`.
+  path to terminal colors and removes `cbc_theme_get_file_mtime`.
   Custom palette paths and subsequent explicit overrides are preserved.
 - Package listing uses local refs by default; `--refresh` contacts remotes.
   Update fetches up to four distinct Git directories concurrently, then
@@ -183,8 +186,10 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 - Run `bash tests/test_theme_reload.sh` from the repository root.
 - Theme reload checks use an isolated temporary home and mocked Gum calls.
-  They cover legacy-default migration, package table refresh after a theme
-  change, and preservation of custom overrides without remote access.
+  They cover terminal palette defaults, legacy-default migration, package
+  table refresh, and custom RGB overrides without remote access. When Gum
+  is installed, real output checks verify ANSI styling without RGB escapes
+  and preservation of literal module colors.
 - Run `node --test tests/test_version_updater.cjs` for release updater checks.
   They cover version assignment updates, prereleases, preserved formatting,
   and rejection of missing, duplicate, or malformed assignments.
