@@ -115,6 +115,41 @@ When the terminal sources CBC:
   palette elsewhere.
 - CBC does not check for updates automatically; use `cbc update check`.
 
+### Theme colors and automatic refresh
+
+CBC reads the active Omarchy palette from
+`~/.local/state/omarchy/current/theme/colors.toml`, falling back to the older
+`~/.config/omarchy/current/theme/colors.toml` location when the state file is
+missing or unreadable. Both current named colors (such as `red`, `green`,
+`selection`, and `muted`) and older `color0`–`color14` palettes are supported.
+Named colors take precedence when both formats appear in a file.
+
+When no readable palette is found, CBC uses its built-in Catppuccin-Mocha
+palette. Palette values must be quoted six-digit hex colors; invalid values
+are ignored. Missing colors are derived from other available theme colors,
+with Catppuccin-Mocha defaults for roles that cannot be derived. Changing
+themes clears colors inherited from the previous palette.
+
+CBC checks palette contents before each styled render, including prompts,
+spinners, messages, and tables. Existing shells pick up theme changes on the
+next render, including rapid edits, replaced files, and theme symlink
+switches. No Omarchy hook or shell restart is needed. An already-running Gum
+prompt or spinner keeps its launch-time palette until it finishes.
+
+Gum's configurable component colors are passed explicitly from the active
+palette. Built-in keybinding help is hidden because its colors are internal
+to Gum; CBC command help remains available with `-h`. Gum input's unstyled
+typed text inherits terminal colors.
+
+For a custom palette location, set `CBC_OMARCHY_COLORS_FILE` before sourcing
+CBC, or assign it in the running shell. An empty value restores automatic
+path detection. This is a shell variable, not a `cbc.config` key.
+
+When reloading over an older CBC release with `cbc test` or `source`, CBC
+replaces the inherited old default palette path with automatic detection.
+Custom palette paths are preserved. After this one-time migration, explicit
+overrides of the legacy path are also preserved on subsequent reloads.
+
 ## Daily Usage
 
 ### Discover and monitor CBC
