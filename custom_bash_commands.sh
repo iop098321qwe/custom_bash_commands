@@ -16,7 +16,7 @@ CBC_BANNER_MODE="full"
 CBC_SOURCE_BASH_ALIASES="true"
 CBC_LIST_SHOW_DESCRIPTIONS="false"
 CBC_USE_GUM="auto"
-# Empty selects the current Omarchy location, then the legacy config path.
+# Empty uses the terminal palette; a path opts into fixed RGB colors.
 CBC_OMARCHY_COLORS_FILE="${CBC_OMARCHY_COLORS_FILE:-}"
 # Older CBC releases assigned the legacy path unconditionally. Migrate that
 # inherited default when reloading, then retire the obsolete helper so later
@@ -176,9 +176,38 @@ cbc_theme_set_catppuccin_palette() {
   CATPPUCCIN_SURFACE2="#585b70"
   CATPPUCCIN_BASE="#1e1e2e"
   CBC_THEME_SELECTION_TEXT="$CATPPUCCIN_TEXT"
+  CBC_THEME_HEADER_TEXT="$CATPPUCCIN_BASE"
 }
 
-cbc_theme_set_catppuccin_palette
+cbc_theme_set_terminal_palette() {
+  # Gum numeric colors 0-15 retain ANSI palette references in scrollback.
+  # Empty colors inherit the terminal's default foreground/background.
+  CATPPUCCIN_ROSEWATER="7"
+  CATPPUCCIN_FLAMINGO="13"
+  CATPPUCCIN_PINK="13"
+  CATPPUCCIN_MAUVE="5"
+  CATPPUCCIN_RED="1"
+  CATPPUCCIN_MAROON="9"
+  CATPPUCCIN_PEACH="11"
+  CATPPUCCIN_YELLOW="3"
+  CATPPUCCIN_GREEN="2"
+  CATPPUCCIN_TEAL="6"
+  CATPPUCCIN_SKY="14"
+  CATPPUCCIN_SAPPHIRE="14"
+  CATPPUCCIN_BLUE="4"
+  CATPPUCCIN_LAVENDER="12"
+  CATPPUCCIN_TEXT=""
+  CATPPUCCIN_SUBTEXT="7"
+  CATPPUCCIN_OVERLAY="8"
+  CATPPUCCIN_SURFACE0=""
+  CATPPUCCIN_SURFACE1="7"
+  CATPPUCCIN_SURFACE2="8"
+  CATPPUCCIN_BASE=""
+  CBC_THEME_SELECTION_TEXT="0"
+  CBC_THEME_HEADER_TEXT="0"
+}
+
+cbc_theme_set_terminal_palette
 
 CBC_GUM_AVAILABLE="false"
 CBC_GUM_ACTIVE="false"
@@ -210,10 +239,10 @@ cbc_theme_set_color_if_valid() {
 cbc_theme_refresh_palette() {
   local colors_file="$CBC_OMARCHY_COLORS_FILE"
   if [ -z "$colors_file" ]; then
-    colors_file="$HOME/.local/state/omarchy/current/theme/colors.toml"
-    if [ ! -f "$colors_file" ] || [ ! -r "$colors_file" ]; then
-      colors_file="$HOME/.config/omarchy/current/theme/colors.toml"
-    fi
+    cbc_theme_set_terminal_palette
+    CBC_THEME_CACHE_FILE=""
+    CBC_THEME_CACHE_CONTENT=""
+    return 0
   fi
   local content=""
   if [ ! -f "$colors_file" ] || [ ! -r "$colors_file" ] ||
@@ -399,6 +428,7 @@ cbc_theme_refresh_palette() {
   cbc_theme_set_color_if_valid "CATPPUCCIN_FLAMINGO" "${color13:-$cursor}"
   cbc_theme_set_color_if_valid "CATPPUCCIN_ROSEWATER" "${cursor:-$foreground}"
   CBC_THEME_SELECTION_TEXT="${named[selection_foreground]:-$CATPPUCCIN_TEXT}"
+  CBC_THEME_HEADER_TEXT="$CATPPUCCIN_BASE"
 
   CBC_THEME_CACHE_FILE="$colors_file"
   CBC_THEME_CACHE_CONTENT="$content"
@@ -480,9 +510,9 @@ cbc_style_note() {
   gum style \
     --border normal \
     --border-foreground "$CATPPUCCIN_LAVENDER" \
-    --border-background "$CATPPUCCIN_SURFACE1" \
+    --border-background "$CATPPUCCIN_SURFACE0" \
     --foreground "$CATPPUCCIN_TEXT" \
-    --background "$CATPPUCCIN_SURFACE1" \
+    --background "$CATPPUCCIN_SURFACE0" \
     --padding "0 2" \
     --margin "0 0 1 0" \
     "$title" "$@"
@@ -675,7 +705,7 @@ cbc_style_table() {
       --border.background "$CATPPUCCIN_BASE" \
       --cell.foreground "$CATPPUCCIN_TEXT" \
       --cell.background "$CATPPUCCIN_BASE" \
-      --header.foreground "$CATPPUCCIN_BASE" \
+      --header.foreground "$CBC_THEME_HEADER_TEXT" \
       --header.background "$CATPPUCCIN_LAVENDER" \
       --selected.foreground "$CBC_THEME_SELECTION_TEXT" \
       --selected.background "$CATPPUCCIN_SURFACE1" \

@@ -59,17 +59,36 @@ check_table_color() {
 
 CBC_GUM_ACTIVE=true
 cbc_pkg_list >/dev/null
-check_table_color --cell.foreground '#c1c497'
-check_table_color --cell.background '#111c18'
-check_table_color --header.background '#acd4cf'
+check_table_color --cell.foreground ''
+check_table_color --cell.background ''
+check_table_color --header.background '12'
+check_table_color --header.foreground '0'
 
 # The same shell must pick up a subsequent theme change on its first table.
 printf '%s\n' 'background = "#102030"' 'foreground = "#d0e0f0"' \
   'accent = "#456789"' >"$palette"
 cbc_pkg_list >/dev/null
+check_table_color --cell.foreground ''
+check_table_color --cell.background ''
+check_table_color --header.background '12'
+
+# Explicit RGB palettes remain supported and refresh in the same shell.
+CBC_OMARCHY_COLORS_FILE="$palette"
+cbc_pkg_list >/dev/null
 check_table_color --cell.foreground '#d0e0f0'
 check_table_color --cell.background '#102030'
 check_table_color --header.background '#456789'
+printf '%s\n' 'background = "#111c18"' 'foreground = "#c1c497"' \
+  'bright_blue = "#acd4cf"' >"$palette"
+cbc_pkg_list >/dev/null
+check_table_color --cell.foreground '#c1c497'
+check_table_color --header.background '#acd4cf'
+
+# Clearing an override must discard cached RGB values immediately.
+CBC_OMARCHY_COLORS_FILE=""
+cbc_pkg_list >/dev/null
+check_table_color --cell.foreground ''
+check_table_color --header.background '12'
 
 # Genuine custom paths must survive an old-to-new reload too.
 CBC_OMARCHY_COLORS_FILE="$HOME/custom.toml"
@@ -91,4 +110,30 @@ cbc_test >/dev/null
 cbc_theme_refresh_palette
 [ "$CATPPUCCIN_BASE" = '#654321' ] || fail 'Legacy override was not loaded.'
 
-printf '%s\n' 'PASS: reload migration, package table refresh, and overrides'
+# Check real Gum output when installed, with truecolor enabled so accidental
+# RGB colors cannot be hidden by automatic terminal capability downgrading.
+unset -f gum
+if command -v gum >/dev/null 2>&1; then
+  CBC_GUM_ACTIVE=true
+  CBC_OMARCHY_COLORS_FILE=""
+  export TERM=xterm-256color COLORTERM=truecolor CLICOLOR_FORCE=1
+  output="$(cbc_style_message CATPPUCCIN_RED 'palette marker')"
+  [[ "$output" == *$'\e[31m'* ]] || fail 'Message lost its ANSI red role.'
+  [[ "$output" != *$'\e[38;2;'* && "$output" != *$'\e[48;2;'* ]] ||
+    fail 'Message contains fixed RGB colors.'
+  for output in \
+    "$(cbc_style_box CATPPUCCIN_BLUE 'box marker')" \
+    "$(cbc_style_note 'note marker' 'body')" \
+    "$(cbc_style_table 'Name' '16' 'table marker')"; do
+    [[ "$output" == *$'\e['* ]] || fail 'Gum output has no styling.'
+    [[ "$output" != *$'\e[38;2;'* && "$output" != *$'\e[48;2;'* ]] ||
+      fail 'Gum output contains fixed RGB colors.'
+  done
+  output="$(cbc_style_message '#123456' 'literal marker')"
+  [[ "$output" == *'38;2;18;52;86'* ]] ||
+    fail 'Literal module color was not preserved.'
+else
+  printf '%s\n' 'SKIP: real Gum escape-sequence checks (gum unavailable)'
+fi
+
+printf '%s\n' 'PASS: terminal colors, reload migration, and RGB overrides'
