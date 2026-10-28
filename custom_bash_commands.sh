@@ -16,9 +16,20 @@ CBC_BANNER_MODE="full"
 CBC_SOURCE_BASH_ALIASES="true"
 CBC_LIST_SHOW_DESCRIPTIONS="false"
 CBC_USE_GUM="auto"
-CBC_OMARCHY_COLORS_FILE="$HOME/.config/omarchy/current/theme/colors.toml"
+# Empty selects the current Omarchy location, then the legacy config path.
+CBC_OMARCHY_COLORS_FILE="${CBC_OMARCHY_COLORS_FILE:-}"
+# Older CBC releases assigned the legacy path unconditionally. Migrate that
+# inherited default when reloading, then retire the obsolete helper so later
+# explicit overrides (including the legacy path) survive subsequent reloads.
+if declare -F cbc_theme_get_file_mtime >/dev/null; then
+  if [ "$CBC_OMARCHY_COLORS_FILE" = \
+    "$HOME/.config/omarchy/current/theme/colors.toml" ]; then
+    CBC_OMARCHY_COLORS_FILE=""
+  fi
+  unset -f cbc_theme_get_file_mtime
+fi
 CBC_THEME_CACHE_FILE=""
-CBC_THEME_CACHE_MTIME=""
+CBC_THEME_CACHE_CONTENT=""
 
 ################################################################################
 # CBC CONFIG
@@ -164,6 +175,7 @@ cbc_theme_set_catppuccin_palette() {
   CATPPUCCIN_SURFACE1="#45475a"
   CATPPUCCIN_SURFACE2="#585b70"
   CATPPUCCIN_BASE="#1e1e2e"
+  CBC_THEME_SELECTION_TEXT="$CATPPUCCIN_TEXT"
 }
 
 cbc_theme_set_catppuccin_palette
@@ -186,11 +198,6 @@ false)
   ;;
 esac
 
-cbc_theme_get_file_mtime() {
-  local file="$1"
-  stat -c %Y "$file" 2>/dev/null || true
-}
-
 cbc_theme_set_color_if_valid() {
   local var_name="$1"
   local value="${2,,}"
@@ -202,21 +209,27 @@ cbc_theme_set_color_if_valid() {
 
 cbc_theme_refresh_palette() {
   local colors_file="$CBC_OMARCHY_COLORS_FILE"
-  if [ ! -f "$colors_file" ]; then
+  if [ -z "$colors_file" ]; then
+    colors_file="$HOME/.local/state/omarchy/current/theme/colors.toml"
+    if [ ! -f "$colors_file" ] || [ ! -r "$colors_file" ]; then
+      colors_file="$HOME/.config/omarchy/current/theme/colors.toml"
+    fi
+  fi
+  local content=""
+  if [ ! -f "$colors_file" ] || [ ! -r "$colors_file" ] ||
+    ! content="$(<"$colors_file")" 2>/dev/null; then
     cbc_theme_set_catppuccin_palette
     CBC_THEME_CACHE_FILE=""
-    CBC_THEME_CACHE_MTIME=""
+    CBC_THEME_CACHE_CONTENT=""
     return 0
   fi
 
-  local mtime=""
-  mtime="$(cbc_theme_get_file_mtime "$colors_file")"
   if [ "$CBC_THEME_CACHE_FILE" = "$colors_file" ] &&
-    [ -n "$mtime" ] &&
-    [ "$CBC_THEME_CACHE_MTIME" = "$mtime" ]; then
+    [ "$CBC_THEME_CACHE_CONTENT" = "$content" ]; then
     return 0
   fi
 
+  # Reset first so removed or invalid keys cannot retain a previous theme.
   cbc_theme_set_catppuccin_palette
 
   local line=""
@@ -241,6 +254,9 @@ cbc_theme_refresh_palette() {
   local color12=""
   local color13=""
   local color14=""
+  local -A named=()
+  local color_pattern="^[[:space:]]*([\"'])(#[[:xdigit:]]{6})"
+  color_pattern+="([\"'])[[:space:]]*(#.*)?$"
 
   while IFS= read -r line || [ -n "$line" ]; do
     cbc_trim_in_place line
@@ -250,17 +266,30 @@ cbc_theme_refresh_palette() {
     fi
 
     case "$line" in
+    \[*)
+      # Omarchy palette keys are top-level TOML assignments.
+      break
+      ;;
     *=*)
       key="${line%%=*}"
       cbc_trim_in_place key
 
-      if [[ "$line" =~ \#([0-9a-fA-F]{6}) ]]; then
-        value="#${BASH_REMATCH[1],,}"
+      value="${line#*=}"
+      if [[ "$value" =~ $color_pattern ]] &&
+        [ "${BASH_REMATCH[1]}" = "${BASH_REMATCH[3]}" ]; then
+        value="${BASH_REMATCH[2],,}"
       else
         continue
       fi
 
       case "${key,,}" in
+      selection | selection_background | selection_foreground | \
+        muted | lighter_background | dark_foreground | \
+        light_foreground | red | green | yellow | orange | blue | \
+        magenta | cyan | bright_red | bright_green | bright_yellow | \
+        bright_blue | bright_magenta | bright_cyan)
+        named["${key,,}"]="$value"
+        ;;
       accent)
         accent="$value"
         ;;
@@ -321,7 +350,24 @@ cbc_theme_refresh_palette() {
       esac
       ;;
     esac
-  done <"$colors_file"
+  done <<<"$content"
+
+  # Named keys are used by current Omarchy; colorN supports older themes.
+  color0="${named[lighter_background]:-${color0:-$background}}"
+  color1="${named[red]:-${color1:-$foreground}}"
+  color2="${named[green]:-${color2:-$foreground}}"
+  color3="${named[yellow]:-${color3:-$foreground}}"
+  color4="${named[blue]:-${color4:-${accent:-$foreground}}}"
+  color5="${named[magenta]:-${color5:-${accent:-$foreground}}}"
+  color6="${named[cyan]:-${color6:-$foreground}}"
+  color7="${named[light_foreground]:-${color7:-$foreground}}"
+  local surface="${named[muted]:-${color8:-$color0}}"
+  color8="${named[muted]:-${color8:-${color7:-$foreground}}}"
+  color9="${named[bright_red]:-${color9:-$color1}}"
+  color11="${named[orange]:-${color11:-$color3}}"
+  color12="${named[bright_blue]:-${color12:-${accent:-$color4}}}"
+  color13="${named[bright_magenta]:-${color13:-$color5}}"
+  color14="${named[bright_cyan]:-${color14:-$color6}}"
 
   local accent_or_blue="$accent"
   if [ -z "$accent_or_blue" ]; then
@@ -330,11 +376,13 @@ cbc_theme_refresh_palette() {
 
   cbc_theme_set_color_if_valid "CATPPUCCIN_TEXT" "$foreground"
   cbc_theme_set_color_if_valid "CATPPUCCIN_SUBTEXT" "${color7:-$foreground}"
-  cbc_theme_set_color_if_valid "CATPPUCCIN_OVERLAY" "${color8:-$color7}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_OVERLAY" \
+    "${named[dark_foreground]:-$color8}"
   cbc_theme_set_color_if_valid "CATPPUCCIN_BASE" "$background"
   cbc_theme_set_color_if_valid "CATPPUCCIN_SURFACE0" "${color0:-$background}"
-  cbc_theme_set_color_if_valid "CATPPUCCIN_SURFACE1" "${color8:-$color0}"
-  cbc_theme_set_color_if_valid "CATPPUCCIN_SURFACE2" "${color8:-$color0}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_SURFACE1" \
+    "${named[selection_background]:-${named[selection]:-$surface}}"
+  cbc_theme_set_color_if_valid "CATPPUCCIN_SURFACE2" "$surface"
 
   cbc_theme_set_color_if_valid "CATPPUCCIN_RED" "$color1"
   cbc_theme_set_color_if_valid "CATPPUCCIN_MAROON" "${color9:-$color1}"
@@ -350,9 +398,10 @@ cbc_theme_refresh_palette() {
   cbc_theme_set_color_if_valid "CATPPUCCIN_PINK" "${color13:-$color5}"
   cbc_theme_set_color_if_valid "CATPPUCCIN_FLAMINGO" "${color13:-$cursor}"
   cbc_theme_set_color_if_valid "CATPPUCCIN_ROSEWATER" "${cursor:-$foreground}"
+  CBC_THEME_SELECTION_TEXT="${named[selection_foreground]:-$CATPPUCCIN_TEXT}"
 
   CBC_THEME_CACHE_FILE="$colors_file"
-  CBC_THEME_CACHE_MTIME="$mtime"
+  CBC_THEME_CACHE_CONTENT="$content"
 }
 
 cbc_style_box() {
@@ -371,10 +420,14 @@ cbc_style_box() {
   fi
 
   local border_color="$1"
+  if [[ "$border_color" == CATPPUCCIN_* ]]; then
+    border_color="${!border_color}"
+  fi
   shift
   gum style \
     --border rounded \
     --border-foreground "$border_color" \
+    --border-background "$CATPPUCCIN_SURFACE0" \
     --foreground "$CATPPUCCIN_TEXT" \
     --background "$CATPPUCCIN_SURFACE0" \
     --padding "0 2" \
@@ -397,6 +450,9 @@ cbc_style_message() {
   fi
 
   local color="$1"
+  if [[ "$color" == CATPPUCCIN_* ]]; then
+    color="${!color}"
+  fi
   shift
   gum style \
     --foreground "$color" \
@@ -424,6 +480,7 @@ cbc_style_note() {
   gum style \
     --border normal \
     --border-foreground "$CATPPUCCIN_LAVENDER" \
+    --border-background "$CATPPUCCIN_SURFACE1" \
     --foreground "$CATPPUCCIN_TEXT" \
     --background "$CATPPUCCIN_SURFACE1" \
     --padding "0 2" \
@@ -446,9 +503,12 @@ cbc_confirm() {
   shift
   gum confirm \
     --prompt.foreground "$CATPPUCCIN_LAVENDER" \
-    --selected.foreground "$CATPPUCCIN_GREEN" \
+    --prompt.background "$CATPPUCCIN_BASE" \
+    --selected.foreground "$CBC_THEME_SELECTION_TEXT" \
     --selected.background "$CATPPUCCIN_SURFACE1" \
     --unselected.foreground "$CATPPUCCIN_RED" \
+    --unselected.background "$CATPPUCCIN_BASE" \
+    --no-show-help \
     "$prompt"
 }
 
@@ -476,7 +536,14 @@ cbc_input() {
   shift
   gum input \
     --prompt.foreground "$CATPPUCCIN_LAVENDER" \
+    --prompt.background "$CATPPUCCIN_BASE" \
+    --placeholder.foreground "$CATPPUCCIN_OVERLAY" \
+    --placeholder.background "$CATPPUCCIN_BASE" \
     --cursor.foreground "$CATPPUCCIN_GREEN" \
+    --cursor.background "$CATPPUCCIN_BASE" \
+    --header.foreground "$CATPPUCCIN_TEXT" \
+    --header.background "$CATPPUCCIN_BASE" \
+    --no-show-help \
     --prompt "$prompt" \
     --placeholder "$placeholder"
 }
@@ -498,6 +565,9 @@ cbc_spinner() {
     --spinner dot \
     --title "$title" \
     --title.foreground "$CATPPUCCIN_MAUVE" \
+    --title.background "$CATPPUCCIN_BASE" \
+    --spinner.foreground "$CATPPUCCIN_LAVENDER" \
+    --spinner.background "$CATPPUCCIN_BASE" \
     -- "$@"
 }
 
@@ -530,6 +600,9 @@ cbc_gum_spinner_start() {
       --spinner dot \
       --title "$title" \
       --title.foreground "$CATPPUCCIN_MAUVE" \
+      --title.background "$CATPPUCCIN_BASE" \
+      --spinner.foreground "$CATPPUCCIN_LAVENDER" \
+      --spinner.background "$CATPPUCCIN_BASE" \
       -- bash -c \
       'while [ ! -e "$1" ]; do sleep 0.1; done' \
       _ "$out_done_file" 2>&3 &
@@ -599,9 +672,14 @@ cbc_style_table() {
       --widths "$widths" \
       --border rounded \
       --border.foreground "$CATPPUCCIN_LAVENDER" \
+      --border.background "$CATPPUCCIN_BASE" \
       --cell.foreground "$CATPPUCCIN_TEXT" \
+      --cell.background "$CATPPUCCIN_BASE" \
       --header.foreground "$CATPPUCCIN_BASE" \
       --header.background "$CATPPUCCIN_LAVENDER" \
+      --selected.foreground "$CBC_THEME_SELECTION_TEXT" \
+      --selected.background "$CATPPUCCIN_SURFACE1" \
+      --no-show-help \
       --padding "0 1"
     return 0
   fi
@@ -1018,7 +1096,7 @@ cbc_pkg_align_with_manifest() {
     git_available=false
 
     if [ ${#CBC_MANIFEST_USES[@]} -gt 0 ]; then
-      cbc_style_message "$CATPPUCCIN_YELLOW" \
+      cbc_style_message CATPPUCCIN_YELLOW \
         "Git unavailable; cloning remote modules will be skipped."
     fi
   fi
@@ -1039,25 +1117,25 @@ cbc_pkg_align_with_manifest() {
       if [ -d "$source" ]; then
         if cbc_spinner "Copying module $module_name" \
           cp -R "$source" "$module_dir"; then
-          cbc_style_message "$CATPPUCCIN_GREEN" \
+          cbc_style_message CATPPUCCIN_GREEN \
             "Installed '$module_name' from local path in packages.toml."
         else
-          cbc_style_message "$CATPPUCCIN_MAROON" \
+          cbc_style_message CATPPUCCIN_MAROON \
             "Failed to copy '$module_name' from $source."
           continue
         fi
       elif [ "$git_available" = true ]; then
         if cbc_spinner "Cloning $module_name" \
           git clone "$source" "$module_dir"; then
-          cbc_style_message "$CATPPUCCIN_GREEN" \
+          cbc_style_message CATPPUCCIN_GREEN \
             "Installed '$module_name' from manifest."
         else
-          cbc_style_message "$CATPPUCCIN_MAROON" \
+          cbc_style_message CATPPUCCIN_MAROON \
             "Failed to clone '$module_name' from $source."
           continue
         fi
       else
-        cbc_style_message "$CATPPUCCIN_MAROON" \
+        cbc_style_message CATPPUCCIN_MAROON \
           "Cannot install '$module_name'; git is unavailable."
         continue
       fi
@@ -1083,16 +1161,16 @@ cbc_pkg_install() {
   local show_help=false
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Record a CBC module source in packages.toml."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  cbc pkg install <creator/repo|git-url|path>"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+    cbc_style_box CATPPUCCIN_PEACH "Examples:" \
       "  cbc pkg install creator/example-module" \
       "  cbc pkg install https://github.com/creator/example-module.git" \
       "  cbc pkg install ~/dev/example-module"
@@ -1104,7 +1182,7 @@ cbc_pkg_install() {
       show_help=true
       ;;
     \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -1118,19 +1196,19 @@ cbc_pkg_install() {
   fi
 
   if [ $# -eq 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" \
+    cbc_style_message CATPPUCCIN_RED \
       "No module source provided. Use 'cbc pkg install <creator/repo>' or a git URL."
     return 1
   fi
 
   if [ $# -gt 1 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    cbc_style_message CATPPUCCIN_RED "Error: Unexpected arguments: $*"
     return 1
   fi
 
   local use="$1"
   if [[ "$use" == -* ]]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Invalid option: $use"
+    cbc_style_message CATPPUCCIN_RED "Invalid option: $use"
     return 1
   fi
 
@@ -1155,7 +1233,7 @@ cbc_pkg_install() {
     status_note="Revision details unavailable; will capture during load."
   fi
 
-  cbc_style_message "$CATPPUCCIN_GREEN" \
+  cbc_style_message CATPPUCCIN_GREEN \
     "Recorded '$use' in packages.toml. Run 'cbc pkg load' to install." \
     "${status_note}"
 }
@@ -1165,16 +1243,16 @@ cbc_pkg_uninstall() {
   local show_help=false
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Remove a CBC module from packages.toml and local modules."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  cbc pkg uninstall <creator/repo|module-name>"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+    cbc_style_box CATPPUCCIN_PEACH "Examples:" \
       "  cbc pkg uninstall creator/example-module" \
       "  cbc pkg uninstall example-module"
   }
@@ -1185,7 +1263,7 @@ cbc_pkg_uninstall() {
       show_help=true
       ;;
     \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -1199,19 +1277,19 @@ cbc_pkg_uninstall() {
   fi
 
   if [ $# -eq 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" \
+    cbc_style_message CATPPUCCIN_RED \
       "No module provided. Use 'cbc pkg uninstall <creator/repo|module-name>'."
     return 1
   fi
 
   if [ $# -gt 1 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    cbc_style_message CATPPUCCIN_RED "Error: Unexpected arguments: $*"
     return 1
   fi
 
   local use="$1"
   if [[ "$use" == -* ]]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Invalid option: $use"
+    cbc_style_message CATPPUCCIN_RED "Invalid option: $use"
     return 1
   fi
 
@@ -1255,7 +1333,7 @@ cbc_pkg_uninstall() {
     if cbc_spinner "Removing $module_name" rm -rf -- "$module_dir"; then
       removed_local=true
     else
-      cbc_style_message "$CATPPUCCIN_MAROON" \
+      cbc_style_message CATPPUCCIN_MAROON \
         "Failed to remove local files for '$module_name'."
     fi
   fi
@@ -1269,11 +1347,11 @@ cbc_pkg_uninstall() {
       removal_targets+=("local modules")
     fi
 
-    cbc_style_message "$CATPPUCCIN_GREEN" \
+    cbc_style_message CATPPUCCIN_GREEN \
       "Removed '$module_name' from ${removal_targets[*]}." \
       "Restart your shell to fully unload sourced functions."
   else
-    cbc_style_message "$CATPPUCCIN_YELLOW" \
+    cbc_style_message CATPPUCCIN_YELLOW \
       "No matching module found in packages.toml or local modules."
   fi
 }
@@ -1284,18 +1362,18 @@ cbc_pkg_list() {
   local refresh_remote=false
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  List CBC modules and update status using local metadata." \
       "  Use --refresh to check remotes."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  cbc pkg list [--refresh]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h         Display this help message" \
       "  --refresh  Check remotes for fresh update status"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+    cbc_style_box CATPPUCCIN_PEACH "Example:" \
       "  cbc pkg list"
   }
 
@@ -1304,7 +1382,7 @@ cbc_pkg_list() {
     -h) show_help=true ;;
     --refresh) refresh_remote=true ;;
     *)
-      cbc_style_message "$CATPPUCCIN_RED" "Unexpected argument: $1"
+      cbc_style_message CATPPUCCIN_RED "Unexpected argument: $1"
       return 1
       ;;
     esac
@@ -1413,7 +1491,7 @@ cbc_pkg_list() {
   cbc_gum_spinner_stop "$spinner_pid" "$spinner_done_file"
 
   if [ "$found" = false ]; then
-    cbc_style_message "$CATPPUCCIN_YELLOW" \
+    cbc_style_message CATPPUCCIN_YELLOW \
       "No CBC modules installed. Use 'cbc pkg install <creator/repo>' to add one."
     return 0
   fi
@@ -1486,18 +1564,18 @@ cbc_pkg_update() {
   local jobs=4
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Update installed CBC modules and show from/to installed versions."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  cbc pkg update [--jobs N]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h        Display this help message" \
       "  --jobs N  Concurrent fetches (default: 4; use 1 for serial)" \
       "            Use 1 when authentication needs terminal prompts."
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+    cbc_style_box CATPPUCCIN_PEACH "Example:" \
       "  cbc pkg update"
   }
 
@@ -1507,7 +1585,7 @@ cbc_pkg_update() {
     --jobs)
       if [ $# -lt 2 ] || [[ ! "$2" =~ ^[1-9][0-9]*$ ]] ||
         [ "${#2}" -gt 6 ]; then
-        cbc_style_message "$CATPPUCCIN_RED" \
+        cbc_style_message CATPPUCCIN_RED \
           "--jobs requires a positive integer (1-999999)."
         return 1
       fi
@@ -1515,7 +1593,7 @@ cbc_pkg_update() {
       shift
       ;;
     *)
-      cbc_style_message "$CATPPUCCIN_RED" "Unexpected argument: $1"
+      cbc_style_message CATPPUCCIN_RED "Unexpected argument: $1"
       return 1
       ;;
     esac
@@ -1528,7 +1606,7 @@ cbc_pkg_update() {
   fi
 
   if ! command -v git >/dev/null 2>&1; then
-    cbc_style_message "$CATPPUCCIN_RED" \
+    cbc_style_message CATPPUCCIN_RED \
       "Git is required to update modules. Install git and try again."
     return 1
   fi
@@ -1709,7 +1787,7 @@ cbc_pkg_update() {
       "20,10,18,18,12,34" \
       "${update_rows[@]}"
   else
-    cbc_style_message "$CATPPUCCIN_YELLOW" \
+    cbc_style_message CATPPUCCIN_YELLOW \
       "No CBC modules installed. Use 'cbc pkg install <creator/repo>' to add one."
   fi
 
@@ -1743,12 +1821,12 @@ cbc_pkg_source_modules() {
   shopt -u nullglob
 
   if [ "$loaded_any" = false ] && [ "$auto_load" != "auto" ]; then
-    cbc_style_message "$CATPPUCCIN_YELLOW" \
+    cbc_style_message CATPPUCCIN_YELLOW \
       "No modules to load from $CBC_MODULE_ROOT."
   fi
 
   if [ ${#skipped_modules[@]} -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_MAROON" \
+    cbc_style_message CATPPUCCIN_MAROON \
       "Skipped modules missing $CBC_MODULE_ENTRYPOINT: ${skipped_modules[*]}"
   fi
 }
@@ -1767,16 +1845,16 @@ cbc_pkg_load() {
   local show_help=false
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Install missing manifest modules and source local modules."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  cbc pkg load"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+    cbc_style_box CATPPUCCIN_PEACH "Example:" \
       "  cbc pkg load"
   }
 
@@ -1786,7 +1864,7 @@ cbc_pkg_load() {
       show_help=true
       ;;
     \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -1800,7 +1878,7 @@ cbc_pkg_load() {
   fi
 
   if [ $# -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    cbc_style_message CATPPUCCIN_RED "Error: Unexpected arguments: $*"
     return 1
   fi
 
@@ -1812,10 +1890,10 @@ cbc_pkg() {
   local show_help=false
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Manage CBC modules through the packages.toml manifest."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  cbc pkg [subcommand]" \
       "  cbc pkg install <creator/repo|git-url|path>" \
       "  cbc pkg list [--refresh]" \
@@ -1823,10 +1901,10 @@ cbc_pkg() {
       "  cbc pkg uninstall <creator/repo|module-name>" \
       "  cbc pkg update [--jobs N]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+    cbc_style_box CATPPUCCIN_PEACH "Examples:" \
       "  cbc pkg" \
       "  cbc pkg install creator/example-module" \
       "  cbc pkg load" \
@@ -1840,7 +1918,7 @@ cbc_pkg() {
       show_help=true
       ;;
     \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -1875,7 +1953,7 @@ cbc_pkg() {
     cbc_pkg_update "$@"
     ;;
   *)
-    cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc pkg command: $subcommand"
+    cbc_style_message CATPPUCCIN_RED "Unknown cbc pkg command: $subcommand"
     usage
     return 1
     ;;
@@ -1990,23 +2068,23 @@ cbc_config_edit() {
   local show_help=false
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Open the CBC config file in your editor."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  cbc config edit [--reset]" \
       "  cbc config -e [--reset]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h, --help  Display this help message" \
       "  --reset     Overwrite the config with defaults before editing"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+    cbc_style_box CATPPUCCIN_PEACH "Examples:" \
       "  cbc config edit" \
       "  cbc config edit --reset" \
       "  cbc config -e"
 
-    cbc_style_box "$CATPPUCCIN_LAVENDER" "Notes:" \
+    cbc_style_box CATPPUCCIN_LAVENDER "Notes:" \
       "  Uses \$EDITOR when available and falls back to nvim."
   }
 
@@ -2021,7 +2099,7 @@ cbc_config_edit() {
       shift
       ;;
     *)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: $1"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: $1"
       return 1
       ;;
     esac
@@ -2034,7 +2112,7 @@ cbc_config_edit() {
 
   if [ ! -f "$CBC_CONFIG_FILE" ] || [ "$reset" = true ]; then
     cbc_config_write_defaults
-    cbc_style_message "$CATPPUCCIN_GREEN" \
+    cbc_style_message CATPPUCCIN_GREEN \
       "Wrote CBC config to $CBC_CONFIG_FILE."
   fi
 
@@ -2051,7 +2129,7 @@ cbc_config_edit() {
   fi
 
   if [ ${#editor_cmd[@]} -eq 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" \
+    cbc_style_message CATPPUCCIN_RED \
       "No editor found. Set \$EDITOR or install nvim."
     return 1
   fi
@@ -2065,21 +2143,21 @@ cbc_config() {
   local show_help=false
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Generate or edit the CBC config file."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  cbc config [-f]" \
       "  cbc config edit [--reset]" \
       "  cbc config -e [--reset]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h, --help  Display this help message" \
       "  -f          Overwrite the existing config file" \
       "  -e          Edit the config file" \
       "  edit        Edit the config file"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+    cbc_style_box CATPPUCCIN_PEACH "Examples:" \
       "  cbc config" \
       "  cbc config -f" \
       "  cbc config edit" \
@@ -2122,7 +2200,7 @@ cbc_config() {
 
   if [ "$edit" = true ] || [ "${1:-}" = "edit" ]; then
     if [ "$force" = true ]; then
-      cbc_style_message "$CATPPUCCIN_RED" \
+      cbc_style_message CATPPUCCIN_RED \
         "Option -f cannot be used with 'cbc config edit'."
       return 1
     fi
@@ -2136,19 +2214,19 @@ cbc_config() {
   fi
 
   if [ $# -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    cbc_style_message CATPPUCCIN_RED "Error: Unexpected arguments: $*"
     return 1
   fi
 
   if [ -f "$CBC_CONFIG_FILE" ] && [ "$force" = false ]; then
-    cbc_style_message "$CATPPUCCIN_YELLOW" \
+    cbc_style_message CATPPUCCIN_YELLOW \
       "Config already exists at $CBC_CONFIG_FILE." \
       "Use 'cbc config -f' to overwrite."
     return 0
   fi
 
   cbc_config_write_defaults
-  cbc_style_message "$CATPPUCCIN_GREEN" \
+  cbc_style_message CATPPUCCIN_GREEN \
     "Wrote CBC config to $CBC_CONFIG_FILE."
 }
 
@@ -2156,13 +2234,13 @@ cbc() {
   OPTIND=1
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Entry point for CBC subcommands."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  cbc [subcommand]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Subcommands:" \
+    cbc_style_box CATPPUCCIN_TEAL "Subcommands:" \
       "  config Manage the CBC configuration file" \
       "  doctor Run CBC diagnostics" \
       "  list   List CBC commands and aliases" \
@@ -2171,7 +2249,7 @@ cbc() {
       "  update Check for CBC updates" \
       "  -h     Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+    cbc_style_box CATPPUCCIN_PEACH "Examples:" \
       "  cbc config" \
       "  cbc config edit" \
       "  cbc doctor" \
@@ -2191,7 +2269,7 @@ cbc() {
       return 0
       ;;
     \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -2230,7 +2308,7 @@ cbc() {
       cbc_update "$@"
       ;;
     *)
-      cbc_style_message "$CATPPUCCIN_RED" \
+      cbc_style_message CATPPUCCIN_RED \
         "Unknown cbc subcommand: $subcommand"
       usage
       return 1
@@ -2248,7 +2326,7 @@ if [ -f "$HOME/.cbc_aliases.sh" ]; then
   # shellcheck disable=SC1090
   source "$HOME/.cbc_aliases.sh"
 else
-  cbc_style_message "$CATPPUCCIN_YELLOW" \
+  cbc_style_message CATPPUCCIN_YELLOW \
     "Alias file not found; skipping $HOME/.cbc_aliases.sh."
 fi
 
@@ -2263,20 +2341,20 @@ wiki() {
   local wiki_url="https://github.com/iop098321qwe/custom_bash_commands/wiki"
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Open the Custom Bash Commands wiki in your default browser."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  wiki [-h|-c|-C|-A|-F]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h    Display this help message" \
       "  -c    Copy the wiki URL to the clipboard" \
       "  -C    Open the wiki to the cheatsheet page" \
       "  -A    Open the wiki to the aliases page" \
       "  -F    Open the wiki to the command reference page"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+    cbc_style_box CATPPUCCIN_PEACH "Examples:" \
       "  wiki" \
       "  wiki -A"
   }
@@ -2293,30 +2371,30 @@ wiki() {
       ;;
     c)
       echo "$wiki_url" | wl-copy
-      cbc_style_message "$CATPPUCCIN_GREEN" "Wiki URL copied to clipboard."
+      cbc_style_message CATPPUCCIN_GREEN "Wiki URL copied to clipboard."
       return 0
       ;;
     C)
-      cbc_style_message "$CATPPUCCIN_SKY" "Opening Cheatsheet..."
+      cbc_style_message CATPPUCCIN_SKY "Opening Cheatsheet..."
       setsid -f xdg-open "$wiki_url/Cheatsheet" >/dev/null 2>&1
       return 0
       ;;
     A)
-      cbc_style_message "$CATPPUCCIN_SKY" "Opening Alias Reference..."
+      cbc_style_message CATPPUCCIN_SKY "Opening Alias Reference..."
       setsid -f xdg-open "$wiki_url/Alias-Reference" >/dev/null 2>&1
       return 0
       ;;
     F)
-      cbc_style_message "$CATPPUCCIN_SKY" "Opening Command Reference..."
+      cbc_style_message CATPPUCCIN_SKY "Opening Command Reference..."
       setsid -f xdg-open "$wiki_url/Command-Reference" >/dev/null 2>&1
       return 0
       ;;
     \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     *)
-      cbc_style_message "$CATPPUCCIN_SKY" "Opening CBC wiki..."
+      cbc_style_message CATPPUCCIN_SKY "Opening CBC wiki..."
       setsid -f xdg-open "$wiki_url" >/dev/null 2>&1
       return 0
       ;;
@@ -2345,17 +2423,17 @@ changes() {
   local changelog_url="https://github.com/iop098321qwe/custom_bash_commands/blob/main/CHANGELOG.md"
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Open the Custom Bash Commands changelog in your default browser."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  changes [-h|-c]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h    Display this help message" \
       "  -c    Copy the changelog URL to the clipboard"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+    cbc_style_box CATPPUCCIN_PEACH "Example:" \
       "  changes"
   }
 
@@ -2371,12 +2449,12 @@ changes() {
       ;;
     c)
       echo "$changelog_url" | wl-copy
-      cbc_style_message "$CATPPUCCIN_GREEN" "Changelog URL copied to clipboard."
+      cbc_style_message CATPPUCCIN_GREEN "Changelog URL copied to clipboard."
       return 0
       ;;
     *)
       # invalid options
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -2401,17 +2479,17 @@ readme() {
   local readme_url="https://github.com/iop098321qwe/custom_bash_commands/blob/main/README.md"
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Open the Custom Bash Commands README in your default browser."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  readme [-h|-c]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h    Display this help message" \
       "  -c    Copy the README URL to the clipboard"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+    cbc_style_box CATPPUCCIN_PEACH "Example:" \
       "  readme"
   }
 
@@ -2427,11 +2505,11 @@ readme() {
       ;;
     c)
       echo "$readme_url" | wl-copy
-      cbc_style_message "$CATPPUCCIN_GREEN" "README URL copied to clipboard."
+      cbc_style_message CATPPUCCIN_GREEN "README URL copied to clipboard."
       return 0
       ;;
     *)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -2455,17 +2533,17 @@ releases() {
   local releases_url="https://github.com/iop098321qwe/custom_bash_commands/releases"
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Open the Custom Bash Commands releases in your default browser."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  releases [-h|-c]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h    Display this help message" \
       "  -c    Copy the releases URL to the clipboard"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+    cbc_style_box CATPPUCCIN_PEACH "Example:" \
       "  releases"
   }
 
@@ -2481,12 +2559,12 @@ releases() {
       ;;
     c)
       echo "$releases_url" | wl-copy
-      cbc_style_message "$CATPPUCCIN_GREEN" "Changelog URL copied to clipboard."
+      cbc_style_message CATPPUCCIN_GREEN "Changelog URL copied to clipboard."
       return 0
       ;;
     *)
       # invalid options
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -2586,10 +2664,10 @@ cbc_update_check() {
     fi
     if [[ -n "$error_message" ]]; then
       error_message="$(cbc_json_unescape "$error_message")"
-      cbc_style_message "$CATPPUCCIN_RED" \
+      cbc_style_message CATPPUCCIN_RED \
         "Unable to check for updates: $error_message"
     else
-      cbc_style_message "$CATPPUCCIN_RED" \
+      cbc_style_message CATPPUCCIN_RED \
         "Unable to check for updates right now."
     fi
     return 1
@@ -2610,7 +2688,7 @@ cbc_update_check() {
   local latest_url="$(cbc_json_unescape "$latest_url_raw")"
 
   if [[ -z "$latest_version" ]]; then
-    cbc_style_message "$CATPPUCCIN_RED" \
+    cbc_style_message CATPPUCCIN_RED \
       "Unable to parse the latest release information."
     return 1
   fi
@@ -2622,9 +2700,9 @@ cbc_update_check() {
       "  Latest:  $latest_version${latest_name:+ ($latest_name)}"
     )
     [[ -n "$latest_url" ]] && update_lines+=("  Release: $latest_url")
-    cbc_style_box "$CATPPUCCIN_SKY" "${update_lines[@]}"
+    cbc_style_box CATPPUCCIN_SKY "${update_lines[@]}"
   else
-    cbc_style_box "$CATPPUCCIN_GREEN" \
+    cbc_style_box CATPPUCCIN_GREEN \
       "Custom Bash Commands is up to date." \
       "  Current: $current_version" \
       "  Latest:  $latest_version${latest_name:+ ($latest_name)}"
@@ -2681,7 +2759,7 @@ cbc_update_run() {
     cbc_aliases.sh
   )
 
-  cbc_style_box "$CATPPUCCIN_BLUE" "Updating Custom Bash Commands"
+  cbc_style_box CATPPUCCIN_BLUE "Updating Custom Bash Commands"
 
   if [ "$verbose" = true ]; then
     local stdin_tty="no"
@@ -2714,7 +2792,7 @@ cbc_update_run() {
   fi
 
   if ! cbc_confirm "Pull the latest version and overwrite local files?"; then
-    cbc_style_message "$CATPPUCCIN_YELLOW" "Update cancelled."
+    cbc_style_message CATPPUCCIN_YELLOW "Update cancelled."
     return 0
   fi
 
@@ -2753,9 +2831,9 @@ cbc_update_run() {
   fi
 
   if [ $prep_status -ne 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Failed to prepare sparse checkout."
+    cbc_style_message CATPPUCCIN_RED "Failed to prepare sparse checkout."
     if [ -s "$prep_log" ]; then
-      cbc_style_message "$CATPPUCCIN_RED" "Git error:"
+      cbc_style_message CATPPUCCIN_RED "Git error:"
       command cat "$prep_log"
     fi
     rm -f "$prep_log"
@@ -2800,10 +2878,10 @@ cbc_update_run() {
   fi
 
   if [ $pull_status -ne 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" \
+    cbc_style_message CATPPUCCIN_RED \
       "Unable to download updates from the repository."
     if [ -s "$pull_log" ]; then
-      cbc_style_message "$CATPPUCCIN_RED" "Git error:"
+      cbc_style_message CATPPUCCIN_RED "Git error:"
       command cat "$pull_log"
     fi
     rm -f "$pull_log"
@@ -2854,9 +2932,9 @@ cbc_update_run() {
     fi
 
     if [ $copy_status -ne 0 ]; then
-      cbc_style_message "$CATPPUCCIN_RED" "Failed to copy $path."
+      cbc_style_message CATPPUCCIN_RED "Failed to copy $path."
       if [ -s "$copy_log" ]; then
-        cbc_style_message "$CATPPUCCIN_RED" "Copy error:"
+        cbc_style_message CATPPUCCIN_RED "Copy error:"
         command cat "$copy_log"
       fi
       copy_errors=1
@@ -2866,7 +2944,7 @@ cbc_update_run() {
   done
 
   if [ $copy_errors -eq 1 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Update incomplete. Please retry."
+    cbc_style_message CATPPUCCIN_RED "Update incomplete. Please retry."
     return 1
   fi
 
@@ -2885,7 +2963,7 @@ cbc_update_run() {
     cbc_spinner "Custom Bash Commands updated. Reloading..." bash -c "$reload_cmd"
     reload_status=$?
   else
-    cbc_style_message "$CATPPUCCIN_GREEN" \
+    cbc_style_message CATPPUCCIN_GREEN \
       "Custom Bash Commands updated. Reloading..."
     bash -c "$reload_cmd"
     reload_status=$?
@@ -2896,7 +2974,7 @@ cbc_update_run() {
   fi
 
   if [ $reload_status -ne 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Failed to reload CBC."
+    cbc_style_message CATPPUCCIN_RED "Failed to reload CBC."
     return 1
   fi
 
@@ -2911,18 +2989,18 @@ cbc_update() {
   local verbose=false
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Update CBC or check for updates."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  cbc update [-v]" \
       "  cbc update check"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h    Display this help message" \
       "  -v    Show verbose update output"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+    cbc_style_box CATPPUCCIN_PEACH "Examples:" \
       "  cbc update" \
       "  cbc update -v" \
       "  cbc update check"
@@ -2937,7 +3015,7 @@ cbc_update() {
       verbose=true
       ;;
     \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -2963,7 +3041,7 @@ cbc_update() {
     cbc_update_run "$verbose"
     ;;
   *)
-    cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc update command: $subcommand"
+    cbc_style_message CATPPUCCIN_RED "Unknown cbc update command: $subcommand"
     usage
     return 1
     ;;
@@ -2981,19 +3059,19 @@ cbc_test() {
   local git_root=""
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Reload CBC scripts from the current repository root."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  cbc test"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_LAVENDER" "Notes:" \
+    cbc_style_box CATPPUCCIN_LAVENDER "Notes:" \
       "  Run from the root of the custom_bash_commands repository."
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+    cbc_style_box CATPPUCCIN_PEACH "Examples:" \
       "  cbc test"
   }
 
@@ -3003,7 +3081,7 @@ cbc_test() {
       show_help=true
       ;;
     \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -3017,8 +3095,8 @@ cbc_test() {
   fi
 
   if [ $# -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
-    cbc_style_message "$CATPPUCCIN_YELLOW" \
+    cbc_style_message CATPPUCCIN_RED "Error: Unexpected arguments: $*"
+    cbc_style_message CATPPUCCIN_YELLOW \
       "Warning: run cbc test from the custom_bash_commands repo root."
     return 1
   fi
@@ -3028,15 +3106,15 @@ cbc_test() {
   if ! git_root="$(
     git -C "$repo_path" rev-parse --show-toplevel 2>/dev/null
   )"; then
-    cbc_style_message "$CATPPUCCIN_YELLOW" \
+    cbc_style_message CATPPUCCIN_YELLOW \
       "Warning: cbc test must run from the custom_bash_commands repo root."
     return 1
   fi
 
   if [ "$git_root" != "$repo_path" ]; then
-    cbc_style_message "$CATPPUCCIN_YELLOW" \
+    cbc_style_message CATPPUCCIN_YELLOW \
       "Warning: cbc test must run from the custom_bash_commands repo root."
-    cbc_style_message "$CATPPUCCIN_YELLOW" \
+    cbc_style_message CATPPUCCIN_YELLOW \
       "Current directory is not the repository root: $repo_path"
     return 1
   fi
@@ -3045,16 +3123,16 @@ cbc_test() {
   local alias_path="$repo_path/cbc_aliases.sh"
 
   if [ ! -f "$script_path" ]; then
-    cbc_style_message "$CATPPUCCIN_YELLOW" \
+    cbc_style_message CATPPUCCIN_YELLOW \
       "Warning: run cbc test from the custom_bash_commands repo root."
-    cbc_style_message "$CATPPUCCIN_RED" "Missing $script_path."
+    cbc_style_message CATPPUCCIN_RED "Missing $script_path."
     return 1
   fi
 
   if [ ! -f "$alias_path" ]; then
-    cbc_style_message "$CATPPUCCIN_YELLOW" \
+    cbc_style_message CATPPUCCIN_YELLOW \
       "Warning: run cbc test from the custom_bash_commands repo root."
-    cbc_style_message "$CATPPUCCIN_RED" "Missing $alias_path."
+    cbc_style_message CATPPUCCIN_RED "Missing $alias_path."
     return 1
   fi
 
@@ -3063,7 +3141,7 @@ cbc_test() {
   # shellcheck disable=SC1090
   source "$alias_path"
 
-  cbc_style_message "$CATPPUCCIN_GREEN" \
+  cbc_style_message CATPPUCCIN_GREEN \
     "Reloaded CBC from $repo_path."
 }
 
@@ -3123,16 +3201,16 @@ cbc_doctor_startup() {
   local show_help=false
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Profile CBC startup timing and print troubleshooting hints."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  cbc doctor startup [-h]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+    cbc_style_box CATPPUCCIN_PEACH "Example:" \
       "  cbc doctor startup"
   }
 
@@ -3142,7 +3220,7 @@ cbc_doctor_startup() {
       show_help=true
       ;;
     \?)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -3156,7 +3234,7 @@ cbc_doctor_startup() {
   fi
 
   if [ $# -gt 0 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    cbc_style_message CATPPUCCIN_RED "Error: Unexpected arguments: $*"
     return 1
   fi
 
@@ -3221,7 +3299,7 @@ cbc_doctor_startup() {
   module_status=$?
 
   CBC_THEME_CACHE_FILE=""
-  CBC_THEME_CACHE_MTIME=""
+  CBC_THEME_CACHE_CONTENT=""
   cbc_doctor_time_call theme_cold_us cbc_theme_refresh_palette >/dev/null 2>&1
   theme_cold_status=$?
   cbc_doctor_time_call theme_cached_us cbc_theme_refresh_palette >/dev/null 2>&1
@@ -3335,10 +3413,10 @@ cbc_doctor_startup() {
     hint_lines+=("No high-impact CBC startup issues detected.")
   fi
 
-  cbc_style_box "$CATPPUCCIN_MAUVE" "Startup Summary" "${summary_lines[@]}"
-  cbc_style_box "$CATPPUCCIN_BLUE" "Measured Steps" "${timing_lines[@]}"
-  cbc_style_box "$CATPPUCCIN_TEAL" "Startup Settings" "${settings_lines[@]}"
-  cbc_style_box "$CATPPUCCIN_PEACH" "Hints" "${hint_lines[@]}"
+  cbc_style_box CATPPUCCIN_MAUVE "Startup Summary" "${summary_lines[@]}"
+  cbc_style_box CATPPUCCIN_BLUE "Measured Steps" "${timing_lines[@]}"
+  cbc_style_box CATPPUCCIN_TEAL "Startup Settings" "${settings_lines[@]}"
+  cbc_style_box CATPPUCCIN_PEACH "Hints" "${hint_lines[@]}"
 }
 
 cbc_doctor() {
@@ -3352,20 +3430,20 @@ cbc_doctor() {
 
   usage() {
     if [ "$has_gum" = true ]; then
-      cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+      cbc_style_box CATPPUCCIN_MAUVE "Description:" \
         "  Run diagnostics for CBC configuration, dependencies, and updates."
 
-      cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+      cbc_style_box CATPPUCCIN_BLUE "Usage:" \
         "  cbc doctor [-h]" \
         "  cbc doctor startup [-h]"
 
-      cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+      cbc_style_box CATPPUCCIN_TEAL "Options:" \
         "  -h    Display this help message"
 
-      cbc_style_box "$CATPPUCCIN_SAPPHIRE" "Subcommands:" \
+      cbc_style_box CATPPUCCIN_SAPPHIRE "Subcommands:" \
         "  startup  Profile CBC startup timing"
 
-      cbc_style_box "$CATPPUCCIN_PEACH" "Example:" \
+      cbc_style_box CATPPUCCIN_PEACH "Example:" \
         "  cbc doctor" \
         "  cbc doctor startup"
       return
@@ -3386,7 +3464,7 @@ cbc_doctor() {
       ;;
     \?)
       if [ "$has_gum" = true ]; then
-        cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+        cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       else
         printf '%s\n' "Invalid option: -$OPTARG"
       fi
@@ -3410,7 +3488,7 @@ cbc_doctor() {
 
   if [ $# -gt 0 ]; then
     if [ "$has_gum" = true ]; then
-      cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+      cbc_style_message CATPPUCCIN_RED "Error: Unexpected arguments: $*"
     else
       printf '%s\n' "Error: Unexpected arguments: $*"
     fi
@@ -3754,11 +3832,11 @@ cbc_doctor() {
   file_module_lines+=("${file_lines[@]}")
   file_module_lines+=("${module_lines[@]}")
 
-  cbc_doctor_print_box "$CATPPUCCIN_MAUVE" "Summary" "${summary_lines[@]}"
-  cbc_doctor_print_box "$CATPPUCCIN_BLUE" "Dependencies" "${dependency_lines[@]}"
-  cbc_doctor_print_box "$CATPPUCCIN_TEAL" "Files and Modules" \
+  cbc_doctor_print_box CATPPUCCIN_MAUVE "Summary" "${summary_lines[@]}"
+  cbc_doctor_print_box CATPPUCCIN_BLUE "Dependencies" "${dependency_lines[@]}"
+  cbc_doctor_print_box CATPPUCCIN_TEAL "Files and Modules" \
     "${file_module_lines[@]}"
-  cbc_doctor_print_box "$CATPPUCCIN_SAPPHIRE" "Network" "${network_lines[@]}"
+  cbc_doctor_print_box CATPPUCCIN_SAPPHIRE "Network" "${network_lines[@]}"
 
   if [ "$fail" -gt 0 ]; then
     return 1
@@ -3772,19 +3850,19 @@ cbc_doctor() {
 display_version() {
   # Function to display usage
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Displays the version number from the .custom_bash_commands file in the local repository."
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Alias:" \
+    cbc_style_box CATPPUCCIN_TEAL "Alias:" \
       "  dv"
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  display_version"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Options:" \
+    cbc_style_box CATPPUCCIN_PEACH "Options:" \
       "  -h    Display this help message"
 
-    cbc_style_box "$CATPPUCCIN_LAVENDER" "Example:" \
+    cbc_style_box CATPPUCCIN_LAVENDER "Example:" \
       "  display_version"
   }
 
@@ -3797,7 +3875,7 @@ display_version() {
       return 0
       ;;
     *)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -3811,11 +3889,11 @@ display_version() {
 
   case "$banner_mode" in
   minimal)
-    cbc_style_message "$CATPPUCCIN_YELLOW" "$CBC_VERSION"
+    cbc_style_message CATPPUCCIN_YELLOW "$CBC_VERSION"
     ;;
   *)
-    cbc_style_message "$CATPPUCCIN_GREEN" "CUSTOM BASH COMMANDS (by iop098321qwe)"
-    cbc_style_message "$CATPPUCCIN_YELLOW" "🔹🔹$CBC_VERSION🔹🔹CHANGELOG: 'changes'🔹🔹RELEASES: 'releases'🔹🔹WIKI: 'wiki'🔹🔹"
+    cbc_style_message CATPPUCCIN_GREEN "CUSTOM BASH COMMANDS (by iop098321qwe)"
+    cbc_style_message CATPPUCCIN_YELLOW "🔹🔹$CBC_VERSION🔹🔹CHANGELOG: 'changes'🔹🔹RELEASES: 'releases'🔹🔹WIKI: 'wiki'🔹🔹"
     ;;
   esac
 }
@@ -3977,19 +4055,19 @@ cbc_list_render() {
   if [ "$all_info" = true ]; then
     if [ "$show_functions" = true ]; then
       cbc_list_format_details function_details function_names function_descs
-      cbc_style_box "$CATPPUCCIN_MAUVE" "CBC Functions" "${function_details[@]}"
+      cbc_style_box CATPPUCCIN_MAUVE "CBC Functions" "${function_details[@]}"
     fi
     if [ "$show_aliases" = true ]; then
       cbc_list_format_details alias_details alias_names alias_descs
-      cbc_style_box "$CATPPUCCIN_BLUE" "CBC Aliases" "${alias_details[@]}"
+      cbc_style_box CATPPUCCIN_BLUE "CBC Aliases" "${alias_details[@]}"
     fi
   else
     if [ "$show_functions" = true ]; then
-      cbc_style_box "$CATPPUCCIN_MAUVE" "CBC Functions" \
+      cbc_style_box CATPPUCCIN_MAUVE "CBC Functions" \
         "  Use 'cbc list -v' for descriptions." "${functions[@]}"
     fi
     if [ "$show_aliases" = true ]; then
-      cbc_style_box "$CATPPUCCIN_BLUE" "CBC Aliases" "${aliases[@]}"
+      cbc_style_box CATPPUCCIN_BLUE "CBC Aliases" "${aliases[@]}"
     fi
   fi
 }
@@ -4000,17 +4078,17 @@ cbc_list() {
   local filter="all"
 
   usage() {
-    cbc_style_box "$CATPPUCCIN_MAUVE" "Description:" \
+    cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  List available CBC commands and aliases."
 
-    cbc_style_box "$CATPPUCCIN_BLUE" "Usage:" \
+    cbc_style_box CATPPUCCIN_BLUE "Usage:" \
       "  cbc list [options] [commands|aliases]"
 
-    cbc_style_box "$CATPPUCCIN_TEAL" "Options:" \
+    cbc_style_box CATPPUCCIN_TEAL "Options:" \
       "  -h    Display this help message" \
       "  -v    Show descriptions"
 
-    cbc_style_box "$CATPPUCCIN_PEACH" "Examples:" \
+    cbc_style_box CATPPUCCIN_PEACH "Examples:" \
       "  cbc list" \
       "  cbc list -v" \
       "  cbc list aliases" \
@@ -4027,7 +4105,7 @@ cbc_list() {
       all_info=true
       ;;
     *)
-      cbc_style_message "$CATPPUCCIN_RED" "Invalid option: -$OPTARG"
+      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
       return 1
       ;;
     esac
@@ -4040,7 +4118,7 @@ cbc_list() {
   fi
 
   if [ $# -gt 1 ]; then
-    cbc_style_message "$CATPPUCCIN_RED" "Error: Unexpected arguments: $*"
+    cbc_style_message CATPPUCCIN_RED "Error: Unexpected arguments: $*"
     return 1
   fi
 
@@ -4053,7 +4131,7 @@ cbc_list() {
       filter="commands"
       ;;
     *)
-      cbc_style_message "$CATPPUCCIN_RED" "Unknown cbc list filter: $1"
+      cbc_style_message CATPPUCCIN_RED "Unknown cbc list filter: $1"
       usage
       return 1
       ;;
