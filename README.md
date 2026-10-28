@@ -261,6 +261,35 @@ cases may exceed that limit when readability would otherwise suffer:
 - Update documentation whenever behavior or dependencies change.
 - Run `zensical build --clean` after changing documentation site files.
 
+### Release versioning
+
+The repository's `.versionrc.cjs` configures `commit-and-tag-version` to
+update `CBC_VERSION` in `custom_bash_commands.sh` during each release. Git
+release tags determine the current release version; the script is a bump
+target, so an outdated embedded version cannot reset the release sequence.
+The updater preserves the `v` prefix and changes only the version assignment.
+It rejects missing, duplicate, or malformed assignments.
+
+Release tooling requires Node.js and npm/npx. The configuration was verified
+with `commit-and-tag-version` 13.3.0, which requires Node.js 22 or newer.
+Preview the next release from the repository root with:
+
+```bash
+npx commit-and-tag-version --dry-run
+```
+
+When available, the `verg` wrapper from the `commit-and-tag-version` CBC
+module automatically uses this configuration for its preview and confirmed
+release. The generated release commit includes the updated script version
+and changelog. Adding the configuration does not itself bump `CBC_VERSION`.
+Keep `CHANGELOG.md` managed by the release tool.
+
+Check the updater independently, without creating a release:
+
+```bash
+node --test tests/test_version_updater.cjs
+```
+
 ## Troubleshooting
 
 - **Provisioning fails with a path error:** `install_cbc.sh` verifies the

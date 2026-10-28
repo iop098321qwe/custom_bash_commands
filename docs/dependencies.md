@@ -30,3 +30,10 @@
 
 - pip, installed inside the Python virtual environment
 - Zensical, installed from `requirements-docs.txt`
+
+## Release Tooling
+
+- Node.js 22 or newer for `commit-and-tag-version` 13.3.0 (verified version)
+- npm/npx to run `commit-and-tag-version`
+- The optional `verg` wrapper is provided by the `commit-and-tag-version`
+  CBC module and uses the repository's `.versionrc.cjs` automatically.
