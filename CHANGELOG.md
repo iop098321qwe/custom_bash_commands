@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [4.0.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v4.0.2...v4.0.3) (2026-10-28)
+
+### Bug Fixes
+
+* **theme:** follow terminal colors in existing CBC output ([8b9a0c9](https://github.com/iop098321qwe/custom_bash_commands/commit/8b9a0c9f9a79839df2223f90ba0f8aa05f20da83))
+
 ## [4.0.2](https://github.com/iop098321qwe/custom_bash_commands/compare/v4.0.1...v4.0.2) (2026-10-28)
 
 ### Bug Fixes
