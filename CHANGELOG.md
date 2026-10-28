@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [4.0.1](https://github.com/iop098321qwe/custom_bash_commands/compare/v4.0.0...v4.0.1) (2026-10-28)
+
+### Bug Fixes
+
+* **theme:** refresh CBC colors when the Omarchy theme changes ([f570411](https://github.com/iop098321qwe/custom_bash_commands/commit/f57041197fc376e0334d5c36e6270c9752fe4159))
+
 ## [4.0.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v3.7.0...v4.0.0) (2026-09-30)
 
 ### ⚠ BREAKING CHANGES
