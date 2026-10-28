@@ -110,43 +110,43 @@ When the terminal sources CBC:
 - `CBC_USE_GUM=true` requires gum and blocks command execution when gum
   is missing.
 - `CBC_USE_GUM=false` always uses plain text output.
-- When gum is active, styled output follows Omarchy theme colors on
-  Omarchy systems and falls back to the built-in Catppuccin-Mocha
-  palette elsewhere.
+- When gum is active, styled output uses the terminal's ANSI palette and
+  default foreground/background colors.
 - CBC does not check for updates automatically; use `cbc update check`.
 
 ### Theme colors and automatic refresh
 
-CBC reads the active Omarchy palette from
-`~/.local/state/omarchy/current/theme/colors.toml`, falling back to the older
-`~/.config/omarchy/current/theme/colors.toml` location when the state file is
-missing or unreadable. Both current named colors (such as `red`, `green`,
-`selection`, and `muted`) and older `color0`–`color14` palettes are supported.
-Named colors take precedence when both formats appear in a file.
+CBC uses the terminal's standard 16 ANSI colors by default: red for errors,
+green for success, yellow for warnings, and blue or magenta for headings.
+Regular text and backgrounds inherit the terminal defaults. CBC does not
+need to read an Omarchy theme file in this mode.
 
-When no readable palette is found, CBC uses its built-in Catppuccin-Mocha
-palette. Palette values must be quoted six-digit hex colors; invalid values
-are ignored. Missing colors are derived from other available theme colors,
-with Catppuccin-Mocha defaults for roles that cannot be derived. Changing
-themes clears colors inherited from the previous palette.
+When your terminal reloads its palette, existing CBC output can recolor,
+including previous messages, boxes, and tables in scrollback. This depends
+on the terminal applying palette changes to existing cells. Already-running
+Gum interfaces use the same palette references. No CBC hook or shell restart
+is needed. Output printed by older CBC versions with fixed RGB colors
+cannot be converted retroactively.
 
-CBC checks palette contents before each styled render, including prompts,
-spinners, messages, and tables. Existing shells pick up theme changes on the
-next render, including rapid edits, replaced files, and theme symlink
-switches. No Omarchy hook or shell restart is needed. An already-running Gum
-prompt or spinner keeps its launch-time palette until it finishes.
+For fixed RGB styling, set `CBC_OMARCHY_COLORS_FILE` to a palette file before
+sourcing CBC, or assign it in the running shell. For example, use
+`~/.local/state/omarchy/current/theme/colors.toml` for the active Omarchy
+palette. An empty value restores terminal colors. This is a shell variable,
+not a `cbc.config` key.
 
-Gum's configurable component colors are passed explicitly from the active
-palette. Built-in keybinding help is hidden because its colors are internal
-to Gum; CBC command help remains available with `-h`. Gum input's unstyled
-typed text inherits terminal colors.
+Explicit palette files support named colors (such as `red`, `green`, and
+`selection`) and legacy `color0`–`color14` keys; named colors take precedence.
+Values must be quoted six-digit hex colors. Missing or invalid colors use
+derived colors or Catppuccin-Mocha defaults; unreadable files use the full
+fallback palette. CBC checks file contents before each render, but existing
+RGB output and already-running interfaces retain their original colors.
+Modules passing literal hex colors also retain fixed RGB styling.
 
-For a custom palette location, set `CBC_OMARCHY_COLORS_FILE` before sourcing
-CBC, or assign it in the running shell. An empty value restores automatic
-path detection. This is a shell variable, not a `cbc.config` key.
+Gum's built-in keybinding help is hidden because its colors are internal to
+Gum; CBC command help remains available with `-h`.
 
 When reloading over an older CBC release with `cbc test` or `source`, CBC
-replaces the inherited old default palette path with automatic detection.
+replaces the inherited old default palette path with terminal colors.
 Custom palette paths are preserved. After this one-time migration, explicit
 overrides of the legacy path are also preserved on subsequent reloads.
 
