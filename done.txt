@@ -1,3 +1,4 @@
 x 2026-06-19 2026-06-19 move `dotfiles` command to module +fixes @function due:2026-06-19
 x 2026-06-21 2026-06-21 change `cbc test` to source from current directory +fixes @command @fix due:2026-06-22
 x 2026-06-23 2026-06-23 `cbc pkg update` should show latest release tag in output @feature
+x 2026-10-31 2026-10-31 optimize for quicker loading times when opening a new terminal window @perf
