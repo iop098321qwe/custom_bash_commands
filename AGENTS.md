@@ -33,7 +33,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - Requires a Linux environment with `xdg-open`, `setsid`, and `wl-copy`
   available (scripts call these directly).
 - Requires Bash (`custom_bash_commands.sh` and `cbc_aliases.sh` use bash).
-- Requires Python 3.10 or newer for Zensical documentation builds.
+- Requires Python 3.10 or newer for Zensical builds, startup benchmarks,
+  and PTY banner tests. Shell runtime has no Python startup dependency.
 - Zensical is pinned in `requirements-docs.txt` for documentation builds.
 - Release tooling needs Node.js and npm/npx. Verified with
   `commit-and-tag-version` 13.3.0, which requires Node.js 22 or newer.
@@ -54,7 +55,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `docs/operations/` holds SOP guidance.
 - `docs/repository_docs/` holds documentation-site symlinks to root docs.
 - `docs/` holds dependencies, command references, and root doc symlinks.
-- `tests/` holds isolated shell regression checks.
+- `tests/` holds shell/PTY regression checks and startup benchmarks.
 - Repository root holds scripts, docs config, installer, and branding assets.
 
 ## Tracked Files Overview
@@ -87,6 +88,10 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `inbox.txt.tuxedo-lock`: Empty todo.txt lock file.
 - `install_cbc.sh`: Installer script for local setup.
 - `requirements-docs.txt`: Pinned Zensical dependency list.
+- `tests/benchmark_startup.py`: Fresh-shell and first-use timing harness.
+- `tests/test_banner.py`: Interactive PTY banner and color-control checks.
+- `tests/test_lazy_loading.sh`: Lazy module lifecycle and recovery checks.
+- `tests/test_startup.sh`: Config, module, banner, and startup fork checks.
 - `tests/test_theme_reload.sh`: Reload and package-table color regression check.
 - `tests/test_version_updater.cjs`: Release updater regression checks.
 - `todo.txt`: Open todo.txt task entries.
@@ -109,6 +114,14 @@ cd ~/Documents/github_repositories/custom_bash_commands
   sources installed module entrypoints from `~/.config/cbc/modules`; manifest
   alignment runs only when users call `cbc pkg load` or related package
   commands.
+- Startup config parsing and module discovery avoid subprocesses. The
+  terminal-palette banner uses Bash ANSI output and honors `NO_COLOR`,
+  `CLICOLOR`, and `CLICOLOR_FORCE`; RGB overrides retain Gum rendering.
+- `cbc_lazy_register <implementation> <function...>` lets module entrypoints
+  defer definition-only implementations. Keep startup effects eager and
+  register every top-level function. The loader preserves alias parsing,
+  later function overrides, current-shell effects, and retryable failures.
+  Core commands remain eager; module entrypoints re-register on reload.
 - Terminal palette references allow existing output to recolor when the
   terminal updates its palette, subject to terminal scrollback support.
   Explicit RGB palettes are cached and checked before each render.
@@ -185,6 +198,21 @@ cd ~/Documents/github_repositories/custom_bash_commands
 ## Testing
 
 - Run `bash tests/test_theme_reload.sh` from the repository root.
+- Run `bash tests/test_startup.sh` for config compatibility, module ordering,
+  shell-option preservation, process-free startup, banner fallback, and the
+  installed two-file layout using the real installer in a temporary home.
+- Run `bash tests/test_lazy_loading.sh` for discovery, completion registration,
+  arguments, shell state, overrides, reloads, and failed-load recovery.
+- Run `python3 tests/test_banner.py` for interactive PTY banner colors,
+  once-per-session output, and color environment controls.
+- Run `python3 tests/benchmark_startup.py --runs 40` for isolated median/p95
+  startup measurements. Add `--modules <path>` and `--aliases <path>` to
+  exercise trusted module entrypoints and aliases. Compare saved scripts
+  with repeated `--script <path>`; put `--command <name> <args...>` last for
+  first/repeated-use measurements. Do not run benchmarks concurrently.
+- `--shell-startup` opts into executing the real `~/.bashrc` while replacing
+  only the installed CBC source. It measures startup plus exit, not the
+  first prompt or terminal-emulator creation, and edits no configuration.
 - Theme reload checks use an isolated temporary home and mocked Gum calls.
   They cover terminal palette defaults, legacy-default migration, package
   table refresh, and custom RGB overrides without remote access. When Gum
@@ -208,6 +236,9 @@ cd ~/Documents/github_repositories/custom_bash_commands
   manually or with AI.
 - Releases use `commit-and-tag-version`; the optional `verg` CBC module
   wrapper invokes it for preview and release.
+- Conventional Commit headers must describe standalone, changelog-ready
+  outcomes; bodies provide supplemental context. Verification needed:
+  release type filters and section mappings use unpinned upstream defaults.
 - `.versionrc.cjs` uses Git tags as the release-version source and registers
   `custom_bash_commands.sh` as a bump target. Its custom updater changes only
   `CBC_VERSION`, preserves the `v` prefix, and rejects invalid assignments.

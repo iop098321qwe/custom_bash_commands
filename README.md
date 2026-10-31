@@ -216,6 +216,76 @@ overrides of the legacy path are also preserved on subsequent reloads.
 - On Ubuntu-like systems, `bat` is aliased to `batcat`.
 - Use `cbc list -v` to see the full alias catalog.
 
+### Startup performance
+
+Configuration parsing and module discovery use Bash built-ins. The standard
+terminal-palette banner also renders with built-ins, retaining its green and
+yellow colors without starting Gum. It respects `NO_COLOR`, `CLICOLOR`, and
+`CLICOLOR_FORCE`; redirected output is plain by default. Explicit RGB palette
+overrides continue to use Gum for color conversion.
+
+Module entrypoints still run in order at startup. Large, definition-only
+implementations can opt into first-use loading while keeping command names
+available to `type`, completion registration, and callers:
+
+```bash
+if declare -F cbc_lazy_register >/dev/null; then
+  cbc_lazy_register "${BASH_SOURCE[0]%cbc-module.sh}commands.sh" \
+    example_command example_helper
+else
+  source "${BASH_SOURCE[0]%cbc-module.sh}commands.sh"
+fi
+```
+
+List every top-level function defined by `commands.sh`. Keep aliases,
+completion registration, keybindings, and other startup effects in the
+entrypoint; the implementation must contain function definitions only. The
+loader preserves registration-time alias parsing and later user function
+overrides. Commands execute in the current shell, and reloads register fresh
+wrappers. Missing or incomplete implementations fail and can be repaired and
+retried. Avoid grouping independently overridden commands into one large
+implementation without testing their interactions.
+
+Small alias modules remain eager. First-use loading moves parsing work to the
+first invocation, so compare both startup and first-use latency before adopting
+it. CBC's own command implementations remain eager after testing showed that
+deferring the entire core added more first-use latency than it saved at startup.
+
+Run the startup regression checks from the repository root:
+
+```bash
+bash tests/test_startup.sh
+bash tests/test_lazy_loading.sh
+python3 tests/test_banner.py
+bash tests/test_theme_reload.sh
+```
+
+Use Python 3.10 or newer for the benchmark and PTY banner tests. The benchmark
+uses fresh interactive Bash processes, three warmups, alternating script order,
+and median/p95 reporting. It loads no host profiles and uses a temporary home.
+Selected module entrypoints execute, so use trusted module directories.
+
+```bash
+python3 tests/benchmark_startup.py --runs 40 \
+  --modules "$HOME/.config/cbc/modules" --aliases cbc_aliases.sh
+```
+
+Compare a saved baseline and the current script with repeated `--script`
+arguments. Measure first and repeated calls by passing `--command` last:
+
+```bash
+python3 tests/benchmark_startup.py --runs 40 --case quiet \
+  --modules "$HOME/.config/cbc/modules" --command mkrepo -h
+```
+
+The opt-in `--shell-startup` mode executes the real `~/.bashrc`, substituting
+each selected script for `source ~/.custom_bash_commands.sh` without editing
+shell configuration. It measures shell startup plus exit, excluding the first
+prompt and terminal-emulator creation. Other shell integrations execute
+normally.
+This mode fails if that CBC source is not observed. Run timing comparisons
+without other benchmarks in parallel.
+
 ## Documentation Site
 
 The documentation site uses Zensical with source files in `docs/` and output in

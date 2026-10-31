@@ -63,13 +63,14 @@ cbc_config_normalize_bool() {
 cbc_config_apply() {
   local key="$1"
   local value="$2"
-  local normalized=""
 
   case "$key" in
-  CBC_SHOW_BANNER)
-    if normalized=$(cbc_config_normalize_bool "$value"); then
-      CBC_SHOW_BANNER="$normalized"
-    fi
+  CBC_SHOW_BANNER | CBC_SOURCE_BASH_ALIASES | CBC_LIST_SHOW_DESCRIPTIONS)
+    # Assign in this shell: command substitution forks once per setting.
+    case "${value,,}" in
+    true | yes | 1) printf -v "$key" '%s' true ;;
+    false | no | 0) printf -v "$key" '%s' false ;;
+    esac
     ;;
   CBC_BANNER_MODE)
     value="${value,,}"
@@ -78,16 +79,6 @@ cbc_config_apply() {
       CBC_BANNER_MODE="$value"
       ;;
     esac
-    ;;
-  CBC_SOURCE_BASH_ALIASES)
-    if normalized=$(cbc_config_normalize_bool "$value"); then
-      CBC_SOURCE_BASH_ALIASES="$normalized"
-    fi
-    ;;
-  CBC_LIST_SHOW_DESCRIPTIONS)
-    if normalized=$(cbc_config_normalize_bool "$value"); then
-      CBC_LIST_SHOW_DESCRIPTIONS="$normalized"
-    fi
     ;;
   CBC_USE_GUM)
     value="${value,,}"
@@ -108,6 +99,9 @@ cbc_config_load() {
   local value=""
 
   while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in
+    '' | \#*) continue ;;
+    esac
     line="${line%%#*}"
     cbc_trim_in_place line
 
@@ -790,6 +784,166 @@ cbc_style_table() {
 ################################################################################
 # CBC MODULE LOADER
 ################################################################################
+
+# Reset registrations on reload; module entrypoints register fresh wrappers.
+declare -gA CBC_LAZY_FILES=() CBC_LAZY_STUBS=() CBC_LAZY_LOADING=()
+declare -gA CBC_LAZY_ALIAS_SETUP=()
+
+cbc_lazy_alias_snapshot() {
+  local -n _cbc_alias_snapshot="$1"
+  local _cbc_alias_name="" _cbc_alias_quoted=""
+  _cbc_alias_snapshot='builtin unalias -a'
+  for _cbc_alias_name in "${!BASH_ALIASES[@]}"; do
+    printf -v _cbc_alias_quoted '%q' \
+      "$_cbc_alias_name=${BASH_ALIASES[$_cbc_alias_name]}"
+    _cbc_alias_snapshot+=$'\n'"builtin alias -- $_cbc_alias_quoted"
+  done
+  if shopt -q expand_aliases; then
+    _cbc_alias_snapshot+=$'\n''builtin shopt -s expand_aliases'
+  else
+    _cbc_alias_snapshot+=$'\n''builtin shopt -u expand_aliases'
+  fi
+}
+
+cbc_lazy_register() {
+  local implementation="$1"
+  shift
+  if [[ "$implementation" != /* ]]; then
+    implementation="$PWD/$implementation"
+  fi
+  local name="" stub=""
+  for name in "$@"; do
+    case "$name" in
+    '' | [!a-zA-Z_]* | *[!a-zA-Z_0-9]*)
+      printf 'CBC: invalid lazy function name: %s\n' "$name" >&2
+      return 1
+      ;;
+    esac
+  done
+  for name in "$@"; do
+    # Only validated identifiers enter shell syntax; paths stay in the map.
+    # Match Bash's declare -f form without forking to capture every wrapper.
+    stub="$name () "$'\n''{ '$'\n'
+    stub+="    cbc_lazy_invoke $name \"\$@\""$'\n''}'
+    eval "function $stub"
+    CBC_LAZY_FILES["$name"]="$implementation"
+    CBC_LAZY_STUBS["$name"]="$stub"
+  done
+  local aliases=""
+  cbc_lazy_alias_snapshot aliases
+  CBC_LAZY_ALIAS_SETUP["$implementation"]="$aliases"
+}
+
+cbc_lazy_capture_definitions() {
+  local -n _cbc_capture_result="$1"
+  shift
+  local -a _cbc_capture_names=("$@")
+  local _cbc_capture_body="" _cbc_capture_index=0
+  local _cbc_capture_name=""
+  # One child for the whole group, rather than one substitution per name.
+  # NUL framing preserves arbitrary newlines and here-documents in bodies.
+  while IFS= read -r -d '' _cbc_capture_body; do
+    _cbc_capture_body="${_cbc_capture_body%$'\n'}"
+    _cbc_capture_name="${_cbc_capture_names[$_cbc_capture_index]}"
+    _cbc_capture_result["$_cbc_capture_name"]="$_cbc_capture_body"
+    _cbc_capture_index=$((_cbc_capture_index + 1))
+  done < <(
+    for _cbc_capture_name in "${_cbc_capture_names[@]}"; do
+      builtin declare -f -- "$_cbc_capture_name" || true
+      builtin printf '\0'
+    done
+  )
+}
+
+cbc_lazy_invoke() {
+  local _cbc_lazy_command="$1"
+  shift
+  local _cbc_lazy_file="${CBC_LAZY_FILES[$_cbc_lazy_command]:-}"
+  if [ -z "$_cbc_lazy_file" ] ||
+    [ -n "${CBC_LAZY_LOADING[$_cbc_lazy_file]:-}" ]; then
+    printf 'CBC: recursive lazy load: %s\n' "$_cbc_lazy_command" >&2
+    return 1
+  fi
+  if [ ! -r "$_cbc_lazy_file" ]; then
+    printf 'CBC: cannot load %s\n' "$_cbc_lazy_file" >&2
+    return 1
+  fi
+
+  local _cbc_lazy_name="" _cbc_lazy_body="" _cbc_lazy_status=0
+  local -A _cbc_lazy_before=() _cbc_lazy_overrides=()
+  local -a _cbc_lazy_names=()
+  for _cbc_lazy_name in "${!CBC_LAZY_FILES[@]}"; do
+    [ "${CBC_LAZY_FILES[$_cbc_lazy_name]}" = "$_cbc_lazy_file" ] || continue
+    _cbc_lazy_names+=("$_cbc_lazy_name")
+  done
+  cbc_lazy_capture_definitions _cbc_lazy_before "${_cbc_lazy_names[@]}"
+  for _cbc_lazy_name in "${_cbc_lazy_names[@]}"; do
+    _cbc_lazy_body="${_cbc_lazy_before[$_cbc_lazy_name]}"
+    if [ "$_cbc_lazy_body" != "${CBC_LAZY_STUBS[$_cbc_lazy_name]}" ]; then
+      _cbc_lazy_overrides["$_cbc_lazy_name"]="$_cbc_lazy_body"
+    fi
+  done
+
+  CBC_LAZY_LOADING["$_cbc_lazy_file"]=1
+  # Implementations must contain definitions only. Source in this shell so
+  # commands retain cd/export/alias effects and their original exit status.
+  local _cbc_lazy_caller_aliases=""
+  cbc_lazy_alias_snapshot _cbc_lazy_caller_aliases
+  eval "${CBC_LAZY_ALIAS_SETUP[$_cbc_lazy_file]}"
+  if source "$_cbc_lazy_file"; then
+    # Scan definitions as a stream: reading every large body into Bash
+    # variables just to check wrapper promotion makes first use much slower.
+    if ! builtin declare -F -- "${_cbc_lazy_names[@]}" >/dev/null ||
+      builtin declare -f -- "${_cbc_lazy_names[@]}" |
+        command awk '
+          /^    cbc_lazy_invoke [a-zA-Z_][a-zA-Z_0-9]* "\$@"$/ { found=1 }
+          END { exit !found }
+        '; then
+      printf 'CBC: incomplete lazy implementation: %s\n' \
+        "$_cbc_lazy_file" >&2
+      _cbc_lazy_status=1
+    fi
+  else
+    _cbc_lazy_status=$?
+  fi
+  eval "$_cbc_lazy_caller_aliases"
+  unset 'CBC_LAZY_LOADING[$_cbc_lazy_file]'
+
+  # declare -f bodies are already alias-expanded. Do not expand them again
+  # when restoring a user definition (or expand an alias in its header).
+  local _cbc_lazy_aliases=false
+  if shopt -q expand_aliases; then
+    _cbc_lazy_aliases=true
+    shopt -u expand_aliases
+  fi
+  if [ "$_cbc_lazy_status" -ne 0 ]; then
+    # Restore wrappers after partial loads, allowing repair and retry.
+    for _cbc_lazy_name in "${!_cbc_lazy_before[@]}"; do
+      if [ -n "${_cbc_lazy_before[$_cbc_lazy_name]}" ]; then
+        eval "${_cbc_lazy_before[$_cbc_lazy_name]}"
+      else
+        unset -f -- "$_cbc_lazy_name"
+      fi
+    done
+    if [ "$_cbc_lazy_aliases" = true ]; then shopt -s expand_aliases; fi
+    return "$_cbc_lazy_status"
+  fi
+
+  for _cbc_lazy_name in "${!_cbc_lazy_overrides[@]}"; do
+    # Respect later modules and user overrides, including explicit unsets.
+    if [ -n "${_cbc_lazy_overrides[$_cbc_lazy_name]}" ]; then
+      eval "${_cbc_lazy_overrides[$_cbc_lazy_name]}"
+    else
+      unset -f -- "$_cbc_lazy_name"
+    fi
+  done
+  for _cbc_lazy_name in "${!_cbc_lazy_before[@]}"; do
+    unset 'CBC_LAZY_FILES[$_cbc_lazy_name]' 'CBC_LAZY_STUBS[$_cbc_lazy_name]'
+  done
+  unset 'CBC_LAZY_ALIAS_SETUP[$_cbc_lazy_file]'
+  if [ "$_cbc_lazy_aliases" = true ]; then shopt -s expand_aliases; fi
+  "$_cbc_lazy_command" "$@"
+}
 
 cbc_pkg_ensure_config() {
   mkdir -p "$CBC_CONFIG_DIR" "$CBC_MODULE_ROOT"
@@ -1830,25 +1984,23 @@ cbc_pkg_source_modules() {
 
   local loaded_any=false
   local skipped_modules=()
+  local module_dir=""
 
   [ -d "$CBC_MODULE_ROOT" ] || return 0
 
-  shopt -s nullglob
+  # A directory guard skips unmatched globs without changing shell options.
   for module_dir in "$CBC_MODULE_ROOT"/*; do
     [ -d "$module_dir" ] || continue
 
     local entrypoint="$module_dir/$CBC_MODULE_ENTRYPOINT"
-    local module_name="$(basename "$module_dir")"
-
     if [ -f "$entrypoint" ]; then
       # shellcheck disable=SC1090
       source "$entrypoint"
       loaded_any=true
     else
-      skipped_modules+=("$module_name")
+      skipped_modules+=("${module_dir##*/}")
     fi
   done
-  shopt -u nullglob
 
   if [ "$loaded_any" = false ] && [ "$auto_load" != "auto" ]; then
     cbc_style_message CATPPUCCIN_YELLOW \
@@ -3217,12 +3369,16 @@ cbc_doctor_time_call() {
   local end_us=""
   local status=0
 
-  start_us="$(cbc_doctor_now_us)"
+  start_us="${EPOCHREALTIME:-}"
+  start_us="${start_us/./}"
+  start_us="${start_us:-$((SECONDS * 1000000))}"
   "$@"
   status=$?
-  end_us="$(cbc_doctor_now_us)"
+  end_us="${EPOCHREALTIME:-}"
+  end_us="${end_us/./}"
+  end_us="${end_us:-$((SECONDS * 1000000))}"
 
-  out_elapsed_us=$((end_us - start_us))
+  out_elapsed_us=$((10#$end_us - 10#$start_us))
   return "$status"
 }
 
@@ -3341,11 +3497,13 @@ cbc_doctor_startup() {
   fi
 
   cbc_doctor_time_call fresh_source_us \
-    bash -lc 'source "$1" >/dev/null' _ "$source_path" >/dev/null 2>&1
+    bash --noprofile --norc -c 'source "$1" >/dev/null' \
+    _ "$source_path" >/dev/null 2>&1
   fresh_source_status=$?
 
   cbc_doctor_time_call fresh_interactive_us \
-    bash --noprofile --norc -ic 'source "$1" >/dev/null' \
+    bash --noprofile --norc -ic \
+    'unset CBC_INFO_SHOWN; source "$1" >/dev/null' \
     _ "$source_path" >/dev/null 2>&1
   fresh_interactive_status=$?
 
@@ -3424,8 +3582,9 @@ cbc_doctor_startup() {
   )
 
   local -a hint_lines=()
-  if [ "$CBC_SHOW_BANNER" = true ] && [ "$CBC_GUM_ACTIVE" = true ]; then
-    hint_lines+=("Disable CBC_SHOW_BANNER or CBC_USE_GUM for fastest startup.")
+  if [ "$CBC_SHOW_BANNER" = true ] && [ "$CBC_GUM_ACTIVE" = true ] &&
+    [ -n "$CBC_OMARCHY_COLORS_FILE" ]; then
+    hint_lines+=("Clear CBC_OMARCHY_COLORS_FILE for the built-in ANSI banner.")
   fi
   if [ "$banner_us" -gt 50000 ]; then
     hint_lines+=("Startup banner is over 50ms; consider a plain or disabled banner.")
@@ -3877,6 +4036,36 @@ cbc_doctor() {
 # DISPLAY VERSION
 ################################################################################
 
+cbc_banner_message() {
+  # Simple terminal-palette text does not need a Gum process. Keep Gum for
+  # explicit RGB palettes, whose capability conversion it already handles.
+  if [ -n "$CBC_OMARCHY_COLORS_FILE" ]; then
+    cbc_style_message "$@"
+    return
+  fi
+
+  cbc_theme_refresh_palette
+  local color="$1"
+  shift
+  local styled=false
+  if [ "$CBC_GUM_ACTIVE" = true ] && [ -z "${NO_COLOR:-}" ]; then
+    if [[ -n "${CLICOLOR_FORCE:-}" && "${CLICOLOR_FORCE}" != 0 ]] ||
+      { [ -t 1 ] && [ "${TERM:-dumb}" != dumb ] &&
+        [ "${CLICOLOR:-1}" != 0 ]; }; then
+      styled=true
+    fi
+  fi
+
+  if [ "$styled" = true ]; then
+    case "$color" in
+    CATPPUCCIN_GREEN) printf '\033[32m%s\033[0m\n' "$@" ;;
+    CATPPUCCIN_YELLOW) printf '\033[33m%s\033[0m\n' "$@" ;;
+    esac
+  else
+    printf '%s\n' "$@"
+  fi
+}
+
 display_version() {
   # Function to display usage
   usage() {
@@ -3919,11 +4108,12 @@ display_version() {
 
   case "$banner_mode" in
   minimal)
-    cbc_style_message CATPPUCCIN_YELLOW "$CBC_VERSION"
+    cbc_banner_message CATPPUCCIN_YELLOW "$CBC_VERSION"
     ;;
   *)
-    cbc_style_message CATPPUCCIN_GREEN "CUSTOM BASH COMMANDS (by iop098321qwe)"
-    cbc_style_message CATPPUCCIN_YELLOW "🔹🔹$CBC_VERSION🔹🔹CHANGELOG: 'changes'🔹🔹RELEASES: 'releases'🔹🔹WIKI: 'wiki'🔹🔹"
+    cbc_banner_message CATPPUCCIN_GREEN \
+      "CUSTOM BASH COMMANDS (by iop098321qwe)"
+    cbc_banner_message CATPPUCCIN_YELLOW "🔹🔹$CBC_VERSION🔹🔹CHANGELOG: 'changes'🔹🔹RELEASES: 'releases'🔹🔹WIKI: 'wiki'🔹🔹"
     ;;
   esac
 }
