@@ -1,2 +1,3 @@
 (B) 2026-06-16 rebuild zensical docs +docs-site @docs
 (B) create modules page +docs-site @docs
+(A) 2026-10-31 optimize for quicker loading times when opening a new terminal window @perf
