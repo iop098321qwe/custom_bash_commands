@@ -91,6 +91,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `tests/benchmark_startup.py`: Fresh-shell and first-use timing harness.
 - `tests/test_banner.py`: Interactive PTY banner and color-control checks.
 - `tests/test_lazy_loading.sh`: Lazy module lifecycle and recovery checks.
+- `tests/test_pkg_update.sh`: Local Git upstream and lazy update checks.
 - `tests/test_startup.sh`: Config, module, banner, and startup fork checks.
 - `tests/test_theme_reload.sh`: Reload and package-table color regression check.
 - `tests/test_version_updater.cjs`: Release updater regression checks.
@@ -141,6 +142,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
   merges and writes metadata sequentially. `--jobs 1` fetches in the
   foreground for terminal authentication. Parallel workers require
   noninteractive credentials and are stopped as process groups on cancel.
+  A missing or deleted upstream falls back to `origin/HEAD` in cached
+  checks, or origin's advertised HEAD when refreshing remote refs.
 - `cbc_aliases.sh` defines aliases that the main script loads during startup.
 - `install_cbc.sh` copies scripts into `~`, appends a sourcing block to
   `~/.bashrc` when missing, and creates common directories under
@@ -203,6 +206,11 @@ cd ~/Documents/github_repositories/custom_bash_commands
   installed two-file layout using the real installer in a temporary home.
 - Run `bash tests/test_lazy_loading.sh` for discovery, completion registration,
   arguments, shell state, overrides, reloads, and failed-load recovery.
+- Run `bash tests/test_pkg_update.sh` for deleted-upstream fallback, valid
+  upstream preference, serial/parallel updates, manifest metadata, and
+  lazy implementation reloads using isolated local Git remotes.
+  It also checks diverged-history failures and, when Gum is installed,
+  spinner error visibility and exit-status preservation.
 - Run `python3 tests/test_banner.py` for interactive PTY banner colors,
   once-per-session output, and color environment controls.
 - Run `python3 tests/benchmark_startup.py --runs 40` for isolated median/p95
