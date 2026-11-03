@@ -1,3 +1,2 @@
 (B) 2026-06-16 rebuild zensical docs +docs-site @docs
 (B) create modules page +docs-site @docs
-(A) 2026-10-31 fix `cbc pkg update` as it does not update projectmod or smartsort modules +optimization @fix
