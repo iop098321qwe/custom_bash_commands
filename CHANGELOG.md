@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [4.0.4](https://github.com/iop098321qwe/custom_bash_commands/compare/v4.0.3...v4.0.4) (2026-11-03)
+
+### Bug Fixes
+
+* **pkg:** update modules whose upstream branches were deleted ([9a976c9](https://github.com/iop098321qwe/custom_bash_commands/commit/9a976c9dc50aa10332211ecaca634afde18d9605))
+
 ## [4.0.3](https://github.com/iop098321qwe/custom_bash_commands/compare/v4.0.2...v4.0.3) (2026-10-28)
 
 ### Bug Fixes
