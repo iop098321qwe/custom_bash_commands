@@ -586,6 +586,7 @@ cbc_spinner() {
   local title="$1"
   shift
   gum spin \
+    --show-error \
     --spinner dot \
     --title "$title" \
     --title.foreground "$CATPPUCCIN_MAUVE" \
@@ -1185,18 +1186,23 @@ cbc_pkg_resolve_remote_head() {
   fi
 
   if [ -d "$module_dir/.git" ]; then
-    local upstream
-    upstream="$(git -C "$module_dir" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
-
-    if [ -n "$upstream" ]; then
+    local upstream=""
+    # Failed rev-parse calls can still print '@{u}' on stdout. Only use
+    # successfully resolved upstreams; deleted branches need the fallback.
+    if upstream="$(git -C "$module_dir" rev-parse --abbrev-ref \
+      --symbolic-full-name '@{u}' 2>/dev/null)" &&
+      out_remote="$(git -C "$module_dir" rev-parse --verify \
+        "$upstream^{commit}" 2>/dev/null)"; then
       if [ "$refresh_remote" = true ]; then
+        out_remote=""
         git -C "$module_dir" fetch --quiet 2>/dev/null || return 0
       fi
 
       out_remote="$(git -C "$module_dir" rev-parse --verify \
-        "$upstream" 2>/dev/null || true)"
-      return
+        "$upstream^{commit}" 2>/dev/null)" && return
+      # Fetch may have removed the upstream; try the default remote HEAD.
     fi
+    out_remote=""
 
     if [ "$refresh_remote" = true ]; then
       out_remote="$(git -C "$module_dir" ls-remote origin HEAD 2>/dev/null | awk 'NR==1 {print $1}')"
