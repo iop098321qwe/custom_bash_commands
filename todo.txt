@@ -1,2 +1,3 @@
 (B) 2026-06-16 rebuild zensical docs +docs-site @docs
 (B) create modules page +docs-site @docs
+(A) 2026-11-04 change `cbc doctor` to output json so that it can more easily be parsed by machines. #feat @feat
