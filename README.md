@@ -159,10 +159,139 @@ overrides of the legacy path are also preserved on subsequent reloads.
   GitHub update access.
 - `cbc doctor startup` profiles CBC startup timing and prints hints for
   reducing terminal initialization delay.
+- Add `--json` to either doctor command for machine-readable output.
 - `readme`, `wiki`, `changes`, `releases`, and `dotfiles` open project
   resources in the default browser. Use `-c` to copy URLs where supported.
 - `cbc list [-v]` lists available functions and aliases; it uses `bat` or
   `batcat` for formatted output when available.
+
+### Machine-readable diagnostics
+
+```bash
+cbc doctor --json >doctor.json
+cbc doctor startup --json >startup.json
+```
+
+`--json` may appear before or after `startup`. Each command emits one JSON
+document with two-space indentation and a final newline, without ANSI styling
+or Gum rendering.
+Serialization uses Bash built-ins and requires neither Python nor `jq`.
+Help (`-h`) remains human-readable. Invalid arguments produce an error on
+stderr, no stdout, and exit status 1.
+
+Both reports use this version-2 structure:
+
+- `schema_version`: integer `2`; consumers should check this before parsing.
+- `command`: `"cbc doctor"` or `"cbc doctor startup"`.
+- `context`: CBC `version` (including its `v` prefix), `script`, `config_file`,
+  `module_root`, and `package_manifest` strings. Paths do not abbreviate the
+  home directory.
+- `summary`: overall `status`, numeric `counts`, and numeric `exit_status`.
+- `sections`: named objects containing a readable `title`, aggregate `status`,
+  `counts`, and a `checks` array. Each check appears in exactly one section.
+- `recommendations`: actionable objects with `check_id` and `message` strings.
+  An empty array means no advice was generated. Recommendations are guidance;
+  CBC does not execute them automatically.
+
+Statuses are `"OK"`, `"WARN"`, `"FAIL"`, and `"skipped"`. Counts always include
+all four keys, including zeros. Failures take precedence over warnings, then
+successful checks. A section containing only skipped checks is `"skipped"`.
+Global counts equal the sums of section counts.
+
+Every check has `id`, `label`, `status`, and `detail` strings, plus a typed
+`data` object. Use IDs and `data` fields for filtering; `detail` and
+recommendation messages are human-readable prose. Null means no value was
+observed or the measurement was skipped; it is distinct from false and zero.
+
+#### Diagnostic results
+
+`cbc doctor --json` provides four sections:
+
+- `dependencies`: tool checks with `command`, boolean `required` and
+  `available`, and `resolved_path` (the `command -v` result or null).
+  The `bat/batcat` check records the command selected from those alternatives.
+- `files`: file/directory checks with `path`, `kind`, boolean `required`, and
+  boolean `present`. The disabled Bash-alias check has `enabled: false` and
+  `present: null` because presence was not checked.
+- `modules`: root/manifest checks use the file/directory fields. Individual
+  modules have `name`, manifest `source` (null for untracked modules), `path`,
+  boolean `tracked` and `installed`, `entrypoint`, and boolean
+  `entrypoint_present`. An empty installation has an informational check with
+  numeric `installed` and `tracked` counts of zero.
+- `network`: `endpoint`, `transport`, and boolean `attempted`, plus numeric
+  `http_status` and string `release_tag` for the API, or string `head` for Git.
+  Unavailable values are null. Missing curl/git sets `attempted: false` and
+  `reason: "dependency_missing"`; a failed attempt has `attempted: true`.
+  An API error may include an `error` string or null.
+
+Main diagnostic IDs retain their original singular category prefixes, such
+as `dependency:curl`, `file:Main script`, `module:Module example-module`, and
+`network:GitHub API`. IDs do not depend on array order.
+
+All checks contribute to the counts. Missing optional tools or files are
+warnings; missing required dependencies and failed network checks are
+failures. The command exits 1 if any check fails and 0 otherwise, including
+when warnings are present. The complete document is still emitted on
+diagnostic failure. Network checks contact GitHub just as in readable mode.
+
+After saving `doctor.json`, an optional `jq` installation can select sections,
+failed checks, or missing required tools:
+
+```bash
+jq '.sections.network' doctor.json
+jq '.sections[].checks[] | select(.status == "FAIL")' doctor.json
+jq '.sections.dependencies.checks[]
+    | select(.data.required == true and .data.available == false)' doctor.json
+jq '.recommendations' doctor.json
+```
+
+#### Startup profiling results
+
+`cbc doctor startup --json` provides five sections. Check IDs use the
+`startup:` prefix followed by these step names:
+
+- `shell`: `fresh_source` and `fresh_interactive`.
+- `configuration`: `config`, with `data.path`, boolean `data.present`, and
+  `data.settings`. Settings contain the `CBC_SHOW_BANNER`,
+  `CBC_GUM_AVAILABLE`, `CBC_GUM_ACTIVE`, and `CBC_SOURCE_BASH_ALIASES`
+  booleans, plus the `CBC_BANNER_MODE` and `CBC_USE_GUM` strings.
+  `CBC_USE_GUM` is a mode: `"true"`, `"false"`, or `"auto"`.
+- `modules`: `module`, with `data.root`, integer `data.installed`, and integer
+  `data.entrypoints`.
+- `theme`: `theme_cold` and `theme_cached`, with `data.palette_file` (empty
+  when terminal colors are selected).
+- `banner`: `banner`, with boolean `data.enabled` and string `data.mode`.
+
+Every startup check includes integer `data.duration_us` in microseconds and
+integer `data.exit_status`. A disabled banner is `"skipped"` with null
+duration and exit status. Slow steps and failures can generate linked
+recommendations; a performance recommendation does not itself fail a step.
+
+Startup profiling retains its reporting-only exit behavior: it exits 0
+after producing the report even if a measured step failed. Inspect step
+statuses and exit statuses to detect failures. Measurements cover CBC
+sourcing and startup steps, not terminal-emulator creation or the first
+prompt.
+
+```bash
+jq '.summary' startup.json
+jq '.sections.theme.checks[] | {id, status, data}' startup.json
+jq '.sections[].checks[] | select(.status == "FAIL")' startup.json
+```
+
+#### Migrating from schema version 1
+
+Version 2 replaces the flat layout; it does not duplicate checks:
+
+- `.checks[]` becomes `.sections[].checks[]`.
+- `.overall` becomes `.summary.status`; `.counts` becomes `.summary.counts`.
+- Root `.version`, `.script`, and configuration paths move into `.context`.
+- Startup `.timings.<step>` becomes the check with ID `startup:<step>`.
+  Timing values are in its `.data`; status remains on the check.
+- Startup `.settings` moves to the configuration check's `.data.settings`;
+  module counts move to the module check's `.data`.
+- Startup `.hints` becomes `.recommendations[].message`. The previous
+  no-issues placeholder is replaced by an empty recommendations array.
 
 ### Update CBC
 

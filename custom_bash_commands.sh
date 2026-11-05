@@ -3388,46 +3388,195 @@ cbc_doctor_time_call() {
   return "$status"
 }
 
+# Emit a JSON string without requiring a working external diagnostic tool.
+cbc_doctor_json_string() {
+  local value="$1" char code i
+  local LC_ALL=C
+  printf '"'
+  for ((i = 0; i < ${#value}; i++)); do
+    char="${value:i:1}"
+    case "$char" in
+    '"') printf '\\"' ;;
+    \\) printf '\\\\' ;;
+    *)
+      printf -v code '%d' "'$char"
+      if ((code < 32)); then
+        printf '\\u%04x' "$code"
+      else
+        printf '%s' "$char"
+      fi
+      ;;
+    esac
+  done
+  printf '"'
+}
+
+# Values marked raw below are only internally generated JSON, numbers, or
+# booleans. Paths, names, remote messages, and other observed text use string.
+cbc_doctor_json_object() {
+  local indent="$1" separator=""
+  shift
+  printf '{'
+  while [ $# -gt 0 ]; do
+    printf '%s\n%*s' "$separator" "$((indent + 2))" ''
+    cbc_doctor_json_string "$1"
+    printf ': '
+    if [ "$2" = string ]; then
+      cbc_doctor_json_string "$3"
+    else
+      printf '%s' "$3"
+    fi
+    separator=,
+    shift 3
+  done
+  [ -z "$separator" ] || printf '\n%*s' "$indent" ''
+  printf '}'
+}
+
+# Both commands own these parallel arrays locally; helpers use Bash's dynamic
+# scope so results, summaries, and recommendations share one source of truth.
+cbc_doctor_record() {
+  report_sections+=("$1")
+  report_ids+=("$2")
+  report_labels+=("$3")
+  report_statuses+=("$4")
+  report_details+=("$5")
+  report_advice+=("$6")
+  shift 6
+  report_data+=("$(cbc_doctor_json_object 10 "$@")")
+}
+
+cbc_doctor_json_counts() {
+  local indent="$1" section="$2" i
+  local -A totals=([OK]=0 [WARN]=0 [FAIL]=0 [skipped]=0)
+  for i in "${!report_statuses[@]}"; do
+    if [ -z "$section" ] || [ "${report_sections[$i]}" = "$section" ]; then
+      totals[${report_statuses[$i]}]=$((
+        totals[${report_statuses[$i]}] + 1
+      ))
+    fi
+  done
+  cbc_doctor_json_object "$indent" \
+    OK raw "${totals[OK]}" WARN raw "${totals[WARN]}" \
+    FAIL raw "${totals[FAIL]}" skipped raw "${totals[skipped]}"
+}
+
+cbc_doctor_report_status() {
+  local section="$1" i result=skipped
+  for i in "${!report_statuses[@]}"; do
+    [ -z "$section" ] || [ "${report_sections[$i]}" = "$section" ] || continue
+    case "${report_statuses[$i]}" in
+    FAIL) printf FAIL; return ;;
+    WARN) result=WARN ;;
+    OK) [ "$result" != skipped ] || result=OK ;;
+    esac
+  done
+  printf '%s' "$result"
+}
+
+cbc_doctor_render_report() {
+  local report_command="$1" context="$2" policy="$3"
+  local overall exit_status=0 i section separator="" check_separator
+  overall="$(cbc_doctor_report_status '')"
+  if [ "$policy" = diagnostic ] && [ "$overall" = FAIL ]; then
+    exit_status=1
+  fi
+  printf '{\n  "schema_version": 2,\n  "command": '
+  cbc_doctor_json_string "$report_command"
+  printf ',\n  "context": %s,\n  "summary": {\n' "$context"
+  printf '    "status": "%s",\n    "counts": ' "$overall"
+  cbc_doctor_json_counts 4 ''
+  printf ',\n    "exit_status": %d\n  },\n  "sections": {' "$exit_status"
+  for section in "${section_keys[@]}"; do
+    printf '%s\n    "%s": {\n      "title": ' "$separator" "$section"
+    cbc_doctor_json_string "${section_titles[$section]}"
+    printf ',\n      "status": '
+    cbc_doctor_json_string "$(cbc_doctor_report_status "$section")"
+    printf ',\n      "counts": '
+    cbc_doctor_json_counts 6 "$section"
+    printf ',\n      "checks": ['
+    check_separator=""
+    for i in "${!report_ids[@]}"; do
+      [ "${report_sections[$i]}" = "$section" ] || continue
+      printf '%s\n        ' "$check_separator"
+      cbc_doctor_json_object 8 \
+        id string "${report_ids[$i]}" label string "${report_labels[$i]}" \
+        status string "${report_statuses[$i]}" \
+        detail string "${report_details[$i]}" data raw "${report_data[$i]}"
+      check_separator=,
+    done
+    [ -z "$check_separator" ] || printf '\n      '
+    printf ']\n    }'
+    separator=,
+  done
+  printf '\n  },\n  "recommendations": ['
+  separator=""
+  for i in "${!report_advice[@]}"; do
+    [ -n "${report_advice[$i]}" ] || continue
+    printf '%s\n    ' "$separator"
+    cbc_doctor_json_object 4 check_id string "${report_ids[$i]}" \
+      message string "${report_advice[$i]}"
+    separator=,
+  done
+  [ -z "$separator" ] || printf '\n  '
+  printf ']\n}\n'
+  return "$exit_status"
+}
+
+# Caller-local variables hold parsed options for either doctor entrypoint.
+cbc_doctor_parse_args() {
+  local allow_startup="$1"
+  shift
+  while [ $# -gt 0 ]; do
+    case "$1" in
+    --json) json_output=true ;;
+    -h) show_help=true ;;
+    startup)
+      if [ "$allow_startup" != true ] || [ -n "$doctor_subcommand" ]; then
+        printf 'Error: Unexpected argument: %s\n' "$1" >&2
+        return 1
+      fi
+      doctor_subcommand=startup
+      ;;
+    --)
+      shift
+      if [ $# -eq 0 ]; then break; fi
+      printf 'Error: Unexpected arguments: %s\n' "$*" >&2
+      return 1
+      ;;
+    *)
+      printf 'Error: Unexpected argument: %s\n' "$1" >&2
+      return 1
+      ;;
+    esac
+    shift
+  done
+}
+
 cbc_doctor_startup() {
-  OPTIND=1
   local show_help=false
+  local json_output=false doctor_subcommand=""
 
   usage() {
     cbc_style_box CATPPUCCIN_MAUVE "Description:" \
       "  Profile CBC startup timing and print troubleshooting hints."
 
     cbc_style_box CATPPUCCIN_BLUE "Usage:" \
-      "  cbc doctor startup [-h]"
+      "  cbc doctor startup [--json] [-h]"
 
     cbc_style_box CATPPUCCIN_TEAL "Options:" \
-      "  -h    Display this help message"
+      "  -h      Display this help message" \
+      "  --json  Emit machine-readable JSON"
 
     cbc_style_box CATPPUCCIN_PEACH "Example:" \
       "  cbc doctor startup"
   }
 
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      show_help=true
-      ;;
-    \?)
-      cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
-      return 1
-      ;;
-    esac
-  done
-
-  shift $((OPTIND - 1))
+  cbc_doctor_parse_args false "$@" || return 1
 
   if [ "$show_help" = true ]; then
     usage
     return 0
-  fi
-
-  if [ $# -gt 0 ]; then
-    cbc_style_message CATPPUCCIN_RED "Error: Unexpected arguments: $*"
-    return 1
   fi
 
   local source_path="${BASH_SOURCE[0]}"
@@ -3608,6 +3757,112 @@ cbc_doctor_startup() {
     hint_lines+=("No high-impact CBC startup issues detected.")
   fi
 
+  if [ "$json_output" = true ]; then
+    local -a report_sections=() report_ids=() report_labels=()
+    local -a report_statuses=() report_details=()
+    local -a report_data=() report_advice=()
+    local -a section_keys=(shell configuration modules theme banner)
+    local -A section_titles=(
+      [shell]="Shell sourcing" [configuration]="Configuration"
+      [modules]="Modules" [theme]="Theme" [banner]="Banner"
+    )
+    local -A step_labels=(
+      [fresh_source]="Fresh shell source"
+      [fresh_interactive]="Fresh interactive shell source"
+      [config]="Config load" [module]="Module source"
+      [theme_cold]="Cold palette refresh"
+      [theme_cached]="Cached palette refresh"
+      [banner]="Startup banner"
+    )
+    local step duration step_status step_result section advice settings_json
+    local -a fields=()
+    local config_present=false
+    [ ! -f "$CBC_CONFIG_FILE" ] || config_present=true
+    settings_json="$(cbc_doctor_json_object 12 \
+      CBC_SHOW_BANNER raw "$CBC_SHOW_BANNER" \
+      CBC_BANNER_MODE string "$CBC_BANNER_MODE" \
+      CBC_USE_GUM string "$CBC_USE_GUM" \
+      CBC_GUM_AVAILABLE raw "$CBC_GUM_AVAILABLE" \
+      CBC_GUM_ACTIVE raw "$CBC_GUM_ACTIVE" \
+      CBC_SOURCE_BASH_ALIASES raw "$CBC_SOURCE_BASH_ALIASES")"
+    for step in fresh_source fresh_interactive config module \
+      theme_cold theme_cached banner; do
+      duration="${step}_us"
+      step_status="${step}_status"
+      step_result=OK
+      [ "${!step_status}" -eq 0 ] || step_result=FAIL
+      fields=(duration_us raw "${!duration}" \
+        exit_status raw "${!step_status}")
+      advice=""
+      case "$step" in
+      fresh_*)
+        section=shell
+        if [ "$step_result" = FAIL ] ||
+          { [ "$step" = fresh_interactive ] &&
+            [ "$fresh_interactive_us" -gt 200000 ]; }; then
+          advice="Inspect shell configuration and CBC source errors."
+        fi
+        ;;
+      config)
+        section=configuration
+        fields+=(path string "$CBC_CONFIG_FILE" present raw "$config_present"
+          settings raw "$settings_json")
+        if [ "$step_result" = FAIL ]; then
+          advice="Review CBC configuration with 'cbc config edit'."
+        elif [ "$CBC_SOURCE_BASH_ALIASES" = true ] &&
+          [ ! -f "$HOME/.bash_aliases" ]; then
+          advice="Create ~/.bash_aliases or disable CBC_SOURCE_BASH_ALIASES."
+        fi
+        ;;
+      module)
+        section=modules
+        fields+=(root string "$CBC_MODULE_ROOT" installed raw "$module_count"
+          entrypoints raw "$entrypoint_count")
+        if [ "$step_result" = FAIL ]; then
+          advice="Inspect module entrypoints for source errors."
+        elif [ "$module_us" -gt 50000 ] || [ "$entrypoint_count" -gt 10 ]; then
+          advice="Consider disabling or lazy-loading expensive modules."
+        fi
+        ;;
+      theme_*)
+        section=theme
+        fields+=(palette_file string "$CBC_OMARCHY_COLORS_FILE")
+        if [ "$step_result" = FAIL ]; then
+          advice="Check the configured palette file or use terminal colors."
+        fi
+        ;;
+      banner)
+        section=banner
+        fields+=(enabled raw "$CBC_SHOW_BANNER"
+          mode string "$CBC_BANNER_MODE")
+        if [ "$step_result" = FAIL ]; then
+          advice="Check banner rendering and Gum availability."
+        elif [ "$banner_us" -gt 50000 ]; then
+          advice="Consider a plain or disabled startup banner."
+        elif [ "$CBC_SHOW_BANNER" = true ] && [ "$CBC_GUM_ACTIVE" = true ] &&
+          [ -n "$CBC_OMARCHY_COLORS_FILE" ]; then
+          advice="Clear CBC_OMARCHY_COLORS_FILE for the built-in ANSI banner."
+        fi
+        ;;
+      esac
+      if [ "$step" = banner ] && [ "$CBC_SHOW_BANNER" != true ]; then
+        step_result=skipped
+        fields=(duration_us raw null exit_status raw null
+          enabled raw false mode string "$CBC_BANNER_MODE")
+      fi
+      local detail="Elapsed time for ${step_labels[$step]}."
+      [ "$step_result" != skipped ] || detail="Disabled by CBC_SHOW_BANNER."
+      cbc_doctor_record "$section" "startup:$step" "${step_labels[$step]}" \
+        "$step_result" "$detail" "$advice" "${fields[@]}"
+    done
+    cbc_doctor_render_report 'cbc doctor startup' \
+      "$(cbc_doctor_json_object 2 version string "$CBC_VERSION" \
+        script string "$source_path" config_file string "$CBC_CONFIG_FILE" \
+        module_root string "$CBC_MODULE_ROOT" \
+        package_manifest string "$CBC_PACKAGE_MANIFEST")" reporting-only
+    return
+  fi
+
   cbc_style_box CATPPUCCIN_MAUVE "Startup Summary" "${summary_lines[@]}"
   cbc_style_box CATPPUCCIN_BLUE "Measured Steps" "${timing_lines[@]}"
   cbc_style_box CATPPUCCIN_TEAL "Startup Settings" "${settings_lines[@]}"
@@ -3615,8 +3870,8 @@ cbc_doctor_startup() {
 }
 
 cbc_doctor() {
-  OPTIND=1
   local show_help=false
+  local json_output=false doctor_subcommand=""
   local has_gum=true
 
   if ! command -v gum >/dev/null 2>&1; then
@@ -3629,11 +3884,12 @@ cbc_doctor() {
         "  Run diagnostics for CBC configuration, dependencies, and updates."
 
       cbc_style_box CATPPUCCIN_BLUE "Usage:" \
-        "  cbc doctor [-h]" \
-        "  cbc doctor startup [-h]"
+        "  cbc doctor [--json] [-h]" \
+        "  cbc doctor startup [--json] [-h]"
 
       cbc_style_box CATPPUCCIN_TEAL "Options:" \
-        "  -h    Display this help message"
+        "  -h      Display this help message" \
+        "  --json  Emit machine-readable JSON"
 
       cbc_style_box CATPPUCCIN_SAPPHIRE "Subcommands:" \
         "  startup  Profile CBC startup timing"
@@ -3645,49 +3901,27 @@ cbc_doctor() {
     fi
 
     printf '%s\n' "Description: Run diagnostics for CBC configuration, dependencies, and updates."
-    printf '%s\n' "Usage: cbc doctor [-h]"
-    printf '%s\n' "Usage: cbc doctor startup [-h]"
+    printf '%s\n' "Usage: cbc doctor [--json] [-h]"
+    printf '%s\n' "Usage: cbc doctor startup [--json] [-h]"
     printf '%s\n' "Options: -h  Display this help message"
+    printf '%s\n' "         --json  Emit machine-readable JSON"
     printf '%s\n' "Subcommands: startup  Profile CBC startup timing"
     printf '%s\n' "Examples: cbc doctor; cbc doctor startup"
   }
 
-  while getopts ":h" opt; do
-    case $opt in
-    h)
-      show_help=true
-      ;;
-    \?)
-      if [ "$has_gum" = true ]; then
-        cbc_style_message CATPPUCCIN_RED "Invalid option: -$OPTARG"
-      else
-        printf '%s\n' "Invalid option: -$OPTARG"
-      fi
-      return 1
-      ;;
-    esac
-  done
+  cbc_doctor_parse_args true "$@" || return 1
 
-  shift $((OPTIND - 1))
+  if [ "$doctor_subcommand" = startup ]; then
+    local -a startup_args=()
+    [ "$json_output" = true ] && startup_args+=(--json)
+    [ "$show_help" = true ] && startup_args+=(-h)
+    cbc_doctor_startup "${startup_args[@]}"
+    return
+  fi
 
   if [ "$show_help" = true ]; then
     usage
     return 0
-  fi
-
-  if [ "${1:-}" = "startup" ]; then
-    shift
-    cbc_doctor_startup "$@"
-    return
-  fi
-
-  if [ $# -gt 0 ]; then
-    if [ "$has_gum" = true ]; then
-      cbc_style_message CATPPUCCIN_RED "Error: Unexpected arguments: $*"
-    else
-      printf '%s\n' "Error: Unexpected arguments: $*"
-    fi
-    return 1
   fi
 
   local ok=0
@@ -3699,6 +3933,13 @@ cbc_doctor() {
   local -a file_lines=()
   local -a module_lines=()
   local -a network_lines=()
+  local -a report_sections=() report_ids=() report_labels=()
+  local -a report_statuses=() report_details=() report_data=() report_advice=()
+  local -a section_keys=(dependencies files modules network)
+  local -A section_titles=(
+    [dependencies]="Dependencies" [files]="Files and configuration"
+    [modules]="Modules" [network]="Network access"
+  )
 
   cbc_doctor_pretty_path() {
     local path="$1"
@@ -3717,6 +3958,21 @@ cbc_doctor() {
     local detail="$3"
     local -n out="$4"
     local line=""
+
+    if [ "$json_output" = true ]; then
+      local category="${4%_lines}"
+      local section="$category"
+      case "$category" in
+      dependency) section=dependencies ;;
+      file) section=files ;;
+      module) section=modules ;;
+      esac
+      local advice="${5:-}"
+      [ "$status" = OK ] || advice="${advice:-Review $label: $detail.}"
+      local -a extra_fields=("${@:6}")
+      cbc_doctor_record "$section" "$category:$label" "$label" "$status" \
+        "$detail" "$advice" "${extra_fields[@]}"
+    fi
 
     case "$status" in
     OK)
@@ -3764,20 +4020,31 @@ cbc_doctor() {
     local required="$3"
     local out_name="$4"
     local resolved=""
+    local alternative="${5:-}"
 
     resolved="$(command -v "$cmd" 2>/dev/null || true)"
+    if [ -z "$resolved" ] && [ -n "$alternative" ]; then
+      cmd="$alternative"
+      resolved="$(command -v "$cmd" 2>/dev/null || true)"
+    fi
+    local -a fields=(command string "$cmd" required raw "$required")
 
     if [ -n "$resolved" ]; then
-      cbc_doctor_add_result "OK" "$label" "$resolved" "$out_name"
+      cbc_doctor_add_result "OK" "$label" "$resolved" "$out_name" "" \
+        "${fields[@]}" available raw true resolved_path string "$resolved"
       return
     fi
 
+    fields+=(available raw false resolved_path raw null)
+    local advice="Install $label and ensure it is available on PATH."
     if [ "$required" = true ]; then
-      cbc_doctor_add_result "FAIL" "$label" "missing" "$out_name"
+      cbc_doctor_add_result "FAIL" "$label" "missing" "$out_name" \
+        "$advice" "${fields[@]}"
       return
     fi
 
-    cbc_doctor_add_result "WARN" "$label" "missing (optional)" "$out_name"
+    cbc_doctor_add_result "WARN" "$label" "missing (optional)" "$out_name" \
+      "Install $label if you want its optional functionality." "${fields[@]}"
   }
 
   cbc_doctor_check_file() {
@@ -3786,20 +4053,26 @@ cbc_doctor() {
     local required="$3"
     local out_name="$4"
     local display
+    local -a fields=(path string "$path" kind string file
+      required raw "$required")
 
     display="$(cbc_doctor_pretty_path "$path")"
 
     if [ -f "$path" ]; then
-      cbc_doctor_add_result "OK" "$label" "$display" "$out_name"
+      cbc_doctor_add_result "OK" "$label" "$display" "$out_name" "" \
+        "${fields[@]}" present raw true
       return
     fi
 
     if [ "$required" = true ]; then
-      cbc_doctor_add_result "FAIL" "$label" "missing: $display" "$out_name"
+      cbc_doctor_add_result "FAIL" "$label" "missing: $display" "$out_name" \
+        "Restore the required file at $path." "${fields[@]}" present raw false
       return
     fi
 
-    cbc_doctor_add_result "WARN" "$label" "missing: $display" "$out_name"
+    cbc_doctor_add_result "WARN" "$label" "missing: $display" "$out_name" \
+      "Create $path if you use this optional configuration." \
+      "${fields[@]}" present raw false
   }
 
   cbc_doctor_check_dir() {
@@ -3808,20 +4081,27 @@ cbc_doctor() {
     local required="$3"
     local out_name="$4"
     local display
+    local -a fields=(path string "$path" kind string directory
+      required raw "$required")
 
     display="$(cbc_doctor_pretty_path "$path")"
 
     if [ -d "$path" ]; then
-      cbc_doctor_add_result "OK" "$label" "$display" "$out_name"
+      cbc_doctor_add_result "OK" "$label" "$display" "$out_name" "" \
+        "${fields[@]}" present raw true
       return
     fi
 
     if [ "$required" = true ]; then
-      cbc_doctor_add_result "FAIL" "$label" "missing: $display" "$out_name"
+      cbc_doctor_add_result "FAIL" "$label" "missing: $display" "$out_name" \
+        "Restore the required directory at $path." \
+        "${fields[@]}" present raw false
       return
     fi
 
-    cbc_doctor_add_result "WARN" "$label" "missing: $display" "$out_name"
+    cbc_doctor_add_result "WARN" "$label" "missing: $display" "$out_name" \
+      "Create $path if you use this optional configuration." \
+      "${fields[@]}" present raw false
   }
 
   cbc_doctor_check_tool "bash" "bash" true dependency_lines
@@ -3843,13 +4123,7 @@ cbc_doctor() {
   fi
   cbc_doctor_check_tool "fzf" "fzf" true dependency_lines
 
-  if command -v bat >/dev/null 2>&1; then
-    cbc_doctor_add_result "OK" "bat/batcat" "$(command -v bat)" dependency_lines
-  elif command -v batcat >/dev/null 2>&1; then
-    cbc_doctor_add_result "OK" "bat/batcat" "$(command -v batcat)" dependency_lines
-  else
-    cbc_doctor_add_result "FAIL" "bat/batcat" "missing" dependency_lines
-  fi
+  cbc_doctor_check_tool bat "bat/batcat" true dependency_lines batcat
 
   cbc_doctor_check_tool "eza" "eza" true dependency_lines
   cbc_doctor_check_tool "imv-x11" "imv-x11" true dependency_lines
@@ -3862,33 +4136,26 @@ cbc_doctor() {
   cbc_doctor_check_file "Config file" "$CBC_CONFIG_FILE" false file_lines
 
   if [ "$CBC_SOURCE_BASH_ALIASES" = true ]; then
-    local bash_aliases="$HOME/.bash_aliases"
-    local bash_aliases_display
-    bash_aliases_display="$(cbc_doctor_pretty_path "$bash_aliases")"
-
-    if [ -f "$bash_aliases" ]; then
-      cbc_doctor_add_result "OK" "Bash aliases" "$bash_aliases_display" file_lines
-    else
-      cbc_doctor_add_result "WARN" "Bash aliases" "missing: $bash_aliases_display" file_lines
-    fi
+    cbc_doctor_check_file "Bash aliases" "$HOME/.bash_aliases" false file_lines
   else
-    cbc_doctor_add_result "OK" "Bash aliases" "disabled by config" file_lines
+    cbc_doctor_add_result "OK" "Bash aliases" "disabled by config" file_lines \
+      "" path string "$HOME/.bash_aliases" kind string file \
+      required raw false enabled raw false present raw null
   fi
 
-  local module_root_display
-  module_root_display="$(cbc_doctor_pretty_path "$CBC_MODULE_ROOT")"
-  if [ -d "$CBC_MODULE_ROOT" ]; then
-    cbc_doctor_add_result "OK" "Module root" "$module_root_display" module_lines
-  else
-    cbc_doctor_add_result "FAIL" "Module root" "missing: $module_root_display" module_lines
-  fi
+  cbc_doctor_check_dir "Module root" "$CBC_MODULE_ROOT" true module_lines
 
   local manifest_display
   manifest_display="$(cbc_doctor_pretty_path "$CBC_PACKAGE_MANIFEST")"
   if [ -f "$CBC_PACKAGE_MANIFEST" ]; then
-    cbc_doctor_add_result "OK" "Packages manifest" "$manifest_display" module_lines
+    cbc_doctor_add_result "OK" "Packages manifest" "$manifest_display" \
+      module_lines "" path string "$CBC_PACKAGE_MANIFEST" \
+      kind string file required raw false present raw true
   else
-    cbc_doctor_add_result "OK" "Packages manifest" "not found (no modules tracked)" module_lines
+    cbc_doctor_add_result "OK" "Packages manifest" \
+      "not found (no modules tracked)" module_lines "" \
+      path string "$CBC_PACKAGE_MANIFEST" kind string file \
+      required raw false present raw false
   fi
 
   cbc_pkg_read_manifest
@@ -3903,18 +4170,27 @@ cbc_doctor() {
     manifest_modules+=("$module_name")
 
     local module_dir="$CBC_MODULE_ROOT/$module_name"
+    local -a module_fields=(name string "$module_name" source string "$use"
+      path string "$module_dir" tracked raw true
+      entrypoint string "$module_dir/$CBC_MODULE_ENTRYPOINT")
     if [ ! -d "$module_dir" ]; then
       cbc_doctor_add_result "WARN" "Module $module_name" \
-        "missing; run 'cbc pkg load'" module_lines
+        "missing; run 'cbc pkg load'" module_lines \
+        "Run 'cbc pkg load' to install missing manifest modules." \
+        "${module_fields[@]}" installed raw false entrypoint_present raw false
       continue
     fi
 
     local entrypoint="$module_dir/$CBC_MODULE_ENTRYPOINT"
     if [ -f "$entrypoint" ]; then
-      cbc_doctor_add_result "OK" "Module $module_name" "entrypoint ok" module_lines
+      cbc_doctor_add_result "OK" "Module $module_name" "entrypoint ok" \
+        module_lines "" "${module_fields[@]}" installed raw true \
+        entrypoint_present raw true
     else
       cbc_doctor_add_result "WARN" "Module $module_name" \
-        "missing $CBC_MODULE_ENTRYPOINT" module_lines
+        "missing $CBC_MODULE_ENTRYPOINT" module_lines \
+        "Restore the module entrypoint at $entrypoint." \
+        "${module_fields[@]}" installed raw true entrypoint_present raw false
     fi
   done
 
@@ -3925,30 +4201,42 @@ cbc_doctor() {
     local_modules=true
 
     local module_name
-    module_name="$(basename "$module_dir")"
+    module_name="${module_dir##*/}"
 
     if [[ " ${manifest_modules[*]} " == *" $module_name "* ]]; then
       continue
     fi
 
+    local entrypoint_present=false
+    [ ! -f "$module_dir/$CBC_MODULE_ENTRYPOINT" ] || entrypoint_present=true
     cbc_doctor_add_result "WARN" "Module $module_name" \
-      "not tracked in packages.toml" module_lines
+      "not tracked in packages.toml" module_lines \
+      "Record the module with 'cbc pkg install' if it should be managed." \
+      name string "$module_name" source raw null path string "$module_dir" \
+      tracked raw false installed raw true \
+      entrypoint string "$module_dir/$CBC_MODULE_ENTRYPOINT" \
+      entrypoint_present raw "$entrypoint_present"
   done
   shopt -u nullglob
 
   if [ ${#CBC_MANIFEST_USES[@]} -eq 0 ] && [ "$local_modules" = false ]; then
     if [ -d "$CBC_MODULE_ROOT" ]; then
-      cbc_doctor_add_result "OK" "Modules" "none installed" module_lines
+      cbc_doctor_add_result "OK" "Modules" "none installed" module_lines "" \
+        installed raw 0 tracked raw 0
     fi
   fi
 
   local github_api_url="https://api.github.com/repos/iop098321qwe/custom_bash_commands/releases/latest"
+  local -a api_fields=(endpoint string "$github_api_url" transport string http)
   if command -v curl >/dev/null 2>&1; then
     local response status body
     response=$(curl -sSL --connect-timeout 5 --max-time 10 -w "\n%{http_code}" \
       "$github_api_url" 2>/dev/null || true)
-    status=$(printf '%s\n' "$response" | tail -n1)
-    body=$(printf '%s\n' "$response" | sed '$d')
+    status="${response##*$'\n'}"
+    body="${response%$'\n'*}"
+    local http_status=null
+    [[ "$status" =~ ^[1-9][0-9][0-9]$ ]] && http_status="$status"
+    api_fields+=(attempted raw true http_status raw "$http_status")
 
     if [ "$status" = "200" ]; then
       local latest_tag_raw=""
@@ -3957,9 +4245,13 @@ cbc_doctor() {
       latest_tag="$(cbc_json_unescape "$latest_tag_raw")"
 
       if [ -n "$latest_tag" ]; then
-        cbc_doctor_add_result "OK" "GitHub API" "latest release $latest_tag" network_lines
+        cbc_doctor_add_result "OK" "GitHub API" "latest release $latest_tag" \
+          network_lines "" "${api_fields[@]}" release_tag string "$latest_tag"
       else
-        cbc_doctor_add_result "WARN" "GitHub API" "reachable; release tag missing" network_lines
+        cbc_doctor_add_result "WARN" "GitHub API" \
+          "reachable; release tag missing" network_lines \
+          "Inspect the latest-release API response for a release tag." \
+          "${api_fields[@]}" release_tag raw null
       fi
     else
       local error_message=""
@@ -3976,16 +4268,25 @@ cbc_doctor() {
 
       if [ -n "$error_message" ]; then
         cbc_doctor_add_result "FAIL" "GitHub API" \
-          "http $status_label: $error_message" network_lines
+          "http $status_label: $error_message" network_lines \
+          "Check GitHub API access and the reported service error." \
+          "${api_fields[@]}" release_tag raw null \
+          error string "$error_message"
       else
-        cbc_doctor_add_result "FAIL" "GitHub API" "http $status_label" network_lines
+        cbc_doctor_add_result "FAIL" "GitHub API" "http $status_label" \
+          network_lines "Check connectivity to the GitHub API endpoint." \
+          "${api_fields[@]}" release_tag raw null error raw null
       fi
     fi
   else
-    cbc_doctor_add_result "FAIL" "GitHub API" "curl missing" network_lines
+    cbc_doctor_add_result "FAIL" "GitHub API" "curl missing" network_lines \
+      "Install curl and rerun diagnostics to test GitHub API access." \
+      "${api_fields[@]}" attempted raw false http_status raw null \
+      release_tag raw null reason string dependency_missing
   fi
 
   local github_repo_url="https://github.com/iop098321qwe/custom_bash_commands.git"
+  local -a git_fields=(endpoint string "$github_repo_url" transport string git)
   if command -v git >/dev/null 2>&1; then
     local git_out=""
     local git_hash=""
@@ -3994,12 +4295,18 @@ cbc_doctor() {
     git_hash="${git_out%%[[:space:]]*}"
 
     if [ -n "$git_hash" ]; then
-      cbc_doctor_add_result "OK" "GitHub git" "HEAD $git_hash" network_lines
+      cbc_doctor_add_result "OK" "GitHub git" "HEAD $git_hash" network_lines \
+        "" "${git_fields[@]}" attempted raw true head string "$git_hash"
     else
-      cbc_doctor_add_result "FAIL" "GitHub git" "ls-remote failed" network_lines
+      cbc_doctor_add_result "FAIL" "GitHub git" "ls-remote failed" \
+        network_lines "Check GitHub Git access and rerun diagnostics." \
+        "${git_fields[@]}" attempted raw true head raw null
     fi
   else
-    cbc_doctor_add_result "FAIL" "GitHub git" "git missing" network_lines
+    cbc_doctor_add_result "FAIL" "GitHub git" "git missing" network_lines \
+      "Install git and rerun diagnostics to test repository access." \
+      "${git_fields[@]}" attempted raw false head raw null \
+      reason string dependency_missing
   fi
 
   local overall="OK"
@@ -4014,6 +4321,15 @@ cbc_doctor() {
   local config_display
   source_display="$(cbc_doctor_pretty_path "$source_path")"
   config_display="$(cbc_doctor_pretty_path "$CBC_CONFIG_FILE")"
+
+  if [ "$json_output" = true ]; then
+    cbc_doctor_render_report 'cbc doctor' \
+      "$(cbc_doctor_json_object 2 version string "$CBC_VERSION" \
+        script string "$source_path" config_file string "$CBC_CONFIG_FILE" \
+        module_root string "$CBC_MODULE_ROOT" \
+        package_manifest string "$CBC_PACKAGE_MANIFEST")" diagnostic
+    return
+  fi
 
   summary_lines=(
     "Overall: $overall"
