@@ -34,7 +34,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
   available (scripts call these directly).
 - Requires Bash (`custom_bash_commands.sh` and `cbc_aliases.sh` use bash).
 - Requires Python 3.10 or newer for Zensical builds, startup benchmarks,
-  and PTY banner tests. Shell runtime has no Python startup dependency.
+  JSON diagnostics tests, and PTY banner tests. Shell runtime has no Python
+  startup dependency.
 - Zensical is pinned in `requirements-docs.txt` for documentation builds.
 - Release tooling needs Node.js and npm/npx. Verified with
   `commit-and-tag-version` 13.3.0, which requires Node.js 22 or newer.
@@ -90,6 +91,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `requirements-docs.txt`: Pinned Zensical dependency list.
 - `tests/benchmark_startup.py`: Fresh-shell and first-use timing harness.
 - `tests/test_banner.py`: Interactive PTY banner and color-control checks.
+- `tests/test_doctor.py`: Sectioned JSON diagnostics and startup report checks.
 - `tests/test_lazy_loading.sh`: Lazy module lifecycle and recovery checks.
 - `tests/test_pkg_update.sh`: Local Git upstream and lazy update checks.
 - `tests/test_startup.sh`: Config, module, banner, and startup fork checks.
@@ -118,6 +120,12 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - Startup config parsing and module discovery avoid subprocesses. The
   terminal-palette banner uses Bash ANSI output and honors `NO_COLOR`,
   `CLICOLOR`, and `CLICOLOR_FORCE`; RGB overrides retain Gum rendering.
+- Doctor commands accept `--json` for a single schema-versioned document.
+  Bash built-ins escape JSON strings without a Python or jq dependency.
+  Schema version 2 groups checks into sections with typed data, consistent
+  global/section summaries, context, and check-linked recommendations.
+  Diagnostic failures return 1; startup profiling reports step failures
+  in its document and retains its reporting-only exit status of 0.
 - `cbc_lazy_register <implementation> <function...>` lets module entrypoints
   defer definition-only implementations. Keep startup effects eager and
   register every top-level function. The loader preserves alias parsing,
@@ -168,6 +176,8 @@ cd ~/Documents/github_repositories/custom_bash_commands
   access.
 - `cbc doctor startup`: Profile CBC startup timing and print troubleshooting
   hints.
+- `cbc doctor --json` or `cbc doctor startup --json`: Emit structured
+  diagnostic checks or numeric microsecond timings without styling.
 - `cbc update check`: Query the latest GitHub release and report the current
   and latest versions plus the release link.
 - `cbc update`: Pull the latest scripts via sparse checkout and reload them.
@@ -200,6 +210,10 @@ cd ~/Documents/github_repositories/custom_bash_commands
 
 ## Testing
 
+- Run `python3 tests/test_doctor.py` for JSON parsing, escaping, check totals,
+  typed section data, module states, network failures, unavailable facts,
+  startup step statuses, advice links, repeated reports, argument errors,
+  and readable-output compatibility using isolated homes and network mocks.
 - Run `bash tests/test_theme_reload.sh` from the repository root.
 - Run `bash tests/test_startup.sh` for config compatibility, module ordering,
   shell-option preservation, process-free startup, banner fallback, and the
