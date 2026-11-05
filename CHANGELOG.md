@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [4.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v4.0.4...v4.1.0) (2026-11-05)
+
+### Features
+
+* **doctor:** add JSON diagnostics and startup profiling output ([7bfbcde](https://github.com/iop098321qwe/custom_bash_commands/commit/7bfbcde6925c951a4f24b270dbb968b1ac532b0f))
+
 ## [4.0.4](https://github.com/iop098321qwe/custom_bash_commands/compare/v4.0.3...v4.0.4) (2026-11-03)
 
 ### Bug Fixes
