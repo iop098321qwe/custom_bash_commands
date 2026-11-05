@@ -1,3 +1,3 @@
 (B) 2026-06-16 rebuild zensical docs +docs-site @docs
 (B) create modules page +docs-site @docs
-(A) 2026-11-04 change `cbc doctor` to output json so that it can more easily be parsed by machines. #feat @feat
+(A) 2026-11-05 include a date in the packages.toml manifest for cbc modules for easier human understanding #feat @feat
