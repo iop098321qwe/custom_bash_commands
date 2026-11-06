@@ -1075,12 +1075,16 @@ cbc_pkg_read_manifest() {
   CBC_MANIFEST_USES=()
   CBC_MANIFEST_REVS=()
   CBC_MANIFEST_HASHES=()
+  CBC_MANIFEST_COMMIT_DATES=()
+  CBC_MANIFEST_INSTALLED_AT=()
 
   [ -f "$CBC_PACKAGE_MANIFEST" ] || return 0
 
   local current_use=""
   local current_rev=""
   local current_hash=""
+  local current_commit_date=""
+  local current_installed_at=""
 
   while IFS= read -r line || [ -n "$line" ]; do
     line="${line%%#*}"
@@ -1095,11 +1099,15 @@ cbc_pkg_read_manifest() {
         CBC_MANIFEST_USES+=("$current_use")
         CBC_MANIFEST_REVS+=("$current_rev")
         CBC_MANIFEST_HASHES+=("$current_hash")
+        CBC_MANIFEST_COMMIT_DATES+=("$current_commit_date")
+        CBC_MANIFEST_INSTALLED_AT+=("$current_installed_at")
       fi
 
       current_use=""
       current_rev=""
       current_hash=""
+      current_commit_date=""
+      current_installed_at=""
       continue
     fi
 
@@ -1121,6 +1129,12 @@ cbc_pkg_read_manifest() {
     hash)
       current_hash="$value"
       ;;
+    commit_date)
+      current_commit_date="$value"
+      ;;
+    installed_at)
+      current_installed_at="$value"
+      ;;
     esac
   done <"$CBC_PACKAGE_MANIFEST"
 
@@ -1128,6 +1142,8 @@ cbc_pkg_read_manifest() {
     CBC_MANIFEST_USES+=("$current_use")
     CBC_MANIFEST_REVS+=("$current_rev")
     CBC_MANIFEST_HASHES+=("$current_hash")
+    CBC_MANIFEST_COMMIT_DATES+=("$current_commit_date")
+    CBC_MANIFEST_INSTALLED_AT+=("$current_installed_at")
   fi
 }
 
@@ -1146,6 +1162,12 @@ cbc_pkg_write_manifest() {
       echo "use = \"${use}\""
       echo "rev = \"${rev}\""
       echo "hash = \"${hash}\""
+      if [ -n "${CBC_MANIFEST_COMMIT_DATES[$idx]:-}" ]; then
+        echo "commit_date = \"${CBC_MANIFEST_COMMIT_DATES[$idx]}\""
+      fi
+      if [ -n "${CBC_MANIFEST_INSTALLED_AT[$idx]:-}" ]; then
+        echo "installed_at = \"${CBC_MANIFEST_INSTALLED_AT[$idx]}\""
+      fi
       echo ""
     done
   } >"$CBC_PACKAGE_MANIFEST"
@@ -1155,12 +1177,28 @@ cbc_pkg_record_manifest() {
   local use="$1"
   local rev="$2"
   local hash="$3"
+  local module_dir="${4:-}"
+  local installed="${5:-false}"
+  local commit_date=""
+  if [ -n "$module_dir" ] && [ -n "$hash" ]; then
+    commit_date="$(git -C "$module_dir" show -s --format=%cI \
+      "$hash" 2>/dev/null)" || commit_date=""
+  fi
 
   local updated=false
   for idx in "${!CBC_MANIFEST_USES[@]}"; do
     if [ "${CBC_MANIFEST_USES[$idx]}" = "$use" ]; then
+      if [ "${CBC_MANIFEST_HASHES[$idx]}" != "$hash" ]; then
+        CBC_MANIFEST_COMMIT_DATES[$idx]=""
+      fi
       CBC_MANIFEST_REVS[$idx]="$rev"
       CBC_MANIFEST_HASHES[$idx]="$hash"
+      if [ -n "$commit_date" ]; then
+        CBC_MANIFEST_COMMIT_DATES[$idx]="$commit_date"
+      fi
+      if [ "$installed" = true ]; then
+        CBC_MANIFEST_INSTALLED_AT[$idx]="$(date -u +%Y-%m-%dT%H:%M:%S+00:00)"
+      fi
       updated=true
       break
     fi
@@ -1170,6 +1208,12 @@ cbc_pkg_record_manifest() {
     CBC_MANIFEST_USES+=("$use")
     CBC_MANIFEST_REVS+=("$rev")
     CBC_MANIFEST_HASHES+=("$hash")
+    CBC_MANIFEST_COMMIT_DATES+=("$commit_date")
+    local installed_at=""
+    if [ "$installed" = true ]; then
+      installed_at="$(date -u +%Y-%m-%dT%H:%M:%S+00:00)"
+    fi
+    CBC_MANIFEST_INSTALLED_AT+=("$installed_at")
   fi
 }
 
@@ -1303,6 +1347,7 @@ cbc_pkg_align_with_manifest() {
     cbc_pkg_resolve_source "$use" source module_name
     local module_dir="$CBC_MODULE_ROOT/$module_name"
 
+    local installed=false
     if [ ! -d "$module_dir" ]; then
       if [ -d "$source" ]; then
         if cbc_spinner "Copying module $module_name" \
@@ -1329,14 +1374,20 @@ cbc_pkg_align_with_manifest() {
           "Cannot install '$module_name'; git is unavailable."
         continue
       fi
+      installed=true
     fi
 
     local current_rev=""
     local current_hash=""
     cbc_pkg_capture_state "$module_dir" current_rev current_hash
 
-    if [ "$current_rev" != "$manifest_rev" ] || [ "$current_hash" != "$manifest_hash" ]; then
-      cbc_pkg_record_manifest "$use" "$current_rev" "$current_hash"
+    if [ "$current_rev" != "$manifest_rev" ] ||
+      [ "$current_hash" != "$manifest_hash" ] ||
+      [ "$installed" = true ] ||
+      { [ -n "$current_hash" ] &&
+        [ -z "${CBC_MANIFEST_COMMIT_DATES[$idx]:-}" ]; }; then
+      cbc_pkg_record_manifest "$use" "$current_rev" "$current_hash" \
+        "$module_dir" "$installed"
       manifest_changed=true
     fi
   done
@@ -1494,6 +1545,8 @@ cbc_pkg_uninstall() {
   local new_uses=()
   local new_revs=()
   local new_hashes=()
+  local new_commit_dates=()
+  local new_installed_at=()
   local removed=false
 
   for idx in "${!CBC_MANIFEST_USES[@]}"; do
@@ -1509,12 +1562,16 @@ cbc_pkg_uninstall() {
     new_uses+=("$current_use")
     new_revs+=("${CBC_MANIFEST_REVS[$idx]}")
     new_hashes+=("${CBC_MANIFEST_HASHES[$idx]}")
+    new_commit_dates+=("${CBC_MANIFEST_COMMIT_DATES[$idx]}")
+    new_installed_at+=("${CBC_MANIFEST_INSTALLED_AT[$idx]}")
   done
 
   if [ "$removed" = true ]; then
     CBC_MANIFEST_USES=("${new_uses[@]}")
     CBC_MANIFEST_REVS=("${new_revs[@]}")
     CBC_MANIFEST_HASHES=("${new_hashes[@]}")
+    CBC_MANIFEST_COMMIT_DATES=("${new_commit_dates[@]}")
+    CBC_MANIFEST_INSTALLED_AT=("${new_installed_at[@]}")
     cbc_pkg_write_manifest
   fi
 
@@ -1912,8 +1969,10 @@ cbc_pkg_update() {
     if [ "$remote_head" = "$current_hash" ]; then
       local details="Already current"
 
-      if [ "$manifest_hash" != "$current_hash" ]; then
-        cbc_pkg_record_manifest "$use" "$current_rev" "$current_hash"
+      if [ "$manifest_hash" != "$current_hash" ] ||
+        [ -z "${CBC_MANIFEST_COMMIT_DATES[$idx]:-}" ]; then
+        cbc_pkg_record_manifest "$use" "$current_rev" "$current_hash" \
+          "$module_dir"
         manifest_changed=true
         details="Already current; manifest refreshed"
       fi
@@ -1946,7 +2005,8 @@ cbc_pkg_update() {
       local new_tag="N/A"
       cbc_pkg_capture_state "$module_dir" new_rev new_hash
       new_tag="$(cbc_pkg_installed_tag "$module_dir" "$new_hash")"
-      cbc_pkg_record_manifest "$use" "$new_rev" "$new_hash"
+      cbc_pkg_record_manifest "$use" "$new_rev" "$new_hash" \
+        "$module_dir" true
       manifest_changed=true
 
       update_rows+=("$(cbc_table_row \

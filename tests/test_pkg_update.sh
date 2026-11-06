@@ -23,6 +23,7 @@ for jobs in 1 4; do
   CBC_MODULE_ROOT="$HOME/modules-$jobs"
   mkdir -p "$CBC_MODULE_ROOT"
   CBC_MANIFEST_USES=() CBC_MANIFEST_REVS=() CBC_MANIFEST_HASHES=()
+  CBC_MANIFEST_COMMIT_DATES=() CBC_MANIFEST_INSTALLED_AT=()
   for name in projectmod smartsort; do
     default=main
     [[ "$name" == smartsort ]] && default=develop
@@ -53,6 +54,9 @@ for jobs in 1 4; do
       [[ "$(<"$HOME/old-output")" == old ]] || fail 'Initial load failed.'
     fi
   done
+  CBC_MANIFEST_INSTALLED_AT=(
+    '2001-01-01T00:00:00+00:00' '2001-01-01T00:00:00+00:00'
+  )
   cbc_pkg_write_manifest
   cbc pkg update --jobs "$jobs" >"$HOME/update-output"
   [[ "$(<"$HOME/update-output")" != *'No upstream detected'* ]] ||
@@ -65,6 +69,13 @@ for jobs in 1 4; do
     [[ "$(git -C "$module" rev-parse HEAD)" == "$expected" &&
       "${CBC_MANIFEST_HASHES[$idx]}" == "$expected" ]] ||
       fail "Commit or manifest not updated for $name (jobs=$jobs)."
+    [[ "${CBC_MANIFEST_COMMIT_DATES[$idx]}" == \
+      "$(git -C "$module" show -s --format=%cI HEAD)" ]] ||
+      fail 'Update did not record the commit timestamp.'
+    [[ "${CBC_MANIFEST_INSTALLED_AT[$idx]}" == *T*+00:00 ]] ||
+      fail 'Update did not record the local installation timestamp.'
+    [[ "${CBC_MANIFEST_INSTALLED_AT[$idx]}" != \
+      '2001-01-01T00:00:00+00:00' ]] || fail 'Update kept the old time.'
     resolved=""
     cbc_pkg_resolve_remote_head "fixture/$name" "$module" resolved true
     [[ "$resolved" == "$expected" ]] ||
@@ -74,6 +85,10 @@ for jobs in 1 4; do
     "fixture_$name" >"$HOME/new-output"
     [[ "$(<"$HOME/new-output")" == new ]] || fail 'Stale implementation.'
   done
+  before_manifest="$(<"$CBC_PACKAGE_MANIFEST")"
+  cbc pkg update --jobs "$jobs" >"$HOME/noop-output"
+  [[ "$(<"$CBC_PACKAGE_MANIFEST")" == "$before_manifest" ]] ||
+    fail 'No-op update changed timestamps.'
 done
 
 # A valid nondefault upstream must win over origin/HEAD.
@@ -107,7 +122,12 @@ printf '%s\n' '# remote history' >>"$seed/impl.sh"
 git -C "$seed" commit --quiet -am 'fixture: remote history'
 git -C "$seed" push --quiet origin main
 before="$(git -C "$module" rev-parse HEAD)"
+cbc_pkg_read_manifest
+before_installed_at="${CBC_MANIFEST_INSTALLED_AT[*]}"
 cbc pkg update --jobs 1 >"$HOME/failed-output" 2>"$HOME/failed-error"
+cbc_pkg_read_manifest
+[[ "${CBC_MANIFEST_INSTALLED_AT[*]}" == "$before_installed_at" ]] ||
+  fail 'Failed update changed installation timestamps.'
 [[ "$(<"$HOME/failed-output")" == *'Update failed'* &&
   "$(<"$HOME/failed-error")" == *'Not possible to fast-forward'* ]] ||
   fail 'Diverged update did not report the Git failure.'
