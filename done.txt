@@ -4,3 +4,4 @@ x 2026-06-23 2026-06-23 `cbc pkg update` should show latest release tag in outpu
 x 2026-10-31 2026-10-31 optimize for quicker loading times when opening a new terminal window @perf
 x 2026-11-03 2026-10-31 fix `cbc pkg update` as it does not update projectmod or smartsort modules +optimization @fix
 x 2026-11-04 2026-11-04 change `cbc doctor` to output json so that it can more easily be parsed by machines. #feat @feat
+x 2026-11-06 2026-11-05 include a date in the packages.toml manifest for cbc modules for easier human understanding #feat @feat
