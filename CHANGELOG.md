@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [4.2.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v4.1.0...v4.2.0) (2026-11-09)
+
+### Features
+
+* **pkg:** record module commit and installation timestamps ([1d61ca2](https://github.com/iop098321qwe/custom_bash_commands/commit/1d61ca2d72b958900d6043b2edba70b28ac916b3))
+
 ## [4.1.0](https://github.com/iop098321qwe/custom_bash_commands/compare/v4.0.4...v4.1.0) (2026-11-05)
 
 ### Features
