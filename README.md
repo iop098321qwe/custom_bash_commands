@@ -314,6 +314,14 @@ Version 2 replaces the flat layout; it does not duplicate checks:
 ### Manage CBC modules
 
 - `cbc pkg` stores module metadata in `~/.config/cbc/packages.toml`.
+- Each entry can include ISO 8601 timestamps with timezone offsets:
+  `commit_date` is Git's committer timestamp for the recorded revision;
+  `installed_at` is when CBC last installed or successfully updated it
+  locally, recorded in UTC. Registration and unchanged update checks do
+  not reset the installation timestamp.
+- Older manifests remain supported. Loading or updating can backfill Git
+  commit dates, but unknown historical installation times stay omitted.
+  Non-Git modules have no commit date.
 - `cbc pkg install <creator/repo|git-url|path>` records a module source.
 - `cbc pkg load` installs missing manifest modules, refreshes metadata,
   and sources entrypoints.

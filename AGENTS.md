@@ -93,6 +93,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `tests/test_banner.py`: Interactive PTY banner and color-control checks.
 - `tests/test_doctor.py`: Sectioned JSON diagnostics and startup report checks.
 - `tests/test_lazy_loading.sh`: Lazy module lifecycle and recovery checks.
+- `tests/test_manifest_dates.sh`: Manifest timestamp lifecycle checks.
 - `tests/test_pkg_update.sh`: Local Git upstream and lazy update checks.
 - `tests/test_startup.sh`: Config, module, banner, and startup fork checks.
 - `tests/test_theme_reload.sh`: Reload and package-table color regression check.
@@ -146,6 +147,11 @@ cd ~/Documents/github_repositories/custom_bash_commands
   path to terminal colors and removes `cbc_theme_get_file_mtime`.
   Custom palette paths and subsequent explicit overrides are preserved.
 - Package listing uses local refs by default; `--refresh` contacts remotes.
+  Manifest entries optionally store `commit_date` (Git committer time with
+  its offset) and `installed_at` (last CBC installation/update time in UTC)
+  as ISO 8601 strings. Registration and no-op updates preserve known times;
+  legacy installation times are not inferred. Non-Git commit dates are
+  omitted. Load/update can backfill locally available commit timestamps.
   Update fetches up to four distinct Git directories concurrently, then
   merges and writes metadata sequentially. `--jobs 1` fetches in the
   foreground for terminal authentication. Parallel workers require
@@ -220,6 +226,9 @@ cd ~/Documents/github_repositories/custom_bash_commands
   installed two-file layout using the real installer in a temporary home.
 - Run `bash tests/test_lazy_loading.sh` for discovery, completion registration,
   arguments, shell state, overrides, reloads, and failed-load recovery.
+- Run `bash tests/test_manifest_dates.sh` for Git/non-Git installations,
+  timestamp round trips, no-op preservation, uninstall alignment, and
+  legacy-manifest backfill without invented installation times.
 - Run `bash tests/test_pkg_update.sh` for deleted-upstream fallback, valid
   upstream preference, serial/parallel updates, manifest metadata, and
   lazy implementation reloads using isolated local Git remotes.
