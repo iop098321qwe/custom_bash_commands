@@ -69,6 +69,7 @@ cd ~/Documents/github_repositories/custom_bash_commands
 - `AGENTS.md`: Contributor and automation instructions.
 - `CHANGELOG.md`: Release history (managed outside this repository).
 - `LICENSE`: License text.
+- `PLAN.md`: Draft AUR and alias-module migration plan for future work.
 - `README.md`: User-facing documentation.
 - `cbc_aliases.sh`: Alias catalog sourced by the main script.
 - `cbc_logo_00001.png`: CBC logo asset.
