@@ -1,3 +1,5 @@
 (B) 2026-06-16 rebuild zensical docs +docs-site @docs
 (B) create modules page +docs-site @docs
-(A) 2026-11-06 I want to update and improve the config file to make it more useful for users of CBC #feat @feat
+(A) 2026-11-06 update and improve the config file to make it more useful for users of CBC #feat @feat
+(A) 2026-11-09 restructure and improve custom_bash_commands.sh and cbc_aliases.sh to prepare for AUR packaging. #feat @feat
+(A) 2026-11-09 move aliases from cbc_aliases.sh to module packages @feat
