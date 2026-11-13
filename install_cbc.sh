@@ -37,9 +37,6 @@ else
 fi
 
 # Create common directories (Temporary, GitHub Repositories)
-mkdir -p ~/Documents/Temporary/screenshots/
-mkdir -p ~/Documents/Temporary/recordings/raw/
-mkdir -p ~/Documents/Temporary/recordings/edited/
 mkdir -p ~/Documents/github_repositories
 
 # Countdown from 5 seconds
